@@ -16,7 +16,8 @@ import { useEffect, useId, useLayoutEffect, useMemo, } from "react";
  * The complete whitelist of injectable tokens (VULN-3) — every custom
  * property in css/tokens.css: the core 6, the keeper tokens, the shared
  * theme-independent tokens, the z-index scale (Pillar 3, including the
- * 1.2.0 navbar notch --z-nav), and — since 0.4.0 — the ten --party-*
+ * 1.2.0 navbar notch --z-nav and the 1.4.0 zenith rung --z-toast) — and
+ * since 0.4.0 — the ten --party-*
  * content tokens (Rule of Engagement: party tokens are for CONTENT only —
  * badges, tags, avatars, calendar, data-viz; structural UI keeps
  * Flamingo/Teal).
@@ -43,11 +44,12 @@ const TOKEN_KEYS = [
     "--space-tight",
     "--space-standard",
     "--space-section",
-    /* z-index scale — structural pillars (0.3.0) */
+    /* z-index scale — structural pillars (0.3.0); 1.4.0 adds the zenith rung */
     "--z-sticky",
     "--z-nav",
     "--z-overlay",
     "--z-modal",
+    "--z-toast",
     /* party palette — CONTENT-only tokens (0.4.0); never for structural chrome */
     "--party-pink-bright",
     "--party-pink-soft",

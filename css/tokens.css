@@ -34,9 +34,10 @@
    jobs — they carry over unchanged across editions.
 
    Z-INDEX SCALE (Pillar 3): --z-sticky 10, --z-nav 30, --z-overlay 40,
-   --z-modal 50. Theme-independent, defined once in :root, same values in
-   both themes. --z-nav (1.2.0) is the navbar notch: exactly one rung
-   above sticky chrome, one below the overlay scrim.
+   --z-modal 50, --z-toast 60. Theme-independent, defined once in :root,
+   same values in both themes. --z-nav (1.2.0) is the navbar notch:
+   exactly one rung above sticky chrome, one below the overlay scrim.
+   --z-toast (1.4.0) is the zenith: toasts float above modals.
 
    PARTY PALETTE (0.4.0) — RULE OF ENGAGEMENT: the ten --party-* tokens are
    reserved EXCLUSIVELY for CONTENT (badges, tags, avatars, event theme
@@ -78,6 +79,7 @@
     --z-nav: 30;
     --z-overlay: 40;
     --z-modal: 50;
+    --z-toast: 60;   /* toasts — the zenith: above modals */
 
     /* -- PARTY PALETTE (0.4.0) — content-only tokens --------------------------
        Theme-independent BY DESIGN: defined ONCE here in :root and inherited
