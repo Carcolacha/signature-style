@@ -39,3 +39,9 @@ export {
   type NavItem,
   type GlobalNavProps,
 } from "./nav.js";
+export {
+  ProgressBar,
+  type ProgressBarProps,
+  StatRing,
+  type StatRingProps,
+} from "./viz.js";

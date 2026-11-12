@@ -10,3 +10,4 @@ export { Icon, type IconProps, type IconName, EmptyState, type EmptyStateProps, 
 export { EventTimeline, type EventTimelineProps, type PtpEvent, } from "./timeline.js";
 export { EventModal, useModal, type EventModalProps, type UseModalReturn, } from "./modal.js";
 export { GlobalNav, type NavItem, type GlobalNavProps, } from "./nav.js";
+export { ProgressBar, type ProgressBarProps, StatRing, type StatRingProps, } from "./viz.js";

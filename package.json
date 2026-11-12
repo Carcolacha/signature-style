@@ -33,7 +33,8 @@
     "!react/primitives.tsx",
     "!react/timeline.tsx",
     "!react/modal.tsx",
-    "!react/nav.tsx"
+    "!react/nav.tsx",
+    "!react/viz.tsx"
   ],
   "sideEffects": [
     "*.css"
