@@ -16,47 +16,54 @@
    3. If a problem seems to require editing a global token here, stop:
       tokens belong to css/tokens.css and ThemeProvider. That is the path.
 
-   Override values may leave the token palette (that is their purpose),
-   but states are still derived with color-mix() — overrides follow the
-   Cascade, they just change the source token locally.
+   Override SURFACE values may leave the token palette (that is their
+   purpose) — but everything structural is token-driven: text sits on
+   --color-on-cake, padding lives on the --space-* tiers, borders are the
+   1px 20%-muted hairline, motion uses the transition tokens, and the
+   press is scale(0.97). States are still derived with color-mix() —
+   overrides follow the Cascade, they just change the source token locally.
    ========================================================================== */
 
 @layer overrides {
 
-  /* -- Danger: the loud alarm ------------------------------------------------ */
+  /* -- Danger: the loud alarm (owner's bright red, kept verbatim) ------------ */
   .override-danger {
     background-color: #FF6B6B;
-    color: #1E1E2E;
-    border: none;
+    color: var(--color-on-cake);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
     border-radius: var(--radius-ui);
-    padding: 0.6rem 1.25rem;
+    padding: var(--space-tight) var(--space-standard);
     font: inherit;
+    font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-standard);
+    transition: var(--transition-standard), var(--transition-transform);
   }
   .override-danger:hover {
     background-color: color-mix(in srgb, #FF6B6B 85%, black);
   }
   .override-danger:active {
     background-color: color-mix(in srgb, #FF6B6B 70%, black);
+    transform: scale(0.97);
   }
 
-  /* -- Success: soft mint ----------------------------------------------------- */
+  /* -- Success: soft mint (keeper token, now semantic) ------------------------ */
   .override-success {
-    background-color: #A8E6CF;
-    color: #1E1E2E;
-    border: none;
+    background-color: var(--color-success);
+    color: var(--color-on-cake);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
     border-radius: var(--radius-ui);
-    padding: 0.6rem 1.25rem;
+    padding: var(--space-tight) var(--space-standard);
     font: inherit;
+    font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-standard);
+    transition: var(--transition-standard), var(--transition-transform);
   }
   .override-success:hover {
-    background-color: color-mix(in srgb, #A8E6CF 85%, white);
+    background-color: color-mix(in srgb, var(--color-success) 85%, white);
   }
   .override-success:active {
-    background-color: color-mix(in srgb, #A8E6CF 85%, black);
+    background-color: color-mix(in srgb, var(--color-success) 85%, black);
+    transform: scale(0.97);
   }
 
   /* -- Gold: the shiny escalation ---------------------------------------------- */
@@ -64,13 +71,14 @@
     background-image: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
     background-size: 100% 100%;
     background-position: 0% 50%;
-    color: #1E1E2E;
-    border: none;
+    color: var(--color-on-cake);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
     border-radius: var(--radius-ui);
-    padding: 0.6rem 1.25rem;
+    padding: var(--space-tight) var(--space-standard);
     font: inherit;
+    font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-standard);
+    transition: var(--transition-standard), var(--transition-transform);
   }
   /* The shine: enlarge and slide the gradient on hover. background-size +
      position are covered by --transition-standard, so the light sweep is
@@ -81,13 +89,14 @@
   }
   .override-gold:active {
     filter: brightness(0.9);
+    transform: scale(0.97);
   }
 
   /* -- Shared focus ring + disabled gray-out ------------------------------------ */
   .override-danger:focus-visible,
   .override-success:focus-visible,
   .override-gold:focus-visible {
-    outline: 2px solid var(--color-cake-secondary);
+    outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
   .override-danger:disabled,
@@ -96,5 +105,6 @@
     background: var(--bg-surface); /* shorthand also clears the gold gradient */
     color: var(--text-muted);
     cursor: not-allowed;
+    transform: none;
   }
 }
