@@ -8,10 +8,17 @@
 
      hover          = color-mix(in srgb, <token> 85%, white)   (lighten)
      active         = color-mix(in srgb, <token> 85%, black)   (darken)
+                      + transform: scale(0.97)                 (the press)
      disabled       = var(--bg-surface) + var(--text-muted)    (gray out)
-     focus-visible  = 2px solid var(--color-cake-secondary)    (the ring)
+     focus-visible  = 2px solid var(--color-cake-primary)      (the ring)
 
-   Every interactive element carries var(--transition-standard).
+   ANIMATION PHYSICS — mechanical, snappy, zero bounce:
+     colors/opacity  = var(--transition-standard)  0.15s ease-out
+     transforms      = var(--transition-transform) 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)
+   The press is instant to start and settles smoothly — a machine, not a toy.
+
+   SPACING — the 8px grid: padding lives on --space-* tiers, never magic
+   numbers. Buttons and inputs: var(--space-tight) var(--space-standard).
 
    Order matters inside this layer: :hover / :active come first, :disabled
    last, so a hovered disabled control still shows the gray-out (equal
@@ -24,25 +31,27 @@
   /* -- Primary button (cake pink surface) ------------------------------------ */
   .btn-primary {
     background-color: var(--color-cake-primary);
-    color: #1E1E2E; /* deep grey text on pastel = readable contrast */
+    color: var(--color-on-cake); /* deep grey text on pastel = readable contrast */
     border: none;
     border-radius: var(--radius-ui);
-    padding: 0.6rem 1.25rem;
+    padding: var(--space-tight) var(--space-standard);
     font: inherit;
     font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-standard);
+    transition: var(--transition-standard), var(--transition-transform);
   }
   .btn-primary:hover {
     background-color: color-mix(in srgb, var(--color-cake-primary) 85%, white);
   }
   .btn-primary:active {
     background-color: color-mix(in srgb, var(--color-cake-primary) 85%, black);
+    transform: scale(0.97);
   }
   .btn-primary:disabled {
     background-color: var(--bg-surface);
     color: var(--text-muted);
     cursor: not-allowed;
+    transform: none;
   }
 
   /* -- Secondary button (elevated grey surface) ----------------------------- */
@@ -51,11 +60,11 @@
     border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
     color: var(--text-main);
     border-radius: var(--radius-ui);
-    padding: 0.6rem 1.25rem;
+    padding: var(--space-tight) var(--space-standard);
     font: inherit;
     font-weight: 500;
     cursor: pointer;
-    transition: var(--transition-standard);
+    transition: var(--transition-standard), var(--transition-transform);
   }
   .btn-secondary:hover {
     background-color: color-mix(in srgb, var(--bg-surface) 85%, white);
@@ -64,12 +73,14 @@
   .btn-secondary:active {
     background-color: color-mix(in srgb, var(--bg-surface) 85%, black);
     border-color: color-mix(in srgb, var(--text-muted) 85%, black);
+    transform: scale(0.97);
   }
   .btn-secondary:disabled {
     background-color: var(--bg-surface);
-    border-color: var(--text-muted);
+    border-color: color-mix(in srgb, var(--text-muted) 20%, transparent);
     color: var(--text-muted);
     cursor: not-allowed;
+    transform: none;
   }
 
   /* -- Text inputs ----------------------------------------------------------- */
@@ -80,7 +91,7 @@
     border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
     color: var(--text-main);
     border-radius: var(--radius-ui);
-    padding: 0.6rem 0.75rem;
+    padding: var(--space-tight) var(--space-standard);
     font: inherit;
     transition: var(--transition-standard);
   }
@@ -99,7 +110,7 @@
   textarea:disabled,
   select:disabled {
     background-color: var(--bg-surface);
-    border-color: var(--text-muted);
+    border-color: color-mix(in srgb, var(--text-muted) 20%, transparent);
     color: var(--text-muted);
     cursor: not-allowed;
   }
@@ -107,20 +118,24 @@
   /* -- Generic hook: opt any element into the cascade ------------------------ */
   /* [data-cascade] cascades the element's own foreground (currentColor), so
      it works on links, icons and text. Pair it with .btn-* (or your own
-     background token) for surface-level cascades. */
+     background token) for surface-level cascades. Motion is mechanical:
+     colors snap at 0.15s ease-out; the active press scales at 0.3s —
+     no bounce, no overshoot, no playfulness. */
   [data-cascade] {
-    transition: var(--transition-standard);
+    transition: var(--transition-standard), var(--transition-transform);
   }
   [data-cascade]:hover {
     color: color-mix(in srgb, currentColor 85%, white);
   }
   [data-cascade]:active {
     color: color-mix(in srgb, currentColor 85%, black);
+    transform: scale(0.97);
   }
   [data-cascade]:disabled {
     background-color: var(--bg-surface);
     color: var(--text-muted);
     cursor: not-allowed;
+    transform: none;
   }
 
   /* -- The focus ring (shared, keyboard only) -------------------------------- */
@@ -130,7 +145,7 @@
   textarea:focus-visible,
   select:focus-visible,
   [data-cascade]:focus-visible {
-    outline: 2px solid var(--color-cake-secondary);
+    outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
 
@@ -138,16 +153,18 @@
   /* Without color-mix() support, every :hover/:active declaration above is
      invalid at parse time and silently dead. This block re-derives the same
      states with filter: brightness() so the cascade still breathes on old
-     engines. It must stay LAST in this layer: equal specificity, later wins. */
+     engines — and the active press keeps its scale(0.97), which needs no
+     @supports gate because transforms work everywhere. It must stay LAST in
+     this layer: equal specificity, later wins. */
   @supports not (color: color-mix(in srgb, red, blue)) {
     .btn-primary:hover { filter: brightness(1.12); }
-    .btn-primary:active { filter: brightness(0.88); }
+    .btn-primary:active { filter: brightness(0.88); transform: scale(0.97); }
     .btn-secondary:hover { filter: brightness(1.12); }
-    .btn-secondary:active { filter: brightness(0.88); }
+    .btn-secondary:active { filter: brightness(0.88); transform: scale(0.97); }
     input:hover,
     textarea:hover,
     select:hover { filter: brightness(1.12); }
     [data-cascade]:hover { filter: brightness(1.12); }
-    [data-cascade]:active { filter: brightness(0.88); }
+    [data-cascade]:active { filter: brightness(0.88); transform: scale(0.97); }
   }
 }
