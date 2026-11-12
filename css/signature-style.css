@@ -3,6 +3,7 @@
 @import "./tokens.css";
 @import "./timeline.css" layer(cascade);
 @import "./modal.css" layer(cascade);
+@import "./nav.css" layer(cascade);
 @import "./cascade.css";
 @import "./overrides.css";
 

@@ -1,0 +1,168 @@
+/* ==========================================================================
+   NAV — <GlobalNav> (1.2.0 "GlobalNav"). Layered into `cascade` by
+   signature-style.css (imported after modal.css).
+
+   Z-GAP (Pillar 3): the navbar is `position: sticky` and wears
+   `var(--z-nav, 30)` — exactly one rung above the timeline's sticky
+   headers (`--z-sticky` 10) and one below the modal backdrop
+   (`--z-overlay` 40). The drawer is a `--z-modal` (50) sibling of the
+   modal card, so an open menu always beats the page it navigates.
+
+   THE ACTIVE MECHANISM: there is no `.is-active` class. Every link
+   carries a transparent 2px bottom border at rest, and the current
+   page's link turns that underline Flamingo — driven entirely by
+   `[aria-current="page"]`. The attribute IS the state, so router
+   solutions (React Router's NavLink) get the active style for free.
+
+   MOBILE (<= 768px, Pillar 2): the flat list hides and the hamburger
+   appears. The drawer is a full-height side sheet sliding from the
+   right; it reuses the modal backdrop element (z-40) as its scrim and
+   the modal close class for its close button — the Teal hover stays the
+   close signature. Links inside the drawer close the menu.
+
+   DECISION — drawer link underline: vertical lists often switch the
+   active marker to a left border, but the Flamingo bottom-border
+   underline is THE active mechanism, so drawer links keep it. One
+   active state, one place to read it. (A second, quieter license: the
+   hamburger gets `margin-left: auto` — the bar is a flex row so the
+   menu button parks right on mobile.)
+
+   COLOR DOCTRINE: zero hex, zero box-shadow. Every color is var(--token)
+   or color-mix(in srgb, var(--text-muted) 20%, transparent). The rgba
+   scrim lives ONLY in modal.css — the drawer borrows the modal backdrop
+   element itself instead of shipping a second scrim. Press physics
+   (scale 0.97) on links and the hamburger; doctrine focus ring
+   (2px Flamingo, offset 2px, matching cascade.css); motion tokens only,
+   and `prefers-reduced-motion` turns the transitions off outright.
+   ========================================================================== */
+
+/* The sticky navbar bar — hairline bottom border, surface background.
+   Flex row so the mobile hamburger can park right (see header). */
+.ptp-nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav, 30);
+  display: flex;
+  align-items: center;
+  background: var(--bg-surface);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  padding: 0 var(--space-standard);
+}
+
+/* Flat link row: a ul laid out horizontally, zero list chrome. */
+.ptp-nav__list {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-standard);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Nav links — inline-flex so the press transform has a transformable box. */
+.ptp-nav__link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: var(--space-standard) 0;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition-standard), var(--transition-transform);
+}
+
+.ptp-nav__link:hover {
+  color: var(--text-main);
+}
+
+.ptp-nav__link:active {
+  transform: scale(0.97);
+}
+
+/* THE active mechanism: the aria-current attribute IS the state. */
+.ptp-nav__link[aria-current="page"] {
+  color: var(--text-main);
+  border-bottom-color: var(--color-cake-primary);
+}
+
+/* Doctrine focus ring — identical to cascade.css / timeline.css. */
+.ptp-nav__link:focus-visible,
+.ptp-nav__menu-btn:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* Hamburger — muted, hairline-bordered, minimal. Hover goes to main text
+   (NOT Teal — that is the modal close signature); press = scale 0.97. */
+.ptp-nav__menu-btn {
+  display: none;
+  align-items: center;
+  margin-left: auto;
+  padding: var(--space-tight);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+  transition: var(--transition-standard), var(--transition-transform);
+}
+
+.ptp-nav__menu-btn:hover {
+  color: var(--text-main);
+}
+
+.ptp-nav__menu-btn:active {
+  transform: scale(0.97);
+}
+
+/* Pillar 2 mobile shift: the flat list collapses, the hamburger appears. */
+@media (max-width: 768px) {
+  .ptp-nav__list {
+    display: none;
+  }
+
+  .ptp-nav__menu-btn {
+    display: inline-flex;
+  }
+}
+
+/* The mobile menu — full-height side drawer sliding in from the right.
+   Sits at --z-modal (50): above the navbar, sibling to the modal card. */
+.ptp-nav-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(16rem, 80vw);
+  padding: var(--space-standard);
+  background: var(--bg-surface);
+  border-left: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  z-index: var(--z-modal, 50);
+  transform: translateX(100%);
+}
+
+.ptp-nav-drawer[data-open="true"] {
+  transform: translateX(0);
+}
+
+/* Vertical link stack — drawer links wear the same .ptp-nav__link class
+   as the flat bar (bottom-border aria-current underline kept on purpose;
+   see the header decision), just stacked and full-width. */
+.ptp-nav-drawer__list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-tight);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Motion is a gift, not a requirement: no transitions when the visitor
+   asked for reduced motion (the base layer's global guard also runs). */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-nav__link,
+  .ptp-nav__menu-btn,
+  .ptp-nav-drawer {
+    transition: none;
+  }
+}
