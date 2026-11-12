@@ -2,6 +2,8 @@
 
 > One command. One import. Your entire personal UI theme — Catppuccin-mapped, cake colors, zero manual hex codes.
 
+📖 **Read the manual:** [STORYBOOK.md](./STORYBOOK.md) — the official, human-readable guide to the philosophy, every color token, and the component API.
+
 `@edwyn/signature-style` installs edwyn's **Signature Style** into any project:
 a **harmonized** foundation — 100% official Catppuccin, per-theme
 (**Mocha (dark) by default, Latte (light) on request**, each wearing its own
