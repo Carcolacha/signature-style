@@ -116,6 +116,49 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 0.5.0 — Pruning Protocol + React Primitives
+
+- **The Pruning Protocol (Subtract by Default)** — the Engine is now
+  explicitly authorized and encouraged to delete redundant code. Three
+  mandates: **DOM Flattening** (never use a wrapper `<div>` if CSS
+  Flexbox/Grid on the parent can achieve the same layout — if an element
+  looks visually identical without a wrapper, delete the wrapper) and
+  **Minimalist Code** (no "extra stuff", no decorative wrappers — 3 lines
+  of HTML over 10 whenever the UI stays clean and correct). Subtraction
+  is a feature; the full mandate lives in
+  [`SYSTEM_PROMPT.md`](./SYSTEM_PROMPT.md) (Engine v2.5).
+- **Three official React primitives** — flat-DOM, `var(--token)`-driven
+  components in the `./react` umbrella (no new tokens, zero CSS changes):
+
+  ```jsx
+  import { ThemeProvider, Icon, EmptyState, PartyBadge } from "@edwyn/signature-style/react";
+  <Icon name="PartyPopper" />
+  <EmptyState icon="PackageOpen" title="Nothing here" message="Add your first event." />
+  <PartyBadge colorToken="--party-peach" label="Birthday" />
+  ```
+
+  - `<Icon name />` — strict lucide-react wrapper: `name` must be a real
+    lucide icon name (typo = compile error), inherits `currentColor`,
+    `strokeWidth` locked to 2 by default per Pillar 1 (overridable).
+  - `<EmptyState icon title message />` — the Pillar 4 empty state as one
+    `div.empty-state` (centered flex column, surface bg, hairline border);
+    nothing else in the DOM.
+  - `<PartyBadge colorToken label />` — the Rule of Engagement at compile
+    time: `colorToken` only accepts `--party-*` tokens
+    (`Extract<KnownToken, \`--party-${string}\`>`); a structural token like
+    `--color-cake-primary` is a type error, and a runtime guard
+    warn-and-drops anything JS slips past the types. Renders ONE `<span>`
+    with a subtle `color-mix` tint of the party token and guaranteed
+    high-contrast `--text-main` label on both themes.
+- **lucide-react is an optional peer** — declared in
+  `peerDependenciesMeta` as `optional: true`. CSS-only consumers never
+  install icons; React consumers using `<Icon>`/`<EmptyState>` should add
+  `lucide-react >= 0.400.0`.
+- `exports["./react"]` now resolves to the umbrella `react/index.js`
+  entry, re-exporting `ThemeProvider` alongside all three primitives.
+  Tokens and token VALUES are unchanged — `TOKEN_KEYS` stays at 31; the
+  structural freeze holds (`css/` is byte-identical to 0.4.0).
+
 ### 0.4.0 — Party Palette
 
 - **New token family: the Party Palette** — ten theme-independent,
