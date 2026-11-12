@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.5.0 "Pruning
- * Protocol + React Primitives").
+ * verify.mjs — release gate for @edwyn/signature-style (v0.6.0 "Event
+ * Timeline").
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
@@ -43,8 +43,9 @@
  *       strings — the CSSLayerBlockRule support check (VULN-2), the
  *       value-injection warn (VULN-3), and the canonical layer-order
  *       declaration — i.e. hardening survives every edit.
- *   (r1) REACT PRIMITIVES (0.5.0): react/index.js exists and the umbrella
- *       re-exports Icon, EmptyState and PartyBadge (checked in index.d.ts);
+ *   (r1) REACT PRIMITIVES (0.5.0) + EVENT TIMELINE (0.6.0): react/index.js
+ *       exists and the umbrella re-exports Icon, EmptyState, PartyBadge
+ *       and EventTimeline (checked in index.d.ts);
  *   (r2) lucide-react is declared in package.json peerDependenciesMeta as
  *       optional — CSS-only consumers never need it;
  *   (r3) the exports["./react"] umbrella resolves to files that exist on
@@ -52,6 +53,14 @@
  *   (r4) PRUNING PROTOCOL COLOR HYGIENE: react/primitives.tsx contains
  *       ZERO hardcoded hex literals — primitives consume var(--token)
  *       only.
+ *   (t1) EVENT TIMELINE CSS (0.6.0): css/timeline.css exists, collapses
+ *       at `max-width: 768px`, pins headers with `var(--z-sticky`,
+ *       draws the line with a `.ptp-timeline::before` pseudo-element,
+ *       respects prefers-reduced-motion, and contains NO hex literals;
+ *   (t2) BUNDLE MEMBERSHIP: css/signature-style.css imports
+ *       ./timeline.css into the `cascade` layer, AFTER ./tokens.css —
+ *       the layer-order statement stays line 1;
+ *   (t3) the umbrella re-exports EventTimeline from react/index.js too.
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
@@ -406,10 +415,10 @@ for (const [needle, label] of HARDENING_STRINGS) {
   }
 }
 
-// ---- (r) react primitives (0.5.0) ---------------------------------------------
-// (r1) the umbrella exists and re-exports all three primitives.
+// ---- (r) react primitives + event timeline -------------------------------------
+// (r1) the umbrella exists and re-exports the primitives + EventTimeline.
 const indexDts = readFileSync(resolve(root, "react/index.d.ts"), "utf8");
-for (const primitive of ["Icon", "EmptyState", "PartyBadge"]) {
+for (const primitive of ["Icon", "EmptyState", "PartyBadge", "EventTimeline"]) {
   const exportPattern = new RegExp(`\\b${primitive}\\b`);
   if (!exportPattern.test(indexDts)) {
     failures.push(`react/index.d.ts must re-export ${primitive} from the umbrella entry point`);
@@ -448,6 +457,57 @@ if (hexMatches !== null) {
     `react/primitives.tsx contains hardcoded hex literal(s) ${[...new Set(hexMatches)].join(", ")} — primitives must consume var(--token) only`,
   );
 }
+
+// (r5) EventTimeline is exported from the compiled umbrella entry too.
+const indexJs = readFileSync(resolve(root, "react/index.js"), "utf8");
+if (!/\bEventTimeline\b/.test(indexJs)) {
+  failures.push("react/index.js must re-export EventTimeline from the umbrella entry point");
+}
+
+// ---- (t) event timeline (0.6.0) -------------------------------------------------
+// (t1) TIMELINE CSS: exists, 768px collapse, sticky z-scale token, pseudo-element
+// line, reduced-motion respected, and ZERO hex literals (token-driven only).
+const timelineCssPath = resolve(root, "css/timeline.css");
+if (!existsSync(timelineCssPath)) {
+  failures.push("css/timeline.css is missing — the Event Timeline ships its own stylesheet");
+} else {
+  const timelineCss = readFileSync(timelineCssPath, "utf8");
+  const TIMELINE_REQUIREMENTS = [
+    ["max-width: 768px", "the 768px mobile collapse"],
+    ["var(--z-sticky", "the Pillar 3 sticky z-scale token on date headers"],
+    [".ptp-timeline::before", "the pseudo-element vertical line (never a div)"],
+    ["prefers-reduced-motion", "the reduced-motion guard on node transitions"],
+  ];
+  for (const [needle, label] of TIMELINE_REQUIREMENTS) {
+    if (!timelineCss.includes(needle)) {
+      failures.push(`css/timeline.css must contain ${needle} — ${label}`);
+    }
+  }
+  const timelineHexes = timelineCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (timelineHexes !== null) {
+    failures.push(
+      `css/timeline.css contains hex literal(s) ${[...new Set(timelineHexes)].join(", ")} — the timeline is token-driven, zero hex`,
+    );
+  }
+}
+
+// (t2) BUNDLE MEMBERSHIP: timeline.css is layered into `cascade`, after tokens.
+const timelineImportIndex = bundle.indexOf('@import "./timeline.css" layer(cascade);');
+if (timelineImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./timeline.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const tokensImportIndex = bundle.indexOf('@import "./tokens.css";');
+  if (tokensImportIndex !== -1 && timelineImportIndex < tokensImportIndex) {
+    failures.push(
+      "css/signature-style.css must import ./timeline.css AFTER ./tokens.css (tokens load first)",
+    );
+  }
+}
+
+// (t3) EventTimeline re-export from the compiled umbrella — covered by (r1)
+// (index.d.ts) and (r5) (index.js) above.
 
 // ---- verdict ------------------------------------------------------------------
 if (failures.length > 0) {
