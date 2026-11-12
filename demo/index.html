@@ -182,7 +182,8 @@
     <section>
       <h2>Palette — both themes</h2>
       <div id="palette"></div>
-      <p class="keeper-caption">★ keeper — beloved legacy palette colors, given semantic jobs and carried across editions.</p>
+      <p class="keeper-caption">🎂 signature — the owner's custom cake accent pair (#FFB7B2 / #E2F0CB), the exact same hexes in both themes.
+        <br />★ keeper — beloved legacy palette colors, given semantic jobs and carried across editions.</p>
     </section>
 
     <section>
@@ -239,35 +240,36 @@
       });
 
       // Static palette catalog — reference data, not live tokens.
+      // Third tuple element: "" = structural, "★" = keeper, "🎂" = signature.
       var PALETTE = [
         {
           group: "Mocha — default (dark)",
           tokens: [
-            ["bg-base", "#1E1E2E", false],
-            ["bg-surface", "#313244", false],
-            ["cake-primary", "#F5C2E7", false],
-            ["cake-secondary", "#A6E3A1", false],
-            ["text-main", "#CDD6F4", false],
-            ["text-muted", "#7F849C", false],
-            ["bg-inset", "#282A36", true],
-            ["text-bright", "#F8F8F2", true],
-            ["color-success", "#A8E6CF", true],
-            ["text-muted-soft", "#6272A4", true]
+            ["bg-base", "#1E1E2E", ""],
+            ["bg-surface", "#313244", ""],
+            ["cake-primary", "#FFB7B2", "🎂"],
+            ["cake-secondary", "#E2F0CB", "🎂"],
+            ["text-main", "#CDD6F4", ""],
+            ["text-muted", "#7F849C", ""],
+            ["bg-inset", "#282A36", "★"],
+            ["text-bright", "#F8F8F2", "★"],
+            ["color-success", "#A8E6CF", "★"],
+            ["text-muted-soft", "#6272A4", "★"]
           ]
         },
         {
           group: "Latte — the white version",
           tokens: [
-            ["bg-base", "#EFF1F5", false],
-            ["bg-surface", "#CCD0DA", false],
-            ["cake-primary", "#EA76CB", false],
-            ["cake-secondary", "#40A02B", false],
-            ["text-main", "#4C4F69", false],
-            ["text-muted", "#6272A4", true],
-            ["bg-inset", "#E6E9EF", true],
-            ["text-bright", "#11111B", true],
-            ["color-success", "#A8E6CF", true],
-            ["text-muted-soft", "#8C8FA1", true]
+            ["bg-base", "#EFF1F5", ""],
+            ["bg-surface", "#CCD0DA", ""],
+            ["cake-primary", "#FFB7B2", "🎂"],
+            ["cake-secondary", "#E2F0CB", "🎂"],
+            ["text-main", "#4C4F69", ""],
+            ["text-muted", "#6272A4", "★"],
+            ["bg-inset", "#E6E9EF", "★"],
+            ["text-bright", "#11111B", "★"],
+            ["color-success", "#A8E6CF", "★"],
+            ["text-muted-soft", "#8C8FA1", "★"]
           ]
         }
       ];
@@ -288,7 +290,7 @@
           chip.className = "chip";
           chip.style.backgroundColor = token[1];
           var name = document.createElement("h3");
-          name.textContent = token[0] + (token[2] ? " ★" : "");
+          name.textContent = token[0] + (token[2] ? " " + token[2] : "");
           var hex = document.createElement("code");
           hex.textContent = token[1];
           swatch.appendChild(chip);

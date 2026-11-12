@@ -1,7 +1,7 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "0.2.0",
-  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Catppuccin-mapped — Mocha by default, Latte for light mode, cake colors included.",
+  "version": "0.2.1",
+  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Hybrid — Catppuccin structure (Mocha default, Latte light mode) with the owner's exact custom cake interaction colors.",
   "type": "module",
   "license": "MIT",
   "author": "edwyn",

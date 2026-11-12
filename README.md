@@ -3,12 +3,14 @@
 > One command. One import. Your entire personal UI theme — Catppuccin-mapped, cake colors, zero manual hex codes.
 
 `@edwyn/signature-style` installs edwyn's **Signature Style** into any project:
-a Catppuccin-flavored foundation — **Mocha (dark) by default, Latte (light) on
-request** — with vibrant pastel interactions, where every hover, active,
-disabled and focus-visible state is *derived* from the core tokens instead of
-hand-authored. It ships a zero-dependency CSS core, an optional hardened React
-provider, a machine-readable token manifest, and the **Dynamic Signature
-Engine v2.1** system prompt so AI agents can extend the style faithfully.
+a **hybrid** foundation — Catppuccin structure for backgrounds and text
+(**Mocha (dark) by default, Latte (light) on request**) with the owner's
+**exact custom cake colors** driving every interaction — where every hover,
+active, disabled and focus-visible state is *derived* from the core tokens
+instead of hand-authored. It ships a zero-dependency CSS core, an optional
+hardened React provider, a machine-readable token manifest, and the
+**Dynamic Signature Engine v2.2** system prompt so AI agents can extend the
+style faithfully.
 
 ```
 npm i @edwyn/signature-style
@@ -60,12 +62,29 @@ The provider injects your token overrides into `@layer tokens`, and — before
 anything else — claims the canonical layer order as the first style tag in
 `<head>`. It is SSR-safe, leak-proof, and rejects unknown token keys.
 
-> **Known limitation (0.2.0):** the provider's token whitelist still covers
-> the original 8 tokens only. The keeper tokens (`--bg-inset`, `--text-bright`,
-> `--color-success`, `--text-muted-soft`) and the shared spacing/font tokens
-> are *not* prop-overridable yet — passing them to `<ThemeProvider theme={…}>`
-> warns and drops them. Pure-CSS usage is unaffected. Whitelist expansion is a
-> planned follow-up pending owner approval.
+As of 0.2.1 the whitelist covers **every** custom property in
+`css/tokens.css` — the core 6, the keeper tokens, and the shared
+font/radius/transition/spacing tokens (18 keys, typed at compile time and
+enforced at runtime):
+
+```tsx
+<ThemeProvider
+  theme={{
+    "--color-cake-primary": "#FFB7B2", // signature Pastel Strawberry
+    "--bg-inset": "#282A36",           // keeper — inset wells, code blocks
+    "--space-standard": "1rem",        // 8px grid tier 2
+  }}
+>
+  <App />
+</ThemeProvider>
+```
+
+Guard logic is unchanged: values containing `{`, `}`, `;` or `\` are warned
+and dropped; unknown keys are warned and dropped.
+
+> **Documented tradeoff (owner-mandated):** the signature cakes
+> (`#FFB7B2` / `#E2F0CB`) are the exact same hexes in both themes, so focus
+> rings and primary surfaces run pale on the Latte light theme. Deliberate.
 
 ## The three doctrines
 
@@ -88,9 +107,35 @@ anything else — claims the canonical layer order as the first style tag in
 |---|---|---|
 | VULN-1 | `color-mix()` unsupported → hover/active silently dead | `@supports not (color: color-mix(in srgb, red, blue))` block re-derives states via `filter: brightness(1.12)` / `brightness(0.88)` |
 | VULN-2 | `@layer` fragility: unlayered host CSS beats layered CSS; layer-order races | `ThemeProvider` injects `@layer tokens, base, cascade, overrides;` as the FIRST style tag in `<head>` + `CSSLayerBlockRule` support warning; bundle declares the same order statically |
-| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (8 keys, type + runtime), CSS-injection guard on values |
+| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 18 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 0.2.1 — Hybrid Theme
+
+- **Hybrid doctrine** — the strict Catppuccin accents of 0.2.0 erased the
+  owner's personal "cake" signature. 0.2.1 restores it as a hybrid:
+  Catppuccin Mocha/Latte structural colors (backgrounds, text) stay, and the
+  owner's exact custom cake colors return for **all interaction tokens** —
+  `--color-cake-primary #FFB7B2` (Pastel Strawberry) and
+  `--color-cake-secondary #E2F0CB` (Soft Matcha). Catppuccin Pink/Green are
+  never used for accents again.
+- **Exact on both sides of the toggle** — the signature hexes are identical
+  in Mocha and Latte by owner mandate ("exact" means exact). Known tradeoff,
+  documented and deliberate: the pale cakes give quiet focus rings on the
+  Latte light theme.
+- **Provider whitelist expanded** — `<ThemeProvider theme={…}>` now accepts
+  every custom property in `css/tokens.css`: the core 6, the 4 keepers,
+  `--color-on-cake`, `--font-sans`, `--radius-ui`, both transitions, and the
+  three 8px spacing tiers (18 keys). This removes the 0.2.0 known
+  limitation. Guard mechanisms are byte-identical in behavior: the
+  isomorphic layout effect, `useId` dedup, self-only cleanup, the
+  value-injection guard, and the layer-order first injection all survive
+  (asserted by the new verify hardening gate).
+- **Release gates** — `verify.mjs` now asserts the signature hexes in both
+  theme blocks, zero Catppuccin accent hexes anywhere in `css/` or
+  `tokens.json`, whitelist parity between `tokens.css` and the provider, and
+  that the provider's hardening strings survive edits.
 
 ### 0.2.0 — Catppuccin Edition
 
@@ -122,6 +167,7 @@ anything else — claims the canonical layer order as the first style tag in
   surfaces) and the spacing tiers.
 - **Known limitation** — the ThemeProvider whitelist doesn't cover the keeper
   tokens yet (see React usage above); pure-CSS usage is unaffected.
+  *(Resolved in 0.2.1.)*
 
 ### 0.1.0
 
@@ -140,7 +186,7 @@ into an existing one and keep the repo as the style's source of truth.
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, keeper hexes, bundle head, exports, react/ frozen
+npm run verify     # theme parity, signature hexes, retired-hex ban, whitelist parity, bundle head, exports, provider hardening
 npm pack --dry-run # inspect the publishable tarball
 ```
 
