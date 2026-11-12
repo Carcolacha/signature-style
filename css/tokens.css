@@ -33,8 +33,10 @@
    --text-muted-soft) are beloved legacy palette colors given semantic
    jobs — they carry over unchanged across editions.
 
-   Z-INDEX SCALE (Pillar 3): --z-sticky 10, --z-overlay 40, --z-modal 50.
-   Theme-independent, defined once in :root, same values in both themes.
+   Z-INDEX SCALE (Pillar 3): --z-sticky 10, --z-nav 30, --z-overlay 40,
+   --z-modal 50. Theme-independent, defined once in :root, same values in
+   both themes. --z-nav (1.2.0) is the navbar notch: exactly one rung
+   above sticky chrome, one below the overlay scrim.
 
    PARTY PALETTE (0.4.0) — RULE OF ENGAGEMENT: the ten --party-* tokens are
    reserved EXCLUSIVELY for CONTENT (badges, tags, avatars, event theme
@@ -73,6 +75,7 @@
 
     /* -- z-index scale (Pillar 3) — same values in both themes -------------- */
     --z-sticky: 10;
+    --z-nav: 30;
     --z-overlay: 40;
     --z-modal: 50;
 

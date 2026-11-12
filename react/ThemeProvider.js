@@ -15,10 +15,11 @@ import { useEffect, useId, useLayoutEffect, useMemo, } from "react";
 /**
  * The complete whitelist of injectable tokens (VULN-3) — every custom
  * property in css/tokens.css: the core 6, the keeper tokens, the shared
- * theme-independent tokens, the z-index scale (Pillar 3), and — since 0.4.0
- * — the ten --party-* content tokens (Rule of Engagement: party tokens are
- * for CONTENT only — badges, tags, avatars, calendar, data-viz; structural
- * UI keeps Flamingo/Teal).
+ * theme-independent tokens, the z-index scale (Pillar 3, including the
+ * 1.2.0 navbar notch --z-nav), and — since 0.4.0 — the ten --party-*
+ * content tokens (Rule of Engagement: party tokens are for CONTENT only —
+ * badges, tags, avatars, calendar, data-viz; structural UI keeps
+ * Flamingo/Teal).
  */
 const TOKEN_KEYS = [
     /* core 6 — catppuccin structure + harmonized accents */
@@ -44,6 +45,7 @@ const TOKEN_KEYS = [
     "--space-section",
     /* z-index scale — structural pillars (0.3.0) */
     "--z-sticky",
+    "--z-nav",
     "--z-overlay",
     "--z-modal",
     /* party palette — CONTENT-only tokens (0.4.0); never for structural chrome */
