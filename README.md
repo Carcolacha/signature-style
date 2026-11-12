@@ -116,6 +116,66 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 0.7.0 — Event Modal
+
+- **`<EventModal>` + `useModal()`** — the final Info1 composition: an
+  interactive Event Detail overlay that opens when a user clicks a
+  timeline node. Three pieces, no magic:
+
+  ```tsx
+  import { EventTimeline, EventModal, useModal } from "@edwyn/signature-style/react";
+
+  const modal = useModal(); // or useModal<PtpEvent>() for explicit typing
+
+  <EventTimeline events={events} onEventSelect={modal.open} />
+  {modal.selectedEvent && (
+    <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
+  )}
+  ```
+
+  - **Portal architecture** — `createPortal` mounts the overlay on
+    `document.body`, breaking free of the timeline's CSS Grid stacking
+    context. The Pillar 3 z-scale is then the only stacking authority:
+    backdrop `z-index: var(--z-overlay, 40)`, card
+    `z-index: var(--z-modal, 50)`.
+  - **A11y contract** — the card is `role="dialog"` with
+    `aria-modal="true"` and `aria-label` = the event title. Escape closes
+    (a document keydown listener installed in a `useEffect`, always
+    cleaned up), clicking the backdrop closes, and clicking inside the
+    card does NOT — the card stops propagation.
+  - **`useModal<T>()`** — the minimal hook behind the overlay: two
+    `useState` values (`isOpen`, `selectedEvent`) plus stable callbacks
+    (`useCallback`, so `modal.open` can be handed straight to
+    `onEventSelect`). No context, no portals inside the hook — the hook
+    owns state, the component owns the DOM.
+  - **Flat grid card** — the card is ONE CSS Grid whose direct children
+    are the title (`h2`), the close button, the `<PartyBadge>` row, and
+    flat label/value rows (Date / Time / About) — zero wrapper divs, even
+    the header row is pure grid placement. The close button is muted
+    `--text-muted` by default and hovers to `--color-cake-secondary`
+    (Teal — structural chrome, Rule of Engagement untouched).
+  - New stylesheet **`css/modal.css`** (`.ptp-modal-*` classes,
+    token-driven, zero box-shadow, `prefers-reduced-motion` respected,
+    768px collapse), imported into the `cascade` layer after
+    `timeline.css`. One documented exception to the token doctrine, by
+    owner mandate: the backdrop scrim is the neutral
+    `rgba(0, 0, 0, 0.6)` — a dimming layer must dim regardless of theme.
+    `cascade.css` and `overrides.css` remain untouched — the structural
+    freeze holds.
+- **`<EventTimeline onEventSelect?>`** — new optional prop
+  `(event: PtpEvent) => void`. Timeline nodes are now real `<button>`
+  elements (was `span`) with pointer cursor and the shared Flamingo
+  focus ring; without the prop they render identically and simply do
+  nothing on click. Nodes expose `aria-label` = the event title.
+- **`PtpEvent.description?`** — new optional field rendered as the
+  modal's "About" row (additive; 0.6.0 call sites are unaffected).
+- **Release gates** — verify now asserts the modal stylesheet's z-pillars
+  (`var(--z-overlay` / `var(--z-modal`), the documented-scrim-only hex
+  exception (zero hex beyond `rgba(0, 0, 0, 0.6)`), the umbrella
+  re-exports of `EventModal` + `useModal`, the modal source's portal +
+  a11y contract, and that timeline nodes are buttons firing
+  `onEventSelect`.
+
 ### 0.6.0 — Event Timeline
 
 - **`<EventTimeline>`** — the first full component built on the 0.5.0
@@ -388,7 +448,7 @@ into an existing one and keep the repo as the style's source of truth.
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, exports, provider hardening
+npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, exports, provider hardening, timeline gates, modal gates
 npm pack --dry-run # inspect the publishable tarball
 ```
 
