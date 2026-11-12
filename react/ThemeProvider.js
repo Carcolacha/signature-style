@@ -14,11 +14,12 @@ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
 import { useEffect, useId, useLayoutEffect, useMemo, } from "react";
 /**
  * The complete whitelist of injectable tokens (VULN-3) — every custom
- * property in css/tokens.css (0.2.1 hybrid expansion): the core 6, the
- * keeper tokens, and the shared theme-independent tokens.
+ * property in css/tokens.css (0.3.0 harmonized expansion): the core 6, the
+ * keeper tokens, the shared theme-independent tokens, and the z-index
+ * scale (Pillar 3).
  */
 const TOKEN_KEYS = [
-    /* core 6 — catppuccin structure + custom cake accents */
+    /* core 6 — catppuccin structure + harmonized accents */
     "--bg-base",
     "--bg-surface",
     "--color-cake-primary",
@@ -39,6 +40,10 @@ const TOKEN_KEYS = [
     "--space-tight",
     "--space-standard",
     "--space-section",
+    /* z-index scale — structural pillars (0.3.0) */
+    "--z-sticky",
+    "--z-overlay",
+    "--z-modal",
 ];
 /** Canonical layer order — must be the first style in the document (VULN-2). */
 const LAYER_ORDER = "@layer tokens, base, cascade, overrides;";
