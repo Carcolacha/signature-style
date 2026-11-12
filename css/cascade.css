@@ -149,6 +149,48 @@
     outline-offset: 2px;
   }
 
+  /* -- Edge states (Pillar 4) ------------------------------------------------ */
+  /* Loading = pulsing opacity on --bg-surface: a .skeleton surface breathes
+     between full and half opacity, no color motion at all. Empty = a
+     --bg-surface card: hairline border, icon + muted text centered on the
+     cross axes. Both are token-driven — no new colors, no shadows, radius
+     and spacing from the tokens. */
+  .skeleton {
+    background-color: var(--bg-surface);
+    border-radius: var(--radius-ui);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton {
+      animation: none;
+    }
+  }
+
+  .empty-state {
+    background-color: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-section);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--space-standard);
+    color: var(--text-muted);
+  }
+
   /* -- VULN-1 patch: legacy fallback ---------------------------------------- */
   /* Without color-mix() support, every :hover/:active declaration above is
      invalid at parse time and silently dead. This block re-derives the same
