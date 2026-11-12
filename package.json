@@ -1,0 +1,53 @@
+{
+  "name": "@edwyn/signature-style",
+  "version": "0.1.0",
+  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Linux-inspired minimalist, cake colors included.",
+  "type": "module",
+  "license": "MIT",
+  "author": "edwyn",
+  "keywords": [
+    "css",
+    "design-system",
+    "theme",
+    "tokens",
+    "react"
+  ],
+  "main": "./css/signature-style.css",
+  "exports": {
+    ".": "./css/signature-style.css",
+    "./tokens.css": "./css/tokens.css",
+    "./cascade.css": "./css/cascade.css",
+    "./overrides.css": "./css/overrides.css",
+    "./tokens.json": "./tokens.json",
+    "./system-prompt.md": "./SYSTEM_PROMPT.md",
+    "./react": {
+      "types": "./react/ThemeProvider.d.ts",
+      "import": "./react/ThemeProvider.js",
+      "default": "./react/ThemeProvider.js"
+    }
+  },
+  "files": [
+    "css/",
+    "react/",
+    "tokens.json",
+    "SYSTEM_PROMPT.md",
+    "!react/*.ts",
+    "!react/*.tsx"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "verify": "node scripts/verify.mjs"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "typescript": "^5.6.3"
+  }
+}
