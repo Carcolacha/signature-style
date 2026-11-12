@@ -9,7 +9,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v2.3** system prompt so AI agents can extend the
+**Dynamic Signature Engine v2.4** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -62,10 +62,11 @@ The provider injects your token overrides into `@layer tokens`, and — before
 anything else — claims the canonical layer order as the first style tag in
 `<head>`. It is SSR-safe, leak-proof, and rejects unknown token keys.
 
-As of 0.3.0 the whitelist covers **every** custom property in
+As of 0.4.0 the whitelist covers **every** custom property in
 `css/tokens.css` — the core 6, the keeper tokens, the shared
-font/radius/transition/spacing tokens, and the z-index scale
-(21 keys, typed at compile time and enforced at runtime):
+font/radius/transition/spacing tokens, the z-index scale, and the ten
+`--party-*` content tokens (31 keys, typed at compile time and enforced at
+runtime):
 
 ```tsx
 <ThemeProvider
@@ -111,9 +112,63 @@ and dropped; unknown keys are warned and dropped.
 |---|---|---|
 | VULN-1 | `color-mix()` unsupported → hover/active silently dead | `@supports not (color: color-mix(in srgb, red, blue))` block re-derives states via `filter: brightness(1.12)` / `brightness(0.88)` |
 | VULN-2 | `@layer` fragility: unlayered host CSS beats layered CSS; layer-order races | `ThemeProvider` injects `@layer tokens, base, cascade, overrides;` as the FIRST style tag in `<head>` + `CSSLayerBlockRule` support warning; bundle declares the same order statically |
-| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 21 tokens, type + runtime), CSS-injection guard on values |
+| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 31 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 0.4.0 — Party Palette
+
+- **New token family: the Party Palette** — ten theme-independent,
+  content-reserved tokens, defined ONCE in `:root` and inherited by both
+  Mocha and Latte untouched (theme-independent by design, so content wears
+  the same party colors on both sides of the toggle):
+
+  | Token | Hex | Role |
+  |---|---|---|
+  | `--party-pink-bright` | `#ea76cb` | badges, tag fills, event highlights |
+  | `--party-pink-soft` | `#f5bde6` | tag surfaces, avatar rings, soft calendar fills |
+  | `--party-pink-alt` | `#f4b8e4` | alternate pink for content categories |
+  | `--party-mauve-bright` | `#8839ef` | chart series, bold tags |
+  | `--party-mauve-soft` | `#cba6f7` | avatar dots, calendar blocks |
+  | `--party-lavender` | `#7287fd` | content links, calendar themes, data-viz series |
+  | `--party-sky` | `#04a5e5` | informational tags, data-viz series |
+  | `--party-blue` | `#1e66f5` | data-viz series, event themes |
+  | `--party-peach` | `#fe640b` | calendar block edges, attention tags |
+  | `--party-green` | `#a6d189` | status tags, positive data-viz series |
+
+- **Rule of Engagement** — `--party-*` tokens are reserved EXCLUSIVELY for
+  content: badges, tags, avatars, event theme overrides, calendar blocks,
+  data visualization. The Engine keeps Flamingo/Teal for ALL structural UI
+  actions — buttons, inputs, focus rings. Never use `--party-*` for
+  structural chrome; never use Flamingo/Teal for content categories.
+  The v0.3.0 structural UI is LOCKED and the release gate enforces it: a
+  structural-freeze gate requires `git diff v0.3.0 -- css/cascade.css
+  css/overrides.css` to be empty and the structural + Flamingo/Teal values
+  in `tokens.css` to be unchanged.
+- **Whitelist covers everything, party included** — `TOKEN_KEYS` grows
+  from 21 to 31 keys; `<ThemeProvider theme={…}>` now accepts every custom
+  property in `css/tokens.css`, the party tokens included. Guard logic is
+  unchanged. Because party tokens are whitelisted, a user can retheme
+  their event content dynamically — for example changing their event
+  theme's accent:
+
+  ```tsx
+  <ThemeProvider theme={{ "--party-peach": "#ff8800" }}>
+    <Calendar />
+  </ThemeProvider>
+  ```
+
+- **Engine v2.4** — `SYSTEM_PROMPT.md` gains the "Party Palette
+  (Content-Only Tokens)" section listing all ten tokens plus the Rule of
+  Engagement. The demo gains a compact "Party Palette · content only"
+  strip (all 10 swatches with muted mono names) plus three content chips:
+  a `birthday` badge on `--party-pink-bright` (text `--color-on-cake`), an
+  avatar dot on `--party-mauve-soft`, and a calendar block edged in
+  `--party-peach`.
+- **Release gates** — verify now asserts the exact ten party hexes in
+  both `tokens.css` (`:root`, theme-independent) and `tokens.json`
+  (`partyPalette` entries with `"reserved": true` and the content-only
+  role), party whitelist parity, and the v0.3.0 structural freeze.
 
 ### 0.3.0 — Harmonized Catppuccin
 
@@ -231,7 +286,7 @@ into an existing one and keep the repo as the style's source of truth.
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, bundle head, exports, provider hardening
+npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, exports, provider hardening
 npm pack --dry-run # inspect the publishable tarball
 ```
 
