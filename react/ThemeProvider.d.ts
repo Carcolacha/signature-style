@@ -11,8 +11,12 @@
  *   keys are warned and dropped, injection-capable values are rejected).
  */
 import { type ReactNode } from "react";
-/** The complete whitelist of injectable tokens (VULN-3). */
-declare const TOKEN_KEYS: readonly ["--bg-base", "--bg-surface", "--color-cake-primary", "--color-cake-secondary", "--text-main", "--text-muted", "--radius-ui", "--transition-standard"];
+/**
+ * The complete whitelist of injectable tokens (VULN-3) — every custom
+ * property in css/tokens.css (0.2.1 hybrid expansion): the core 6, the
+ * keeper tokens, and the shared theme-independent tokens.
+ */
+declare const TOKEN_KEYS: readonly ["--bg-base", "--bg-surface", "--color-cake-primary", "--color-cake-secondary", "--text-main", "--text-muted", "--bg-inset", "--text-bright", "--color-success", "--text-muted-soft", "--color-on-cake", "--font-sans", "--radius-ui", "--transition-standard", "--transition-transform", "--space-tight", "--space-standard", "--space-section"];
 /** A token name known to Signature Style. */
 export type KnownToken = (typeof TOKEN_KEYS)[number];
 /** Overrides accepted by <ThemeProvider>; keys outside KnownToken are dropped. */
