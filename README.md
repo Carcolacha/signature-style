@@ -3,13 +3,13 @@
 > One command. One import. Your entire personal UI theme — Catppuccin-mapped, cake colors, zero manual hex codes.
 
 `@edwyn/signature-style` installs edwyn's **Signature Style** into any project:
-a **hybrid** foundation — Catppuccin structure for backgrounds and text
-(**Mocha (dark) by default, Latte (light) on request**) with the owner's
-**exact custom cake colors** driving every interaction — where every hover,
-active, disabled and focus-visible state is *derived* from the core tokens
+a **harmonized** foundation — 100% official Catppuccin, per-theme
+(**Mocha (dark) by default, Latte (light) on request**, each wearing its own
+palette's signature Flamingo/Teal pairing) — where every hover, active,
+disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v2.2** system prompt so AI agents can extend the
+**Dynamic Signature Engine v2.3** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -62,17 +62,18 @@ The provider injects your token overrides into `@layer tokens`, and — before
 anything else — claims the canonical layer order as the first style tag in
 `<head>`. It is SSR-safe, leak-proof, and rejects unknown token keys.
 
-As of 0.2.1 the whitelist covers **every** custom property in
-`css/tokens.css` — the core 6, the keeper tokens, and the shared
-font/radius/transition/spacing tokens (18 keys, typed at compile time and
-enforced at runtime):
+As of 0.3.0 the whitelist covers **every** custom property in
+`css/tokens.css` — the core 6, the keeper tokens, the shared
+font/radius/transition/spacing tokens, and the z-index scale
+(21 keys, typed at compile time and enforced at runtime):
 
 ```tsx
 <ThemeProvider
   theme={{
-    "--color-cake-primary": "#FFB7B2", // signature Pastel Strawberry
+    "--color-cake-primary": "#F2CDCD", // signature Mocha Flamingo
     "--bg-inset": "#282A36",           // keeper — inset wells, code blocks
     "--space-standard": "1rem",        // 8px grid tier 2
+    "--z-modal": "50",                 // z-index scale (Pillar 3)
   }}
 >
   <App />
@@ -82,9 +83,12 @@ enforced at runtime):
 Guard logic is unchanged: values containing `{`, `}`, `;` or `\` are warned
 and dropped; unknown keys are warned and dropped.
 
-> **Documented tradeoff (owner-mandated):** the signature cakes
-> (`#FFB7B2` / `#E2F0CB`) are the exact same hexes in both themes, so focus
-> rings and primary surfaces run pale on the Latte light theme. Deliberate.
+> **Per-theme harmony (0.3.0 decision):** the signature accents are each
+> theme's *own* official Catppuccin pairing — Mocha Flamingo `#F2CDCD` /
+> Mocha Teal `#94E2D5` on the dark side, Latte Flamingo `#DD7878` /
+> Latte Teal `#179299` on the light side. Contrast is correct on both sides
+> of the toggle by construction — the 0.2.1 pale-rings-on-Latte tradeoff is
+> resolved, and no custom hexes remain in the palette.
 
 ## The three doctrines
 
@@ -107,9 +111,50 @@ and dropped; unknown keys are warned and dropped.
 |---|---|---|
 | VULN-1 | `color-mix()` unsupported → hover/active silently dead | `@supports not (color: color-mix(in srgb, red, blue))` block re-derives states via `filter: brightness(1.12)` / `brightness(0.88)` |
 | VULN-2 | `@layer` fragility: unlayered host CSS beats layered CSS; layer-order races | `ThemeProvider` injects `@layer tokens, base, cascade, overrides;` as the FIRST style tag in `<head>` + `CSSLayerBlockRule` support warning; bundle declares the same order statically |
-| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 18 tokens, type + runtime), CSS-injection guard on values |
+| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 21 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 0.3.0 — Harmonized Catppuccin
+
+- **Harmonization** — the custom hybrid cake accents are retired. The
+  signature now uses ONLY official Catppuccin colors, per theme: the dark
+  default wears **Mocha Flamingo `#F2CDCD`** and **Mocha Teal `#94E2D5`**;
+  the light theme wears its own **Latte Flamingo `#DD7878`** and
+  **Latte Teal `#179299`**. Structural tokens are unchanged
+  (Mocha `#1E1E2E`/`#313244`/`#CDD6F4`/`#7F849C`, Latte
+  `#EFF1F5`/`#CCD0DA`/`#4C4F69`/`#6272A4`, keepers intact).
+- **The Latte-counterparts decision** — 0.2.1 mandated the identical hexes
+  in both themes, which left pale focus rings on Latte. 0.3.0 resolves the
+  tradeoff by giving each theme its own official palette pairing: contrast
+  is correct on both sides of the toggle by construction, and the palette
+  is mathematically harmonious because every value is Catppuccin's own.
+  The retired custom hexes (`#FFB7B2`, `#E2F0CB`) are banned everywhere in
+  `css/` and `tokens.json` — enforced by the release gate.
+- **Four structural pillars locked in** — (1) **Iconography**: Lucide-React
+  exclusively, 2px stroke matching Inter weight 500, never mix libraries;
+  (2) **Breakpoints**: strict mobile shift at `max-width: 768px`, all
+  multi-column grids collapse to one column; (3) **Z-Index Scale**: new
+  tokens `--z-sticky: 10`, `--z-overlay: 40`, `--z-modal: 50` —
+  sticky/toolbars, overlays/backdrops, modals/popups/dropdowns;
+  (4) **Edge States**: loading is a pulsing-opacity skeleton on
+  `--bg-surface` (`@keyframes skeleton-pulse`, ~1.5s ease-in-out, disabled
+  under `prefers-reduced-motion`); empty is a `--bg-surface` card with a
+  Lucide icon and `--text-muted` text, centered — new `.skeleton` and
+  `.empty-state` classes in `cascade.css`.
+- **Provider whitelist** — grows to 21 keys (adds the three z-tokens).
+  Guard mechanisms are behavior-identical: isomorphic layout effect,
+  `useId` dedup, self-only cleanup, value-injection warn+drop,
+  layer-order-first injection, and the `CSSLayerBlockRule` guard all
+  survive untouched.
+- **Engine v2.3** — `SYSTEM_PROMPT.md` gains the Structural Pillars section
+  and the harmonized token mapping. The demo gains an Edge States section
+  (inline Lucide SVG, zero network refs), a 768px grid collapse, and the
+  harmonized swatches.
+- **Release gates** — verify now asserts the per-theme signature hexes,
+  bans the retired custom hexes alongside the older Catppuccin-accent ban,
+  requires the z-tokens in both `tokens.css` and the provider whitelist,
+  and checks their exact values (10/40/50).
 
 ### 0.2.1 — Hybrid Theme
 
@@ -186,7 +231,7 @@ into an existing one and keep the repo as the style's source of truth.
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, signature hexes, retired-hex ban, whitelist parity, bundle head, exports, provider hardening
+npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, bundle head, exports, provider hardening
 npm pack --dry-run # inspect the publishable tarball
 ```
 
