@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.6.0 "Event
- * Timeline").
+ * verify.mjs — release gate for @edwyn/signature-style (v0.7.0 "Event
+ * Modal").
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
@@ -43,9 +43,10 @@
  *       strings — the CSSLayerBlockRule support check (VULN-2), the
  *       value-injection warn (VULN-3), and the canonical layer-order
  *       declaration — i.e. hardening survives every edit.
- *   (r1) REACT PRIMITIVES (0.5.0) + EVENT TIMELINE (0.6.0): react/index.js
- *       exists and the umbrella re-exports Icon, EmptyState, PartyBadge
- *       and EventTimeline (checked in index.d.ts);
+ *   (r1) REACT PRIMITIVES (0.5.0) + EVENT TIMELINE (0.6.0) + EVENT MODAL
+ *       (0.7.0): react/index.js exists and the umbrella re-exports Icon,
+ *       EmptyState, PartyBadge, EventTimeline, EventModal and useModal
+ *       (checked in index.d.ts);
  *   (r2) lucide-react is declared in package.json peerDependenciesMeta as
  *       optional — CSS-only consumers never need it;
  *   (r3) the exports["./react"] umbrella resolves to files that exist on
@@ -61,6 +62,25 @@
  *       ./timeline.css into the `cascade` layer, AFTER ./tokens.css —
  *       the layer-order statement stays line 1;
  *   (t3) the umbrella re-exports EventTimeline from react/index.js too.
+ *   (m1) EVENT MODAL CSS (0.7.0): css/modal.css exists, pins the backdrop
+ *       with `var(--z-overlay` and the card with `var(--z-modal`, uses the
+ *       user-mandated neutral scrim `rgba(0, 0, 0, 0.6)` (the ONLY allowed
+ *       non-token color — after stripping it, the file must contain ZERO
+ *       hex literals), respects prefers-reduced-motion, collapses at
+ *       max-width: 768px, and has zero box-shadow;
+ *   (m2) BUNDLE MEMBERSHIP: css/signature-style.css imports ./modal.css
+ *       into the `cascade` layer, AFTER ./timeline.css;
+ *   (m3) MODAL SOURCE HYGIENE: react/modal.tsx portals via createPortal to
+ *       document.body, carries the dialog a11y contract (role="dialog",
+ *       aria-modal, event-title aria-label, Close label), closes on Escape
+ *       with a cleaned-up keydown listener, stops clicks inside the card,
+ *       and contains ZERO hex literals;
+ *   (m4) TIMELINE INTEGRATION: react/timeline.tsx renders nodes as
+ *       `<button … ptp-timeline__node>` (was span) and EventTimelineProps
+ *       declares the optional onEventSelect callback that fires with the
+ *       clicked event;
+ *   (m5) the umbrella re-exports EventModal + useModal from react/index.js
+ *       too (companion to r1/r5).
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
@@ -418,7 +438,16 @@ for (const [needle, label] of HARDENING_STRINGS) {
 // ---- (r) react primitives + event timeline -------------------------------------
 // (r1) the umbrella exists and re-exports the primitives + EventTimeline.
 const indexDts = readFileSync(resolve(root, "react/index.d.ts"), "utf8");
-for (const primitive of ["Icon", "EmptyState", "PartyBadge", "EventTimeline"]) {
+for (const primitive of [
+  "Icon",
+  "EmptyState",
+  "PartyBadge",
+  "EventTimeline",
+  "EventModal",
+  "useModal",
+  "EventModalProps",
+  "UseModalReturn",
+]) {
   const exportPattern = new RegExp(`\\b${primitive}\\b`);
   if (!exportPattern.test(indexDts)) {
     failures.push(`react/index.d.ts must re-export ${primitive} from the umbrella entry point`);
@@ -458,10 +487,15 @@ if (hexMatches !== null) {
   );
 }
 
-// (r5) EventTimeline is exported from the compiled umbrella entry too.
+// (r5) EventTimeline / EventModal / useModal are exported from the compiled
+// umbrella entry too.
 const indexJs = readFileSync(resolve(root, "react/index.js"), "utf8");
-if (!/\bEventTimeline\b/.test(indexJs)) {
-  failures.push("react/index.js must re-export EventTimeline from the umbrella entry point");
+for (const compiledExport of ["EventTimeline", "EventModal", "useModal"]) {
+  if (!new RegExp(`\\b${compiledExport}\\b`).test(indexJs)) {
+    failures.push(
+      `react/index.js must re-export ${compiledExport} from the umbrella entry point`,
+    );
+  }
 }
 
 // ---- (t) event timeline (0.6.0) -------------------------------------------------
@@ -508,6 +542,116 @@ if (timelineImportIndex === -1) {
 
 // (t3) EventTimeline re-export from the compiled umbrella — covered by (r1)
 // (index.d.ts) and (r5) (index.js) above.
+
+// ---- (m) event modal (0.7.0) -----------------------------------------------------
+// (m1) MODAL CSS: exists, z-pillars on backdrop + card, the documented neutral
+// scrim is the ONLY non-token color (zero hex beyond it), reduced-motion
+// respected, transition token, 768px collapse, zero box-shadow.
+const SCRIM = "rgba(0, 0, 0, 0.6)";
+const modalCssPath = resolve(root, "css/modal.css");
+if (!existsSync(modalCssPath)) {
+  failures.push("css/modal.css is missing — the Event Modal ships its own stylesheet");
+} else {
+  const modalCss = readFileSync(modalCssPath, "utf8");
+  const MODAL_REQUIREMENTS = [
+    ["var(--z-overlay", "the Pillar 3 backdrop z-scale token"],
+    ["var(--z-modal", "the Pillar 3 card z-scale token"],
+    ["ptp-modal-backdrop", "the backdrop class"],
+    ["ptp-modal-card", "the dialog card class"],
+    [`background: ${SCRIM}`, "the user-mandated neutral scrim on the backdrop"],
+    ["prefers-reduced-motion", "the reduced-motion guard on close-button transitions"],
+    ["var(--transition-standard)", "the mechanical-physics transition token"],
+    ["max-width: 768px", "the Pillar 2 mobile collapse"],
+    [":hover", "the Teal close-button hover"],
+    ["var(--color-cake-secondary)", "the Teal hover accent (Rule of Engagement: structural)"],
+  ];
+  for (const [needle, label] of MODAL_REQUIREMENTS) {
+    if (!modalCss.includes(needle)) {
+      failures.push(`css/modal.css must contain ${needle} — ${label}`);
+    }
+  }
+  // Border doctrine: zero box-shadow DECLARATIONS (a `box-shadow: none`
+  // reset is allowed; comment mentions of the word are not declarations).
+  const shadowDecls = modalCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  const nonNoneShadows = (shadowDecls ?? []).filter((d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d));
+  if (nonNoneShadows.length > 0) {
+    failures.push(
+      `css/modal.css declares a box-shadow (${nonNoneShadows.join(" ")}) — the border doctrine bans drop shadows everywhere`,
+    );
+  }
+  // COLOR DOCTRINE EXCEPTION: the neutral scrim may appear, nothing else.
+  // Strip every (documented) scrim occurrence, then demand zero hex.
+  const modalHexes = modalCss.replaceAll(SCRIM, "").match(/#[0-9a-f]{3,8}\b/gi);
+  if (modalHexes !== null) {
+    failures.push(
+      `css/modal.css contains hex literal(s) ${[...new Set(modalHexes)].join(", ")} — only the documented rgba(0, 0, 0, 0.6) scrim may bypass the token doctrine`,
+    );
+  }
+}
+
+// (m2) BUNDLE MEMBERSHIP: modal.css is layered into `cascade`, after timeline.
+const modalImportIndex = bundle.indexOf('@import "./modal.css" layer(cascade);');
+if (modalImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./modal.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const timelineImportIndex = bundle.indexOf('@import "./timeline.css" layer(cascade);');
+  if (timelineImportIndex !== -1 && modalImportIndex < timelineImportIndex) {
+    failures.push(
+      "css/signature-style.css must import ./modal.css AFTER ./timeline.css (timeline styles load first)",
+    );
+  }
+}
+
+// (m3) MODAL SOURCE HYGIENE: portal + a11y contract + Escape cleanup +
+// stopPropagation, and zero hardcoded hexes (same rule as primitives, r4).
+const modalSrc = readFileSync(resolve(root, "react/modal.tsx"), "utf8");
+const MODAL_SRC_REQUIREMENTS = [
+  ["createPortal", "the portal architecture"],
+  ["document.body", "the portal host — breaks free of the timeline grid stacking context"],
+  ['role="dialog"', "the dialog role"],
+  ['aria-modal="true"', "the aria-modal flag"],
+  ["aria-label={event.title}", "the event-title dialog label"],
+  ['aria-label="Close"', "the close button accessible name"],
+  ['"Escape"', "the Escape key close"],
+  ["removeEventListener", "the keydown listener must be cleaned up"],
+  ["stopPropagation", "clicks inside the card must NOT close the modal"],
+  ["useCallback", "the useModal stable callbacks"],
+];
+for (const [needle, label] of MODAL_SRC_REQUIREMENTS) {
+  if (!modalSrc.includes(needle)) {
+    failures.push(`react/modal.tsx must contain ${needle} — ${label}`);
+  }
+}
+const modalSrcHexes = modalSrc.match(/#[0-9a-f]{6}/gi);
+if (modalSrcHexes !== null) {
+  failures.push(
+    `react/modal.tsx contains hardcoded hex literal(s) ${[...new Set(modalSrcHexes)].join(", ")} — the modal consumes var(--token) only`,
+  );
+}
+
+// (m4) TIMELINE INTEGRATION: nodes are <button>s firing the optional
+// onEventSelect callback with the clicked event (flat DOM preserved).
+const timelineSrc = readFileSync(resolve(root, "react/timeline.tsx"), "utf8");
+if (!/<button[^>]*className=\{`ptp-timeline__node/.test(timelineSrc)) {
+  failures.push(
+    "react/timeline.tsx must render timeline nodes as <button className={`ptp-timeline__node…`}> (0.7.0 interactive nodes; was span)",
+  );
+}
+if (!/onEventSelect\?\s*:\s*\(event:\s*PtpEvent\)\s*=>\s*void/.test(timelineSrc)) {
+  failures.push(
+    "EventTimelineProps must declare the optional onEventSelect?: (event: PtpEvent) => void callback",
+  );
+}
+if (!/=>\s*onEventSelect\(event\)/.test(timelineSrc)) {
+  failures.push(
+    "react/timeline.tsx must fire onEventSelect(event) from the node button's onClick",
+  );
+}
+
+// (m5) EventModal + useModal re-export from the compiled umbrella — covered
+// by the extended (r1)/(r5) loops above.
 
 // ---- verdict ------------------------------------------------------------------
 if (failures.length > 0) {
