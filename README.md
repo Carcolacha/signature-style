@@ -116,6 +116,65 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 0.6.0 — Event Timeline
+
+- **`<EventTimeline>`** — the first full component built on the 0.5.0
+  primitives, exercising Engine v2.5 rules end to end (Info1 + Pruning +
+  Party Palette): a chronological party-events timeline for
+  PlanThenParty.
+
+  ```tsx
+  import { EventTimeline } from "@edwyn/signature-style/react";
+
+  <EventTimeline
+    events={[
+      {
+        id: "cake",
+        date: "October 2026",      // display string in the date header
+        dateKey: "2026-10",        // optional explicit grouping bucket
+        time: "15:00",
+        title: "Cake cutting",
+        category: "--party-peach", // --party-* tokens only (type-enforced)
+        categoryLabel: "Birthday",
+        icon: "Cake",              // optional; defaults to "Circle"
+      },
+    ]}
+  />
+  ```
+
+  - **Empty state first** — `events.length === 0` renders
+    `<EmptyState icon="CalendarX">` immediately. No empty timeline lines
+    are ever drawn.
+  - **DOM shape (Pruning Protocol)** — perfectly flat: ONE grid container
+    (`.ptp-timeline`) whose DIRECT children are date headers (`h2`),
+    nodes (`span`) and event content blocks (`div`), each placed with
+    inline `gridRow`/`gridColumn` styles against a maintained row
+    counter. No row wrappers, no placeholder divs — the empty side of an
+    alternating row is just empty grid track. The vertical line is the
+    container's `::before` pseudo-element, never a div.
+  - **768px collapse** — desktop: vertical center line
+    (`grid-template-columns: 1fr auto 1fr`), events alternate left/right.
+    Mobile (max-width 768px): `auto 1fr` — the line moves to the far
+    left and all events stack on the right. Pure CSS; placement columns
+    are remapped through custom properties so the component's inline
+    styles stay breakpoint-neutral.
+  - **Pillar 3 z-10 headers** — date headers are
+    `position: sticky; top: 0; z-index: var(--z-sticky)` with opaque
+    `--bg-base` and a hairline bottom border (`color-mix` muted 20%).
+    Each header spans its date group's rows so the sticky position
+    actually travels, and content scrolls beneath it. Grouping follows
+    the `dateKey ?? date` contract (first-occurrence order preserved).
+  - **Primitives, composed** — nodes are STRUCTURE (Flamingo): `<Icon>`
+    in a small circle with a 2px `--color-cake-primary` ring and
+    `--bg-surface` fill. Categories are CONTENT (party tokens):
+    `<PartyBadge colorToken label>`. Titles wear `--text-main` weight
+    500; times wear `--text-muted` mono at 0.875rem.
+  - New stylesheet **`css/timeline.css`** (`.ptp-timeline*` classes,
+    token-driven, zero hex, zero box-shadow, `prefers-reduced-motion`
+    respected), imported into the `cascade` layer by
+    `css/signature-style.css`. `cascade.css` and `overrides.css` are
+    untouched — the structural freeze holds.
+
 ### 0.5.0 — Pruning Protocol + React Primitives
 
 - **The Pruning Protocol (Subtract by Default)** — the Engine is now
