@@ -1,18 +1,25 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.2.1 "Hybrid Theme").
+ * verify.mjs — release gate for @edwyn/signature-style (v0.3.0 "Harmonized Catppuccin").
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
  *       `:root` block, and every token in themes.latte exists in the
  *       `[data-theme="latte"]` block;
- *   (b) HYBRID: `--color-cake-primary` is #FFB7B2 and `--color-cake-secondary`
- *       is #E2F0CB in BOTH the `:root` (mocha) and latte blocks — the owner's
- *       exact signature pair, identical on both sides of the toggle;
- *   (c) HYBRID: the retired Catppuccin accent hexes #F5C2E7 and #A6E3A1
+ *   (b) HARMONIZED: per-theme official signatures — `--color-cake-primary`
+ *       is #F2CDCD (Mocha Flamingo) and `--color-cake-secondary` is
+ *       #94E2D5 (Mocha Teal) in the `:root` (mocha) block, while the latte
+ *       block wears its OWN counterparts #DD7878 (Latte Flamingo) and
+ *       #179299 (Latte Teal). No cross-theme imports;
+ *   (c) RETIRED HEXES: the retired Catppuccin accent hexes #F5C2E7 and
+ *       #A6E3A1, AND the retired custom cake hexes #FFB7B2 and #E2F0CB,
  *       appear NOWHERE in css/ or tokens.json;
  *   (d) WHITELIST PARITY: every custom property name declared in
- *       css/tokens.css appears in react/ThemeProvider.tsx's TOKEN_KEYS;
+ *       css/tokens.css appears in react/ThemeProvider.tsx's TOKEN_KEYS —
+ *       explicitly including the z-scale tokens --z-sticky, --z-overlay,
+ *       --z-modal;
+ *   (d2) Z-SCALE VALUES: --z-sticky / --z-overlay / --z-modal are declared
+ *       in the tokens.css `:root` block with the exact values 10 / 40 / 50;
  *   (e) all four keeper hexes (#282A36 #6272A4 #F8F8F2 #A8E6CF) appear in
  *       css/tokens.css; the first line of signature-style.css is the
  *       @layer statement with the Inter font @import as the first @import
@@ -94,28 +101,37 @@ if (layerTokensBlock !== null) {
   }
 }
 
-// ---- (b) HYBRID: signature cake hexes in BOTH theme blocks -------------------
-const SIGNATURE_HEXES = [
-  ["--color-cake-primary", "#FFB7B2"],
-  ["--color-cake-secondary", "#E2F0CB"],
-];
+// ---- (b) HARMONIZED: per-theme official signature hexes ----------------------
+const SIGNATURE_HEXES = {
+  ":root (mocha)": [
+    ["--color-cake-primary", "#F2CDCD"],
+    ["--color-cake-secondary", "#94E2D5"],
+  ],
+  '[data-theme="latte"]': [
+    ["--color-cake-primary", "#DD7878"],
+    ["--color-cake-secondary", "#179299"],
+  ],
+};
 for (const [blockName, declarations] of [
   [":root (mocha)", rootDeclarations],
   ['[data-theme="latte"]', latteDeclarations],
 ]) {
   if (declarations === null) continue; // already reported missing in (a)
-  for (const [name, hex] of SIGNATURE_HEXES) {
+  for (const [name, hex] of SIGNATURE_HEXES[blockName]) {
     const pattern = new RegExp(`${name}\\s*:\\s*${hex}`, "i");
     if (!pattern.test(declarations)) {
       failures.push(
-        `${name} must be ${hex} in the ${blockName} block of css/tokens.css — hybrid doctrine`,
+        `${name} must be ${hex} in the ${blockName} block of css/tokens.css — harmonized per-theme doctrine (100% official Catppuccin, no cross-theme imports)`,
       );
     }
   }
 }
 
-// ---- (c) HYBRID: retired Catppuccin accent hexes appear nowhere --------------
-const RETIRED_HEXES = ["#F5C2E7", "#A6E3A1"];
+// ---- (c) retired hexes appear nowhere -----------------------------------------
+// #F5C2E7 / #A6E3A1: the retired Catppuccin Pink/Green accents (banned since
+// 0.2.1). #FFB7B2 / #E2F0CB: the retired custom cake hexes (banned since
+// 0.3.0) — even in comments, nowhere in css/ or tokens.json.
+const RETIRED_HEXES = ["#F5C2E7", "#A6E3A1", "#FFB7B2", "#E2F0CB"];
 const scannedPaths = [
   ...readdirSync(resolve(root, "css")).map((f) => join("css", f)),
   "tokens.json",
@@ -125,13 +141,14 @@ for (const rel of scannedPaths) {
   for (const hex of RETIRED_HEXES) {
     if (text.includes(hex)) {
       failures.push(
-        `retired Catppuccin accent ${hex} found in ${rel} — the hybrid doctrine bans it everywhere`,
+        `retired hex ${hex} found in ${rel} — the harmonized doctrine bans retired accents everywhere in css/ + tokens.json`,
       );
     }
   }
 }
 
 // ---- (d) whitelist parity: tokens.css <-> ThemeProvider TOKEN_KEYS -----------
+const Z_TOKENS = ["--z-sticky", "--z-overlay", "--z-modal"];
 const tsx = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
 const whitelistMatch = tsx.match(/const\s+TOKEN_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const;/);
 if (whitelistMatch === null) {
@@ -144,6 +161,29 @@ if (whitelistMatch === null) {
     failures.push(
       `tokens.css custom properties missing from the ThemeProvider TOKEN_KEYS whitelist: ${missingFromWhitelist.join(", ")}`,
     );
+  }
+  // Explicit z-scale membership (Pillar 3) — the whitelist must cover the
+  // z-tokens, not merely not-yet-failed generic parity.
+  const missingZ = Z_TOKENS.filter((name) => !whitelist.includes(name));
+  if (missingZ.length > 0) {
+    failures.push(
+      `z-scale tokens missing from the ThemeProvider TOKEN_KEYS whitelist (Pillar 3): ${missingZ.join(", ")}`,
+    );
+  }
+}
+
+// ---- (d2) z-scale tokens exist with exact values 10 / 40 / 50 ----------------
+const Z_VALUES = { "--z-sticky": "10", "--z-overlay": "40", "--z-modal": "50" };
+if (rootDeclarations === null) {
+  failures.push("cannot check z-scale values — no :root block found");
+} else {
+  for (const [name, value] of Object.entries(Z_VALUES)) {
+    const pattern = new RegExp(`${name}\\s*:\\s*${value}\\s*;`);
+    if (!pattern.test(rootDeclarations)) {
+      failures.push(
+        `${name} must be declared as ${value} in the css/tokens.css :root block (Pillar 3 z-index scale)`,
+      );
+    }
   }
 }
 
