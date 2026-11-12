@@ -1,0 +1,22 @@
+/* ==========================================================================
+   SIGNATURE STYLE — CORE DESIGN TOKENS
+   ----------------------------------------------------------------------------
+   The entire theme is derived from these 8 values. Nothing else in the
+   package is allowed to hardcode a color; every state is mixed from here.
+
+   The ONLY `:root` rule in the package lives inside this `@layer tokens`
+   block — enforced by scripts/verify.mjs and by the ThemeProvider whitelist.
+   ========================================================================== */
+
+@layer tokens {
+  :root {
+    --bg-base: #1E1E2E;
+    --bg-surface: #282A36;
+    --color-cake-primary: #FFB7B2;
+    --color-cake-secondary: #E2F0CB;
+    --text-main: #F8F8F2;
+    --text-muted: #6272A4;
+    --radius-ui: 6px;
+    --transition-standard: all 0.3s ease-in-out;
+  }
+}
