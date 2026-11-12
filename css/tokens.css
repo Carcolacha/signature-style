@@ -1,8 +1,20 @@
 /* ==========================================================================
-   SIGNATURE STYLE — CORE DESIGN TOKENS
+   SIGNATURE STYLE — CORE DESIGN TOKENS · CATPPUCCIN EDITION
    ----------------------------------------------------------------------------
-   The entire theme is derived from these 8 values. Nothing else in the
-   package is allowed to hardcode a color; every state is mixed from here.
+   THEME DOCTRINE
+   The default theme is Catppuccin Mocha (dark): soft dark blues for
+   structure, pastel cake colors for interactions. A light "white version"
+   — Catppuccin Latte — is available by opting in:
+
+     <html data-theme="latte">
+
+   Everything else in the package is derived from these tokens. Nothing
+   else in the package is allowed to hardcode a color; every state is
+   mixed from here.
+
+   Keeper tokens (--bg-inset, --text-bright, --color-success,
+   --text-muted-soft) are beloved legacy palette colors given semantic
+   jobs — they carry over unchanged across editions.
 
    The ONLY `:root` rule in the package lives inside this `@layer tokens`
    block — enforced by scripts/verify.mjs and by the ThemeProvider whitelist.
@@ -10,13 +22,45 @@
 
 @layer tokens {
   :root {
+    /* -- core 6: Catppuccin Mocha ------------------------------------------- */
     --bg-base: #1E1E2E;
-    --bg-surface: #282A36;
-    --color-cake-primary: #FFB7B2;
-    --color-cake-secondary: #E2F0CB;
-    --text-main: #F8F8F2;
-    --text-muted: #6272A4;
+    --bg-surface: #313244;
+    --color-cake-primary: #F5C2E7;
+    --color-cake-secondary: #A6E3A1;
+    --text-main: #CDD6F4;
+    --text-muted: #7F849C;
+
+    /* -- keeper tokens: legacy colors, semantic jobs ------------------------ */
+    --bg-inset: #282A36;
+    --text-bright: #F8F8F2;
+    --color-success: #A8E6CF;
+    --text-muted-soft: #6272A4;
+
+    /* -- shared, theme-independent tokens ----------------------------------- */
+    --color-on-cake: #1E1E2E;
+    --font-sans: "Inter", system-ui, sans-serif;
     --radius-ui: 6px;
-    --transition-standard: all 0.3s ease-in-out;
+    --transition-standard: all 0.15s ease-out;
+    --transition-transform: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --space-tight: 0.5rem;
+    --space-standard: 1rem;
+    --space-section: 1.5rem;
+  }
+
+  /* -- the white version: Catppuccin Latte ----------------------------------- */
+  [data-theme="latte"] {
+    /* -- core 6 -------------------------------------------------------------- */
+    --bg-base: #EFF1F5;
+    --bg-surface: #CCD0DA;
+    --color-cake-primary: #EA76CB;
+    --color-cake-secondary: #40A02B;
+    --text-main: #4C4F69;
+    --text-muted: #6272A4; /* keeper — reads well on light */
+
+    /* -- keeper overrides ---------------------------------------------------- */
+    --bg-inset: #E6E9EF;
+    --text-bright: #11111B;
+    --color-success: #A8E6CF; /* same — works with dark text on light */
+    --text-muted-soft: #8C8FA1;
   }
 }
