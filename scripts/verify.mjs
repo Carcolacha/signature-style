@@ -104,6 +104,19 @@
  *       :root with value 30 (via the extended d2 gate), in tokens.json
  *       themes.shared with value 30, and in the ThemeProvider TOKEN_KEYS
  *       whitelist (via the extended d gate).
+ *   (v1) VIZ CSS (1.3.0): css/viz.css exists, builds the 8px-grid track
+ *       (`height: 8px`), animates the fill with the owner-mandated
+ *       physics (`width 0.3s ease-out`), respects prefers-reduced-motion,
+ *       tracks on `var(--bg-surface)` (data-ink doctrine: track =
+ *       surface, fill = party), and contains ZERO hex literals and zero
+ *       box-shadow (the StatRing has NO css at all — pure SVG attributes);
+ *   (v1b) BUNDLE MEMBERSHIP: css/signature-style.css imports
+ *       ./viz.css into the `cascade` layer, AFTER ./nav.css;
+ *   (v2) the umbrella re-exports ProgressBar + StatRing (+ prop types)
+ *       — types in index.d.ts, the value exports also in index.js;
+ *   (v3) PARTY GUARD: react/viz.tsx contains the runtime party-guard
+ *       string (`startsWith("--party-")`) — the Rule of Engagement is
+ *       enforced in the source, not just the types.
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
@@ -852,6 +865,90 @@ if (navJsonEntry === undefined) {
       "tokens.json shared.tokens[\"--z-nav\"] must carry the navbar description (floats above sticky headers, below overlays)",
     );
   }
+}
+
+// ---- (v) telemetry viz (1.3.0) ---------------------------------------------------
+// (v1) VIZ CSS: exists, 8px-grid track, owner-mandated fill physics, surface
+// track token, reduced-motion respected — and ZERO hex literals, zero
+// box-shadow (data-ink doctrine: no grid lines, no shadows, no 3D; the
+// StatRing needs NO css at all — it is pure SVG attributes).
+const vizCssPath = resolve(root, "css/viz.css");
+if (!existsSync(vizCssPath)) {
+  failures.push("css/viz.css is missing — the telemetry primitives ship their own stylesheet");
+} else {
+  const vizCss = readFileSync(vizCssPath, "utf8");
+  const VIZ_REQUIREMENTS = [
+    ["height: 8px", "the 8px-grid track height"],
+    ["width 0.3s ease-out", "the owner-mandated fill physics"],
+    ["prefers-reduced-motion", "the reduced-motion guard on the fill transition"],
+    ["var(--bg-surface)", "the surface track (data-ink doctrine: track = surface, fill = party)"],
+  ];
+  for (const [needle, label] of VIZ_REQUIREMENTS) {
+    if (!vizCss.includes(needle)) {
+      failures.push(`css/viz.css must contain ${needle} — ${label}`);
+    }
+  }
+  // Border doctrine: zero box-shadow DECLARATIONS (a `box-shadow: none`
+  // reset is allowed; comment mentions of the word are not declarations).
+  const vizShadowDecls = vizCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  const vizNonNoneShadows = (vizShadowDecls ?? []).filter(
+    (d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d),
+  );
+  if (vizNonNoneShadows.length > 0) {
+    failures.push(
+      `css/viz.css declares a box-shadow (${vizNonNoneShadows.join(" ")}) — the data-ink doctrine bans drop shadows everywhere`,
+    );
+  }
+  // COLOR DOCTRINE: viz has NO exception — zero hex.
+  const vizHexes = vizCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (vizHexes !== null) {
+    failures.push(
+      `css/viz.css contains hex literal(s) ${[...new Set(vizHexes)].join(", ")} — the viz is token-driven, zero hex`,
+    );
+  }
+}
+
+// (v1b) BUNDLE MEMBERSHIP: viz.css is layered into `cascade`, after nav.
+const vizImportIndex = bundle.indexOf('@import "./viz.css" layer(cascade);');
+if (vizImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./viz.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const navImportIndexForViz = bundle.indexOf('@import "./nav.css" layer(cascade);');
+  if (navImportIndexForViz !== -1 && vizImportIndex < navImportIndexForViz) {
+    failures.push(
+      "css/signature-style.css must import ./viz.css AFTER ./nav.css (nav styles load first)",
+    );
+  }
+}
+
+// (v2) UMBRELLA RE-EXPORTS: ProgressBar + StatRing (values) and their prop
+// types — same surface split as (n2): type-only names live in the .d.ts,
+// the value exports are additionally checked in the compiled index.js.
+for (const vizExport of ["ProgressBar", "StatRing", "ProgressBarProps", "StatRingProps"]) {
+  if (!new RegExp(`\\b${vizExport}\\b`).test(indexDts)) {
+    failures.push(
+      `react/index.d.ts must re-export ${vizExport} from the umbrella entry point`,
+    );
+  }
+}
+for (const vizValueExport of ["ProgressBar", "StatRing"]) {
+  if (!new RegExp(`\\b${vizValueExport}\\b`).test(indexJs)) {
+    failures.push(
+      `react/index.js must re-export ${vizValueExport} from the umbrella entry point`,
+    );
+  }
+}
+
+// (v3) PARTY GUARD: the runtime Rule-of-Engagement guard survives in the
+// viz source — a structural token slipped past the types (JS consumers)
+// must warn and render null, never paint structural chrome as data.
+const vizSrc = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
+if (!vizSrc.includes('startsWith("--party-")')) {
+  failures.push(
+    'react/viz.tsx must contain the runtime party guard startsWith("--party-") — the Rule of Engagement is enforced at runtime, not just in the types',
+  );
 }
 
 // ---- verdict ------------------------------------------------------------------
