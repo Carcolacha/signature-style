@@ -17,10 +17,11 @@
  *       appear NOWHERE in css/ or tokens.json;
  *   (d) WHITELIST PARITY: every custom property name declared in
  *       css/tokens.css appears in react/ThemeProvider.tsx's TOKEN_KEYS —
- *       explicitly including the z-scale tokens --z-sticky, --z-overlay,
- *       --z-modal;
- *   (d2) Z-SCALE VALUES: --z-sticky / --z-overlay / --z-modal are declared
- *       in the tokens.css `:root` block with the exact values 10 / 40 / 50;
+ *       explicitly including the z-scale tokens --z-sticky, --z-nav,
+ *       --z-overlay, --z-modal;
+ *   (d2) Z-SCALE VALUES: --z-sticky / --z-nav / --z-overlay / --z-modal
+ *       are declared in the tokens.css `:root` block with the exact
+ *       values 10 / 30 / 40 / 50;
  *   (p) PARTY PALETTE (0.4.0): all ten --party-* content tokens exist in
  *       the tokens.css `:root` block with their exact reserved hexes, and
  *       tokens.json's partyPalette section lists all ten with matching
@@ -89,6 +90,20 @@
  *       clicked event;
  *   (m5) the umbrella re-exports EventModal + useModal from react/index.js
  *       too (companion to r1/r5).
+ *   (n1) GLOBAL NAV CSS (1.2.0): css/nav.css exists, pins the navbar with
+ *       `var(--z-nav, 30)` (the z-gap between sticky 10 and overlay 40),
+ *       shifts at `max-width: 768px`, drives the active state via the
+ *       `[aria-current="page"]` selector, slides the drawer with
+ *       translateX, respects prefers-reduced-motion, and contains ZERO
+ *       hex literals (the rgba scrim lives only in modal.css);
+ *   (n1b) BUNDLE MEMBERSHIP: css/signature-style.css imports ./nav.css
+ *       into the `cascade` layer, AFTER ./modal.css;
+ *   (n2) the umbrella re-exports GlobalNav + NavItem + GlobalNavProps
+ *       (types in index.d.ts; the value export also in index.js);
+ *   (n3) --z-nav PARITY (1.2.0): the token is declared in tokens.css
+ *       :root with value 30 (via the extended d2 gate), in tokens.json
+ *       themes.shared with value 30, and in the ThemeProvider TOKEN_KEYS
+ *       whitelist (via the extended d gate).
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
@@ -208,7 +223,7 @@ for (const rel of scannedPaths) {
 }
 
 // ---- (d) whitelist parity: tokens.css <-> ThemeProvider TOKEN_KEYS -----------
-const Z_TOKENS = ["--z-sticky", "--z-overlay", "--z-modal"];
+const Z_TOKENS = ["--z-sticky", "--z-nav", "--z-overlay", "--z-modal"];
 const tsx = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
 /** @type {string[] | null} */
 let whitelist = null;
@@ -234,8 +249,14 @@ if (whitelistMatch === null) {
   }
 }
 
-// ---- (d2) z-scale tokens exist with exact values 10 / 40 / 50 ----------------
-const Z_VALUES = { "--z-sticky": "10", "--z-overlay": "40", "--z-modal": "50" };
+// ---- (d2) z-scale tokens exist with exact values 10 / 30 / 40 / 50 -----------
+// 1.2.0 extension: --z-nav is the navbar rung between sticky and overlay.
+const Z_VALUES = {
+  "--z-sticky": "10",
+  "--z-nav": "30",
+  "--z-overlay": "40",
+  "--z-modal": "50",
+};
 if (rootDeclarations === null) {
   failures.push("cannot check z-scale values — no :root block found");
 } else {
@@ -734,6 +755,104 @@ if (!/=>\s*onEventSelect\(event\)/.test(timelineSrc)) {
 
 // (m5) EventModal + useModal re-export from the compiled umbrella — covered
 // by the extended (r1)/(r5) loops above.
+
+// ---- (n) global nav (1.2.0) ------------------------------------------------------
+// (n1) NAV CSS: exists, wears the new --z-nav rung (sticky 10 < nav 30 <
+// overlay 40), shifts at the strict 768px breakpoint, drives the active
+// state via the aria-current attribute selector, slides the drawer with
+// translateX, respects reduced motion — and contains ZERO hex literals
+// (the rgba scrim lives only in modal.css; nav borrows the backdrop
+// element instead of shipping a second scrim).
+const navCssPath = resolve(root, "css/nav.css");
+if (!existsSync(navCssPath)) {
+  failures.push("css/nav.css is missing — the GlobalNav ships its own stylesheet");
+} else {
+  const navCss = readFileSync(navCssPath, "utf8");
+  const NAV_REQUIREMENTS = [
+    ["var(--z-nav, 30)", "the navbar z-gap token (Pillar 3 rung between sticky and overlay)"],
+    ["position: sticky", "the sticky navbar bar"],
+    ["max-width: 768px", "the Pillar 2 mobile shift (list hides, hamburger appears)"],
+    ['[aria-current="page"]', "THE active mechanism — the attribute is the state"],
+    ["translateX(100%)", "the off-canvas drawer rest state"],
+    ["translateX(0)", "the drawer open state"],
+    ["prefers-reduced-motion", "the reduced-motion guard on nav transitions"],
+    ["var(--color-cake-primary)", "the Flamingo aria-current underline / doctrine focus ring"],
+    ["scale(0.97)", "the press physics on links and the hamburger"],
+  ];
+  for (const [needle, label] of NAV_REQUIREMENTS) {
+    if (!navCss.includes(needle)) {
+      failures.push(`css/nav.css must contain ${needle} — ${label}`);
+    }
+  }
+  // Border doctrine: zero box-shadow DECLARATIONS (a `box-shadow: none`
+  // reset is allowed; comment mentions of the word are not declarations).
+  const navShadowDecls = navCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  const navNonNoneShadows = (navShadowDecls ?? []).filter(
+    (d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d),
+  );
+  if (navNonNoneShadows.length > 0) {
+    failures.push(
+      `css/nav.css declares a box-shadow (${navNonNoneShadows.join(" ")}) — the border doctrine bans drop shadows everywhere`,
+    );
+  }
+  // COLOR DOCTRINE: nav has NO exception — the scrim is not here. Zero hex.
+  const navHexes = navCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (navHexes !== null) {
+    failures.push(
+      `css/nav.css contains hex literal(s) ${[...new Set(navHexes)].join(", ")} — the nav is token-driven, zero hex (the rgba scrim lives only in modal.css)`,
+    );
+  }
+}
+
+// (n1b) BUNDLE MEMBERSHIP: nav.css is layered into `cascade`, after modal.
+const navImportIndex = bundle.indexOf('@import "./nav.css" layer(cascade);');
+if (navImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./nav.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const modalImportIndexForNav = bundle.indexOf('@import "./modal.css" layer(cascade);');
+  if (modalImportIndexForNav !== -1 && navImportIndex < modalImportIndexForNav) {
+    failures.push(
+      "css/signature-style.css must import ./nav.css AFTER ./modal.css (modal styles load first)",
+    );
+  }
+}
+
+// (n2) UMBRELLA RE-EXPORTS: GlobalNav (value) + NavItem + GlobalNavProps
+// (types). Type-only names are elided from the compiled JS by design —
+// the .d.ts is their surface, so all three are checked there and the
+// value export additionally in index.js.
+for (const navExport of ["GlobalNav", "NavItem", "GlobalNavProps"]) {
+  if (!new RegExp(`\\b${navExport}\\b`).test(indexDts)) {
+    failures.push(
+      `react/index.d.ts must re-export ${navExport} from the umbrella entry point`,
+    );
+  }
+}
+if (!new RegExp("\\bGlobalNav\\b").test(indexJs)) {
+  failures.push("react/index.js must re-export GlobalNav from the umbrella entry point");
+}
+
+// (n3) --z-nav PARITY: the new rung must exist in tokens.json's shared
+// section with the exact value 30. (tokens.css :root value + TOKEN_KEYS
+// membership are asserted by the extended (d)/(d2) gates above.)
+const navManifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+const navJsonEntry = navManifest.shared?.tokens?.["--z-nav"];
+if (navJsonEntry === undefined) {
+  failures.push("tokens.json shared.tokens is missing --z-nav (1.2.0 z-gap rung)");
+} else {
+  if (String(navJsonEntry.value) !== "30") {
+    failures.push(
+      `tokens.json shared.tokens["--z-nav"] must be "30", found ${JSON.stringify(navJsonEntry.value)}`,
+    );
+  }
+  if (!/navbar/i.test(String(navJsonEntry.description ?? ""))) {
+    failures.push(
+      "tokens.json shared.tokens[\"--z-nav\"] must carry the navbar description (floats above sticky headers, below overlays)",
+    );
+  }
+}
 
 // ---- verdict ------------------------------------------------------------------
 if (failures.length > 0) {
