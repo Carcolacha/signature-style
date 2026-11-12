@@ -1,28 +1,36 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.2.0).
+ * verify.mjs — release gate for @edwyn/signature-style (v0.2.1 "Hybrid Theme").
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
  *       `:root` block, and every token in themes.latte exists in the
  *       `[data-theme="latte"]` block;
- *   (b) all four keeper hexes (#282A36 #6272A4 #F8F8F2 #A8E6CF) appear
- *       in css/tokens.css;
- *   (c) the first three lines of signature-style.css are exactly:
- *       the @layer statement, the Inter font @import, the tokens @import
- *       (so the font @import is the first @import, per CSS spec);
- *   (d) every package.json export target (and `main`) exists on disk;
- *   (e) the react/ tree is byte-identical to git tag v0.1.0
- *       (`git diff v0.1.0 -- react/` must be empty).
+ *   (b) HYBRID: `--color-cake-primary` is #FFB7B2 and `--color-cake-secondary`
+ *       is #E2F0CB in BOTH the `:root` (mocha) and latte blocks — the owner's
+ *       exact signature pair, identical on both sides of the toggle;
+ *   (c) HYBRID: the retired Catppuccin accent hexes #F5C2E7 and #A6E3A1
+ *       appear NOWHERE in css/ or tokens.json;
+ *   (d) WHITELIST PARITY: every custom property name declared in
+ *       css/tokens.css appears in react/ThemeProvider.tsx's TOKEN_KEYS;
+ *   (e) all four keeper hexes (#282A36 #6272A4 #F8F8F2 #A8E6CF) appear in
+ *       css/tokens.css; the first line of signature-style.css is the
+ *       @layer statement with the Inter font @import as the first @import
+ *       and ./tokens.css as the second (so the font @import precedes all
+ *       other rules, per CSS spec); every package.json export target
+ *       (and `main`) exists on disk;
+ *   (f) HARDENING: react/ThemeProvider.tsx still contains the guard
+ *       strings — the CSSLayerBlockRule support check (VULN-2), the
+ *       value-injection warn (VULN-3), and the canonical layer-order
+ *       declaration — i.e. hardening survives every edit.
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
  */
 
-import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -44,13 +52,15 @@ function declaredVars(declarations) {
 const layerTokensBlock = section(css, /@layer\s+tokens\s*\{([\s\S]*)\}\s*$/);
 if (layerTokensBlock === null) {
   failures.push("css/tokens.css has no @layer tokens block");
-} else {
-  const rootDeclarations = section(layerTokensBlock, /:root\s*\{([^}]*)\}/);
-  const latteDeclarations = section(
-    layerTokensBlock,
-    /\[data-theme="latte"\]\s*\{([^}]*)\}/,
-  );
+}
+const rootDeclarations =
+  layerTokensBlock === null ? null : section(layerTokensBlock, /:root\s*\{([^}]*)\}/);
+const latteDeclarations =
+  layerTokensBlock === null
+    ? null
+    : section(layerTokensBlock, /\[data-theme="latte"\]\s*\{([^}]*)\}/);
 
+if (layerTokensBlock !== null) {
   if (rootDeclarations === null) {
     failures.push("css/tokens.css has no :root block inside @layer tokens");
   }
@@ -84,7 +94,60 @@ if (layerTokensBlock === null) {
   }
 }
 
-// ---- (b) keeper hexes present in tokens.css ---------------------------------
+// ---- (b) HYBRID: signature cake hexes in BOTH theme blocks -------------------
+const SIGNATURE_HEXES = [
+  ["--color-cake-primary", "#FFB7B2"],
+  ["--color-cake-secondary", "#E2F0CB"],
+];
+for (const [blockName, declarations] of [
+  [":root (mocha)", rootDeclarations],
+  ['[data-theme="latte"]', latteDeclarations],
+]) {
+  if (declarations === null) continue; // already reported missing in (a)
+  for (const [name, hex] of SIGNATURE_HEXES) {
+    const pattern = new RegExp(`${name}\\s*:\\s*${hex}`, "i");
+    if (!pattern.test(declarations)) {
+      failures.push(
+        `${name} must be ${hex} in the ${blockName} block of css/tokens.css — hybrid doctrine`,
+      );
+    }
+  }
+}
+
+// ---- (c) HYBRID: retired Catppuccin accent hexes appear nowhere --------------
+const RETIRED_HEXES = ["#F5C2E7", "#A6E3A1"];
+const scannedPaths = [
+  ...readdirSync(resolve(root, "css")).map((f) => join("css", f)),
+  "tokens.json",
+];
+for (const rel of scannedPaths) {
+  const text = readFileSync(resolve(root, rel), "utf8").toUpperCase();
+  for (const hex of RETIRED_HEXES) {
+    if (text.includes(hex)) {
+      failures.push(
+        `retired Catppuccin accent ${hex} found in ${rel} — the hybrid doctrine bans it everywhere`,
+      );
+    }
+  }
+}
+
+// ---- (d) whitelist parity: tokens.css <-> ThemeProvider TOKEN_KEYS -----------
+const tsx = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
+const whitelistMatch = tsx.match(/const\s+TOKEN_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const;/);
+if (whitelistMatch === null) {
+  failures.push("react/ThemeProvider.tsx has no parseable TOKEN_KEYS whitelist");
+} else {
+  const whitelist = [...whitelistMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  const cssVarNames = declaredVars(css);
+  const missingFromWhitelist = cssVarNames.filter((name) => !whitelist.includes(name));
+  if (missingFromWhitelist.length > 0) {
+    failures.push(
+      `tokens.css custom properties missing from the ThemeProvider TOKEN_KEYS whitelist: ${missingFromWhitelist.join(", ")}`,
+    );
+  }
+}
+
+// ---- (e) keepers, bundle head order, export targets --------------------------
 const KEEPER_HEXES = ["#282A36", "#6272A4", "#F8F8F2", "#A8E6CF"];
 for (const hex of KEEPER_HEXES) {
   if (!css.toUpperCase().includes(hex)) {
@@ -92,7 +155,6 @@ for (const hex of KEEPER_HEXES) {
   }
 }
 
-// ---- (c) bundle head: @layer statement, font @import, tokens @import --------
 const bundle = readFileSync(resolve(root, "css/signature-style.css"), "utf8");
 const bundleLines = bundle.split("\n");
 const LAYER_STATEMENT = "@layer tokens, base, cascade, overrides;";
@@ -119,7 +181,6 @@ if (secondImport === undefined || !secondImport.line.includes("./tokens.css")) {
   );
 }
 
-// ---- (d) export targets exist on disk ---------------------------------------
 const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
 
 /** @type {Array<[string, string]>} */
@@ -148,19 +209,16 @@ for (const missing of targets.filter(([, p]) => !existsSync(resolve(root, p)))) 
   failures.push(`export target missing on disk: ${missing[0]} -> ${missing[1]}`);
 }
 
-// ---- (e) react/ is byte-identical to v0.1.0 ----------------------------------
-const gitDiff = spawnSync("git", ["diff", "v0.1.0", "--", "react/"], {
-  cwd: root,
-  encoding: "utf8",
-});
-if (gitDiff.error !== undefined) {
-  failures.push(`could not run git diff v0.1.0 -- react/: ${gitDiff.error.message}`);
-} else if (gitDiff.status !== 0) {
-  failures.push(`git diff v0.1.0 -- react/ exited ${gitDiff.status}: ${gitDiff.stderr.trim()}`);
-} else if (gitDiff.stdout.trim() !== "") {
-  failures.push(
-    "react/ differs from v0.1.0 — ThemeProvider files must stay byte-identical (invariant 4)",
-  );
+// ---- (f) hardening strings survive in ThemeProvider.tsx -----------------------
+const HARDENING_STRINGS = [
+  ["CSSLayerBlockRule", "VULN-2 @layer support check"],
+  ["CSS injection guard", "VULN-3 value-injection warn"],
+  [LAYER_STATEMENT, "canonical layer-order declaration"],
+];
+for (const [needle, label] of HARDENING_STRINGS) {
+  if (!tsx.includes(needle)) {
+    failures.push(`react/ThemeProvider.tsx lost the ${label} — hardening must survive every edit`);
+  }
 }
 
 // ---- verdict ------------------------------------------------------------------
