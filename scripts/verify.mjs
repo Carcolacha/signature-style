@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.7.0 "Event
- * Modal").
+ * verify.mjs — release gate for @edwyn/signature-style (since v1.0.0
+ * "Publish Flow & Distribution"; gates accumulated through 0.7.0).
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
@@ -39,6 +39,14 @@
  *       and ./tokens.css as the second (so the font @import precedes all
  *       other rules, per CSS spec); every package.json export target
  *       (and `main`) exists on disk;
+ *   (e2) DISTRIBUTION CONTRACT (1.0.0): the exports map is EXACTLY the
+ *       3-path public surface — "." -> ./tokens.json (AI tooling core),
+ *       "./css" -> ./css/signature-style.css (the compiled bundle), and
+ *       "./react" -> the umbrella react/index.js + react/index.d.ts
+ *       (types/import/default); `main` is ./tokens.json. No granular
+ *       export entries (./tokens.css, ./cascade.css, ./overrides.css,
+ *       ./system-prompt.md were removed in 1.0.0 — the bundle covers
+ *       everything);
  *   (f) HARDENING: react/ThemeProvider.tsx still contains the guard
  *       strings — the CSSLayerBlockRule support check (VULN-2), the
  *       value-injection warn (VULN-3), and the canonical layer-order
@@ -421,6 +429,80 @@ if (targets.length === 0) {
 }
 for (const missing of targets.filter(([, p]) => !existsSync(resolve(root, p)))) {
   failures.push(`export target missing on disk: ${missing[0]} -> ${missing[1]}`);
+}
+
+// (e2) DISTRIBUTION CONTRACT (1.0.0): the exports map is exactly the
+// 3-path public surface; `main` is the tokens manifest.
+const DISTRIBUTION_CONTRACT = {
+  ".": "./tokens.json",
+  "./css": "./css/signature-style.css",
+};
+const reactConditions = {
+  types: "./react/index.d.ts",
+  import: "./react/index.js",
+  default: "./react/index.js",
+};
+const FORBIDDEN_EXPORT_KEYS = [
+  "./tokens.css",
+  "./cascade.css",
+  "./overrides.css",
+  "./tokens.json",
+  "./system-prompt.md",
+];
+
+if (pkg.main !== DISTRIBUTION_CONTRACT["."]) {
+  failures.push(
+    `package.json main must be ${DISTRIBUTION_CONTRACT["."]} (the AI tooling core), found ${JSON.stringify(pkg.main)}`,
+  );
+}
+if (pkg.exports === undefined || typeof pkg.exports !== "object") {
+  failures.push("package.json has no parseable exports map for the distribution contract");
+} else {
+  const exportKeys = Object.keys(pkg.exports);
+  const expectedKeys = [...Object.keys(DISTRIBUTION_CONTRACT), "./react"];
+  const unexpected = exportKeys.filter((k) => !expectedKeys.includes(k));
+  if (unexpected.length > 0) {
+    failures.push(
+      `exports map has entries outside the 3-path v1.0.0 contract: ${unexpected.join(", ")} (granular entries were removed — the bundle covers everything)`,
+    );
+  }
+  const missingKeys = expectedKeys.filter((k) => !exportKeys.includes(k));
+  if (missingKeys.length > 0) {
+    failures.push(`exports map is missing contract keys: ${missingKeys.join(", ")}`);
+  }
+  for (const [key, expectedTarget] of Object.entries(DISTRIBUTION_CONTRACT)) {
+    const actual = pkg.exports[key];
+    if (actual !== expectedTarget && exportKeys.includes(key)) {
+      failures.push(
+        `exports["${key}"] must be exactly "${expectedTarget}", found ${JSON.stringify(actual)}`,
+      );
+    } else if (typeof actual === "string" && !existsSync(resolve(root, actual))) {
+      failures.push(`exports["${key}"] resolves to a missing file: ${actual}`);
+    }
+  }
+  const reactEntry = pkg.exports["./react"];
+  if (exportKeys.includes("./react")) {
+    if (reactEntry === null || typeof reactEntry !== "object" || Array.isArray(reactEntry)) {
+      failures.push('exports["./react"] must be the umbrella condition object');
+    } else {
+      for (const [condition, expectedTarget] of Object.entries(reactConditions)) {
+        const actual = reactEntry[condition];
+        if (actual !== expectedTarget) {
+          failures.push(
+            `exports["./react"].${condition} must be exactly "${expectedTarget}", found ${JSON.stringify(actual)}`,
+          );
+        } else if (!existsSync(resolve(root, actual))) {
+          failures.push(`exports["./react"].${condition} resolves to a missing file: ${actual}`);
+        }
+      }
+    }
+  }
+  const bannedPresent = FORBIDDEN_EXPORT_KEYS.filter((k) => exportKeys.includes(k));
+  if (bannedPresent.length > 0) {
+    failures.push(
+      `granular export entries must not return: ${bannedPresent.join(", ")} (deep node_modules imports are the consumer's own risk)`,
+    );
+  }
 }
 
 // ---- (f) hardening strings survive in ThemeProvider.tsx -----------------------
