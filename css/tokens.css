@@ -36,6 +36,11 @@
    Z-INDEX SCALE (Pillar 3): --z-sticky 10, --z-overlay 40, --z-modal 50.
    Theme-independent, defined once in :root, same values in both themes.
 
+   PARTY PALETTE (0.4.0) — RULE OF ENGAGEMENT: the ten --party-* tokens are
+   reserved EXCLUSIVELY for CONTENT (badges, tags, avatars, event theme
+   overrides, calendar blocks, data-viz). Structural UI — buttons, inputs,
+   focus rings — keeps Flamingo/Teal, always. Never crossed.
+
    The ONLY `:root` rule in the package lives inside this `@layer tokens`
    block — enforced by scripts/verify.mjs and by the ThemeProvider whitelist.
    ========================================================================== */
@@ -70,6 +75,28 @@
     --z-sticky: 10;
     --z-overlay: 40;
     --z-modal: 50;
+
+    /* -- PARTY PALETTE (0.4.0) — content-only tokens --------------------------
+       Theme-independent BY DESIGN: defined ONCE here in :root and inherited
+       by [data-theme="latte"] untouched, so content wears the same party
+       colors on both sides of the toggle.
+
+       RULE OF ENGAGEMENT — --party-* tokens are reserved EXCLUSIVELY for
+       CONTENT: badges, tags, avatars, event theme overrides, calendar
+       blocks, data visualization. The Engine continues using Flamingo/Teal
+       for ALL structural UI actions (buttons, inputs, focus rings).
+       Never use --party-* for structural chrome; never use Flamingo/Teal
+       for content categories. ------------------------------------------------- */
+    --party-pink-bright: #ea76cb;
+    --party-pink-soft: #f5bde6;
+    --party-pink-alt: #f4b8e4;
+    --party-mauve-bright: #8839ef;
+    --party-mauve-soft: #cba6f7;
+    --party-lavender: #7287fd;
+    --party-sky: #04a5e5;
+    --party-blue: #1e66f5;
+    --party-peach: #fe640b;
+    --party-green: #a6d189;
   }
 
   /* -- the white version: 100% official Catppuccin Latte --------------------- */
