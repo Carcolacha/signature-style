@@ -34,3 +34,8 @@ export {
   type EventModalProps,
   type UseModalReturn,
 } from "./modal.js";
+export {
+  GlobalNav,
+  type NavItem,
+  type GlobalNavProps,
+} from "./nav.js";
