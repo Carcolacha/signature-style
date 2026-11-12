@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.4.0 "Party Palette").
+ * verify.mjs — release gate for @edwyn/signature-style (v0.5.0 "Pruning
+ * Protocol + React Primitives").
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
@@ -42,6 +43,15 @@
  *       strings — the CSSLayerBlockRule support check (VULN-2), the
  *       value-injection warn (VULN-3), and the canonical layer-order
  *       declaration — i.e. hardening survives every edit.
+ *   (r1) REACT PRIMITIVES (0.5.0): react/index.js exists and the umbrella
+ *       re-exports Icon, EmptyState and PartyBadge (checked in index.d.ts);
+ *   (r2) lucide-react is declared in package.json peerDependenciesMeta as
+ *       optional — CSS-only consumers never need it;
+ *   (r3) the exports["./react"] umbrella resolves to files that exist on
+ *       disk (types + import/default);
+ *   (r4) PRUNING PROTOCOL COLOR HYGIENE: react/primitives.tsx contains
+ *       ZERO hardcoded hex literals — primitives consume var(--token)
+ *       only.
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
@@ -394,6 +404,49 @@ for (const [needle, label] of HARDENING_STRINGS) {
   if (!tsx.includes(needle)) {
     failures.push(`react/ThemeProvider.tsx lost the ${label} — hardening must survive every edit`);
   }
+}
+
+// ---- (r) react primitives (0.5.0) ---------------------------------------------
+// (r1) the umbrella exists and re-exports all three primitives.
+const indexDts = readFileSync(resolve(root, "react/index.d.ts"), "utf8");
+for (const primitive of ["Icon", "EmptyState", "PartyBadge"]) {
+  const exportPattern = new RegExp(`\\b${primitive}\\b`);
+  if (!exportPattern.test(indexDts)) {
+    failures.push(`react/index.d.ts must re-export ${primitive} from the umbrella entry point`);
+  }
+}
+
+// (r2) lucide-react peer is declared OPTIONAL — CSS-only consumers never need it.
+const peerMeta = pkg.peerDependenciesMeta ?? {};
+if (peerMeta["lucide-react"]?.optional !== true) {
+  failures.push(
+    'package.json must declare lucide-react in peerDependenciesMeta with "optional": true — CSS-only consumers never install icons',
+  );
+}
+
+// (r3) exports["./react"] resolves to existing files (types + import/default).
+const reactExport = pkg.exports?.["./react"];
+if (reactExport === undefined || typeof reactExport !== "object" || reactExport === null) {
+  failures.push('package.json exports["./react"] must be a condition object');
+} else {
+  for (const condition of ["types", "import", "default"]) {
+    const target = reactExport[condition];
+    if (typeof target !== "string") {
+      failures.push(`exports["./react"].${condition} must be a string path`);
+    } else if (!existsSync(resolve(root, target))) {
+      failures.push(`exports["./react"].${condition} resolves to a missing file: ${target}`);
+    }
+  }
+}
+
+// (r4) PRUNING PROTOCOL: zero hardcoded hexes in the primitives source —
+// they consume CSS variables (var(--token)) or nothing at all.
+const primitivesSrc = readFileSync(resolve(root, "react/primitives.tsx"), "utf8");
+const hexMatches = primitivesSrc.match(/#[0-9a-f]{6}/gi);
+if (hexMatches !== null) {
+  failures.push(
+    `react/primitives.tsx contains hardcoded hex literal(s) ${[...new Set(hexMatches)].join(", ")} — primitives must consume var(--token) only`,
+  );
 }
 
 // ---- verdict ------------------------------------------------------------------
