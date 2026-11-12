@@ -24,7 +24,7 @@ npm i @edwyn/signature-style
 |---|---|---|
 | `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest (AI tooling core) | never |
 | `@edwyn/signature-style/css` | `css/signature-style.css` — the compiled bundle: tokens, base, cascade (timeline + modal + nav included), overrides | never |
-| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal`, `GlobalNav` | `react` + `react-dom`; `lucide-react` optional |
+| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal`, `GlobalNav`, `ProgressBar`, `StatRing` | `react` + `react-dom`; `lucide-react` optional |
 
 ## CSS usage — one import
 
@@ -128,6 +128,59 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 32 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 1.3.0 — Telemetry Module (Data Visualization)
+
+- **`<ProgressBar>` + `<StatRing>`** — the telemetry primitives:
+  lightweight SVG/HTML charting with **zero external charting
+  dependencies**. Two shapes cover the PlanThenParty data story:
+
+  ```tsx
+  import { ProgressBar, StatRing } from "@edwyn/signature-style/react";
+
+  // Budget bar — 72% remaining, on a party-green fill:
+  <ProgressBar value={72} colorToken="--party-green" label="Budget remaining" />
+
+  // RSVP ring — 85% of invitees in, on a party-sky arc:
+  <StatRing value={85} colorToken="--party-sky" />
+  ```
+
+  - **`<ProgressBar value colorToken label? />`** — ONE
+    `div.ptp-progress` (role="progressbar" with the full aria value
+    contract) containing ONE `div.ptp-progress__fill` whose width is
+    the clamped value. The fill animates `width 0.3s ease-out`
+    (owner-mandated physics; `prefers-reduced-motion` disables it).
+    Exactly two elements, no wrappers.
+  - **`<StatRing value colorToken size? strokeWidth? label? />`** — ONE
+    `<svg role="progressbar">` (viewBox `0 0 100 100`, default
+    `size` 64 — an 8px-grid multiple) with exactly two circles
+    (r 44): a `var(--bg-surface)` track and a party-colored progress
+    arc revealed by `strokeDasharray = 2π·44` /
+    `strokeDashoffset = C × (1 − v/100)`, rotated −90° so 0% starts at
+    12 o'clock. `strokeWidth` is a `4 | 8` union (grid-perfect) and is
+    converted to viewBox units, so the visual weight is exact at any
+    size. No center text, no third element — consumers place their
+    numbers beside the ring. Needs NO CSS at all: pure SVG attributes.
+  - **Rule of Engagement, enforced twice** — `colorToken` is typed
+    `PartyTokenName`, so a structural token like `--color-cake-primary`
+    is a compile error; a runtime guard (`startsWith("--party-")`)
+    warns and renders null for anything JS slips past the types (same
+    warn-and-drop pattern as `<PartyBadge>`).
+- **The data-ink doctrine** — high data-to-ink ratio, zero decoration:
+  no grid lines, no drop shadows, no 3D. Tracks are structural chrome
+  (`var(--bg-surface)`); data fills are ALWAYS `--party-*` content
+  tokens. New stylesheet **`css/viz.css`** (`.ptp-progress*` classes
+  only — the ring is attribute-driven), layered into `cascade` after
+  `nav.css`: zero hex, zero box-shadow, `prefers-reduced-motion`
+  respected. **No charting dependencies were added** — the React peers
+  are unchanged, and `lucide-react` stays optional.
+- **No new tokens** — the whitelist stays at 32 keys; `tokens.css` is
+  untouched and the v0.3.0 structural freeze holds.
+- **Release gates** — verify now asserts the viz stylesheet's contract
+  (the 8px track, the owner physics, reduced motion, the surface track
+  token, zero hex, zero box-shadow), its layered import after
+  `nav.css`, the umbrella re-exports of `ProgressBar` / `StatRing` +
+  prop types, and the runtime party guard in the viz source.
 
 ### 1.2.0 — GlobalNav
 
@@ -561,8 +614,8 @@ release runbook lives in [`docs/PUBLISHING.md`](./docs/PUBLISHING.md).
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, 3-path exports contract, provider hardening, timeline gates, modal gates
-npm pack --dry-run # inspect the publishable tarball (expect 21 files)
+npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, 3-path exports contract, provider hardening, timeline gates, modal gates, nav gates, viz gates
+npm pack --dry-run # inspect the publishable tarball (expect 28 files)
 ```
 
 ## License
