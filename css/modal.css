@@ -1,0 +1,154 @@
+/* ==========================================================================
+   MODAL — <EventModal> (0.7.0 "Event Modal"). Layered into `cascade` by
+   signature-style.css (imported after timeline.css).
+
+   Z-PILLARS (Pillar 3, exact): the backdrop is `var(--z-overlay, 40)`, the
+   card is `var(--z-modal, 50)`. The component portals both elements to
+   document.body, so they break free of the timeline's CSS Grid stacking
+   context and these z-index values are the ONLY stacking authority.
+
+   CENTERING (no wrapper): both elements are position: fixed siblings-in-
+   portal. The card centers with the classic over-constrained absolute
+   centering — `inset: 0; margin: auto` with an explicit width and a
+   fit-content height — so auto margins absorb the leftover space equally
+   on both axes. No transform centering, no wrapper div.
+
+   COLOR DOCTRINE EXCEPTION (user-mandated, the ONLY non-token color in the
+   package): the scrim is `rgba(0, 0, 0, 0.6)`. A dimming layer must dim
+   what is BEHIND it regardless of theme, so a neutral black alpha is the
+   correct primitive — it is not a palette color and never participates in
+   hover/active/focus derivation. Every other declaration is token-driven:
+   zero hex, zero box-shadow, prefers-reduced-motion respected.
+
+   DOM SHAPE (Pruning Protocol): the card is a CSS Grid whose DIRECT
+   children are the title (h2), the close button, the PartyBadge (span),
+   and label/value pairs (span + span/time/p). Grid placement:
+
+     desktop (default):   grid-template-columns: max-content 1fr auto
+                          header row 1: title spans columns 1-2, close sits
+                          in the auto column; badge spans 1 / -1; label/value
+                          pairs fill columns 1 and 2 from row 3 down.
+     mobile (<= 768px):   grid-template-columns: 1fr auto — Pillar 2
+                          collapse: labels and values each take a full row
+                          (1 / -1). The header keeps title + close on row 1
+                          because placement uses negative lines (1 / -2 and
+                          -1), which resolve against BOTH column counts.
+   ========================================================================== */
+
+/* The scrim — the documented rgba exception (see header). */
+.ptp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: var(--z-overlay, 40);
+}
+
+/* The dialog card — fixed, centered, hairline-bordered, token-driven. */
+.ptp-modal-card {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(32rem, calc(100% - var(--space-section) * 2));
+  height: fit-content;
+  max-height: calc(100% - var(--space-section) * 2);
+  overflow: auto;
+  display: grid;
+  grid-template-columns: max-content 1fr auto;
+  gap: var(--space-tight) var(--space-standard);
+  padding: var(--space-section);
+  background: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  z-index: var(--z-modal, 50);
+}
+
+/* Header row 1: title owns columns 1-2 (negative end line = breakpoint-
+   neutral), the close button owns the last column — pure grid placement. */
+.ptp-modal-title {
+  grid-column: 1 / -2;
+  grid-row: 1;
+  align-self: center;
+  margin: 0;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Close button — icon-only, muted by default, Teal on hover (the signature
+   structural accent; Rule of Engagement untouched). */
+.ptp-modal-close {
+  grid-column: -1;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.ptp-modal-close:hover {
+  color: var(--color-cake-secondary);
+}
+
+.ptp-modal-close:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* Badge row: the PartyBadge is the card's only bare <span> child — every
+   other span wears a ptp-modal class — so this selector is exact. */
+.ptp-modal-card > span:not([class]) {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin-top: var(--space-tight);
+}
+
+/* Label/value rows: labels in column 1 (explicit, so auto-placement never
+   spills into the close button's column), values in column 2. */
+.ptp-modal-label {
+  grid-column: 1;
+  align-self: baseline;
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ptp-modal-value {
+  grid-column: 2;
+  align-self: baseline;
+  margin: 0;
+  color: var(--text-main);
+}
+
+/* Mechanical physics — motion is a gift, not a requirement. */
+@media (prefers-reduced-motion: no-preference) {
+  .ptp-modal-close {
+    transition: var(--transition-standard);
+  }
+}
+
+/* Pillar 2 mobile collapse: the label/value grid collapses — every content
+   row takes the full width. The header stays a single row via the
+   negative-line placement above. */
+@media (max-width: 768px) {
+  .ptp-modal-card {
+    grid-template-columns: 1fr auto;
+  }
+
+  .ptp-modal-label,
+  .ptp-modal-value {
+    grid-column: 1 / -1;
+  }
+
+  .ptp-modal-label {
+    margin-top: var(--space-tight);
+  }
+}
