@@ -12,14 +12,10 @@
     "tokens",
     "react"
   ],
-  "main": "./css/signature-style.css",
+  "main": "./tokens.json",
   "exports": {
-    ".": "./css/signature-style.css",
-    "./tokens.css": "./css/tokens.css",
-    "./cascade.css": "./css/cascade.css",
-    "./overrides.css": "./css/overrides.css",
-    "./tokens.json": "./tokens.json",
-    "./system-prompt.md": "./SYSTEM_PROMPT.md",
+    ".": "./tokens.json",
+    "./css": "./css/signature-style.css",
     "./react": {
       "types": "./react/index.d.ts",
       "import": "./react/index.js",
@@ -47,6 +43,7 @@
   },
   "peerDependencies": {
     "react": ">=18",
+    "react-dom": ">=18",
     "lucide-react": ">=0.400.0"
   },
   "peerDependenciesMeta": {
