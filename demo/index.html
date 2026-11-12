@@ -3,16 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>signature-style · cake edition</title>
-  <!-- Works from file:// AND `npx serve .` — plain HTML, zero build. -->
+  <title>signature-style · catppuccin edition</title>
+  <!-- Works from file:// AND `npx serve .` — plain HTML, zero build, zero deps.
+       The ONLY remote reference in the demo is the Inter @import inside
+       ../css/signature-style.css; offline it falls back to system-ui. -->
   <link rel="stylesheet" href="../css/signature-style.css" />
   <style>
-    /* Demo layout ONLY. Every color comes from a token — this block
-       never hardcodes a hex and never touches :root. */
+    /* Demo layout ONLY. Every structural color comes from a token — this
+       block never hardcodes a hex and never touches :root. The palette
+       catalog below is the one exception BY DESIGN: its swatch chips print
+       the exact palette values as static reference data. */
     .wrap {
       max-width: 720px;
       margin: 0 auto;
-      padding: 4.5rem 1.5rem 6rem;
+      padding: var(--space-section) 1.5rem 6rem;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--space-tight);
     }
     h1 {
       font-size: 1.5rem;
@@ -24,13 +35,45 @@
       color: var(--text-muted);
       font-weight: 400;
     }
+    .theme-toggle {
+      display: flex;
+      gap: calc(var(--space-tight) / 2);
+    }
+    .theme-toggle button {
+      font: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: calc(var(--space-tight) / 2) var(--space-tight);
+      background-color: transparent;
+      color: var(--text-muted);
+      border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+      border-radius: var(--radius-ui);
+      cursor: pointer;
+      transition: var(--transition-standard), var(--transition-transform);
+    }
+    .theme-toggle button:hover {
+      color: var(--text-main);
+      border-color: color-mix(in srgb, var(--text-muted) 85%, white);
+    }
+    .theme-toggle button:active {
+      transform: scale(0.97);
+    }
+    .theme-toggle button:focus-visible {
+      outline: 2px solid var(--color-cake-primary);
+      outline-offset: 2px;
+    }
+    .theme-toggle button[aria-pressed="true"] {
+      background-color: var(--color-cake-primary);
+      color: var(--color-on-cake);
+      border-color: transparent;
+    }
     .subtitle {
       color: var(--text-muted);
       margin: 0.5rem 0 0;
       font-size: 0.95rem;
     }
     section {
-      margin-top: 4rem;
+      margin-top: var(--space-section);
     }
     h2 {
       font-size: 0.8rem;
@@ -49,15 +92,25 @@
     .row + .row {
       margin-top: 0.75rem;
     }
+    .group-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-bright);
+      margin: 2rem 0 1rem;
+    }
+    .group-title:first-of-type {
+      margin-top: 0;
+    }
     .swatches {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 1rem;
+      gap: var(--space-standard);
     }
     .swatch {
       background-color: var(--bg-surface);
+      border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
       border-radius: var(--radius-ui);
-      padding: 1rem;
+      padding: var(--space-standard);
     }
     .chip {
       height: 3.5rem;
@@ -76,6 +129,11 @@
     }
     .swatch code {
       color: var(--text-muted);
+    }
+    .keeper-caption {
+      color: var(--text-muted-soft);
+      font-size: 0.8rem;
+      margin: var(--space-tight) 0 0;
     }
     .note {
       color: var(--text-muted);
@@ -96,8 +154,14 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>signature-style <span class="edition">· cake edition</span></h1>
-      <p class="subtitle">one import · zero manual hex codes · deliberate, handcrafted, never generic</p>
+      <div>
+        <h1>signature-style <span class="edition">· catppuccin edition</span></h1>
+        <p class="subtitle">one import · zero manual hex codes · mocha by default, latte on request</p>
+      </div>
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="mocha" aria-pressed="true">mocha</button>
+        <button type="button" data-theme-set="latte" aria-pressed="false">latte</button>
+      </div>
     </header>
 
     <section>
@@ -112,19 +176,13 @@
         <button class="override-gold">override-gold (golden weapon)</button>
         <button class="override-success">override-success</button>
       </div>
-      <p class="note">Tab through the page to see the <code>--color-cake-secondary</code> focus ring. Every hover, active and disabled state is derived, not designed.</p>
+      <p class="note">Tab through the page to see the <code>--color-cake-primary</code> focus ring. Every hover, active and disabled state is derived, not designed — and the press is a mechanical <code>scale(0.97)</code>, no bounce.</p>
     </section>
 
     <section>
-      <h2>Palette</h2>
-      <div class="swatches">
-        <div class="swatch"><div class="chip" style="background-color: var(--bg-base)"></div><h3>bg-base</h3><code>#1E1E2E</code></div>
-        <div class="swatch"><div class="chip" style="background-color: var(--bg-surface)"></div><h3>bg-surface</h3><code>#282A36</code></div>
-        <div class="swatch"><div class="chip" style="background-color: var(--color-cake-primary)"></div><h3>cake-primary</h3><code>#FFB7B2</code></div>
-        <div class="swatch"><div class="chip" style="background-color: var(--color-cake-secondary)"></div><h3>cake-secondary</h3><code>#E2F0CB</code></div>
-        <div class="swatch"><div class="chip" style="background-color: var(--text-main)"></div><h3>text-main</h3><code>#F8F8F2</code></div>
-        <div class="swatch"><div class="chip" style="background-color: var(--text-muted)"></div><h3>text-muted</h3><code>#6272A4</code></div>
-      </div>
+      <h2>Palette — both themes</h2>
+      <div id="palette"></div>
+      <p class="keeper-caption">★ keeper — beloved legacy palette colors, given semantic jobs and carried across editions.</p>
     </section>
 
     <section>
@@ -137,11 +195,110 @@
         Two identical buttons, one shared token: <code>--color-cake-primary</code>.
         Their hover, active, disabled and focus-visible states are
         <strong>auto-generated</strong> with <code>color-mix()</code> —
-        <strong>zero manual hex codes</strong>. The Override Protocol classes
-        in the Buttons section break the rules locally without ever touching
-        a global variable.
+        <strong>zero manual hex codes</strong>. Colors move at
+        <code>0.15s ease-out</code>, transforms at
+        <code>0.3s cubic-bezier(0.2, 0.8, 0.2, 1)</code> — snappy and
+        mechanical. The Override Protocol classes in the Buttons section
+        break the rules locally without ever touching a global variable.
+      </p>
+      <p class="note">
+        <strong>Type</strong> is set in <strong>Inter</strong>, loaded from
+        Google Fonts (400 text · 500 buttons · 600 headings). Offline, the
+        <code>--font-sans</code> token falls back to <code>system-ui</code> —
+        the demo still works from <code>file://</code>.
       </p>
     </section>
   </div>
+
+  <script>
+    // Zero dependencies. The toggle writes data-theme on <html>; the CSS
+    // tokens layer does everything else. "mocha" removes the attribute so
+    // :root (the default dark theme) takes over.
+    (function () {
+      var root = document.documentElement;
+      var buttons = document.querySelectorAll("[data-theme-set]");
+
+      function setTheme(name) {
+        if (name === "latte") {
+          root.dataset.theme = "latte";
+        } else {
+          delete root.dataset.theme;
+        }
+        buttons.forEach(function (button) {
+          button.setAttribute(
+            "aria-pressed",
+            String(button.getAttribute("data-theme-set") === name)
+          );
+        });
+      }
+
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          setTheme(button.getAttribute("data-theme-set"));
+        });
+      });
+
+      // Static palette catalog — reference data, not live tokens.
+      var PALETTE = [
+        {
+          group: "Mocha — default (dark)",
+          tokens: [
+            ["bg-base", "#1E1E2E", false],
+            ["bg-surface", "#313244", false],
+            ["cake-primary", "#F5C2E7", false],
+            ["cake-secondary", "#A6E3A1", false],
+            ["text-main", "#CDD6F4", false],
+            ["text-muted", "#7F849C", false],
+            ["bg-inset", "#282A36", true],
+            ["text-bright", "#F8F8F2", true],
+            ["color-success", "#A8E6CF", true],
+            ["text-muted-soft", "#6272A4", true]
+          ]
+        },
+        {
+          group: "Latte — the white version",
+          tokens: [
+            ["bg-base", "#EFF1F5", false],
+            ["bg-surface", "#CCD0DA", false],
+            ["cake-primary", "#EA76CB", false],
+            ["cake-secondary", "#40A02B", false],
+            ["text-main", "#4C4F69", false],
+            ["text-muted", "#6272A4", true],
+            ["bg-inset", "#E6E9EF", true],
+            ["text-bright", "#11111B", true],
+            ["color-success", "#A8E6CF", true],
+            ["text-muted-soft", "#8C8FA1", true]
+          ]
+        }
+      ];
+
+      var container = document.getElementById("palette");
+      PALETTE.forEach(function (group) {
+        var title = document.createElement("p");
+        title.className = "group-title";
+        title.textContent = group.group;
+        container.appendChild(title);
+
+        var grid = document.createElement("div");
+        grid.className = "swatches";
+        group.tokens.forEach(function (token) {
+          var swatch = document.createElement("div");
+          swatch.className = "swatch";
+          var chip = document.createElement("div");
+          chip.className = "chip";
+          chip.style.backgroundColor = token[1];
+          var name = document.createElement("h3");
+          name.textContent = token[0] + (token[2] ? " ★" : "");
+          var hex = document.createElement("code");
+          hex.textContent = token[1];
+          swatch.appendChild(chip);
+          swatch.appendChild(name);
+          swatch.appendChild(hex);
+          grid.appendChild(swatch);
+        });
+        container.appendChild(grid);
+      });
+    })();
+  </script>
 </body>
 </html>
