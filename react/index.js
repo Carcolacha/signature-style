@@ -6,3 +6,4 @@
  * ```
  */
 export { default, ThemeProvider, } from "./ThemeProvider.js";
+export { Icon, EmptyState, PartyBadge, } from "./primitives.js";
