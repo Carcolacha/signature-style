@@ -125,9 +125,102 @@ and dropped; unknown keys are warned and dropped.
 |---|---|---|
 | VULN-1 | `color-mix()` unsupported → hover/active silently dead | `@supports not (color: color-mix(in srgb, red, blue))` block re-derives states via `filter: brightness(1.12)` / `brightness(0.88)` |
 | VULN-2 | `@layer` fragility: unlayered host CSS beats layered CSS; layer-order races | `ThemeProvider` injects `@layer tokens, base, cascade, overrides;` as the FIRST style tag in `<head>` + `CSSLayerBlockRule` support warning; bundle declares the same order statically |
-| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 32 tokens, type + runtime), CSS-injection guard on values |
+| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 33 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 1.4.0 — Input & Feedback Layer
+
+- **The Input & Feedback primitives** — three flat form controls plus
+  the toast system, all wired to tokens, all following the Pruning
+  Protocol:
+
+  ```tsx
+  import { Input, TextArea, ToggleSwitch, ToastProvider, useToast }
+    from "@edwyn/signature-style/react";
+
+  // A field with the error FLAG — the message is yours:
+  <Input
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    error={name.length === 0 && "Name is required"}
+    aria-describedby="name-error"
+  />
+  <span id="name-error">Name is required</span> {/* you render this */}
+
+  // THE toggle — exactly ONE <button role="switch">, knob = ::before:
+  <ToggleSwitch checked={on} onToggle={setOn} label="Enable notifications" />
+  ```
+
+  Wrap the app once, toast from anywhere beneath it:
+
+  ```tsx
+  <ToastProvider>
+    <RsvpForm />
+  </ToastProvider>
+
+  // inside <RsvpForm>:
+  const toast = useToast(); // throws without a provider — fail loudly
+  saveRsvp().then(() => toast("success", "RSVP saved"))
+            .catch(() => toast("error", "Could not save — try again"));
+  ```
+
+  - **`error` is a FLAG, not a message slot** — `<Input error>` /
+    `<TextArea error>` only set `aria-invalid="true"`; the component
+    never renders the error as text. You render your own message beside
+    the field (and wire `aria-describedby` yourself) — the components
+    stay flat: ONE element, no wrapper, no slot.
+  - **`<ToggleSwitch>` is one DOM element** — a `<button type="button"
+    role="switch">` whose knob is the CSS `::before` pseudo-element
+    (peak pruning). State is the attribute: `[aria-checked="true"]`
+    paints the Teal track and travels the knob.
+  - **The status strips** — `toast(status, message)` maps success →
+    `var(--party-green)`, error → `var(--party-peach)`, set INLINE as a
+    `--status` custom property that css/toast.css reads for the 4px
+    left border. Status is a content-outcome signal, so party tokens are
+    the sanctioned palette here.
+- **New stylesheet `css/forms.css`** — the inset wells
+  (`--bg-inset` interiors, hairline borders, 14px Inter), the doctrine
+  Flamingo focus ring, the peach error border, and the switch geometry
+  (44×24px track, 16px knob, 20px travel). Layered into `cascade` after
+  `viz.css`. Zero hex, zero box-shadow, `prefers-reduced-motion`
+  respected.
+- **New stylesheet `css/toast.css`** — the fixed bottom-right region at
+  the zenith z-rung, the `toast-life` animation (slide in → hold → slide
+  out over 3s, riding the owner's mechanical
+  `cubic-bezier(0.2, 0.8, 0.2, 1)` — one curve shapes fast entry, long
+  hold, fast exit; the timing function cannot be varied per keyframe
+  segment, documented and deliberate). Toasts remove themselves on
+  `animationend`; under `prefers-reduced-motion` the animation is
+  disabled, so each toast also carries a matching 3s timeout fallback
+  (idempotent — see css/toast.css and react/toast.tsx). Layered after
+  `forms.css`. Zero hex, zero box-shadow.
+- **The one new token: `--z-toast: 60`** — the zenith rung. The
+  five-rung z-ladder (Pillar 3, theme-independent, `:root`-defined):
+
+  | Token | Value | Layer |
+  |---|---|---|
+  | `--z-sticky` | 10 | sticky headers, toolbars |
+  | `--z-nav` | 30 | the navbar notch (above sticky, below overlays) |
+  | `--z-overlay` | 40 | dimming overlays, backdrops |
+  | `--z-modal` | 50 | modals, popups, dropdowns |
+  | `--z-toast` | 60 | **toasts — the zenith: above modals** |
+
+  All other token VALUES are unchanged; `TOKEN_KEYS` grows 32 → 33
+  (typed `KnownToken` union included).
+- **The knob-color decision** — off knob: `--text-muted` on
+  `--bg-surface`; on knob: `--bg-base` (the dark knob on the Teal
+  track). The owner did not spec knob colors; the dark-on-accent pairing
+  echoes the `--color-on-cake` doctrine (dark ink on bright cake
+  surfaces). `--text-bright` was rejected: near-white on Teal is low
+  contrast; dark-on-Teal is legible on both themes.
+- **Release gates** — verify now asserts the forms stylesheet (inset
+  wells, `aria-invalid` → peach, doctrine focus ring, knob travel,
+  reduced-motion, zero hex / zero shadow), the toast stylesheet
+  (`var(--z-toast, 60)`, `toast-life` keyframes, both status tokens,
+  mechanical physics, zero hex / zero shadow), bundle membership order
+  (viz → forms → toast), the five-rung z-ladder values 10/30/40/50/60,
+  and all five feedback re-exports from the umbrella.
 
 ### 1.3.0 — Telemetry Module (Data Visualization)
 
