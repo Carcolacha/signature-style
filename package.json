@@ -31,8 +31,8 @@
     "react/",
     "tokens.json",
     "SYSTEM_PROMPT.md",
-    "!react/*.ts",
-    "!react/*.tsx"
+    "!react/index.ts",
+    "!react/ThemeProvider.tsx"
   ],
   "sideEffects": [
     "*.css"
