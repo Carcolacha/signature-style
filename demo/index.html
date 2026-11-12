@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>signature-style · cake edition</title>
+  <!-- Works from file:// AND `npx serve .` — plain HTML, zero build. -->
+  <link rel="stylesheet" href="../css/signature-style.css" />
+  <style>
+    /* Demo layout ONLY. Every color comes from a token — this block
+       never hardcodes a hex and never touches :root. */
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 4.5rem 1.5rem 6rem;
+    }
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      margin: 0;
+    }
+    h1 .edition {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .subtitle {
+      color: var(--text-muted);
+      margin: 0.5rem 0 0;
+      font-size: 0.95rem;
+    }
+    section {
+      margin-top: 4rem;
+    }
+    h2 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      margin: 0 0 1.25rem;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .row + .row {
+      margin-top: 0.75rem;
+    }
+    .swatches {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+    .swatch {
+      background-color: var(--bg-surface);
+      border-radius: var(--radius-ui);
+      padding: 1rem;
+    }
+    .chip {
+      height: 3.5rem;
+      border-radius: calc(var(--radius-ui) / 2);
+      border: 1px solid color-mix(in srgb, var(--text-muted) 45%, transparent);
+    }
+    .swatch h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 0.75rem 0 0.15rem;
+    }
+    .swatch code,
+    .note code {
+      font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+    }
+    .swatch code {
+      color: var(--text-muted);
+    }
+    .note {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      max-width: 60ch;
+      margin: 1.25rem 0 0;
+    }
+    .note code {
+      color: var(--text-main);
+      font-size: 0.85em;
+    }
+    .note strong {
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>signature-style <span class="edition">· cake edition</span></h1>
+      <p class="subtitle">one import · zero manual hex codes · deliberate, handcrafted, never generic</p>
+    </header>
+
+    <section>
+      <h2>Buttons</h2>
+      <div class="row">
+        <button class="btn-primary">Primary ▸ hover me</button>
+        <button class="btn-secondary">Secondary</button>
+        <button class="btn-primary" disabled>Disabled</button>
+      </div>
+      <div class="row">
+        <button class="override-danger">override-danger</button>
+        <button class="override-gold">override-gold (golden weapon)</button>
+        <button class="override-success">override-success</button>
+      </div>
+      <p class="note">Tab through the page to see the <code>--color-cake-secondary</code> focus ring. Every hover, active and disabled state is derived, not designed.</p>
+    </section>
+
+    <section>
+      <h2>Palette</h2>
+      <div class="swatches">
+        <div class="swatch"><div class="chip" style="background-color: var(--bg-base)"></div><h3>bg-base</h3><code>#1E1E2E</code></div>
+        <div class="swatch"><div class="chip" style="background-color: var(--bg-surface)"></div><h3>bg-surface</h3><code>#282A36</code></div>
+        <div class="swatch"><div class="chip" style="background-color: var(--color-cake-primary)"></div><h3>cake-primary</h3><code>#FFB7B2</code></div>
+        <div class="swatch"><div class="chip" style="background-color: var(--color-cake-secondary)"></div><h3>cake-secondary</h3><code>#E2F0CB</code></div>
+        <div class="swatch"><div class="chip" style="background-color: var(--text-main)"></div><h3>text-main</h3><code>#F8F8F2</code></div>
+        <div class="swatch"><div class="chip" style="background-color: var(--text-muted)"></div><h3>text-muted</h3><code>#6272A4</code></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cascade</h2>
+      <div class="row">
+        <button class="btn-primary">I am button A</button>
+        <button class="btn-primary">I am button B</button>
+      </div>
+      <p class="note">
+        Two identical buttons, one shared token: <code>--color-cake-primary</code>.
+        Their hover, active, disabled and focus-visible states are
+        <strong>auto-generated</strong> with <code>color-mix()</code> —
+        <strong>zero manual hex codes</strong>. The Override Protocol classes
+        in the Buttons section break the rules locally without ever touching
+        a global variable.
+      </p>
+    </section>
+  </div>
+</body>
+</html>
