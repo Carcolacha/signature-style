@@ -1,0 +1,100 @@
+/* ==========================================================================
+   THE OVERRIDE PROTOCOL — THE GOLDEN WEAPON
+   ----------------------------------------------------------------------------
+   STRICT DOCTRINE:
+
+   Overrides are the Golden Weapon: they alter ONE component locally.
+   NEVER add a rule that touches :root.
+
+   1. Every override is a scoped utility class (.override-*). No element
+      selectors, no descendant trees that leak, no :root — ever.
+   2. Every override carries its OWN derived states (hover / active /
+      focus-visible / disabled). The overrides layer outranks the cascade
+      layer, so a stateless override would let the cascade's states bleed
+      through and repaint the component with cake colors. Define the full
+      set or do not draw the weapon.
+   3. If a problem seems to require editing a global token here, stop:
+      tokens belong to css/tokens.css and ThemeProvider. That is the path.
+
+   Override values may leave the token palette (that is their purpose),
+   but states are still derived with color-mix() — overrides follow the
+   Cascade, they just change the source token locally.
+   ========================================================================== */
+
+@layer overrides {
+
+  /* -- Danger: the loud alarm ------------------------------------------------ */
+  .override-danger {
+    background-color: #FF6B6B;
+    color: #1E1E2E;
+    border: none;
+    border-radius: var(--radius-ui);
+    padding: 0.6rem 1.25rem;
+    font: inherit;
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  .override-danger:hover {
+    background-color: color-mix(in srgb, #FF6B6B 85%, black);
+  }
+  .override-danger:active {
+    background-color: color-mix(in srgb, #FF6B6B 70%, black);
+  }
+
+  /* -- Success: soft mint ----------------------------------------------------- */
+  .override-success {
+    background-color: #A8E6CF;
+    color: #1E1E2E;
+    border: none;
+    border-radius: var(--radius-ui);
+    padding: 0.6rem 1.25rem;
+    font: inherit;
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  .override-success:hover {
+    background-color: color-mix(in srgb, #A8E6CF 85%, white);
+  }
+  .override-success:active {
+    background-color: color-mix(in srgb, #A8E6CF 85%, black);
+  }
+
+  /* -- Gold: the shiny escalation ---------------------------------------------- */
+  .override-gold {
+    background-image: linear-gradient(135deg, #FFD700 0%, #DAA520 100%);
+    background-size: 100% 100%;
+    background-position: 0% 50%;
+    color: #1E1E2E;
+    border: none;
+    border-radius: var(--radius-ui);
+    padding: 0.6rem 1.25rem;
+    font: inherit;
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  /* The shine: enlarge and slide the gradient on hover. background-size +
+     position are covered by --transition-standard, so the light sweep is
+     derived motion, not a hand-authored keyframe. */
+  .override-gold:hover {
+    background-size: 220% 220%;
+    background-position: 100% 50%;
+  }
+  .override-gold:active {
+    filter: brightness(0.9);
+  }
+
+  /* -- Shared focus ring + disabled gray-out ------------------------------------ */
+  .override-danger:focus-visible,
+  .override-success:focus-visible,
+  .override-gold:focus-visible {
+    outline: 2px solid var(--color-cake-secondary);
+    outline-offset: 2px;
+  }
+  .override-danger:disabled,
+  .override-success:disabled,
+  .override-gold:disabled {
+    background: var(--bg-surface); /* shorthand also clears the gold gradient */
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+}
