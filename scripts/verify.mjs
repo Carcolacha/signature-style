@@ -18,10 +18,10 @@
  *   (d) WHITELIST PARITY: every custom property name declared in
  *       css/tokens.css appears in react/ThemeProvider.tsx's TOKEN_KEYS —
  *       explicitly including the z-scale tokens --z-sticky, --z-nav,
- *       --z-overlay, --z-modal;
- *   (d2) Z-SCALE VALUES: --z-sticky / --z-nav / --z-overlay / --z-modal
- *       are declared in the tokens.css `:root` block with the exact
- *       values 10 / 30 / 40 / 50;
+ *       --z-overlay, --z-modal, --z-toast;
+ *   (d2) Z-SCALE VALUES: --z-sticky / --z-nav / --z-overlay / --z-modal /
+ *       --z-toast are declared in the tokens.css `:root` block with the
+ *       exact values 10 / 30 / 40 / 50 / 60 (1.4.0 adds the zenith rung);
  *   (p) PARTY PALETTE (0.4.0): all ten --party-* content tokens exist in
  *       the tokens.css `:root` block with their exact reserved hexes, and
  *       tokens.json's partyPalette section lists all ten with matching
@@ -117,6 +117,26 @@
  *   (v3) PARTY GUARD: react/viz.tsx contains the runtime party-guard
  *       string (`startsWith("--party-")`) — the Rule of Engagement is
  *       enforced in the source, not just the types.
+ *   (f1) FORMS CSS (1.4.0): css/forms.css exists, builds the inset wells
+ *       on var(--bg-inset), drives the error state via the
+ *       `[aria-invalid="true"]` selector answered by var(--party-peach),
+ *       rings focus with the doctrine outline (2px var(--color-cake-primary)),
+ *       travels the switch knob translateX(1.25rem) on
+ *       [aria-checked="true"], respects prefers-reduced-motion, and
+ *       contains ZERO hex literals and zero box-shadow;
+ *   (fb1) TOAST CSS (1.4.0; the t1 label was taken by the timeline):
+ *       css/toast.css exists, pins the region at the zenith rung
+ *       var(--z-toast, 60), declares the toast-life keyframes, maps the
+ *       status strips through var(--status) to var(--party-green) /
+ *       var(--party-peach), rides the owner's mechanical cubic-bezier,
+ *       respects prefers-reduced-motion, and contains ZERO hex literals
+ *       and zero box-shadow;
+ *   (fb2) BUNDLE MEMBERSHIP (1.4.0): css/signature-style.css imports
+ *       ./forms.css into the `cascade` layer AFTER ./viz.css and
+ *       ./toast.css AFTER ./forms.css;
+ *   (n4) FEEDBACK UMBRELLA (1.4.0): the umbrella re-exports Input,
+ *       TextArea, ToggleSwitch, ToastProvider and useToast — all five
+ *       names in index.d.ts, the five value exports also in index.js.
  *
  * Prints PASS and exits 0 on success; prints FAIL + reasons and exits 1
  * otherwise.
@@ -236,7 +256,7 @@ for (const rel of scannedPaths) {
 }
 
 // ---- (d) whitelist parity: tokens.css <-> ThemeProvider TOKEN_KEYS -----------
-const Z_TOKENS = ["--z-sticky", "--z-nav", "--z-overlay", "--z-modal"];
+const Z_TOKENS = ["--z-sticky", "--z-nav", "--z-overlay", "--z-modal", "--z-toast"];
 const tsx = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
 /** @type {string[] | null} */
 let whitelist = null;
@@ -262,13 +282,15 @@ if (whitelistMatch === null) {
   }
 }
 
-// ---- (d2) z-scale tokens exist with exact values 10 / 30 / 40 / 50 -----------
+// ---- (d2) z-scale tokens exist with exact values 10 / 30 / 40 / 50 / 60 -----
 // 1.2.0 extension: --z-nav is the navbar rung between sticky and overlay.
+// 1.4.0 extension: --z-toast is the zenith rung above modals.
 const Z_VALUES = {
   "--z-sticky": "10",
   "--z-nav": "30",
   "--z-overlay": "40",
   "--z-modal": "50",
+  "--z-toast": "60",
 };
 if (rootDeclarations === null) {
   failures.push("cannot check z-scale values — no :root block found");
@@ -949,6 +971,150 @@ if (!vizSrc.includes('startsWith("--party-")')) {
   failures.push(
     'react/viz.tsx must contain the runtime party guard startsWith("--party-") — the Rule of Engagement is enforced at runtime, not just in the types',
   );
+}
+
+// ---- (f) forms (1.4.0) -----------------------------------------------------------
+// (f1) FORMS CSS: exists, inset wells on the keeper token, attribute-driven
+// error state (aria-invalid → party-peach, the ONE sanctioned party use on
+// structural chrome), the doctrine focus outline, the switch knob travel
+// (translateX(1.25rem) on aria-checked), reduced-motion respected — and
+// ZERO hex literals, zero box-shadow.
+const formsCssPath = resolve(root, "css/forms.css");
+if (!existsSync(formsCssPath)) {
+  failures.push("css/forms.css is missing — the input primitives ship their own stylesheet");
+} else {
+  const formsCss = readFileSync(formsCssPath, "utf8");
+  const FORMS_REQUIREMENTS = [
+    ["var(--bg-inset)", "the inset-well field background (the keeper's semantic job)"],
+    ['[aria-invalid="true"]', "the attribute-driven error state (like nav's aria-current)"],
+    ["var(--party-peach)", "the error border token (owner spec: error = party-peach)"],
+    ["outline: 2px solid var(--color-cake-primary)", "the doctrine focus ring"],
+    ["translateX(1.25rem)", "the switch knob travel (44 − 16 − 8 = 20px = 1.25rem)"],
+    ['[aria-checked="true"]', "the switch state machine — the attribute IS the state"],
+    ["::before", "the switch knob as a pseudo-element (peak pruning: ONE element)"],
+    ["var(--transition-standard)", "the mechanical physics on fields and knob"],
+    ["prefers-reduced-motion", "the reduced-motion guard on transitions"],
+  ];
+  for (const [needle, label] of FORMS_REQUIREMENTS) {
+    if (!formsCss.includes(needle)) {
+      failures.push(`css/forms.css must contain ${needle} — ${label}`);
+    }
+  }
+  // Border doctrine: zero box-shadow DECLARATIONS (a `box-shadow: none`
+  // reset is allowed; comment mentions of the word are not declarations).
+  const formsShadowDecls = formsCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  const formsNonNoneShadows = (formsShadowDecls ?? []).filter(
+    (d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d),
+  );
+  if (formsNonNoneShadows.length > 0) {
+    failures.push(
+      `css/forms.css declares a box-shadow (${formsNonNoneShadows.join(" ")}) — the border doctrine bans drop shadows everywhere`,
+    );
+  }
+  // COLOR DOCTRINE: forms have NO exception — zero hex (even in comments).
+  const formsHexes = formsCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (formsHexes !== null) {
+    failures.push(
+      `css/forms.css contains hex literal(s) ${[...new Set(formsHexes)].join(", ")} — the forms are token-driven, zero hex`,
+    );
+  }
+}
+
+// ---- (fb) toasts (1.4.0) ----------------------------------------------------------
+// (fb1) TOAST CSS: exists, the region wears the zenith rung var(--z-toast, 60),
+// the toast-life keyframes exist, status strips map through var(--status) to
+// party-green / party-peach, the owner's mechanical cubic-bezier shapes the
+// slide-hold-fade, reduced-motion respected — ZERO hex, zero box-shadow.
+const toastCssPath = resolve(root, "css/toast.css");
+if (!existsSync(toastCssPath)) {
+  failures.push("css/toast.css is missing — the feedback layer ships its own stylesheet");
+} else {
+  const toastCss = readFileSync(toastCssPath, "utf8");
+  const TOAST_REQUIREMENTS = [
+    ["var(--z-toast, 60)", "the zenith rung — toasts float ABOVE modals (--z-modal 50)"],
+    ["@keyframes toast-life", "the slide-in / hold / slide-out animation"],
+    ["translateX(100%)", "the off-canvas right rest position"],
+    ["var(--status)", "the inline status custom property on the status strip"],
+    ["var(--party-green)", "the success strip token"],
+    ["var(--party-peach)", "the error strip token"],
+    ["cubic-bezier(0.2, 0.8, 0.2, 1)", "the owner's mechanical physics on the slide"],
+    ["prefers-reduced-motion", "the reduced-motion guard (animation: none, opacity 1)"],
+  ];
+  for (const [needle, label] of TOAST_REQUIREMENTS) {
+    if (!toastCss.includes(needle)) {
+      failures.push(`css/toast.css must contain ${needle} — ${label}`);
+    }
+  }
+  // Border doctrine: zero box-shadow DECLARATIONS (a `box-shadow: none`
+  // reset is allowed; comment mentions of the word are not declarations).
+  const toastShadowDecls = toastCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  const toastNonNoneShadows = (toastShadowDecls ?? []).filter(
+    (d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d),
+  );
+  if (toastNonNoneShadows.length > 0) {
+    failures.push(
+      `css/toast.css declares a box-shadow (${toastNonNoneShadows.join(" ")}) — the border doctrine bans drop shadows everywhere`,
+    );
+  }
+  // COLOR DOCTRINE: toasts have NO exception — zero hex (even in comments).
+  const toastHexes = toastCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (toastHexes !== null) {
+    failures.push(
+      `css/toast.css contains hex literal(s) ${[...new Set(toastHexes)].join(", ")} — the toasts are token-driven, zero hex`,
+    );
+  }
+}
+
+// (fb2) BUNDLE MEMBERSHIP: forms.css layered after viz.css, toast.css after
+// forms.css — the cascade-import order doctrine.
+const formsImportIndex = bundle.indexOf('@import "./forms.css" layer(cascade);');
+if (formsImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./forms.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const vizImportIndexForForms = bundle.indexOf('@import "./viz.css" layer(cascade);');
+  if (vizImportIndexForForms !== -1 && formsImportIndex < vizImportIndexForForms) {
+    failures.push(
+      "css/signature-style.css must import ./forms.css AFTER ./viz.css (viz styles load first)",
+    );
+  }
+}
+const toastImportIndex = bundle.indexOf('@import "./toast.css" layer(cascade);');
+if (toastImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./toast.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const formsImportIndexForToast = bundle.indexOf('@import "./forms.css" layer(cascade);');
+  if (formsImportIndexForToast !== -1 && toastImportIndex < formsImportIndexForToast) {
+    failures.push(
+      "css/signature-style.css must import ./toast.css AFTER ./forms.css (form styles load first)",
+    );
+  }
+}
+
+// ---- (n4) FEEDBACK UMBRELLA (1.4.0) ------------------------------------------------
+// Input, TextArea, ToggleSwitch, ToastProvider, useToast — all five names in
+// index.d.ts (types elide from the compiled JS) and the five VALUE exports
+// additionally in index.js.
+for (const feedbackExport of [
+  "Input",
+  "TextArea",
+  "ToggleSwitch",
+  "ToastProvider",
+  "useToast",
+]) {
+  if (!new RegExp(`\\b${feedbackExport}\\b`).test(indexDts)) {
+    failures.push(
+      `react/index.d.ts must re-export ${feedbackExport} from the umbrella entry point`,
+    );
+  }
+  if (!new RegExp(`\\b${feedbackExport}\\b`).test(indexJs)) {
+    failures.push(
+      `react/index.js must re-export ${feedbackExport} from the umbrella entry point`,
+    );
+  }
 }
 
 // ---- verdict ------------------------------------------------------------------
