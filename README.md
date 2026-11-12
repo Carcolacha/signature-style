@@ -23,8 +23,8 @@ npm i @edwyn/signature-style
 | Import | Resolves to | Peers needed |
 |---|---|---|
 | `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest (AI tooling core) | never |
-| `@edwyn/signature-style/css` | `css/signature-style.css` — the compiled bundle: tokens, base, cascade (timeline + modal included), overrides | never |
-| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal` | `react` + `react-dom`; `lucide-react` optional |
+| `@edwyn/signature-style/css` | `css/signature-style.css` — the compiled bundle: tokens, base, cascade (timeline + modal + nav included), overrides | never |
+| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal`, `GlobalNav` | `react` + `react-dom`; `lucide-react` optional |
 
 ## CSS usage — one import
 
@@ -39,7 +39,7 @@ import "@edwyn/signature-style/css"; // → css/signature-style.css
 ```
 
 The bundle covers everything — `tokens.css`, `cascade.css` (with the
-timeline and modal layers), and `overrides.css` are already layered into
+timeline, modal and nav layers), and `overrides.css` are already layered into
 it. The granular stylesheets and `SYSTEM_PROMPT.md` still ship in the
 tarball, but there are no export-map entries for them anymore: import
 them via the node_modules path (or a deep import) at your own risk.
@@ -76,8 +76,9 @@ anything else — claims the canonical layer order as the first style tag in
 
 As of 0.4.0 the whitelist covers **every** custom property in
 `css/tokens.css` — the core 6, the keeper tokens, the shared
-font/radius/transition/spacing tokens, the z-index scale, and the ten
-`--party-*` content tokens (31 keys, typed at compile time and enforced at
+font/radius/transition/spacing tokens, the z-index scale (now with the
+navbar rung `--z-nav`), and the ten
+`--party-*` content tokens (32 keys, typed at compile time and enforced at
 runtime):
 
 ```tsx
@@ -124,9 +125,68 @@ and dropped; unknown keys are warned and dropped.
 |---|---|---|
 | VULN-1 | `color-mix()` unsupported → hover/active silently dead | `@supports not (color: color-mix(in srgb, red, blue))` block re-derives states via `filter: brightness(1.12)` / `brightness(0.88)` |
 | VULN-2 | `@layer` fragility: unlayered host CSS beats layered CSS; layer-order races | `ThemeProvider` injects `@layer tokens, base, cascade, overrides;` as the FIRST style tag in `<head>` + `CSSLayerBlockRule` support warning; bundle declares the same order statically |
-| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 31 tokens, type + runtime), CSS-injection guard on values |
+| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 32 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 1.2.0 — GlobalNav
+
+- **`<GlobalNav>`** — routing between views in PlanThenParty: a sticky
+  navbar whose active state IS the `aria-current="page"` attribute (no
+  `.is-active` class anywhere), plus a mobile drawer behind a hamburger
+  at the strict 768px breakpoint. Two modes, one component:
+
+  ```tsx
+  import { GlobalNav } from "@edwyn/signature-style/react";
+
+  // Plain-anchor mode — renders <a href>; activeHref sets aria-current="page":
+  <GlobalNav
+    items={[
+      { href: "/timeline", label: "Timeline" },
+      { href: "/budget", label: "Budget" },
+    ]}
+    activeHref="/timeline"
+  />
+
+  // React Router mode — pass NavLink as `as`; the ROUTER sets
+  // aria-current, so leave activeHref undefined:
+  import { NavLink } from "react-router";
+  <GlobalNav as={NavLink} items={[{ href: "/timeline", label: "Timeline" }]} />
+  ```
+
+  - **Component-agnostic links** — `as?: React.ElementType` receives
+    `{ href, className: "ptp-nav__link", children }`; the drawer links go
+    through the same renderer.
+  - **Mobile drawer** — `createPortal` to `document.body` (the modal.tsx
+    architecture): it reuses the existing modal backdrop (z-40) as its
+    scrim and the existing `.ptp-modal-close` class for its close button
+    (the Teal hover stays the close signature). Escape closes with a
+    cleaned-up listener, backdrop click closes, drawer links close, and
+    focus moves into the drawer on open / back to the hamburger on close.
+  - New stylesheet **`css/nav.css`** (`.ptp-nav*` classes), layered into
+    `cascade` after `modal.css`. Token-driven: zero hex, zero box-shadow —
+    the rgba scrim still lives ONLY in modal.css. Links press with
+    `scale(0.97)`, the current page's underline is Flamingo, and the
+    hamburger's hover is main-text (never Teal — that is the close
+    signature).
+- **New token `--z-nav: 30`** — the z-scale gains its missing rung, the
+  gap between sticky chrome and the overlay scrim:
+
+  | Token | Value | Role |
+  |---|---|---|
+  | `--z-sticky` | 10 | sticky headers, toolbars |
+  | `--z-nav` | 30 | navbar — floats above sticky headers, below overlays |
+  | `--z-overlay` | 40 | dimming overlays, backdrops |
+  | `--z-modal` | 50 | modals, popups, dropdowns — and the nav drawer |
+
+  The provider whitelist grows 31 → 32 keys (typed at compile time,
+  enforced at runtime, same guards).
+- **Release gates** — verify now asserts the nav stylesheet's contract
+  (`var(--z-nav, 30)`, the 768px shift, the `[aria-current="page"]`
+  selector, the `translateX` drawer states, zero hex, zero box-shadow),
+  its layered import after `modal.css`, the umbrella re-exports of
+  `GlobalNav` / `NavItem` / `GlobalNavProps`, and `--z-nav: 30` across
+  `tokens.css` `:root`, `tokens.json` shared, and `TOKEN_KEYS`.
 
 ### 1.0.0 — Publish Flow & Distribution
 
