@@ -1,23 +1,27 @@
 /* ==========================================================================
-   SIGNATURE STYLE — CORE DESIGN TOKENS · HYBRID EDITION
+   SIGNATURE STYLE — CORE DESIGN TOKENS · HARMONIZED EDITION
    ----------------------------------------------------------------------------
-   THE HYBRID DOCTRINE (v0.2.1)
-   Catppuccin structure · custom cake accents — the premium case with
-   custom fans. Backgrounds and text keep their Catppuccin values (Mocha
-   here, Latte in the light block below); EVERY interaction token —
-   buttons, focus rings, hovers — uses the owner's exact custom cake
-   colors:
+   THE HARMONIZED DOCTRINE (v0.3.0)
+   Harmonized — 100% official Catppuccin, per-theme (Mocha dark / Latte
+   light). The SYSTEM is unchanged — Token Cascade, Override Protocol,
+   mechanical physics, the 8px grid — but the signature now wears official
+   palette colors, so it is mathematically harmonious by construction:
 
-     --color-cake-primary:   #FFB7B2  Pastel Strawberry
-     --color-cake-secondary: #E2F0CB  Soft Matcha
+     --color-cake-primary:   #F2CDCD  Mocha Flamingo  (dark)
+                             #DD7878  Latte Flamingo  (light)
+     --color-cake-secondary: #94E2D5  Mocha Teal      (dark)
+                             #179299  Latte Teal      (light)
 
-   "Exact" means exact on both sides of the toggle: the same signature
-   hexes are mandated in BOTH themes. Known tradeoff, documented and
-   owner-mandated: the pale cakes give quiet focus rings on Latte.
-   No Catppuccin accent color is ever used for an interaction token.
+   PER-THEME OFFICIAL HARMONY: each theme wears its OWN theme's official
+   Flamingo/Teal values. The dark toggle gets Mocha Flamingo/Teal; the
+   light toggle gets Latte Flamingo/Teal. Contrast is correct on both
+   sides of the toggle by construction — these are the palette's own
+   accent choices for their own luminance, not imports across themes.
 
-   A light "white version" — Catppuccin Latte structure, same cake
-   accents — is available by opting in:
+   Backgrounds and text keep their Catppuccin structural values (Mocha
+   here, Latte in the light block below). A light "white version" —
+   Catppuccin Latte structure with Latte accents — is available by
+   opting in:
 
      <html data-theme="latte">
 
@@ -29,17 +33,20 @@
    --text-muted-soft) are beloved legacy palette colors given semantic
    jobs — they carry over unchanged across editions.
 
+   Z-INDEX SCALE (Pillar 3): --z-sticky 10, --z-overlay 40, --z-modal 50.
+   Theme-independent, defined once in :root, same values in both themes.
+
    The ONLY `:root` rule in the package lives inside this `@layer tokens`
    block — enforced by scripts/verify.mjs and by the ThemeProvider whitelist.
    ========================================================================== */
 
 @layer tokens {
   :root {
-    /* -- core 6: hybrid — catppuccin structure + custom cake accents -------- */
+    /* -- core 6: harmonized — Mocha structure + Mocha accents ---------------- */
     --bg-base: #1E1E2E;
     --bg-surface: #313244;
-    --color-cake-primary: #FFB7B2;   /* custom signature — Pastel Strawberry */
-    --color-cake-secondary: #E2F0CB; /* custom signature — Soft Matcha */
+    --color-cake-primary: #F2CDCD;   /* signature — Mocha Flamingo */
+    --color-cake-secondary: #94E2D5; /* signature — Mocha Teal */
     --text-main: #CDD6F4;
     --text-muted: #7F849C;
 
@@ -58,15 +65,23 @@
     --space-tight: 0.5rem;
     --space-standard: 1rem;
     --space-section: 1.5rem;
+
+    /* -- z-index scale (Pillar 3) — same values in both themes -------------- */
+    --z-sticky: 10;
+    --z-overlay: 40;
+    --z-modal: 50;
   }
 
-  /* -- the white version: latte structure + the same signature accents ------ */
+  /* -- the white version: 100% official Catppuccin Latte --------------------- */
   [data-theme="latte"] {
-    /* -- core 6: same exact cakes — "exact" means exact on both sides -------- */
+    /* -- core 6: Latte structure + Latte accents — per-theme harmony ---------- */
+    /* No cross-theme imports: this block declares the light theme's own
+       official Flamingo/Teal so both sides of the toggle are exactly the
+       palette's intended pairing for its luminance. */
     --bg-base: #EFF1F5;
     --bg-surface: #CCD0DA;
-    --color-cake-primary: #FFB7B2; /* custom signature — pale rings here are a documented, owner-mandated tradeoff */
-    --color-cake-secondary: #E2F0CB;
+    --color-cake-primary: #DD7878;   /* signature — Latte Flamingo */
+    --color-cake-secondary: #179299; /* signature — Latte Teal */
     --text-main: #4C4F69;
     --text-muted: #6272A4; /* keeper — reads well on light */
 
