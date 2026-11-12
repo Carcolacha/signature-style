@@ -1,0 +1,151 @@
+/* ==========================================================================
+   THE TOKEN CASCADE
+   ----------------------------------------------------------------------------
+   Doctrine: no one ever writes a hex code for a state.
+
+   One token in, four states out. hover / active / disabled / focus-visible
+   are DERIVED from the core tokens, never authored:
+
+     hover          = color-mix(in srgb, <token> 85%, white)   (lighten)
+     active         = color-mix(in srgb, <token> 85%, black)   (darken)
+     disabled       = var(--bg-surface) + var(--text-muted)    (gray out)
+     focus-visible  = 2px solid var(--color-cake-secondary)    (the ring)
+
+   Every interactive element carries var(--transition-standard).
+
+   Order matters inside this layer: :hover / :active come first, :disabled
+   last, so a hovered disabled control still shows the gray-out (equal
+   specificity, later wins). The VULN-1 @supports fallback sits at the very
+   end for the same reason.
+   ========================================================================== */
+
+@layer cascade {
+
+  /* -- Primary button (pastel strawberry surface) -------------------------- */
+  .btn-primary {
+    background-color: var(--color-cake-primary);
+    color: #1E1E2E; /* deep grey text on pastel = readable contrast */
+    border: none;
+    border-radius: var(--radius-ui);
+    padding: 0.6rem 1.25rem;
+    font: inherit;
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  .btn-primary:hover {
+    background-color: color-mix(in srgb, var(--color-cake-primary) 85%, white);
+  }
+  .btn-primary:active {
+    background-color: color-mix(in srgb, var(--color-cake-primary) 85%, black);
+  }
+  .btn-primary:disabled {
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* -- Secondary button (elevated grey surface) ----------------------------- */
+  .btn-secondary {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+    border-radius: var(--radius-ui);
+    padding: 0.6rem 1.25rem;
+    font: inherit;
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  .btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--bg-surface) 85%, white);
+    border-color: color-mix(in srgb, var(--text-muted) 85%, white);
+  }
+  .btn-secondary:active {
+    background-color: color-mix(in srgb, var(--bg-surface) 85%, black);
+    border-color: color-mix(in srgb, var(--text-muted) 85%, black);
+  }
+  .btn-secondary:disabled {
+    background-color: var(--bg-surface);
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* -- Text inputs ----------------------------------------------------------- */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--text-muted);
+    color: var(--text-main);
+    border-radius: var(--radius-ui);
+    padding: 0.6rem 0.75rem;
+    font: inherit;
+    transition: var(--transition-standard);
+  }
+  input:hover,
+  textarea:hover,
+  select:hover {
+    background-color: color-mix(in srgb, var(--bg-surface) 92%, white);
+    border-color: color-mix(in srgb, var(--text-muted) 85%, white);
+  }
+  input:active,
+  textarea:active,
+  select:active {
+    border-color: color-mix(in srgb, var(--text-muted) 85%, black);
+  }
+  input:disabled,
+  textarea:disabled,
+  select:disabled {
+    background-color: var(--bg-surface);
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* -- Generic hook: opt any element into the cascade ------------------------ */
+  /* [data-cascade] cascades the element's own foreground (currentColor), so
+     it works on links, icons and text. Pair it with .btn-* (or your own
+     background token) for surface-level cascades. */
+  [data-cascade] {
+    transition: var(--transition-standard);
+  }
+  [data-cascade]:hover {
+    color: color-mix(in srgb, currentColor 85%, white);
+  }
+  [data-cascade]:active {
+    color: color-mix(in srgb, currentColor 85%, black);
+  }
+  [data-cascade]:disabled {
+    background-color: var(--bg-surface);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* -- The focus ring (shared, keyboard only) -------------------------------- */
+  .btn-primary:focus-visible,
+  .btn-secondary:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [data-cascade]:focus-visible {
+    outline: 2px solid var(--color-cake-secondary);
+    outline-offset: 2px;
+  }
+
+  /* -- VULN-1 patch: legacy fallback ---------------------------------------- */
+  /* Without color-mix() support, every :hover/:active declaration above is
+     invalid at parse time and silently dead. This block re-derives the same
+     states with filter: brightness() so the cascade still breathes on old
+     engines. It must stay LAST in this layer: equal specificity, later wins. */
+  @supports not (color: color-mix(in srgb, red, blue)) {
+    .btn-primary:hover { filter: brightness(1.12); }
+    .btn-primary:active { filter: brightness(0.88); }
+    .btn-secondary:hover { filter: brightness(1.12); }
+    .btn-secondary:active { filter: brightness(0.88); }
+    input:hover,
+    textarea:hover,
+    select:hover { filter: brightness(1.12); }
+    [data-cascade]:hover { filter: brightness(1.12); }
+    [data-cascade]:active { filter: brightness(0.88); }
+  }
+}
