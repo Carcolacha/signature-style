@@ -1,10 +1,23 @@
 /* ==========================================================================
-   SIGNATURE STYLE — CORE DESIGN TOKENS · CATPPUCCIN EDITION
+   SIGNATURE STYLE — CORE DESIGN TOKENS · HYBRID EDITION
    ----------------------------------------------------------------------------
-   THEME DOCTRINE
-   The default theme is Catppuccin Mocha (dark): soft dark blues for
-   structure, pastel cake colors for interactions. A light "white version"
-   — Catppuccin Latte — is available by opting in:
+   THE HYBRID DOCTRINE (v0.2.1)
+   Catppuccin structure · custom cake accents — the premium case with
+   custom fans. Backgrounds and text keep their Catppuccin values (Mocha
+   here, Latte in the light block below); EVERY interaction token —
+   buttons, focus rings, hovers — uses the owner's exact custom cake
+   colors:
+
+     --color-cake-primary:   #FFB7B2  Pastel Strawberry
+     --color-cake-secondary: #E2F0CB  Soft Matcha
+
+   "Exact" means exact on both sides of the toggle: the same signature
+   hexes are mandated in BOTH themes. Known tradeoff, documented and
+   owner-mandated: the pale cakes give quiet focus rings on Latte.
+   No Catppuccin accent color is ever used for an interaction token.
+
+   A light "white version" — Catppuccin Latte structure, same cake
+   accents — is available by opting in:
 
      <html data-theme="latte">
 
@@ -22,11 +35,11 @@
 
 @layer tokens {
   :root {
-    /* -- core 6: Catppuccin Mocha ------------------------------------------- */
+    /* -- core 6: hybrid — catppuccin structure + custom cake accents -------- */
     --bg-base: #1E1E2E;
     --bg-surface: #313244;
-    --color-cake-primary: #F5C2E7;
-    --color-cake-secondary: #A6E3A1;
+    --color-cake-primary: #FFB7B2;   /* custom signature — Pastel Strawberry */
+    --color-cake-secondary: #E2F0CB; /* custom signature — Soft Matcha */
     --text-main: #CDD6F4;
     --text-muted: #7F849C;
 
@@ -47,13 +60,13 @@
     --space-section: 1.5rem;
   }
 
-  /* -- the white version: Catppuccin Latte ----------------------------------- */
+  /* -- the white version: latte structure + the same signature accents ------ */
   [data-theme="latte"] {
-    /* -- core 6 -------------------------------------------------------------- */
+    /* -- core 6: same exact cakes — "exact" means exact on both sides -------- */
     --bg-base: #EFF1F5;
     --bg-surface: #CCD0DA;
-    --color-cake-primary: #EA76CB;
-    --color-cake-secondary: #40A02B;
+    --color-cake-primary: #FFB7B2; /* custom signature — pale rings here are a documented, owner-mandated tradeoff */
+    --color-cake-secondary: #E2F0CB;
     --text-main: #4C4F69;
     --text-muted: #6272A4; /* keeper — reads well on light */
 
