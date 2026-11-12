@@ -28,3 +28,9 @@ export {
   type EventTimelineProps,
   type PtpEvent,
 } from "./timeline.js";
+export {
+  EventModal,
+  useModal,
+  type EventModalProps,
+  type UseModalReturn,
+} from "./modal.js";

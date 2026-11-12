@@ -19,9 +19,9 @@ function renderHeader(group, headerRow) {
     const spanEnd = headerRow + group.events.length + 1;
     return (_jsx("h2", { className: "ptp-timeline__header", style: { gridRow: `${headerRow} / ${spanEnd}` }, children: group.displayDate }, `date-${group.key}`));
 }
-function renderNode(event, row, index) {
+function renderNode(event, row, index, onEventSelect) {
     const groupFirst = index === 0 ? " ptp-timeline__node--group-first" : "";
-    return (_jsx("span", { className: `ptp-timeline__node${groupFirst}`, style: { gridRow: row, gridColumn: "var(--tl-node-col)" }, children: _jsx(Icon, { name: event.icon ?? "Circle", "aria-hidden": true }) }, `node-${event.id}`));
+    return (_jsx("button", { type: "button", className: `ptp-timeline__node${groupFirst}`, style: { gridRow: row, gridColumn: "var(--tl-node-col)" }, "aria-label": event.title, onClick: onEventSelect !== undefined ? () => onEventSelect(event) : undefined, children: _jsx(Icon, { name: event.icon ?? "Circle", "aria-hidden": true }) }, `node-${event.id}`));
 }
 function renderItem(event, row, index) {
     const side = index % 2 === 0 ? "left" : "right";
@@ -53,7 +53,7 @@ function renderItem(event, row, index) {
  * />
  * ```
  */
-export function EventTimeline({ events }) {
+export function EventTimeline({ events, onEventSelect }) {
     if (events.length === 0) {
         return (_jsx(EmptyState, { icon: "CalendarX", title: "No events planned yet", message: "Add your first event and the timeline will appear." }));
     }
@@ -63,7 +63,7 @@ export function EventTimeline({ events }) {
         children.push(renderHeader(group, row));
         row += 1;
         for (const [index, event] of group.events.entries()) {
-            children.push(renderNode(event, row, index));
+            children.push(renderNode(event, row, index, onEventSelect));
             children.push(renderItem(event, row, index));
             row += 1;
         }

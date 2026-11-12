@@ -10,6 +10,11 @@
  * categories wear Party Palette tokens via <PartyBadge> (Rule of
  * Engagement).
  *
+ * 0.7.0: nodes are `<button>` elements (interactive — an optional
+ * `onEventSelect` callback fires with the clicked event; pass `modal.open`
+ * from useModal() to wire the <EventModal> composition). Without the prop
+ * the buttons render unchanged and simply do nothing on click.
+ *
  * Layout contract with css/timeline.css: elements are placed with INLINE
  * `gridRow`/`gridColumn` styles against a `1fr auto 1fr` desktop grid
  * (content | node column | content). The CSS remaps the placement columns
@@ -52,6 +57,8 @@ export interface PtpEvent {
     categoryLabel: string;
     /** Node icon; defaults to "Circle". */
     icon?: IconName;
+    /** Optional longer copy shown in the <EventModal> "About" row. */
+    description?: string;
 }
 export interface EventTimelineProps {
     /**
@@ -60,6 +67,13 @@ export interface EventTimelineProps {
      * no timeline chrome at all.
      */
     events: PtpEvent[];
+    /**
+     * Optional selection callback — fired with the clicked event. When
+     * provided, every node becomes an interactive `<button>` (it always is
+     * one, since 0.7.0); without it the buttons simply do nothing. Pass
+     * `modal.open` from `useModal()` to compose <EventModal>.
+     */
+    onEventSelect?: (event: PtpEvent) => void;
 }
 /**
  * `<EventTimeline>` — a chronological, alternating party timeline.
@@ -86,4 +100,4 @@ export interface EventTimelineProps {
  * />
  * ```
  */
-export declare function EventTimeline({ events }: EventTimelineProps): import("react").JSX.Element;
+export declare function EventTimeline({ events, onEventSelect }: EventTimelineProps): import("react").JSX.Element;

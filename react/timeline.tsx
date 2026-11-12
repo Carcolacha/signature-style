@@ -10,6 +10,11 @@
  * categories wear Party Palette tokens via <PartyBadge> (Rule of
  * Engagement).
  *
+ * 0.7.0: nodes are `<button>` elements (interactive — an optional
+ * `onEventSelect` callback fires with the clicked event; pass `modal.open`
+ * from useModal() to wire the <EventModal> composition). Without the prop
+ * the buttons render unchanged and simply do nothing on click.
+ *
  * Layout contract with css/timeline.css: elements are placed with INLINE
  * `gridRow`/`gridColumn` styles against a `1fr auto 1fr` desktop grid
  * (content | node column | content). The CSS remaps the placement columns
@@ -61,6 +66,8 @@ export interface PtpEvent {
   categoryLabel: string;
   /** Node icon; defaults to "Circle". */
   icon?: IconName;
+  /** Optional longer copy shown in the <EventModal> "About" row. */
+  description?: string;
 }
 
 export interface EventTimelineProps {
@@ -70,6 +77,13 @@ export interface EventTimelineProps {
    * no timeline chrome at all.
    */
   events: PtpEvent[];
+  /**
+   * Optional selection callback — fired with the clicked event. When
+   * provided, every node becomes an interactive `<button>` (it always is
+   * one, since 0.7.0); without it the buttons simply do nothing. Pass
+   * `modal.open` from `useModal()` to compose <EventModal>.
+   */
+  onEventSelect?: (event: PtpEvent) => void;
 }
 
 /** A date bucket: the grouping key, its display date, and its events. */
@@ -108,16 +122,24 @@ function renderHeader(group: EventGroup, headerRow: number): ReactNode {
   );
 }
 
-function renderNode(event: PtpEvent, row: number, index: number): ReactNode {
+function renderNode(
+  event: PtpEvent,
+  row: number,
+  index: number,
+  onEventSelect?: (event: PtpEvent) => void,
+): ReactNode {
   const groupFirst = index === 0 ? " ptp-timeline__node--group-first" : "";
   return (
-    <span
+    <button
       key={`node-${event.id}`}
+      type="button"
       className={`ptp-timeline__node${groupFirst}`}
       style={{ gridRow: row, gridColumn: "var(--tl-node-col)" }}
+      aria-label={event.title}
+      onClick={onEventSelect !== undefined ? () => onEventSelect(event) : undefined}
     >
       <Icon name={event.icon ?? "Circle"} aria-hidden />
-    </span>
+    </button>
   );
 }
 
@@ -164,7 +186,7 @@ function renderItem(event: PtpEvent, row: number, index: number): ReactNode {
  * />
  * ```
  */
-export function EventTimeline({ events }: EventTimelineProps) {
+export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
   if (events.length === 0) {
     return (
       <EmptyState
@@ -180,7 +202,7 @@ export function EventTimeline({ events }: EventTimelineProps) {
     children.push(renderHeader(group, row));
     row += 1;
     for (const [index, event] of group.events.entries()) {
-      children.push(renderNode(event, row, index));
+      children.push(renderNode(event, row, index, onEventSelect));
       children.push(renderItem(event, row, index));
       row += 1;
     }

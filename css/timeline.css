@@ -86,7 +86,11 @@
   padding-top: var(--tl-header-clearance);
 }
 
-/* Timeline node — STRUCTURE (Flamingo border), icon inherits currentColor. */
+/* Timeline node — STRUCTURE (Flamingo border), icon inherits currentColor.
+   0.7.0: the node is a <button> (onEventSelect), so it carries the button
+   resets: no native padding, pointer cursor, and the shared focus ring
+   (2px Flamingo, keyboard only) — cascade.css rings target .btn-*/[data-cascade]
+   classes, which the bare node does not wear. */
 .ptp-timeline__node {
   grid-column: var(--tl-node-col);
   align-self: start;
@@ -95,10 +99,17 @@
   width: var(--tl-node-size);
   height: var(--tl-node-size);
   margin-top: var(--space-standard);
+  padding: 0;
   border: 2px solid var(--color-cake-primary);
   border-radius: 50%;
   background: var(--bg-surface);
   color: var(--text-main);
+  cursor: pointer;
+}
+
+.ptp-timeline__node:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
 }
 
 .ptp-timeline__node--group-first {

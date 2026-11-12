@@ -34,7 +34,8 @@
     "!react/index.ts",
     "!react/ThemeProvider.tsx",
     "!react/primitives.tsx",
-    "!react/timeline.tsx"
+    "!react/timeline.tsx",
+    "!react/modal.tsx"
   ],
   "sideEffects": [
     "*.css"
