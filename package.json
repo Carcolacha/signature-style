@@ -34,7 +34,9 @@
     "!react/timeline.tsx",
     "!react/modal.tsx",
     "!react/nav.tsx",
-    "!react/viz.tsx"
+    "!react/viz.tsx",
+    "!react/forms.tsx",
+    "!react/toast.tsx"
   ],
   "sideEffects": [
     "*.css"
