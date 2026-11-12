@@ -23,3 +23,8 @@ export {
   type PartyBadgeProps,
   type PartyTokenName,
 } from "./primitives.js";
+export {
+  EventTimeline,
+  type EventTimelineProps,
+  type PtpEvent,
+} from "./timeline.js";
