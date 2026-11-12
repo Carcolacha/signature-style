@@ -1,0 +1,143 @@
+/* ==========================================================================
+   TIMELINE — <EventTimeline> (0.6.0 "Event Timeline"). Layered into
+   `cascade` by signature-style.css. Zero hex, zero box-shadow, token-driven.
+
+   DOM SHAPE (Pruning Protocol): the component renders ONE grid container
+   whose DIRECT children are date headers (h2), nodes (span) and event
+   content blocks (div) — no row wrappers, no line div. The vertical line
+   is the container's ::before pseudo-element. Placement is explicit:
+
+     desktop (default):   grid-template-columns: 1fr auto 1fr
+                          header spans 1 / -1, nodes in column 2, event
+                          content alternates column 1 / column 3.
+     mobile (<= 768px):   grid-template-columns: auto 1fr
+                          the line moves to the far left; nodes in column 1,
+                          ALL event content in column 2.
+
+   Breakpoint-aware columns are remapped via custom properties so the
+   component's inline `gridColumn` references stay breakpoint-neutral:
+
+     var(--tl-node-col)         the node column
+     var(--tl-content-left-col) left-side content column
+     var(--tl-content-right-col) right-side content column
+   ========================================================================== */
+
+.ptp-timeline {
+  --tl-node-size: 2.75rem;
+  --tl-node-col: 2;
+  --tl-content-left-col: 1;
+  --tl-content-right-col: 3;
+  /* A sticky date header is a spanning grid item, so it does not size its
+     own row: the first event of each group reserves this clearance so the
+     statically-positioned header never covers it. Content scrolls BENEATH
+     the header afterwards — that is the Pillar 3 z-10 contract. */
+  --tl-header-clearance: calc(var(--space-standard) * 2 + 2.25rem);
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+}
+
+/* The vertical line — a pseudo-element, NOT a div (Pruning Protocol). */
+.ptp-timeline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: color-mix(in srgb, var(--text-muted) 40%, transparent);
+}
+
+/* Date header — sticky, opaque, hairline-divided; content scrolls beneath. */
+.ptp-timeline__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky, 10);
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: var(--space-standard) 0;
+  background: var(--bg-base);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Event content block — direct grid child, placed via inline gridColumn. */
+.ptp-timeline__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  padding: var(--space-standard) 0;
+}
+
+.ptp-timeline__item--left {
+  grid-column: var(--tl-content-left-col);
+  align-items: flex-end;
+  text-align: right;
+}
+
+.ptp-timeline__item--right {
+  grid-column: var(--tl-content-right-col);
+}
+
+.ptp-timeline__item--group-first {
+  padding-top: var(--tl-header-clearance);
+}
+
+/* Timeline node — STRUCTURE (Flamingo border), icon inherits currentColor. */
+.ptp-timeline__node {
+  grid-column: var(--tl-node-col);
+  align-self: start;
+  display: grid;
+  place-items: center;
+  width: var(--tl-node-size);
+  height: var(--tl-node-size);
+  margin-top: var(--space-standard);
+  border: 2px solid var(--color-cake-primary);
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--text-main);
+}
+
+.ptp-timeline__node--group-first {
+  margin-top: var(--tl-header-clearance);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ptp-timeline__node {
+    transition: var(--transition-standard);
+  }
+}
+
+.ptp-timeline__title {
+  margin: 0;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.ptp-timeline__time {
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.875rem;
+}
+
+/* Mobile collapse: line to the far left, all events stack on the right. */
+@media (max-width: 768px) {
+  .ptp-timeline {
+    grid-template-columns: auto 1fr;
+    --tl-node-col: 1;
+    --tl-content-left-col: 2;
+    --tl-content-right-col: 2;
+  }
+
+  .ptp-timeline::before {
+    left: calc(var(--tl-node-size) / 2);
+  }
+
+  .ptp-timeline__item {
+    align-items: flex-start;
+    text-align: left;
+  }
+}

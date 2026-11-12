@@ -1,6 +1,7 @@
 @layer tokens, base, cascade, overrides;
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 @import "./tokens.css";
+@import "./timeline.css" layer(cascade);
 @import "./cascade.css";
 @import "./overrides.css";
 
