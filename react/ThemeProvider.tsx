@@ -21,9 +21,11 @@ import {
 
 /**
  * The complete whitelist of injectable tokens (VULN-3) — every custom
- * property in css/tokens.css (0.3.0 harmonized expansion): the core 6, the
- * keeper tokens, the shared theme-independent tokens, and the z-index
- * scale (Pillar 3).
+ * property in css/tokens.css: the core 6, the keeper tokens, the shared
+ * theme-independent tokens, the z-index scale (Pillar 3), and — since 0.4.0
+ * — the ten --party-* content tokens (Rule of Engagement: party tokens are
+ * for CONTENT only — badges, tags, avatars, calendar, data-viz; structural
+ * UI keeps Flamingo/Teal).
  */
 const TOKEN_KEYS = [
   /* core 6 — catppuccin structure + harmonized accents */
@@ -51,6 +53,17 @@ const TOKEN_KEYS = [
   "--z-sticky",
   "--z-overlay",
   "--z-modal",
+  /* party palette — CONTENT-only tokens (0.4.0); never for structural chrome */
+  "--party-pink-bright",
+  "--party-pink-soft",
+  "--party-pink-alt",
+  "--party-mauve-bright",
+  "--party-mauve-soft",
+  "--party-lavender",
+  "--party-sky",
+  "--party-blue",
+  "--party-peach",
+  "--party-green",
 ] as const;
 
 /** A token name known to Signature Style. */
