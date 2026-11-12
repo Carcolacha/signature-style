@@ -1,0 +1,145 @@
+/* ==========================================================================
+   FORMS — input & feedback primitives (1.4.0 "Input & Feedback Layer").
+   Layered into `cascade` by signature-style.css (imported after viz.css).
+
+   THREE PRIMITIVES, THREE CLASSES:
+   - .ptp-input / .ptp-textarea — inset wells: the field interior is
+     --bg-inset (the keeper's semantic job since 0.2.0), separated from
+     the page by the border doctrine hairline, NOT a shadow.
+   - .ptp-switch — THE toggle. Peak pruning: ONE <button role="switch">
+     carries the whole control; the knob is the ::before pseudo-element.
+     No wrapper div, no inner span, no input/label pair — the state is
+     the attribute ([aria-checked]), exactly like the nav's
+     [aria-current="page"]: the attribute IS the state machine.
+
+   ERROR DOCTRINE: invalid fields wear [aria-invalid="true"] — attribute-
+   driven, so the state survives any DOM shape. The error border is
+   --party-peach, the ONE sanctioned use of a party token on structural
+   chrome (owner spec: error border = --party-peach; errors are attention,
+   which is party territory, not Flamingo/Teal action territory).
+
+   KNOB-COLOR DECISION (documented per release notes): the knob rests as
+   --text-muted on --bg-surface (off) and flips to --bg-base when the
+   switch is on (dark knob on the Teal track). That dark-on-accent pairing
+   echoes the --color-on-cake doctrine — dark ink sits on bright cake
+   surfaces. --text-bright was rejected: near-white on the Teal track is
+   low contrast; --bg-base on Teal is legible on both themes.
+
+   SWITCH GEOMETRY — the arithmetic, verified:
+     track  2.75rem × 1.5rem  (44px × 24px — a touch target)
+     knob   1rem × 1rem       (16px), border-radius 50%
+     inset  0.25rem (4px) per side; top = (24 − 16) / 2 = 4px (centered)
+     travel = track − knob − 2 × inset = 44 − 16 − 8 = 20px = 1.25rem
+     knob rest  left = 4px; checked left = 44 − 16 − 4 = 24px → 24 − 4 = 20px
+     → [aria-checked="true"]::before { transform: translateX(1.25rem) }
+
+   BORDER-RADIUS NOTE: the switch uses 999px (pill), deliberately NOT
+   --radius-ui. The pill is the shape of the control — a binary
+   on/off metaphor — the way a radio button is round. Rounding the two
+   ends with the pill geometry is not "a radius token bypass"; it is the
+   widget's anatomy. Everything else in this file stays on --radius-ui.
+
+   COLOR DOCTRINE: zero hex, zero box-shadow. Focus rings are the
+   doctrine ring (2px solid --color-cake-primary, offset 2px).
+   ========================================================================== */
+
+@layer cascade {
+
+  /* -- text input: an inset well --------------------------------------------- */
+  .ptp-input {
+    background: var(--bg-inset);
+    color: var(--text-main);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-tight) var(--space-standard);
+    font-family: inherit;
+    font-size: 0.875rem; /* 14px — an 8px-grid half-step */
+    font-weight: 400;
+    width: 100%;
+    transition: var(--transition-standard);
+  }
+  .ptp-input:focus {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+  .ptp-input::placeholder {
+    color: var(--text-muted);
+  }
+  .ptp-input[aria-invalid="true"] {
+    border-color: var(--party-peach);
+  }
+
+  /* -- textarea: the same well, multi-line ------------------------------------ */
+  .ptp-textarea {
+    background: var(--bg-inset);
+    color: var(--text-main);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-tight) var(--space-standard);
+    font-family: inherit;
+    font-size: 0.875rem; /* 14px — an 8px-grid half-step */
+    font-weight: 400;
+    width: 100%;
+    transition: var(--transition-standard);
+  }
+  .ptp-textarea:focus {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+  .ptp-textarea::placeholder {
+    color: var(--text-muted);
+  }
+  .ptp-textarea[aria-invalid="true"] {
+    border-color: var(--party-peach);
+  }
+
+  /* -- the switch: ONE button, the knob is ::before ----------------------------
+     999px = the pill SHAPE of the widget (see header note), not a
+     radius-token bypass. Travel math: 44 − 16 − 8 = 20px = 1.25rem. */
+  .ptp-switch {
+    width: 2.75rem;  /* 44px */
+    height: 1.5rem;  /* 24px */
+    border-radius: 999px;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    position: relative;
+    transition: var(--transition-standard);
+    cursor: pointer;
+    padding: 0;
+  }
+  .ptp-switch::before {
+    content: "";
+    position: absolute;
+    width: 1rem;     /* 16px knob */
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--text-muted);
+    top: 0.25rem;    /* (24 − 16) / 2 = 4px — vertically centered */
+    left: 0.25rem;   /* 4px rest inset */
+    transition: transform var(--transition-standard),
+      background var(--transition-standard);
+  }
+  .ptp-switch[aria-checked="true"] {
+    background: var(--color-cake-secondary); /* Teal — the owner-spec'd on state */
+  }
+  .ptp-switch[aria-checked="true"]::before {
+    transform: translateX(1.25rem); /* 20px travel: lands 4px from the right */
+    background: var(--bg-base);     /* dark knob on Teal — on-cake echo (see header) */
+  }
+
+  /* -- the doctrine ring, keyboard only ---------------------------------------- */
+  .ptp-switch:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+
+  /* Motion is a gift, not a requirement. */
+  @media (prefers-reduced-motion: reduce) {
+    .ptp-input,
+    .ptp-textarea,
+    .ptp-switch,
+    .ptp-switch::before {
+      transition: none;
+    }
+  }
+}
