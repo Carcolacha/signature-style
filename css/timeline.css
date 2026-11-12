@@ -1,6 +1,6 @@
 /* ==========================================================================
    TIMELINE — <EventTimeline> (0.6.0 "Event Timeline"). Layered into
-   `cascade` by signature-style.css. Zero hex, zero box-shadow, token-driven.
+   `cascade` by signature-style.css. Zero hex, no shadows, token-driven.
 
    DOM SHAPE (Pruning Protocol): the component renders ONE grid container
    whose DIRECT children are date headers (h2), nodes (span) and event
