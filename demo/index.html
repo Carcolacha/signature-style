@@ -149,6 +149,72 @@
     .note strong {
       color: var(--text-main);
     }
+    /* -- Party Palette (0.4.0) demo — CONTENT examples. Colors arrive via
+       inline var(--party-*) references only; this block never hardcodes a
+       party hex. Layout only. */
+    .party-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-tight);
+    }
+    .party-swatch {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--space-tight) / 2);
+    }
+    .party-color {
+      display: block;
+      width: 3.5rem;
+      height: 2rem;
+      border-radius: calc(var(--radius-ui) / 2);
+      border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    }
+    .party-swatch code,
+    .party-example code {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+    }
+    .party-examples {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: var(--space-standard);
+      margin-top: var(--space-standard);
+    }
+    .party-example {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--space-tight) / 2);
+    }
+    .party-badge {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: calc(var(--space-tight) / 2) var(--space-tight);
+      border-radius: calc(var(--radius-ui) / 2);
+    }
+    .party-avatar {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .party-event {
+      background-color: var(--bg-surface);
+      border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+      border-left: 3px solid var(--text-muted); /* inline style overrides with --party-peach */
+      border-radius: var(--radius-ui);
+      padding: calc(var(--space-tight) / 2) var(--space-tight);
+      font-size: 0.8rem;
+      color: var(--text-main);
+      min-width: 12rem;
+    }
     /* -- Edge States (Pillar 4) demo scaffolding — layout only, all colors
        and spacing come from the cascade's .skeleton / .empty-state classes */
     .edge-grid {
@@ -221,6 +287,67 @@
       <p class="keeper-caption">🎂 signature — official Catppuccin Flamingo/Teal, per-theme harmony:
         Mocha #F2CDCD / #94E2D5 · Latte #DD7878 / #179299 — each theme wears its own palette's pairing.
         <br />★ keeper — beloved legacy palette colors, given semantic jobs and carried across editions.</p>
+    </section>
+
+    <section>
+      <h2>Party Palette · content only</h2>
+      <div class="party-strip">
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-pink-bright)"></span>
+          <code>--party-pink-bright</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-pink-soft)"></span>
+          <code>--party-pink-soft</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-pink-alt)"></span>
+          <code>--party-pink-alt</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-mauve-bright)"></span>
+          <code>--party-mauve-bright</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-mauve-soft)"></span>
+          <code>--party-mauve-soft</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-lavender)"></span>
+          <code>--party-lavender</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-sky)"></span>
+          <code>--party-sky</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-blue)"></span>
+          <code>--party-blue</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-peach)"></span>
+          <code>--party-peach</code>
+        </div>
+        <div class="party-swatch">
+          <span class="party-color" style="background-color: var(--party-green)"></span>
+          <code>--party-green</code>
+        </div>
+      </div>
+      <div class="party-examples">
+        <div class="party-example">
+          <span class="party-badge" style="background-color: var(--party-pink-bright); color: var(--color-on-cake);">birthday</span>
+          <code>--party-pink-bright</code>
+        </div>
+        <div class="party-example">
+          <span class="party-avatar" style="background-color: var(--party-mauve-soft); color: var(--color-on-cake);">e</span>
+          <code>--party-mauve-soft</code>
+        </div>
+        <div class="party-example">
+          <div class="party-event" style="border-left-color: var(--party-peach);">Design review · 14:00–15:00</div>
+          <code>--party-peach</code>
+        </div>
+      </div>
+      <p class="keeper-caption">reserved for content — badges, tags, avatars, calendar. Structure stays Flamingo/Teal.</p>
     </section>
 
     <section>
