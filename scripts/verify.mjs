@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (v0.3.0 "Harmonized Catppuccin").
+ * verify.mjs — release gate for @edwyn/signature-style (v0.4.0 "Party Palette").
  *
  * Asserts:
  *   (a) every token in tokens.json themes.mocha exists in the tokens.css
@@ -20,6 +20,18 @@
  *       --z-modal;
  *   (d2) Z-SCALE VALUES: --z-sticky / --z-overlay / --z-modal are declared
  *       in the tokens.css `:root` block with the exact values 10 / 40 / 50;
+ *   (p) PARTY PALETTE (0.4.0): all ten --party-* content tokens exist in
+ *       the tokens.css `:root` block with their exact reserved hexes, and
+ *       tokens.json's partyPalette section lists all ten with matching
+ *       values, the content-only role and "reserved": true;
+ *   (p2) PARTY WHITELIST PARITY: all ten --party-* names are present in
+ *       the ThemeProvider TOKEN_KEYS whitelist;
+ *   (s) STRUCTURAL FREEZE: `git diff v0.3.0 -- css/cascade.css
+ *       css/overrides.css` is EMPTY, and tokens.css still declares the
+ *       exact v0.3.0 structural values — the 4 structural hexes (bg-base,
+ *       bg-surface, text-main, text-muted) and the Flamingo/Teal signature
+ *       pairs in both the Mocha `:root` and Latte blocks. The v0.3.0
+ *       structural UI is LOCKED; 0.4.0 may only ADD content tokens.
  *   (e) all four keeper hexes (#282A36 #6272A4 #F8F8F2 #A8E6CF) appear in
  *       css/tokens.css; the first line of signature-style.css is the
  *       @layer statement with the Inter font @import as the first @import
@@ -38,6 +50,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -150,11 +163,13 @@ for (const rel of scannedPaths) {
 // ---- (d) whitelist parity: tokens.css <-> ThemeProvider TOKEN_KEYS -----------
 const Z_TOKENS = ["--z-sticky", "--z-overlay", "--z-modal"];
 const tsx = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
+/** @type {string[] | null} */
+let whitelist = null;
 const whitelistMatch = tsx.match(/const\s+TOKEN_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const;/);
 if (whitelistMatch === null) {
   failures.push("react/ThemeProvider.tsx has no parseable TOKEN_KEYS whitelist");
 } else {
-  const whitelist = [...whitelistMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  whitelist = [...whitelistMatch[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const cssVarNames = declaredVars(css);
   const missingFromWhitelist = cssVarNames.filter((name) => !whitelist.includes(name));
   if (missingFromWhitelist.length > 0) {
@@ -182,6 +197,126 @@ if (rootDeclarations === null) {
     if (!pattern.test(rootDeclarations)) {
       failures.push(
         `${name} must be declared as ${value} in the css/tokens.css :root block (Pillar 3 z-index scale)`,
+      );
+    }
+  }
+}
+
+// ---- (p) party palette: exact tokens.css hexes + tokens.json reserved entries
+// RULE OF ENGAGEMENT: --party-* tokens are reserved EXCLUSIVELY for content
+// (badges, tags, avatars, event theme overrides, calendar blocks, data-viz).
+// The Engine keeps Flamingo/Teal for ALL structural UI. Never crossed.
+const PARTY_TOKENS = [
+  ["--party-pink-bright", "#ea76cb"],
+  ["--party-pink-soft", "#f5bde6"],
+  ["--party-pink-alt", "#f4b8e4"],
+  ["--party-mauve-bright", "#8839ef"],
+  ["--party-mauve-soft", "#cba6f7"],
+  ["--party-lavender", "#7287fd"],
+  ["--party-sky", "#04a5e5"],
+  ["--party-blue", "#1e66f5"],
+  ["--party-peach", "#fe640b"],
+  ["--party-green", "#a6d189"],
+];
+if (rootDeclarations === null) {
+  failures.push("cannot check party palette — no :root block found");
+} else {
+  for (const [name, hex] of PARTY_TOKENS) {
+    const pattern = new RegExp(`${name}\\s*:\\s*${hex}`, "i");
+    if (!pattern.test(rootDeclarations)) {
+      failures.push(
+        `party token ${name} must be ${hex} in the css/tokens.css :root block — the Party Palette is exact and content-reserved (0.4.0)`,
+      );
+    }
+  }
+}
+
+const partyManifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+const partyJson = partyManifest.partyPalette?.tokens ?? {};
+for (const [name, hex] of PARTY_TOKENS) {
+  const entry = partyJson[name];
+  if (entry === undefined) {
+    failures.push(`tokens.json partyPalette is missing ${name}`);
+    continue;
+  }
+  const value = String(entry.value ?? "").toLowerCase();
+  if (value !== hex.toLowerCase()) {
+    failures.push(
+      `tokens.json partyPalette.${name} must be ${hex}, found ${entry.value}`,
+    );
+  }
+  if (entry.role !== "content only: tags/avatars/calendar/data-viz") {
+    failures.push(
+      `tokens.json partyPalette.${name} role must be the content-only role, found ${JSON.stringify(entry.role)}`,
+    );
+  }
+  if (entry.reserved !== true) {
+    failures.push(`tokens.json partyPalette.${name} must carry "reserved": true`);
+  }
+}
+
+// ---- (p2) party whitelist parity: all 10 party names in TOKEN_KEYS -----------
+if (whitelist !== null) {
+  const missingParty = PARTY_TOKENS.map(([name]) => name).filter(
+    (name) => !whitelist.includes(name),
+  );
+  if (missingParty.length > 0) {
+    failures.push(
+      `party palette tokens missing from the ThemeProvider TOKEN_KEYS whitelist: ${missingParty.join(", ")}`,
+    );
+  }
+}
+
+// ---- (s) structural freeze: v0.3.0 structural UI is LOCKED -------------------
+// (s1) cascade.css and overrides.css are byte-identical to v0.3.0.
+let freezeDiff = "";
+try {
+  freezeDiff = execFileSync(
+    "git",
+    ["diff", "v0.3.0", "--", "css/cascade.css", "css/overrides.css"],
+    { cwd: root, encoding: "utf8" },
+  );
+} catch (error) {
+  failures.push(
+    `structural freeze: could not diff against v0.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`,
+  );
+}
+if (freezeDiff.trim() !== "") {
+  failures.push(
+    "structural freeze: css/cascade.css or css/overrides.css changed since v0.3.0 — the structural UI is LOCKED",
+  );
+}
+
+// (s2) tokens.css still declares the exact v0.3.0 structural values:
+// the 4 structural hexes per theme plus the Flamingo/Teal signature pairs.
+const STRUCTURAL_FREEZE = {
+  ":root (mocha)": [
+    ["--bg-base", "#1E1E2E"],
+    ["--bg-surface", "#313244"],
+    ["--text-main", "#CDD6F4"],
+    ["--text-muted", "#7F849C"],
+    ["--color-cake-primary", "#F2CDCD"],
+    ["--color-cake-secondary", "#94E2D5"],
+  ],
+  '[data-theme="latte"]': [
+    ["--bg-base", "#EFF1F5"],
+    ["--bg-surface", "#CCD0DA"],
+    ["--text-main", "#4C4F69"],
+    ["--text-muted", "#6272A4"],
+    ["--color-cake-primary", "#DD7878"],
+    ["--color-cake-secondary", "#179299"],
+  ],
+};
+for (const [blockName, declarations] of [
+  [":root (mocha)", rootDeclarations],
+  ['[data-theme="latte"]', latteDeclarations],
+]) {
+  if (declarations === null) continue; // already reported missing in (a)
+  for (const [name, hex] of STRUCTURAL_FREEZE[blockName]) {
+    const pattern = new RegExp(`${name}\\s*:\\s*${hex}`, "i");
+    if (!pattern.test(declarations)) {
+      failures.push(
+        `structural freeze: ${name} must remain ${hex} in the ${blockName} block of css/tokens.css — v0.3.0 structural values are LOCKED`,
       );
     }
   }
