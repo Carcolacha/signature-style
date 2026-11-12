@@ -1,0 +1,54 @@
+/* ==========================================================================
+   SIGNATURE STYLE — the whole theme in one import.
+
+   @import url:
+     <link rel="stylesheet" href=".../css/signature-style.css" />
+   or, with a bundler that understands CSS:
+     import "@edwyn/signature-style";
+
+   The FIRST rule is the layer order declaration (the static half of the
+   VULN-2 patch — ThemeProvider re-injects it at runtime as the first head
+   style tag). It must stay first: layer order is claimed by whichever
+   declaration runs first, and unlayered host CSS can only outrank layers,
+   never reorder them. This line fixes the ranking for the whole document.
+   ========================================================================== */
+
+@layer tokens, base, cascade, overrides;
+
+@import "./tokens.css";
+@import "./cascade.css";
+@import "./overrides.css";
+
+/* -- base: a minimal, opinionated floor ------------------------------------ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg-base);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Progressive Enhancement doctrine: motion is a gift, not a requirement. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+}
