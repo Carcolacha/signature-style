@@ -1,0 +1,8 @@
+# Issue template configuration.
+#
+# NOTE: this repository is intended to be flagged as a GitHub Template
+# repository (repo Settings -> check "Template repository"). That is a
+# GitHub setting, not a file — after "Use this template", new repos start
+# with the Signature Style package, gates and publish workflow already in
+# place. See docs/PUBLISHING.md.
+blank_issues_enabled: true
