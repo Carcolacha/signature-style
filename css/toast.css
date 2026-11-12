@@ -1,0 +1,98 @@
+/* ==========================================================================
+   TOASTS — the feedback layer (1.4.0 "Input & Feedback Layer"). Layered
+   into `cascade` by signature-style.css (imported after forms.css).
+
+   THE ZENITH RUNG: the region wears var(--z-toast, 60) — one rung above
+   --z-modal (50). Toasts are transient global feedback; they must float
+   over modals, not under them. The , 60 fallback keeps the region stacked
+   correctly even for consumers who load toast.css without tokens.css.
+
+   STATUS STRIPS: the left border is 4px solid var(--status) — a custom
+   property the component sets INLINE per toast (react/toast.tsx):
+   success → var(--party-green), error → var(--party-peach). Status is
+   feedback about CONTENT outcomes, so party tokens are the correct
+   palette here (Rule of Engagement: status = content signal, not
+   structural chrome). The CSS never hardcodes which; it reads --status.
+
+   ELEVATION WITHOUT SHADOW: the border doctrine bans drop shadows — the
+   toast separates from the page with the hairline... actually, with its
+   4px status strip and its surface background it separates by CONTRAST,
+   no hairline, no shadow. Zero box-shadow, zero hex.
+
+   ANIMATION PHYSICS — slide in, hold, slide out, in ONE declaration:
+     animation: toast-life 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards
+   The owner's mechanical cubic-bezier cannot be applied per keyframe
+   SEGMENT, so the single curve rides the whole 3s: it fast-starts the
+   entry (the fast-in feel), spends the plateau of the curve on the hold,
+   and fast-finishes the exit. An approximation of fast-entry / long-hold
+   / fast-exit in one animation — documented, deliberate. The toast
+   removes ITSELF on animationend (the component listens), so the
+   lifecycle is pure CSS timing — no timers in the hot path.
+
+   Keyframe shape: 0% off-canvas right (translateX(100%), transparent)
+   → 10% docked (translateX(0), opaque) → 85% held → 100% back off-canvas
+   right, fading out.
+
+   Motion is a gift: prefers-reduced-motion kills the animation entirely
+   (opacity stays 1 so toasts remain readable). Trade-off, documented in
+   react/toast.tsx: with the animation gone, no animationend fires — the
+   component carries a 3s timeout fallback so reduced-motion visitors
+   still get their toasts dismissed.
+   ========================================================================== */
+
+@layer cascade {
+
+  /* -- the region: fixed bottom-right, above modals --------------------------- */
+  .ptp-toast-region {
+    position: fixed;
+    right: var(--space-standard);
+    bottom: var(--space-standard);
+    z-index: var(--z-toast, 60);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tight);
+    max-width: 20rem;
+  }
+
+  /* -- a toast: surface card with a status strip ------------------------------- */
+  .ptp-toast {
+    background: var(--bg-surface);
+    border-left: 4px solid var(--status);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+    color: var(--text-main);
+    font-size: 0.875rem; /* 14px — an 8px-grid half-step */
+    animation: toast-life 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  /* -- slide in from the right, hold, slide back out ---------------------------
+     10% of 3s = 0.3s entry; 85% of 3s = 2.55s hold ends; the exit gets
+     the final 0.45s. The single mechanical curve shapes all three. */
+  @keyframes toast-life {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    10% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    85% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  /* Motion is a gift, not a requirement: no slide, no auto-fade — the
+     toast simply sits until the component's timeout removes it. */
+  @media (prefers-reduced-motion: reduce) {
+    .ptp-toast {
+      animation: none;
+      opacity: 1;
+    }
+  }
+}
