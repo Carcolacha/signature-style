@@ -149,6 +149,42 @@
     .note strong {
       color: var(--text-main);
     }
+    /* -- Edge States (Pillar 4) demo scaffolding — layout only, all colors
+       and spacing come from the cascade's .skeleton / .empty-state classes */
+    .edge-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-standard);
+    }
+    .edge-card {
+      border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+      border-radius: var(--radius-ui);
+      padding: var(--space-standard);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-tight);
+    }
+    .skeleton-bar {
+      height: 0.75rem;
+    }
+    .skeleton-bar:last-child {
+      width: 60%;
+    }
+    .empty-state svg {
+      width: 2rem;
+      height: 2rem;
+    }
+    .empty-state p {
+      margin: 0;
+    }
+    /* Pillar 2 — strict mobile shift: every multi-column grid collapses to
+       one column at max-width: 768px. */
+    @media (max-width: 768px) {
+      .swatches,
+      .edge-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -182,7 +218,8 @@
     <section>
       <h2>Palette — both themes</h2>
       <div id="palette"></div>
-      <p class="keeper-caption">🎂 signature — the owner's custom cake accent pair (#FFB7B2 / #E2F0CB), the exact same hexes in both themes.
+      <p class="keeper-caption">🎂 signature — official Catppuccin Flamingo/Teal, per-theme harmony:
+        Mocha #F2CDCD / #94E2D5 · Latte #DD7878 / #179299 — each theme wears its own palette's pairing.
         <br />★ keeper — beloved legacy palette colors, given semantic jobs and carried across editions.</p>
     </section>
 
@@ -209,6 +246,36 @@
         the demo still works from <code>file://</code>.
       </p>
     </section>
+
+    <section>
+      <h2>Edge States</h2>
+      <div class="edge-grid">
+        <div class="edge-card" aria-hidden="true">
+          <div class="skeleton skeleton-bar"></div>
+          <div class="skeleton skeleton-bar"></div>
+          <div class="skeleton skeleton-bar"></div>
+        </div>
+        <div class="empty-state">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="package-open">
+            <path d="M12 22v-9" />
+            <path d="M15.17 2.21a1.67 1.67 0 0 1 1.63 0L21 4.57a1.93 1.93 0 0 1 0 3.36L8.82 14.79a1.655 1.655 0 0 1-1.64 0L3 12.43a1.93 1.93 0 0 1 0-3.36z" />
+            <path d="M20 13v3.87a2.06 2.06 0 0 1-1.11 1.83l-6 3.08a1.93 1.93 0 0 1-1.78 0l-6-3.08A2.06 2.06 0 0 1 4 16.87V13" />
+            <path d="M21 12.43a1.93 1.93 0 0 0 0-3.36L8.83 2.2a1.64 1.64 0 0 0-1.63 0L3 4.57a1.93 1.93 0 0 0 0 3.36l12.18 6.86a1.636 1.636 0 0 0 1.63 0z" />
+          </svg>
+          <p>Nothing scheduled yet</p>
+        </div>
+      </div>
+      <p class="note">
+        <strong>Loading</strong> is a pulsing-opacity skeleton on
+        <code>--bg-surface</code> (1.5s ease-in-out, and <code>none</code>
+        under <code>prefers-reduced-motion</code>). <strong>Empty</strong> is
+        a surface card with a Lucide icon (inline SVG, 2px stroke — Pillar 1)
+        and <code>--text-muted</code> text, centered. Zero new colors — both
+        states are token-driven (Pillar 4).
+      </p>
+    </section>
+
+    <p class="keeper-caption">z-scale: sticky 10 · overlay 40 · modal 50</p>
   </div>
 
   <script>
@@ -247,8 +314,8 @@
           tokens: [
             ["bg-base", "#1E1E2E", ""],
             ["bg-surface", "#313244", ""],
-            ["cake-primary", "#FFB7B2", "🎂"],
-            ["cake-secondary", "#E2F0CB", "🎂"],
+            ["cake-primary", "#F2CDCD", "🎂"],
+            ["cake-secondary", "#94E2D5", "🎂"],
             ["text-main", "#CDD6F4", ""],
             ["text-muted", "#7F849C", ""],
             ["bg-inset", "#282A36", "★"],
@@ -262,8 +329,8 @@
           tokens: [
             ["bg-base", "#EFF1F5", ""],
             ["bg-surface", "#CCD0DA", ""],
-            ["cake-primary", "#FFB7B2", "🎂"],
-            ["cake-secondary", "#E2F0CB", "🎂"],
+            ["cake-primary", "#DD7878", "🎂"],
+            ["cake-secondary", "#179299", "🎂"],
             ["text-main", "#4C4F69", ""],
             ["text-muted", "#6272A4", "★"],
             ["bg-inset", "#E6E9EF", "★"],
