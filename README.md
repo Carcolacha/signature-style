@@ -16,6 +16,14 @@ style faithfully.
 npm i @edwyn/signature-style
 ```
 
+## Import paths (v1.0.0)
+
+| Import | Resolves to | Peers needed |
+|---|---|---|
+| `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest (AI tooling core) | never |
+| `@edwyn/signature-style/css` | `css/signature-style.css` — the compiled bundle: tokens, base, cascade (timeline + modal included), overrides | never |
+| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal` | `react` + `react-dom`; `lucide-react` optional |
+
 ## CSS usage — one import
 
 ```html
@@ -25,12 +33,14 @@ npm i @edwyn/signature-style
 or with a bundler:
 
 ```js
-import "@edwyn/signature-style"; // → css/signature-style.css
+import "@edwyn/signature-style/css"; // → css/signature-style.css
 ```
 
-Individual layers are also exported: `@edwyn/signature-style/tokens.css`,
-`/cascade.css`, `/overrides.css`, plus the token manifest `/tokens.json` and
-the AI prompt `/system-prompt.md`.
+The bundle covers everything — `tokens.css`, `cascade.css` (with the
+timeline and modal layers), and `overrides.css` are already layered into
+it. The granular stylesheets and `SYSTEM_PROMPT.md` still ship in the
+tarball, but there are no export-map entries for them anymore: import
+them via the node_modules path (or a deep import) at your own risk.
 
 ### Light theme — one attribute
 
@@ -115,6 +125,43 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 31 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 1.0.0 — Publish Flow & Distribution
+
+Distribution release: no CSS, React or demo changes (the frontend is
+locked; `css/`, `react/` and `demo/` are byte-identical to 0.7.0).
+Packaging, CI and docs only.
+
+- **3-path exports map** — the public surface is now exactly:
+
+  | Path | Target |
+  |---|---|
+  | `@edwyn/signature-style` | `./tokens.json` (AI tooling core is the package root) |
+  | `@edwyn/signature-style/css` | `./css/signature-style.css` (the compiled bundle — includes the timeline + modal layers) |
+  | `@edwyn/signature-style/react` | umbrella `react/index.js` + `react/index.d.ts` |
+
+  The older granular export entries (`./tokens.css`, `./cascade.css`,
+  `./overrides.css`, `./tokens.json`, `./system-prompt.md`) are removed —
+  **the bundle covers everything**. Consumers who need a granular file can
+  still reach it inside the installed package via node_modules paths or
+  deep imports, at their own risk. `main` is `./tokens.json`.
+- **Strict peers, never bundled** — `react >=18` and `react-dom >=18` are
+  required peer dependencies; `lucide-react >=0.400.0` stays a peer with
+  `peerDependenciesMeta.optional: true` — **strictly peers, never bundled**;
+  lucide is optional because only `./react` importers need it (CSS-only
+  consumers never install icons). Nothing is added to `dependencies`.
+- **Tag-driven npm publish (CI)** — `.github/workflows/publish.yml`:
+  pushing a `v*` tag runs a `typecheck` job (`npm ci` →
+  `npx tsc --noEmit`) and then the `publish` job (`npm ci` →
+  `node scripts/verify.mjs` — the parity gates are a **release blocker**
+  → `npm publish --access public` with the `NPM_TOKEN` repo secret).
+  Full runbook: [`docs/PUBLISHING.md`](./docs/PUBLISHING.md).
+- **Distribution-contract gate** — verify's export gate now pins the exact
+  3-path map: every target must exist on disk, `main` must be
+  `./tokens.json`, and the removed granular entries must not return.
+- **`package.json` `files` unchanged** — the tarball still ships exactly
+  21 files (6 stylesheets, 10 compiled React files, `tokens.json`,
+  `SYSTEM_PROMPT.md`, plus `package.json`/`README`/`LICENSE`).
 
 ### 0.7.0 — Event Modal
 
@@ -438,9 +485,13 @@ and dropped; unknown keys are warned and dropped.
 
 ## Use this template
 
-This repo doubles as a GitHub template: click **Use this template** to start
-a new project that already speaks Signature Style — or install the package
-into an existing one and keep the repo as the style's source of truth.
+This repo is intended to be flagged as a **GitHub Template repository** —
+enable it via **Settings → check "Template repository"** (a GitHub
+setting, not a file). Click **Use this template** to start a new project
+that already speaks Signature Style — package, gates, demo and the
+tag-driven publish workflow included — or install the package into an
+existing one and keep the repo as the style's source of truth. The full
+release runbook lives in [`docs/PUBLISHING.md`](./docs/PUBLISHING.md).
 
 ## Development
 
@@ -448,8 +499,8 @@ into an existing one and keep the repo as the style's source of truth.
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, exports, provider hardening, timeline gates, modal gates
-npm pack --dry-run # inspect the publishable tarball
+npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, 3-path exports contract, provider hardening, timeline gates, modal gates
+npm pack --dry-run # inspect the publishable tarball (expect 21 files)
 ```
 
 ## License
