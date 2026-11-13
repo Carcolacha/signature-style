@@ -129,6 +129,42 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 1.5.0 — Bento Box Showcase
+
+- **The playground** — a real consumer app (`npm run playground` →
+  http://localhost:5173) that imports the package through the PUBLISHED
+  exports map (`@edwyn/signature-style/css` + `@edwyn/signature-style/react`
+  via the `"@edwyn/signature-style": "file:."` self-link in
+  devDependencies). Every module the library ships, on ONE asymmetric
+  grid — `playground/` is excluded from `npm pack` by the files array,
+  so the tarball stays exactly 34 files.
+- **What each bento card proves**:
+  - **Form Controls** — `<Input>`, `<TextArea>`, `<ToggleSwitch>` and a
+    doctrine button firing `toast("success", …)` — the 1.4.0 feedback
+    layer works end-to-end through a consumer's bundle.
+  - **Timeline** — `<EventTimeline>` with six events across two date
+    buckets; clicking a node opens `<EventModal>` via `useModal` — the
+    0.6.0 + 0.7.0 composition, portaled overlay and all.
+  - **Telemetry** — `<ProgressBar>` (party-green / party-peach) and
+    `<StatRing>` (party-sky) with consumer-rendered label rows — the
+    Rule of Engagement (party tokens = content only) in practice.
+  - **Party Palette** — all ten `--party-*` tokens as `<PartyBadge>`s
+    ("Pink" through "Green"), wrapped at `var(--space-tight)`.
+- **The grid itself** — `.bento` (3 columns, `var(--space-section)`
+  gaps, 75rem max) with placements for the tall timeline card; collapses
+  to a single column at 768px. Zero hex literals — 100%
+  `var()`/`color-mix()`, including the card hairline:
+  `color-mix(in srgb, var(--text-muted) 20%, transparent)`.
+- **Release gates** — `npm run verify:playground` (b1–b7): scaffold
+  present, consumer wiring + exports/files/main deep-equal to 1.4.0,
+  `npm pack` = 34 files, zero hex, 4-card DOM shape, lucide icon names
+  verified against the installed icons map, and the core-file safety
+  diff (`git diff v1.4.0 -- css/ react/ tokens.json SYSTEM_PROMPT.md
+  demo/ scripts/`) empty.
+- **Note** — `scripts/verify.mjs` is byte-frozen; the 1.5.0 gates live
+  in `playground/verify-playground.mjs`. The playground is
+  vite-checked (`npx vite build`), not root-tsc-checked.
+
 ### 1.4.0 — Input & Feedback Layer
 
 - **The Input & Feedback primitives** — three flat form controls plus
