@@ -1,27 +1,40 @@
 /**
- * App — the Bento Box Showcase dashboard (1.5.1).
+ * App — THE ENGINE, the Hub dashboard (2.0.0 "The Hub Migration —
+ * Shed Aesthetic").
  *
- * Every shipped module on ONE asymmetric grid: form controls, the event
- * timeline + modal composition, telemetry viz, and the full Party
- * Palette. DOM flatness: <main className="bento"> → 4 <section> cards;
- * each card is header (h2) + module elements. All imports come from
- * "@edwyn/signature-style/react" — the playground is a consumer, not a
- * contributor.
+ * 2.0.0 DIAGNOSIS → STRATEGY. The 1.5.1–1.8.0 bento grid read as
+ * scattered boxes: it had cards but no discipline. The Shed's language
+ * — one constrained centered column, an ANNOUNCED header, strict card
+ * anatomy (teal all-caps label / muted mono path / elegant serif title
+ * / content), tactile hover — is now the dashboard's law. The bento
+ * classes migrate 1:1 to hub classes (`bento* → hub*`); the asymmetric
+ * 3-column stage yields to an auto-fit minmax(400px, 1fr) column grid
+ * under a hero that announces what the page is. Anatomy per card:
  *
- * 1.5.1 — timeline hydration fix. The dashboard now mirrors the owner's
- * real integration: source data lives in HIS shape (`mockEvents`: id,
- * month, title, time, colorToken, iconName) and is mapped to the package
- * contract (`PtpEvent`: date, category, icon) in ONE explicit layer at
- * the render boundary. ROOT CAUSE (SSR-probe verified against the
- * package): the 1.5.0-era integration passed owner-shaped records
- * (`month`/`colorToken`/`iconName`) straight as PtpEvent[] — with
- * `date` undefined, `groupEvents` buckets everything under the single
- * key `undefined` (react/timeline.js: `const key = event.dateKey ??
- * event.date`) and the sticky header prints NO text — the "empty
- * header"; with `category` undefined, PartyBadge's `!colorToken
- * .startsWith("--party-")` guard (react/primitives.js:25) throws on the
- * undefined dereference and React unmounts the timeline — "without
- * events".
+ *   .hub__meta   → header row: .hub__label (teal, all-caps via CSS
+ *                  text-transform — content stays capitalized words)
+ *                  + .hub__path (muted mono, the module's source path)
+ *   h2           → the elegant title (serif-adjacent weight rules in
+ *                  styles.css; child combinator keeps the timeline's
+ *                  package-rendered h2s untouched)
+ *   content      → the module itself
+ *
+ * DOM flatness kept: <header> + <main className="hub"> siblings under
+ * #root; 4 <section> cards, each meta + h2 + module elements. All
+ * imports come from "@edwyn/signature-style/react" — the playground is
+ * a consumer, not a contributor. The PACKAGE IS UNTOUCHED this release
+ * (safety diff vs v1.8.0 is a release gate, tools/ frozen too).
+ *
+ * TIMELINE HYDRATION (1.5.1, still load-bearing): the dashboard mirrors
+ * the owner's real integration — source data lives in HIS shape
+ * (`mockEvents`: id, month, title, time, colorToken, iconName) and is
+ * mapped to the package contract (`PtpEvent`: date, category, icon) in
+ * ONE explicit layer at the render boundary. ROOT CAUSE (SSR-probe
+ * verified against the package): owner-shaped records passed straight
+ * as PtpEvent[] render an empty timeline (undefined `date` buckets
+ * everything under one key with a textless header; undefined
+ * `category` throws in PartyBadge's token guard and unmounts the
+ * timeline). The mapping layer below is why the nodes are alive.
  */
 import { useState } from "react";
 import {
@@ -182,18 +195,18 @@ export default function App() {
   return (
     <ThemeProvider>
       <ToastProvider>
-        <BentoDashboard />
+        <HubDashboard />
       </ToastProvider>
     </ThemeProvider>
   );
 }
 
 /**
- * The dashboard body — rendered INSIDE the providers so useToast() and
- * useModal() resolve. The fragment adds no DOM: nav and main stay
- * siblings under #root.
+ * The hub body — rendered INSIDE the providers so useToast() and
+ * useModal() resolve. The fragment adds no DOM: nav, the announcing
+ * hero header, and the hub main stay siblings under #root.
  */
-function BentoDashboard() {
+function HubDashboard() {
   const toast = useToast();
   const modal = useModal<PtpEvent>();
   const [isPublic, setIsPublic] = useState(true);
@@ -201,8 +214,16 @@ function BentoDashboard() {
   return (
     <>
       <GlobalNav items={NAV_ITEMS} activeHref="#" />
-      <main className="bento">
-        <section className="bento__card bento__card--forms" data-testid="bento-card-forms">
+      <header className="hub__hero">
+        <h1>THE ENGINE</h1>
+        <p className="hub__hero-sub">every primitive, one dashboard · live showcase</p>
+      </header>
+      <main className="hub">
+        <section className="hub__card hub__card--forms" data-testid="hub-card-forms">
+          <div className="hub__meta">
+            <span className="hub__label">Forms</span>
+            <span className="hub__path">components/forms.tsx</span>
+          </div>
           <h2>Form Controls</h2>
           <Input placeholder="Guest name" />
           <TextArea placeholder="Notes for the host…" rows={3} />
@@ -213,7 +234,7 @@ function BentoDashboard() {
           />
           <button
             type="button"
-            className="bento__btn"
+            className="hub__btn"
             data-testid="btn-toast"
             onClick={() => toast("success", "RSVP sent — see you there 🎉")}
           >
@@ -221,8 +242,12 @@ function BentoDashboard() {
           </button>
         </section>
 
-        <section className="bento__card bento__card--timeline" data-testid="bento-card-timeline">
-          <h2>Timeline</h2>
+        <section className="hub__card hub__card--timeline" data-testid="hub-card-timeline">
+          <div className="hub__meta">
+            <span className="hub__label">Timeline</span>
+            <span className="hub__path">components/timeline.tsx</span>
+          </div>
+          <h2>The Chronology</h2>
           <EventTimeline events={events} onEventSelect={modal.open} />
           {modal.selectedEvent !== null && (
             <EventModal
@@ -233,28 +258,36 @@ function BentoDashboard() {
           )}
         </section>
 
-        <section className="bento__card bento__card--telemetry" data-testid="bento-card-telemetry">
-          <h2>Telemetry</h2>
-          <div className="bento__metric" data-testid="metric-budget-remaining">
-            <span className="bento__metric-label">Budget remaining</span>
-            <span className="bento__metric-value">72%</span>
+        <section className="hub__card hub__card--telemetry" data-testid="hub-card-telemetry">
+          <div className="hub__meta">
+            <span className="hub__label">Telemetry</span>
+            <span className="hub__path">components/viz.tsx</span>
+          </div>
+          <h2>Budget &amp; RSVP</h2>
+          <div className="hub__metric" data-testid="metric-budget-remaining">
+            <span className="hub__metric-label">Budget remaining</span>
+            <span className="hub__metric-value">72%</span>
           </div>
           <ProgressBar value={72} colorToken="--party-green" label="Budget remaining" />
-          <div className="bento__metric" data-testid="metric-budget-spent">
-            <span className="bento__metric-label">Budget spent</span>
-            <span className="bento__metric-value">45%</span>
+          <div className="hub__metric" data-testid="metric-budget-spent">
+            <span className="hub__metric-label">Budget spent</span>
+            <span className="hub__metric-value">45%</span>
           </div>
           <ProgressBar value={45} colorToken="--party-peach" label="Budget spent" />
-          <div className="bento__metric" data-testid="metric-rsvp">
-            <span className="bento__metric-label">RSVP ratio</span>
-            <span className="bento__metric-value">85%</span>
+          <div className="hub__metric" data-testid="metric-rsvp">
+            <span className="hub__metric-label">RSVP ratio</span>
+            <span className="hub__metric-value">85%</span>
           </div>
           <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
         </section>
 
-        <section className="bento__card bento__card--palette" data-testid="bento-card-palette">
-          <h2>Party Palette</h2>
-          <div className="bento__palette">
+        <section className="hub__card hub__card--palette" data-testid="hub-card-palette">
+          <div className="hub__meta">
+            <span className="hub__label">Palette</span>
+            <span className="hub__path">components/primitives.tsx</span>
+          </div>
+          <h2>The Party Palette</h2>
+          <div className="hub__palette">
             {PALETTE.map(({ token, label }) => (
               <PartyBadge key={token} colorToken={token} label={label} />
             ))}

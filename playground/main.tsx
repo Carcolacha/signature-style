@@ -1,5 +1,5 @@
 /**
- * playground entry — mounts the Bento Dashboard.
+ * playground entry — mounts the Hub dashboard ("The Engine").
  *
  * The first import goes through the REAL package exports map
  * ("@edwyn/signature-style/css" → css/signature-style.css), proving the
