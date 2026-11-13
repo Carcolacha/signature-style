@@ -35,6 +35,11 @@
  * THIS layer only (1.8.0 doctrine boundary), and the 768px single-
  * column collapse (1.5.0) — now a natural fit for auto-fit, pinned as
  * an explicit reset of the timeline's grid-row span.
+ *
+ * 2.1.0 adds: the MEASURED timeline header breathing room (scoped slab
+ * padding + mirrored group-first clearance, ≥16px probe-verified) and
+ * the Master Index layer — a constrained 900px gateway grid reusing the
+ * hub card skeleton, where the cards themselves are the doors.
  */
 
 /* ---- the hub column (2.0.0) --------------------------------------------- */
@@ -304,7 +309,33 @@
   gap: var(--space-standard);
 }
 
-/* ---- the doctrine button (btn-primary echo, v1.6.0 shape) ---------------- */
+/* ---- the master index (2.1.0 — gate ix2/ix1 support) ----------------------
+   Three gateway doors in the SAME hub language: the grid keeps the
+   auto-fit minmax(400px, 1fr) packing but constrains the column to
+   900px — three cards read better narrow (owner call, documented:
+   unconstrained they stretch to 1400px and the trio stops reading as a
+   set of doors). The cards ARE <button>s in App.tsx: the UA button
+   styles are neutralized below so the hub surface + hover lift carry
+   the whole interaction, and keyboard focus presses the same door. */
+.hub--index {
+  max-width: 900px;
+}
+
+.hub__card--gateway {
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--text-main);
+}
+
+.hub__gateway-desc {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* ---- doctrine button (btn-primary echo, v1.6.0 shape) --------------------- */
 /* 1.6.0 hierarchy, unchanged in 2.0.0: the primary action pops against
    the elevated cards — Flamingo fill, on-cake ink, weight 600, and a
    small ambient shadow of its own (0 4px 16px rgba(0, 0, 0, 0.3) —
