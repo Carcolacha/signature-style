@@ -49,10 +49,27 @@
   background: color-mix(in srgb, var(--text-muted) 40%, transparent);
 }
 
-/* Date header — sticky, opaque, hairline-divided; content scrolls beneath. */
+/* Date header — sticky, opaque, hairline-divided; content scrolls beneath.
+   1.6.0 TIMELINE RESURRECTION — align-self: start. WHY (probe-proven,
+   host-independent — NOT a bento bug): the header is a SPANNING grid item
+   (inline `grid-row: "1 / 5"` style group spans from react/timeline.tsx)
+   with no explicit block size, so the default `align-self: stretch`
+   stretched its box across the ENTIRE group height (measured slabRatio
+   1.00: 553.5px header over a 553.5px group). With the opaque
+   `background: var(--bg-base)` + `z-index: var(--z-sticky, 10)` that box
+   painted a full-group cover slab — every node, title, badge and the
+   ::before line were invisible in ANY host while bounding rects stayed
+   non-zero (the "headers render, events don't" report). `align-self:
+   start` returns the box to content height (~62px) while the grid-area
+   span still provides the sticky travel room; the group-first
+   --tl-header-clearance (68px > 62px) then does its designed job of
+   keeping the stuck header off the first event. */
 .ptp-timeline__header {
   position: sticky;
   top: 0;
+  /* 1.6.0: start, NOT stretch — a spanning item must not size its box to
+     the whole span (see the block comment above for the probe evidence). */
+  align-self: start;
   z-index: var(--z-sticky, 10);
   grid-column: 1 / -1;
   margin: 0;
@@ -89,11 +106,32 @@
 /* Timeline node — STRUCTURE (Flamingo border), icon inherits currentColor.
    0.7.0: the node is a <button> (onEventSelect), so it carries the button
    resets: no native padding, pointer cursor, and the shared focus ring
-   (2px Flamingo, keyboard only) — cascade.css rings target .btn-*/[data-cascade]
-   classes, which the bare node does not wear. */
+   (2px Flamingo, keyboard only) — the cascade.css rings target .btn-* and
+   [data-cascade] classes, which the bare node does not wear.
+
+   1.6.0 TIMELINE RESURRECTION, part 1 — THE PARSE-ERROR FIX. This comment
+   used to contain a stray comment-terminator sequence in its middle:
+   the old text ".btn-[star][slash][data-cascade]" had a closing
+   comment token between ".btn-" and "[data-cascade]". That early
+   terminator turned the trailing text ("[data-cascade] classes, …
+   wear.") into live CSS tokens — a malformed selector list — and every
+   browser SILENTLY DROPPED this entire rule (probe-proven: computed
+   style was display: block, align-self: auto, width 40px — none of the
+   declarations below applied, in ANY host, since 0.6.0). Nodes rendered
+   as unstyled stretched buttons with no circle, no ring, no size.
+   Never put a comment-terminator sequence inside a CSS comment; this
+   rule is the reason why. */
 .ptp-timeline__node {
   grid-column: var(--tl-node-col);
   align-self: start;
+  /* 1.6.0: position: relative — the ::before center line is absolutely
+     positioned, so without a stacking box on the node it painted AFTER
+     the in-flow buttons (CSS phase 8) and its 2px stripe crossed every
+     node's icon center (probe: elementFromPoint at node center resolved
+     to the container). Positioned, the node paints in tree order AFTER
+     the container's ::first-child pseudo-element — nodes sit ON the
+     line, not under it. Generic, host-independent. */
+  position: relative;
   display: grid;
   place-items: center;
   width: var(--tl-node-size);
