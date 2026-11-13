@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * verify-playground.mjs — the 1.5.0 "Bento Box Showcase" gates.
+ * verify-playground.mjs — the 1.5.0 "Bento Box Showcase" gates plus the
+ * 1.5.1 hydration/animation gates.
  *
  * scripts/verify.mjs is byte-frozen (core safety rule), so the bento
  * gates live HERE, inside the playground directory. Asserts:
@@ -18,12 +19,28 @@
  *   (b5)  App.tsx imports from "@edwyn/signature-style/react" and uses
  *         ThemeProvider > ToastProvider > GlobalNav + main.bento with
  *         exactly 4 card sections;
- *   (b6)  EVERY lucide icon name used in App.tsx (and main.tsx) exists
- *         in the installed lucide-react icons map — the strict
- *         IconName contract, verified at gate time;
+ *   (b6)  EVERY lucide icon name used in App.tsx (icon:/iconName:) exists
+ *         in the installed lucide-react icons map — the strict IconName
+ *         contract, verified at gate time;
  *   (b7)  SAFETY PROOF: `git diff v1.4.0 -- css/ react/ tokens.json
  *         SYSTEM_PROMPT.md demo/ scripts/` is EMPTY — the core package
  *         files are locked.
+ *
+ * 1.5.1 gates:
+ *   (h1)  styles.css carries the staggered load-in: @keyframes
+ *         slideUpFade, the cubic-bezier animation with `forwards`, the
+ *         opacity: 0 base, the nth-child(1..4) stagger, AND the
+ *         MANDATORY prefers-reduced-motion escape (without it,
+ *         reduced-motion users get permanently invisible cards) — plus
+ *         the ruled card headers;
+ *   (h2)  App.tsx declares ≥4 COMPLETE owner-shaped mockEvents entries
+ *         (id / month / title / time / colorToken --party-* token /
+ *         iconName) across ≥2 month buckets, with the ONE mapping layer
+ *         present (month → date, colorToken → category, iconName →
+ *         icon);
+ *   (h3)  every mockEvents iconName probes against the LIVE lucide
+ *         icons map (the "Music" lesson: a name that looks right but is
+ *         not a key renders a blank node).
  *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
@@ -149,7 +166,7 @@ if (sectionCount !== 4) {
 }
 
 // ---- (b6) every icon name used in App.tsx exists in lucide's icons map ----------
-const iconNames = [...appSrc.matchAll(/icon: "(\w+)"/g)].map((m) => m[1]);
+const iconNames = [...appSrc.matchAll(/icon(?:Name)?: "(\w+)"/g)].map((m) => m[1]);
 if (iconNames.length === 0) {
   failures.push("(b6) App.tsx declares no event icons — the timeline nodes would be blank");
 } else {
@@ -162,6 +179,96 @@ if (iconNames.length === 0) {
     }
   } catch (error) {
     failures.push(`(b6) could not load lucide-react — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  }
+}
+
+// ---- (h1) staggered load-in + reduced-motion escape + ruled headers --------------
+if (!stylesCss.includes("@keyframes slideUpFade")) {
+  failures.push("(h1) styles.css must declare @keyframes slideUpFade");
+}
+if (!stylesCss.includes("animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards")) {
+  failures.push(
+    "(h1) .bento__card must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
+  );
+}
+if (!/\.bento__card\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
+  failures.push("(h1) .bento__card needs the opacity: 0 animation base");
+}
+for (const [child, delay] of [[1, "0.1s"], [2, "0.2s"], [3, "0.3s"], [4, "0.4s"]]) {
+  const stagger = new RegExp(
+    `\\.bento__card:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
+    "s",
+  );
+  if (!stagger.test(stylesCss)) {
+    failures.push(`(h1) .bento__card:nth-child(${child}) must stagger at animation-delay: ${delay}`);
+  }
+}
+const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.bento__card\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
+if (!reduceEscape.test(stylesCss)) {
+  failures.push(
+    "(h1) MANDATORY prefers-reduced-motion: reduce escape missing — without animation: none + opacity: 1, reduced-motion users get permanently invisible cards",
+  );
+}
+if (!stylesCss.includes(".bento__card > h2")) {
+  failures.push("(h1) ruled headers expected on .bento__card > h2 (child combinator)");
+}
+if (!stylesCss.includes("padding-bottom: var(--space-tight)")) {
+  failures.push("(h1) ruled headers need padding-bottom: var(--space-tight)");
+}
+if (!stylesCss.includes("border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent)")) {
+  failures.push("(h1) ruled headers need the 10% color-mix hairline");
+}
+
+// ---- (h2) owner-shaped mockEvents + the ONE mapping layer ------------------------
+const mockSlice = appSrc.match(/const mockEvents: MockEvent\[\] = \[([\s\S]*?)\n\];/);
+if (mockSlice === null) {
+  failures.push("(h2) App.tsx must declare `const mockEvents: MockEvent[]`");
+} else {
+  const entries = mockSlice[1].match(/\{[^{}]+\}/g) ?? [];
+  if (entries.length < 4) {
+    failures.push(`(h2) mockEvents needs ≥4 entries, found ${entries.length}`);
+  }
+  for (const entry of entries) {
+    const id = entry.match(/id: "([^"]+)"/)?.[1] ?? "?";
+    for (const field of ["id", "month", "title", "time", "colorToken", "iconName"]) {
+      if (!new RegExp(`${field}: "`).test(entry)) {
+        failures.push(`(h2) mockEvents entry ${id} is missing field ${field}`);
+      }
+    }
+    if (!entry.includes('colorToken: "--party-')) {
+      failures.push(`(h2) mockEvents entry ${id} colorToken must be a --party-* token`);
+    }
+  }
+  const buckets = new Set([...mockSlice[1].matchAll(/month: "([^"]+)"/g)].map((m) => m[1]));
+  if (buckets.size < 2) {
+    failures.push(`(h2) mockEvents must span ≥2 month buckets, found ${buckets.size}`);
+  }
+}
+for (const [mapping, label] of [
+  ["date: e.month", "month → date"],
+  ["category: e.colorToken", "colorToken → category"],
+  ["categoryLabel: CATEGORY_LABELS[e.colorToken]", "colorToken → categoryLabel"],
+  ["icon: e.iconName", "iconName → icon"],
+]) {
+  if (!appSrc.includes(mapping)) {
+    failures.push(`(h2) the mapping layer is missing ${mapping} — ${label}`);
+  }
+}
+
+// ---- (h3) every mockEvents iconName probes against the LIVE lucide icons map ------
+const mockIconNames = [...appSrc.matchAll(/iconName: "(\w+)"/g)].map((m) => m[1]);
+if (mockIconNames.length === 0) {
+  failures.push("(h3) mockEvents declares no iconName fields — nodes would be blank");
+} else {
+  try {
+    const { icons } = await import("lucide-react");
+    for (const name of new Set(mockIconNames)) {
+      if (!(name in icons)) {
+        failures.push(`(h3) iconName "${name}" does not exist in the LIVE lucide-react icons map`);
+      }
+    }
+  } catch (error) {
+    failures.push(`(h3) could not load lucide-react — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
   }
 }
 
@@ -189,4 +296,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7): scaffold, wiring, pack=34, zero hex, bento shape, icons, safety diff empty");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3): scaffold, wiring, pack=34, zero hex, bento shape, icons, safety diff empty, stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes");
