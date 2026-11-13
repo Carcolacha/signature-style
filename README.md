@@ -129,6 +129,99 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.0.0 — The Hub Migration (Shed Aesthetic)
+
+- **THE STORY — the dashboard finally has discipline.** The diagnosis:
+  1.5.0's bento grid read as scattered boxes. The cards were fine; the
+  PAGE had no discipline — no constrained column (an asymmetric stage
+  of hand-placed coordinates), no announcement (the nav opened straight
+  onto raw cards), no shared anatomy (every card was just "an h2 and
+  some stuff"), no tactile feedback (surfaces never answered the
+  pointer). The strategy: migrate the playground presentation layer to
+  The Shed's language — the same rules that discipline this repo's own
+  aesthetic. **The package is untouched**: `git diff v1.8.0 -- css/
+  react/ tokens.json demo/ SYSTEM_PROMPT.md scripts/ tools/` is EMPTY
+  at the release gate (tools/ joins the freeze this release), and
+  `npm pack` still yields EXACTLY 34 files. `tokens.json` stays 1.4.0.
+- **Anatomy mapping (old → new), the migration in one table:**
+
+  | Bento era | Hub era | Role |
+  |---|---|---|
+  | `.bento` — asymmetric 3-col stage, hand placements, `minmax(300px,1fr) minmax(400px,1.5fr) minmax(300px,1fr)` | `.hub` — `max-width: 1400px`, centered, `repeat(auto-fit, minmax(400px, 1fr))`, gap 2rem | the constrained column |
+  | — (cards started at y=83, unannounced) | `.hub__hero` — h1 `THE ENGINE` (serif "Besley", Georgia, serif; `clamp(2.25rem, 6vw, 4rem)`; tracking 0.35em) + `.hub__hero-sub` mono subtitle | the announced header |
+  | `.bento__card` | `.hub__card` — same surface tokens, + `:hover { translateY(-2px) }` with `0 16px 40px rgba(0,0,0,0.5)` | the strict card surface, now tactile |
+  | — (h2 was the header) | `.hub__meta` → `.hub__label` (teal `--color-cake-secondary`, all-caps via `text-transform`, 0.2em tracking) + `.hub__path` (muted mono, the module's source path) | the shed meta row |
+  | `.bento__card > h2` (1rem) | `.hub__card > h2` (1.125rem, child combinator kept so package timeline h2s stay untouched) | the elegant ruled title |
+  | `.bento__metric` / `-label` / `-value` | `.hub__metric` (+ owner mandate: `margin-bottom: var(--space-standard)` — ≥16px air under every label row; value now mono) | telemetry rows |
+  | `.bento__btn` | `.hub__btn` (identical v1.6.0 doctrine shape) | the doctrine button |
+  | `.bento__palette` | `.hub__palette` | the palette cluster |
+  | `data-testid="bento-card-*"` | `data-testid="hub-card-*"` (metric/btn hooks unchanged) | the cortex hooks |
+
+  Every card: meta → ruled h2 → content. Titles: Form Controls /
+  The Chronology / Budget & RSVP / The Party Palette; labels: Forms /
+  Timeline / Telemetry / Palette; paths: components/forms.tsx /
+  timeline.tsx / viz.tsx / primitives.tsx.
+- **The timeline span decision (owner fallback rule, probe-decided)** —
+  `.hub__card--timeline { grid-row: span 2; }` was built in, then
+  probed per the owner's rule ("drop the span if it creates a dead
+  void larger than one card"). Cortex verdict at the 1280px viewport:
+  the auto-fit grid packs 2 × 600px columns; the span puts forms+timeline
+  on row 1, telemetry+timeline on row 2, palette on row 3 — leaving
+  EXACTLY ONE empty cell (600 × 244px = 146,400px², pixel-equal to its
+  row-mate palette's cell). Not larger than one card → **the span
+  stays**. Dropping it would be worse: the timeline (1142px tall with
+  6 nodes across 3 month groups) would stretch its row-mates to its
+  own height instead. The 768px collapse resets the span (`grid-row:
+  auto`), where spanning makes no sense.
+- **Kept and renamed (bento → hub)** — the slideUpFade stagger +
+  mandatory reduced-motion escape (1.5.1), the elevation border +
+  inset/ambient shadows (1.6.0, composition layer only), the timeline
+  node elevation via the card descendant (1.8.0 doctrine boundary),
+  the telemetry space-between/flex-end rows + breathing bars (1.8.0),
+  the 768px collapse (1.5.0), and the doctrine button (1.6.0). Zero hex
+  literals; the only raw colors remain the owner-sanctioned rgba
+  elevation shadows.
+- **Gate evolution (verify:playground)** — every bento needle became its
+  hub equivalent, preserving intent: new (n-hub1) the constrained
+  column (`max-width: 1400px` + auto-fit `minmax(400px, 1fr)`) AND the
+  probed timeline span; (n-hub2) the announcing hero (THE ENGINE +
+  subtitle); (n-hub3) the shed anatomy (teal label / mono path / meta
+  row / `translateY(-2px)` + `0 16px 40px` hover lift / the ≥16px
+  metric-air mandate) plus a scan asserting no bento-era classes or
+  testids remain in the DOM contract; (n-hub4) the NEW v2.0.0 frozen
+  proof — `git diff v1.8.0` over css/ react/ tokens.json demo/
+  SYSTEM_PROMPT.md scripts/ **tools/** must be EMPTY. (m3) hooks
+  renamed hub-card-*; (g1) retired with the asymmetric stage it pinned;
+  (g2)/(g3) re-needled to the hub ancestors. **e2 AMENDMENT:** the
+  deletion guard REBASES to v1.8.0 and the v1.8.0 single-use allowlist
+  entry (`background: var(--bg-base);`) is consumed — the v2.0.0
+  allowlist is EMPTY; timeline.css was untouched, so e2 passes
+  trivially while still guarding the future. Negative test
+  (falsifiability, restore-verified): gutting the hover lift to
+  `transform: none` flips (n-hub3) to FAIL; restore → PASS. (First
+  attempt COMMENTED the lift out instead of deleting it — the needle
+  still matched the literal inside the comment and the "negative" test
+  passed; a falsifiability test only counts if it actually falsifies.)
+- **Cortex proof** — dev server killed and relaunched fresh (the 1.8.0
+  `/mnt/c` inotify lesson), then `inspect_layout` with hub selectors:
+  4/4 `.hub__card` visible; timeline card 600px wide (≥400 floor);
+  6/6 `.ptp-timeline__node` visible with area; all three metric rows
+  no-overlap (value left ≥ label right), flush right within 1px of the
+  card's content edge, and 40px/40px/32px of air below the label rows
+  (≥16px mandate — the RSVP row's nearest viz is the classless
+  StatRing `svg[role="progressbar"]`, swept explicitly). BEFORE/AFTER
+  rect table (1280px viewport): the asymmetric stage measured
+  315.4/473.1/315.4px columns at y=83 with a hole under the telemetry;
+  the hub measures 600px columns at y=232 (the hero announces first)
+  with one one-card void beside the palette — both layouts carry
+  exactly one one-card hole; the hub's is pixel-equal to its row-mate.
+  Proof screenshot: `/tmp/visual-cortex/v200-proof.png`.
+- **Release proof** — `npm run verify` PASS; `npm run verify:playground`
+  PASS; `npm run verify:mcp` SMOKE ALL PASS (tools/ byte-frozen — the
+  smoke's `.ptp-timeline__node` assertion still holds); `vite build`
+  exit 0; `npm pack` exactly 34 files; safety diff (incl. tools/)
+  EMPTY; `package.json`/lock → 2.0.0, `tokens.json` stays 1.4.0.
+
 ### 1.8.0 — Bento Refinement & Spatial Harmony
 
 - **THE STORY — the composition gets its final polish, measured by the
