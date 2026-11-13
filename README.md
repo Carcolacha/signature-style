@@ -129,6 +129,73 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.4.1 — Intuitive Form Anatomy & Alignment Fix
+
+The first patch release: v2.4.0 shipped the primitive SET; the owner's
+canonical spec arrived with DELTAS. `npm pack` still packs EXACTLY 43
+files — every delta grows an existing file (zero new files, zero new
+tokens; `tokens.json` stays 1.4.0). `scripts/verify.mjs` stays
+BYTE-FROZEN; `tools/` fully frozen (all 2.4.1 classes keep the `ptp-`
+prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
+
+| # | v2.4.0 shipped | Owner spec refined (2.4.1) | Where |
+|---|---|---|---|
+| 1 | `<DataTable>` with `numeric: true` — cells right-aligned, **header left** (the bug: `.ptp-data-table thead th` at specificity 0,1,2 outranks the bare `__num` class 0,1,0) | `DataTableColumn.align?: "left" \| "right" \| "center"` — ancestor-scoped `.ptp-data-table__align-*` utilities (0,2,0) applied to BOTH th and td, composing with `__num` (align = geometry, numeric = digits). Playground ledger: Contribution `numeric + align: "right"` — the header finally sits flush over the $120 values | react/data.tsx:37-70, css/data.css:75-95, playground/App.tsx:641-647 |
+| 2 | `<FormField>` = label + control + hint XOR error | `required?: boolean` — an aria-hidden peach `*` after the label text (VISUAL only; the CONTROL's `aria-required` stays consumer wiring). `prefix?: string` — a mono muted weight-600 adornment before the control, riding the justified `.ptp-form-field__row` flex wrapper. Playground money field: `label="Contribution" prefix="$"` (the dollar sign left the label) | react/forms.tsx (FormFieldProps + render), css/forms.css (__required/__row/__prefix), playground/App.tsx:827-845 |
+| 3 | `<RadioCardGroup>` selected = 2px Flamingo + 10% cake tint (a highlight read) | selected card **lifts** to `var(--bg-surface)` over the inset siblings — the owner override; the 2px Flamingo border stays the state signal | css/forms.css:368-379 |
+| 4 | `<ToggleSwitch>`: ONE element, `label` = aria-label ONLY — orphaned switches | `label` renders as VISIBLE text: every pill selector migrates `.ptp-switch` → `.ptp-switch__pill` (audited: no pill property left on the bare name, no `[aria-checked]` outside the pill, reduced-motion list follows); `.ptp-switch` becomes the justified wrapper (pill + visible-text composition, the `.ptp-select` sanction) around the pill + `.ptp-switch__text` (text-main, 0.875rem, weight 500). ONLY the pill is interactive; the button keeps its aria-label | react/forms.tsx (ToggleSwitch), css/forms.css:136-195, 396-409 |
+| 5 | `<AnnouncementBanner status?: "info"\|"success"\|"warning">`, fixed Megaphone | API EVOLVED: `variant?: "info" \| "warning" \| "announcement"` (default `announcement` — the Flamingo banner `--color-cake-primary`; info → sky, warning → peach strips; `status`/`"success"` retired). `icon?: IconName` with probed defaults — Info / **TriangleExclamationPoint** / Megaphone (PROBED: the installed lucide-react 1.72.0 map has NO `TriangleAlert` key — the AudioLines/"Music" lesson; the (icons) gate logs the probe). `action?: { label; onClick }` — a small token-driven ghost button (Teal border hover) after the text. Still dismissible. Playground Data-view banner: `variant="announcement"` + `action={{ label: "See what shipped", onClick: toast }}`, v2.4.1 copy | react/editorial.tsx (AnnouncementBanner), css/editorial.css (__action), playground/App.tsx:684-707, react/index.ts (type re-exports) |
+| 6 | ProseBlock blockquote: 4px **Flamingo** rule; styled `p`/`blockquote`/`footer`/`cite` only | quote rule → **`var(--party-mauve)`** (OWNER OVERRIDE: a blockquote IS editorial content, so the Rule of Engagement reads FOR the party token — Flamingo was borrowing the structural action color); `h3` ensured (0.9375rem, weight 600, text-main, margin); inline `code`/`kbd` chips added (mono stack, `--bg-inset` body, 15% muted hairline, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, `--text-bright`) | css/editorial.css:112-156 |
+| 7 | `<Carousel>`: three justified elements (track + 2 buttons), no position readout | page indicator added (a FOURTH justified element — the position made legible): `onScroll` → rAF-throttled → `<span class="ptp-carousel__indicator" aria-live="polite">{n} / {count}</span>` with the owner formula `Math.round(scrollLeft / itemWidth) + 1`, mono tabular-nums muted, placed between the two buttons | react/editorial.tsx (Carousel), css/editorial.css:99-111 |
+| 8 | Codex title v2.6, 21 snippets | Codex → **v2.7**: FormField/RadioCardGroup/Carousel/ProseBlock/AnnouncementBanner recipes ADDED; DataTable (align), ToggleSwitch (visible label) refreshed — every snippet factual against the new `.d.ts`; contract version string → 2.4.1 | SYSTEM_PROMPT.md |
+
+- **Signature changes** — BREAKING: `AnnouncementBannerProps.status` →
+  `variant` (the `"success"` mood retires with the old union;
+  `AnnouncementStatus` → `AnnouncementVariant`, plus new
+  `AnnouncementBannerAction`). ADDITIVE: `DataTableColumn.align`,
+  `FormField.required`, `FormField.prefix`, `AnnouncementBanner.icon`,
+  `AnnouncementBanner.action`. Behavioral: `ToggleSwitch` with a
+  `label` now renders a wrapper span (pill + text) — the no-label
+  form stays the single-element pill.
+- **Gate evolution (verify:playground)** — (b7)/(n-hub4) REBASED to the
+  v2.4.0 baseline: the authorized 2.4.1 deltas are css/data.css +
+  css/forms.css + css/editorial.css (grow), react/data.{tsx,js,d.ts} +
+  react/forms.{tsx,js,d.ts} + react/editorial.{tsx,js,d.ts} (grow),
+  react/index.{ts,js,d.ts} (type re-exports), SYSTEM_PROMPT.md —
+  css/viz.css and css/signature-style.css must stay BYTE-IDENTICAL.
+  (dd4) title needle → v2.7; (ed1) quote-rule needle → mauve; (ed2)
+  AnnouncementVariant + AnnouncementBannerAction; (ed3) selected bg →
+  the --bg-surface lift; (icons) += Info/TriangleExclamationPoint;
+  (showcase) → Contribution/prefix/variant/action/v2.4.1 copy. NEW
+  gates: (af1) the align utilities (ancestor-scoped — the gate
+  REGEX-verifies the 0,2,0 scoping, because a bare class would lose
+  the cascade and re-create the bug), the th+td flow (exactly 2
+  `dataTableCellClass` sites), the compiled .d.ts fact, the ledger
+  usage; (af2) required/prefix slots, the switch migration audit
+  (comment-stripped attribute scan), the __text contract, the radio
+  lift; (af3) mauve/h3/kbd/indicator/action needles, the variant map,
+  the probed icon defaults, the owner index formula, and the v2.7
+  codex needles. Negative test (falsifiability, restore-verified):
+  surgically removing the `.ptp-data-table__align-right` rule from
+  css/data.css flips (af1) to FAIL (both needles) — restore → PASS
+  (git-verified byte-identical).
+- **Release proof** — `npm run verify` PASS (the frozen floor);
+  `npm run verify:playground` PASS (with (af1)–(af3) + the amended
+  gates); `npm run verify:mcp` SMOKE ALL PASS; the one-off cortex
+  probe (clicks the Forms + Data tabs) measured the deltas live:
+  `.ptp-switch__text` visible ("Make event public"), the ledger
+  numeric header computed `text-align: right` (was left — the fix,
+  verified computed-style), the banner strip `rgb(242, 205, 205)`
+  (Mocha Flamingo — the announcement accent), the `$` prefix +
+  indicator "1 / 5" rendered; `vite build` exit 0; `npm pack` exactly
+  43 files; `git diff v2.4.0 -- css/ react/` = EXACTLY css/data.css +
+  css/forms.css + css/editorial.css (grow), react/data.{tsx,js,d.ts} +
+  react/forms.{tsx,js,d.ts} + react/editorial.{tsx,js,d.ts} (grow),
+  react/index.{ts,d.ts} (type re-exports; index.js unchanged — type
+  names elide from compiled JS) — nothing else; tokens.json 1.4.0;
+  dev server relaunched detached with `--config
+  playground/vite.config.ts`, `curl localhost:5173` → 200.
+
 ### 2.4.0 — Form Wrappers & Editorial Primitives
 
 - **THE STORY — the scaffold around the control, and the slots around

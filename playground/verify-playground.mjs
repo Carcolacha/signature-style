@@ -321,6 +321,62 @@
  *         banner + KPI trio + ProseBlock Field Notes + palette
  *         clippings Carousel.
  *
+ * 2.4.1 gates ("Intuitive Form Anatomy & Alignment Fix" — the patch
+ * release: owner-spec DELTAS on top of the v2.4.0 primitives, zero
+ * new files, pack stays 43):
+ *   (b7)/(n-hub4)  REBASED to the v2.4.0 baseline with the authorized
+ *         2.4.1 deltas enumerated (css/data.css + css/forms.css +
+ *         css/editorial.css growth, the matching react growth +
+ *         compiled pairs, react/index.{ts,js,d.ts} for the
+ *         AnnouncementStatus → AnnouncementVariant rename). css/viz.css
+ *         and css/signature-style.css are NOT excluded — both must stay
+ *         byte-identical to v2.4.0. scripts/verify.mjs stays
+ *         BYTE-FROZEN; tools/ fully frozen (no DEFAULT_SELECTORS change
+ *         needed — every 2.4.1 class keeps the ptp- prefix).
+ *   (dd4 AMENDMENT)  the codex title needle moves to v2.7.
+ *   (ed1 AMENDMENT)  the quote-rule needle moves Flamingo → mauve.
+ *   (ed2 AMENDMENT)  AnnouncementStatus → AnnouncementVariant +
+ *         AnnouncementBannerAction in the umbrella type list.
+ *   (ed3 AMENDMENT)  the selected-radio background needle moves to the
+ *         --bg-surface lift.
+ *   (icons AMENDMENT)  += the banner default icons Info /
+ *         TriangleExclamationPoint (PROBED: lucide 1.72.0 has NO
+ *         "TriangleAlert" key — the owner-spec'd name maps to the
+ *         live-map-valid equivalent, the AudioLines/Music precedent).
+ *   (showcase AMENDMENT)  label="Contribution" + prefix="$", banner
+ *         variant="announcement" + action, v2.4.1 banner copy.
+ *   (af1) DATA ALIGN — css/data.css carries the ancestor-scoped
+ *         .ptp-data-table__align-{left,center,right} utilities (the
+ *         (0,2,0) prefix beats .ptp-data-table thead th (0,1,2) — the
+ *         bare class would LOSE and re-create the bug); react/data.tsx
+ *         declares align?: "left"|"right"|"center" and flows
+ *         dataTableCellClass to BOTH th and td; react/data.d.ts is
+ *         factual; App.tsx ledger sets numeric + align: "right".
+ *   (af2) FORM ANATOMY — css/forms.css: __required (peach, visual
+ *         only), __row/__prefix (the justified adornment composition),
+ *         the switch wrapper .ptp-switch (inline-flex) + migrated
+ *         .ptp-switch__pill (NO pill property left on the bare
+ *         wrapper, no [aria-checked] outside the pill, reduced-motion
+ *         follows) + __text (text-main 0.875rem/500), the radio
+ *         selected lift to var(--bg-surface) with the 2px Flamingo
+ *         border kept; react/forms.tsx: required/prefix props +
+ *         renders, the label → visible text span (bare pill when no
+ *         label), the .d.ts factual.
+ *   (af3) EDITORIAL DELTAS + V2.7 CODEX — css/editorial.css: the mauve
+ *         quote rule, h3 (0.9375rem/600), the code/kbd inline chip,
+ *         the tabular-nums indicator, the Teal-hover action button;
+ *         react/editorial.tsx: variant/icon/action API (default
+ *         announcement → Flamingo, probed icons), the rAF-throttled
+ *         indicator with the owner formula
+ *         Math.round(scrollLeft/itemWidth)+1; the compiled .d.ts
+ *         factual; SYSTEM_PROMPT.md carries the refreshed v2.7 recipes
+ *         (FormField/RadioCardGroup/ToggleSwitch/AnnouncementBanner/
+ *         ProseBlock/Carousel snippets + align/lift/mauve needles).
+ *   Negative test (falsifiability, restore-verified): removing the
+ *         `.ptp-data-table .ptp-data-table__align-right` rule from
+ *         css/data.css flips (af1) to FAIL; restore → PASS
+ *         (git-verified byte-identical).
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -765,36 +821,37 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.3.0 ------------------------
-// 2.4.0 REBASE (the release that legitimately touches core rebases the floor —
-// v2.2.0 → v2.3.0). The owner-authorized 2.4.0 deltas, and NOTHING else:
-//   css/editorial.css                 — NEW editorial stylesheet (ed1 pins content)
-//   css/forms.css                     — grows: FormField/RadioCardGroup (ed3)
-//   css/viz.css                       — grows: StatCard (ed4)
-//   css/signature-style.css           — the layered editorial.css import (ed1)
-//   react/editorial.{tsx,js,d.ts}     — NEW editorial primitives + compiled
-//   react/forms.{tsx,js,d.ts}         — grow: FormField/RadioCardGroup + compiled
-//   react/viz.{tsx,js,d.ts}           — grow: Sparkline/StatCard + compiled
-//   react/index.{ts,js,d.ts}          — the umbrella re-exports (+ compiled)
-// css/timeline.css stays e2-governed. scripts/verify.mjs stays BYTE-FROZEN.
-// Everything else must be byte-identical to v2.3.0.
+// ---- (b7) SAFETY PROOF: core files untouched since v2.4.0 ------------------------
+// 2.4.1 REBASE (the release that legitimately touches core rebases the floor —
+// v2.3.0 → v2.4.0). The owner-authorized 2.4.1 deltas, and NOTHING else:
+//   css/data.css                      — grows: __align-* utilities (af1)
+//   css/forms.css                     — grows: required/prefix, switch wrapper,
+//                                       radio lift (af2)
+//   css/editorial.css                 — grows: mauve bar, h3, kbd/code,
+//                                       indicator, action (af3)
+//   react/data.{tsx,js,d.ts}          — grow: DataTableColumn.align + compiled
+//   react/forms.{tsx,js,d.ts}         — grow: required/prefix, visible switch
+//                                       label + compiled
+//   react/editorial.{tsx,js,d.ts}     — grow: banner variant/action, carousel
+//                                       indicator + compiled
+//   react/index.{ts,js,d.ts}          — the umbrella re-exports (type rename
+//                                       AnnouncementStatus → AnnouncementVariant)
+// css/viz.css and css/signature-style.css are NOT excluded this release —
+// both must stay byte-identical to v2.4.0 (patch release: no new files, no
+// new imports). scripts/verify.mjs stays BYTE-FROZEN. Everything else must
+// be byte-identical to v2.4.0.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 const B7_AUTHORIZED = [
   ":(exclude)css/timeline.css",
   ":(exclude)css/data.css",
   ":(exclude)css/forms.css",
-  ":(exclude)css/viz.css",
   ":(exclude)css/editorial.css",
-  ":(exclude)css/signature-style.css",
   ":(exclude)react/data.tsx",
   ":(exclude)react/data.js",
   ":(exclude)react/data.d.ts",
   ":(exclude)react/forms.tsx",
   ":(exclude)react/forms.js",
   ":(exclude)react/forms.d.ts",
-  ":(exclude)react/viz.tsx",
-  ":(exclude)react/viz.js",
-  ":(exclude)react/viz.d.ts",
   ":(exclude)react/editorial.tsx",
   ":(exclude)react/editorial.js",
   ":(exclude)react/editorial.d.ts",
@@ -807,39 +864,39 @@ let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.3.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.4.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.4.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.3.0 beyond the owner-authorized 2.4.0 deltas (editorial layer, forms/viz growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.4.0 beyond the owner-authorized 2.4.1 deltas (data/forms/editorial growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.4.0 FROZEN PROOF — v2.3.0 baseline, tools/ included ---------
-// Rebased v2.2.0 → v2.3.0 for 2.4.0. tools/ is UNTOUCHED this release — the
-// cortex sweep's class targets are unchanged (the new primitives keep the
-// ptp- prefix), so NO tools exclusion is authorized: any tools/ diff now
-// fails. Everything under the locked paths beyond the (b7) deltas must stay
-// byte-identical to v2.3.0.
+// ---- (n-hub4) THE V2.4.1 FROZEN PROOF — v2.4.0 baseline, tools/ included ---------
+// Rebased v2.3.0 → v2.4.0 for 2.4.1. tools/ is UNTOUCHED this release — the
+// cortex sweep's class targets are unchanged (all 2.4.1 classes keep the
+// ptp- prefix and none joins DEFAULT_SELECTORS), so NO tools exclusion is
+// authorized: any tools/ diff now fails. Everything under the locked paths
+// beyond the (b7) deltas must stay byte-identical to v2.4.0.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.3.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.4.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.4.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.3.0 beyond the owner-authorized 2.4.0 deltas (editorial layer, forms/viz growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.4.0 beyond the owner-authorized 2.4.1 deltas (data/forms/editorial growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -1352,9 +1409,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.6")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.7")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.6 (the codex is a major doctrine addition)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.7 (the 2.4.1 codex refresh: required/prefix, align, visible switch labels, banner variants, mauve/kbd prose, the carousel indicator)",
   );
 }
 
@@ -1432,7 +1489,7 @@ if (!existsSync(editorialCssPath)) {
     [".ptp-carousel__item", "the item slot (flex 0 0 auto)"],
     ["flex: 0 0 auto", "items keep content width"],
     [".ptp-prose blockquote", "the prose blockquote anatomy"],
-    ["border-left: 4px solid var(--color-cake-primary)", "the Flamingo quote rule (structural)"],
+    ["border-left: 4px solid var(--party-mauve)", "the MAUVE quote rule (2.4.1 owner override — the quote is editorial content, the content voice; was v2.4.0's Flamingo)"],
     ["font-style: italic", "the quote voice"],
     ["border-left: 4px solid var(--status)", "the banner status strip (the toast/callout mechanism)"],
     ["var(--bg-inset)", "the inset-well bodies (quote + banner)"],
@@ -1504,7 +1561,8 @@ const ED2_TYPES = [
   "CarouselItemProps",
   "ProseBlockProps",
   "AnnouncementBannerProps",
-  "AnnouncementStatus",
+  "AnnouncementVariant",
+  "AnnouncementBannerAction",
   "SparklineProps",
   "StatCardProps",
 ];
@@ -1542,7 +1600,7 @@ const FORMS_24_REQUIREMENTS = [
   [".ptp-radio-card:has(input:focus-visible)", "THE :has() focus ring — the keyboard focus lands on the hidden input, the CARD rings"],
   [".ptp-radio-card:has(input:checked)", "the selected state machine — the attribute IS the state"],
   [".ptp-radio-card.ptp-radio-card--selected", "the selected class mirror (consumer convenience, specificity-safe vs :hover)"],
-  ["color-mix(in srgb, var(--color-cake-primary) 10%, var(--bg-inset))", "the 10% cake-tint selected background"],
+  ["background: var(--bg-surface)", "the selected card LIFTS to --bg-surface (2.4.1 owner override of the 10% cake tint — a surface read over the inset siblings)"],
   ["var(--party-peach)", "the error message token (the v1.4.0 doctrine, message slot)"],
 ];
 for (const [needle, label] of FORMS_24_REQUIREMENTS) {
@@ -1629,16 +1687,35 @@ if (statCardBlock === null) {
   );
 }
 
-// ---- (icons) SDK-LUCIDE PROBE — the editorial icon names exist (2.4.0) ------------
-// Megaphone, ChevronLeft, ChevronRight (+ X for the banner close): a name that
-// is not a key in the installed icons map renders a blank square (the "Music"
-// lesson), so the probe runs against the LIVE map at gate time.
+// ---- (icons) SDK-LUCIDE PROBE — the editorial icon names exist (2.4.0, 2.4.1) ------
+// Megaphone, ChevronLeft, ChevronRight, X (2.4.0) + the 2.4.1 banner default
+// icons Info / TriangleExclamationPoint (+ the announcement default Megaphone,
+// already probed): a name that is not a key in the installed icons map renders
+// a blank square (the "Music" lesson), so the probe runs against the LIVE map
+// at gate time. NOTE (2.4.1, probe-verified): the installed lucide-react
+// 1.72.0 map has NO "TriangleAlert" — this future-major spells the warning
+// triangle "TriangleExclamationPoint"; the owner-spec'd name is mapped to the
+// live-map-valid equivalent in react/editorial.tsx (the AudioLines precedent).
 try {
   const { icons } = await import("lucide-react");
-  for (const name of ["Megaphone", "ChevronLeft", "ChevronRight", "X"]) {
+  for (const name of [
+    "Megaphone",
+    "ChevronLeft",
+    "ChevronRight",
+    "X",
+    "Info",
+    "TriangleExclamationPoint",
+  ]) {
     if (!(name in icons)) {
       failures.push(`(icons) icon "${name}" does not exist in the lucide-react icons map — editorial.tsx would render a blank square`);
     }
+  }
+  if ("TriangleAlert" in icons === false) {
+    // Documented decision, not a failure — kept as a deliberate probe so the
+    // next release that flips the map sees it in the gate output.
+    console.log(
+      "(icons) note: \"TriangleAlert\" is NOT a key in the installed lucide-react map — the 2.4.1 warning default uses \"TriangleExclamationPoint\" (the AudioLines/Music precedent)",
+    );
   }
 } catch (error) {
   failures.push(`(icons) could not load lucide-react — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
@@ -1648,7 +1725,8 @@ try {
 const SHOWCASE_REQUIREMENTS = [
   ["<FormField", "the accessible wrapper in the matrix"],
   ['label="Name"', "the Name field"],
-  ['label="$ Contribution"', "the $ Contribution field"],
+  ['label="Contribution"', "the Contribution field (2.4.1 — the dollar sign moved OUT of the label)"],
+  ['prefix="$"', "the 2.4.1 prefix adornment on the money field"],
   ['htmlFor="matrix-name"', "the consumer-wired label association (field 1)"],
   ['htmlFor="matrix-share"', "the consumer-wired label association (field 2)"],
   ["hint=\"As it appears on the invite\"", "the hint slot demoed"],
@@ -1658,7 +1736,9 @@ const SHOWCASE_REQUIREMENTS = [
   ['{ value: "maybe", label: "Maybe" }', "RSVP option 2"],
   ['{ value: "declined", label: "Can\'t make it" }', "RSVP option 3"],
   ["<AnnouncementBanner", "the banner at the top of the Data view"],
-  ["v2.4.0 — six new editorial &amp; form primitives shipped.", "the release banner copy"],
+  ['variant="announcement"', "the 2.4.1 variant API (Flamingo banner default)"],
+  ['label: "See what shipped"', "the 2.4.1 action slot demoed"],
+  ["v2.4.1 — intuitive form anatomy &amp; the alignment fix shipped.", "the release banner copy"],
   ["<StatCard", "the KPI trio"],
   ['label="Total Budget"', "KPI 1"],
   ['label="Confirmed Guests"', "KPI 2"],
@@ -1676,10 +1756,271 @@ for (const [needle, label] of SHOWCASE_REQUIREMENTS) {
   }
 }
 
+// ---- (af1) INTUITIVE ANATOMY I — the DataTable align fix (2.4.1) -------------------
+// The bug: `numeric` right-aligned the CELLS but the HEADER stayed left —
+// `.ptp-data-table thead th` (specificity 0,1,2) outranks the bare
+// .ptp-data-table__num class (0,1,0). The fix: DataTableColumn.align flows to
+// BOTH th and td through ancestor-scoped .ptp-data-table__align-* utilities
+// (0,2,0 — back on top), composing with __num (align = geometry, numeric =
+// tabular digits). css/data.css owns the paint (class-based, gate-able);
+// react/data.tsx applies per column; the compiled .d.ts carries the prop.
+const dataCssAf = readFileSync(resolve(root, "css/data.css"), "utf8");
+const dataSrcAf = readFileSync(resolve(root, "react/data.tsx"), "utf8");
+const dataDtsAf = readFileSync(resolve(root, "react/data.d.ts"), "utf8");
+for (const [needle, label] of [
+  [".ptp-data-table__align-left", "the left alignment utility"],
+  [".ptp-data-table__align-center", "the center alignment utility"],
+  [".ptp-data-table__align-right", "the right alignment utility"],
+]) {
+  if (!dataCssAf.includes(needle)) {
+    failures.push(`(af1) css/data.css must contain ${needle} — ${label}`);
+  }
+}
+for (const [side, value] of [["left", "left"], ["center", "center"], ["right", "right"]]) {
+  const rule = new RegExp(
+    `\\.ptp-data-table \\.ptp-data-table__align-${side}\\s*\\{[^}]*text-align: ${value};`,
+    "s",
+  );
+  if (!rule.test(dataCssAf)) {
+    failures.push(
+      `(af1) css/data.css must scope .ptp-data-table__align-${side} under .ptp-data-table with text-align: ${value} — the ancestor prefix (0,2,0) is the specificity fix that beats .ptp-data-table thead th (0,1,2); a bare class would LOSE and the header would stay left (the bug itself)`,
+    );
+  }
+}
+if (!dataSrcAf.includes('align?: "left" | "right" | "center"')) {
+  failures.push(
+    '(af1) react/data.tsx must declare align?: "left" | "right" | "center" on DataTableColumn',
+  );
+}
+if (!dataSrcAf.includes("`ptp-data-table__align-${column.align}`")) {
+  failures.push(
+    "(af1) react/data.tsx must derive the .ptp-data-table__align-* class from column.align",
+  );
+}
+const cellClassUses = (dataSrcAf.match(/className=\{dataTableCellClass\(column\)\}/g) ?? []).length;
+if (cellClassUses !== 2) {
+  failures.push(
+    `(af1) react/data.tsx must apply dataTableCellClass to BOTH the th and the td (2 sites), found ${cellClassUses} — align flows to header AND cells`,
+  );
+}
+if (!/align\?:\s*"left" \| "right" \| "center"/.test(dataDtsAf)) {
+  failures.push(
+    "(af1) the compiled react/data.d.ts must carry align?: \"left\" | \"right\" | \"center\" (the consumer-facing contract is the .d.ts)",
+  );
+}
+if (!appSrc.includes('numeric: true, align: "right"')) {
+  failures.push(
+    '(af1) App.tsx ledger must set the Contribution column numeric: true + align: "right" — the header flushes over the $120 values',
+  );
+}
+
+// ---- (af2) INTUITIVE ANATOMY II — FormField required/prefix + the visible
+// switch label + the radio lift (2.4.1). The required asterisk is VISUAL
+// (aria-hidden; the CONTROL's aria-required is consumer wiring), the prefix
+// rides the justified __row flex composition, the switch migrates every pill
+// selector .ptp-switch → .ptp-switch__pill with the label as visible text,
+// and the selected radio card lifts to var(--bg-surface).
+const formsCssAf = readFileSync(resolve(root, "css/forms.css"), "utf8");
+const formsSrcAf = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
+const formsDtsAf = readFileSync(resolve(root, "react/forms.d.ts"), "utf8");
+for (const [needle, label] of [
+  [".ptp-form-field__required", "the peach required asterisk slot"],
+  [".ptp-form-field__row", "the justified prefix-adornment flex row"],
+  [".ptp-form-field__prefix", "the mono muted prefix span"],
+  [".ptp-switch", "the switch wrapper (pill + visible text composition)"],
+  [".ptp-switch__pill", "the migrated pill (every pill selector renamed)"],
+  [".ptp-switch__text", "the visible label text"],
+]) {
+  if (!formsCssAf.includes(needle)) {
+    failures.push(`(af2) css/forms.css must contain ${needle} — ${label}`);
+  }
+}
+const rowRule = /\.ptp-form-field__row\s*\{[^}]*display: flex;[^}]*align-items: center;[^}]*gap: var\(--space-tight\);/s;
+if (!rowRule.test(formsCssAf)) {
+  failures.push(
+    "(af2) .ptp-form-field__row must be flex + align-items: center + gap: var(--space-tight) (the justified adornment wrapper)",
+  );
+}
+const prefixRule = /\.ptp-form-field__prefix\s*\{[^}]*var\(--font-mono,[^}]*font-weight: 600;/s;
+if (!prefixRule.test(formsCssAf)) {
+  failures.push(
+    "(af2) .ptp-form-field__prefix must be mono + weight 600 (the adornment voice)",
+  );
+}
+const requiredRule = /\.ptp-form-field__required\s*\{[^}]*color: var\(--party-peach\);/s;
+if (!requiredRule.test(formsCssAf)) {
+  failures.push(
+    "(af2) .ptp-form-field__required must paint the peach asterisk — color: var(--party-peach) (the v1.4.0 attention token)",
+  );
+}
+const switchWrapper = /\.ptp-switch\s*\{[^}]*display: inline-flex;[^}]*align-items: center;/s;
+if (!switchWrapper.test(formsCssAf)) {
+  failures.push(
+    "(af2) .ptp-switch must now be the inline-flex wrapper (pill + visible text) — the JUSTIFIED composition, commented in css",
+  );
+}
+const switchText = /\.ptp-switch__text\s*\{[^}]*color: var\(--text-main\);[^}]*font-size: 0\.875rem;[^}]*font-weight: 500;/s;
+if (!switchText.test(formsCssAf)) {
+  failures.push(
+    "(af2) .ptp-switch__text must be text-main 0.875rem weight 500 (the visible label contract)",
+  );
+}
+const wrapperBlock = formsCssAf.match(/(?:^|\n)\s*\.ptp-switch\s*\{([^}]*)\}/s);
+if (wrapperBlock === null || wrapperBlock[1].includes("border-radius: 999px")) {
+  failures.push(
+    "(af2) the bare .ptp-switch block must NOT be the pill anymore (no 999px radius) — every pill property migrated to .ptp-switch__pill",
+  );
+}
+// The attribute scan runs on comment-stripped text: prose may EXPLAIN the
+// state machine (the header's geometry comment quotes the selector), only
+// rule selectors may carry it.
+if (/\[aria-checked="true"\]/.test(formsCssAf.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\.ptp-switch__pill\[aria-checked="true"\]/g, ""))) {
+  failures.push(
+    '(af2) an [aria-checked="true"] selector remains OUTSIDE .ptp-switch__pill — the state machine must live on the migrated pill only',
+  );
+}
+if (!formsCssAf.includes(".ptp-switch__pill,\n    .ptp-switch__pill::before,")) {
+  failures.push(
+    "(af2) the reduced-motion guard must follow the migration — .ptp-switch__pill / .ptp-switch__pill::before in the prefers-reduced-motion list",
+  );
+}
+const radioLift = /\.ptp-radio-card\.ptp-radio-card--selected,\s*\.ptp-radio-card:has\(input:checked\)\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*border-width: 2px;[^}]*background: var\(--bg-surface\);/s;
+if (!radioLift.test(formsCssAf)) {
+  failures.push(
+    "(af2) the selected radio card must KEEP the 2px Flamingo border AND lift to background: var(--bg-surface) (2.4.1 owner override of the cake tint)",
+  );
+}
+for (const [needle, label] of [
+  ["required?: boolean", "the FormField required prop"],
+  ["prefix?: string", "the FormField prefix prop"],
+  ['className="ptp-form-field__row"', "the row wraps children ONLY when prefix is present"],
+  ['className="ptp-form-field__prefix"', "the prefix renders BEFORE the children"],
+  ['className="ptp-form-field__required"', "the asterisk span on the label"],
+  ['aria-hidden="true"', "the asterisk is VISUAL — screen readers get aria-required from the control, never from the wrapper"],
+  ['className="ptp-switch"', "the justified switch wrapper"],
+  ['className="ptp-switch__pill"', "the pill class (migrated)"],
+  ['className="ptp-switch__text"', "the visible label span (NOT aria-hidden — visible text)"],
+  ["if (label === undefined)", "no label → the bare pill, exactly ONE element (peak pruning preserved)"],
+  ['role="switch"', "the pill keeps the switch role"],
+]) {
+  if (!formsSrcAf.includes(needle)) {
+    failures.push(`react/forms.tsx must contain ${JSON.stringify(needle)} — (af2) ${label}`);
+  }
+}
+if (!/required\?:\s*boolean/.test(formsDtsAf) || !/prefix\?:\s*string/.test(formsDtsAf)) {
+  failures.push(
+    "(af2) the compiled react/forms.d.ts must carry FormField required?: boolean + prefix?: string (the consumer-facing contract)",
+  );
+}
+
+// ---- (af3) INTUITIVE ANATOMY III — editorial deltas + the v2.7 codex (2.4.1) --------
+// The banner API evolves to variant (info/warning/announcement, default
+// announcement) + icon (default Info / TriangleExclamationPoint / Megaphone)
+// + action (ghost button after the text), the prose quote bar goes MAUVE
+// (owner override — a quote is content), prose gains h3 + kbd/code, and the
+// carousel grows the rAF-throttled page indicator. Plus the codex needles:
+// SYSTEM_PROMPT.md must title v2.7 and carry the refreshed snippets, factual
+// against the new .d.ts.
+const editorialCssAf = readFileSync(resolve(root, "css/editorial.css"), "utf8");
+const editorialSrcAf = readFileSync(resolve(root, "react/editorial.tsx"), "utf8");
+const editorialDtsAf = readFileSync(resolve(root, "react/editorial.d.ts"), "utf8");
+for (const [needle, label] of [
+  [".ptp-carousel__indicator", "the page indicator class"],
+  [".ptp-prose h3", "the h3 sub-section voice"],
+  [".ptp-prose kbd", "kbd joins the inline-code chip"],
+  [".ptp-announcement__action", "the ghost action button"],
+]) {
+  if (!editorialCssAf.includes(needle)) {
+    failures.push(`(af3) css/editorial.css must contain ${needle} — ${label}`);
+  }
+}
+const indicatorRule = /\.ptp-carousel__indicator\s*\{[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-muted\);/s;
+if (!indicatorRule.test(editorialCssAf)) {
+  failures.push(
+    "(af3) .ptp-carousel__indicator must be tabular-nums muted (the position readout is metadata, not a headline)",
+  );
+}
+const kbdRule = /\.ptp-prose code,\s*\n\.ptp-prose kbd\s*\{[^}]*background: var\(--bg-inset\);[^}]*border-radius: 0\.25rem;[^}]*padding: 0\.125rem 0\.375rem;[^}]*font-size: 0\.8125rem;[^}]*color: var\(--text-bright\);/s;
+if (!kbdRule.test(editorialCssAf)) {
+  failures.push(
+    "(af3) .ptp-prose code/kbd must carry the inline chip contract — inset body, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, --text-bright",
+  );
+}
+const proseH3Block = editorialCssAf.match(/\.ptp-prose h3\s*\{([^}]*)\}/s);
+if (
+  proseH3Block === null ||
+  !/\bfont-size: 0\.9375rem;/.test(proseH3Block[1]) ||
+  !/\bfont-weight: 600;/.test(proseH3Block[1]) ||
+  !/\bcolor: var\(--text-main\);/.test(proseH3Block[1])
+) {
+  failures.push(
+    "(af3) .ptp-prose h3 must be 0.9375rem weight 600 text-main (the ensured sub-section styles)",
+  );
+}
+const actionHover = /\.ptp-announcement__action:hover\s*\{[^}]*border-color: var\(--color-cake-secondary\);/s;
+if (!actionHover.test(editorialCssAf)) {
+  failures.push(
+    "(af3) .ptp-announcement__action:hover must answer with the Teal border (token-driven ghost button)",
+  );
+}
+for (const [needle, label] of [
+  ["variant?: AnnouncementVariant", "the evolved variant prop"],
+  ['variant = "announcement"', "the announcement default (the Flamingo banner)"],
+  ["ANNOUNCEMENT_ICONS", "the variant → default icon map"],
+  ['warning: "TriangleExclamationPoint"', "the warning default icon — PROBED: lucide 1.72.0 has NO TriangleAlert key (the AudioLines/Music lesson)"],
+  ['announcement: "Megaphone"', "the announcement default icon"],
+  ['info: "Info"', "the info default icon"],
+  ["announcement: \"var(--color-cake-primary)\"", "the Flamingo banner strip — the variant map"],
+  ["action?: AnnouncementBannerAction", "the call-to-action slot"],
+  ['className="ptp-announcement__action"', "the ghost action button render"],
+  ["aria-live=\"polite\"", "the indicator announces page turns politely"],
+  ["Math.round(track.scrollLeft / itemWidthOf(track)) + 1", "the owner-spec'd active index formula"],
+  ["onScroll={handleScroll}", "the indicator tracks the native scroll event"],
+  ["requestAnimationFrame", "the rAF throttle — one state write per frame"],
+  ["cancelAnimationFrame", "the pending frame is cleaned up on unmount"],
+]) {
+  if (!editorialSrcAf.includes(needle)) {
+    failures.push(`react/editorial.tsx must contain ${JSON.stringify(needle)} — (af3) ${label}`);
+  }
+}
+for (const [needle, label] of [
+  [/variant\?:\s*AnnouncementVariant/, "the compiled variant prop"],
+  [/action\?:\s*AnnouncementBannerAction/, "the compiled action slot"],
+  [/icon\?:\s*IconName/, "the compiled icon override (a real lucide key, typed)"],
+]) {
+  if (!needle.test(editorialDtsAf)) {
+    failures.push(`(af3) the compiled react/editorial.d.ts must carry ${label}`);
+  }
+}
+// THE V2.7 CODEX NEEDLES — SYSTEM_PROMPT.md recipes must be factual against
+// the new surface (title checked in (dd4)).
+for (const [needle, label] of [
+  ["### <FormField>", "the FormField recipe exists"],
+  ["prefix=\"$\"", "the codex shows the prefix adornment"],
+  ["required", "the codex mentions the required marker"],
+  ['align: "right"', "the codex DataTable shows the align fix"],
+  ["### <RadioCardGroup>", "the RadioCardGroup recipe exists"],
+  ["--bg-surface", "the codex carries the selected-card lift note"],
+  ["### <ToggleSwitch>", "the ToggleSwitch recipe exists"],
+  [/visible text/i, "the codex documents the label as visible text"],
+  ["### <AnnouncementBanner>", "the AnnouncementBanner recipe exists"],
+  ['variant="announcement"', "the codex shows the variant API"],
+  ["TriangleExclamationPoint", "the codex names the live-map-valid warning icon"],
+  ["### <ProseBlock>", "the ProseBlock recipe exists"],
+  ["--party-mauve", "the codex documents the mauve quote bar"],
+  ["### <Carousel>", "the Carousel recipe exists"],
+  ["indicator", "the codex documents the page indicator"],
+]) {
+  const found = needle instanceof RegExp ? needle.test(systemPrompt) : systemPrompt.includes(needle);
+  if (!found) {
+    failures.push(`SYSTEM_PROMPT.md must contain ${String(needle)} — (af3) the v2.7 codex ${label}`);
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase): scaffold, wiring, pack=43 (40 + editorial.css/js/d.ts), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.3.0 safety diff empty beyond the owner-authorized 2.4.0 deltas (editorial layer, forms/viz growth, umbrella re-exports; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ fully frozen (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + surface-scoped package shadow contract (css/surface.css: sig-surface-card rules ONLY, hex banned) + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks incl. tabs-module + data-table-ledger, constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room and the Master Index; 2.2.0: promoted surface anatomy (s1) + umbrella SurfaceCard/PageHero (s2) + living telemetry-limits gate (v22); 2.3.0: (dd1) data.css anatomy — scroll containment (NO 768px query: the wrapper IS the mobile strategy), uppercase thead, tabular-nums, 8% Flamingo hover wash, aria-selected tab contract (attribute-driven, Flamingo underline, zero .is-active), var(--status) callout strip, layered import after surface.css, zero hex/zero shadow; (dd2) umbrella re-exports all six new names (DataTable/Tabs/Callout/Select/Checkbox/Avatar + types) in .d.ts AND .js with compiled artifacts; (dd3) forms additions — appearance-none select/checkbox, :checked Teal fill, ::after on-cake checkmark, positioned chevron, avatar disc, inline-border ring + runtime --party-* guard, live-map-probed ChevronDown; (dd4) the Universal AI Replication Contract (≥15 snippet headings, engine v2.6, the closing law); (dd5) the tabs showcase — module switcher + ledger (5 crew rows, composed PartyBadge) + three callout moods + avatar crew (2 party rings) + input matrix (Select 3 options/Checkbox/Switch); (dd6) cortex sweep grows .ptp-data-table/.ptp-tabs__tab/.ptp-callout + server version 2.3.0; 2.4.0: (ed1) editorial.css anatomy — carousel snap (mandatory + snap-start + thin scrollbar), prose blockquote (inset well + 4px Flamingo rule + italic + mono attribution), banner var(--status) strip + ghost Teal-hover close, layered import after data.css, zero hex/zero shadow (the e1 scope extends: ALL css/ files flat except surface.css's sanctioned sig-surface-card rules); (ed2) umbrella re-exports the 2.4.0 names (FormField/RadioCardGroup/Carousel/CarouselItem/ProseBlock/AnnouncementBanner/StatCard/Sparkline + types) in .d.ts AND .js with compiled artifacts; (ed3) forms additions — :has() focus ring + documented no-:has degrade, radio selected contract (class mirror + :has(input:checked) → 2px Flamingo + 10% cake tint), visually hidden input, auto-fit minmax(140px,1fr) grid, hint-XOR-error slot with role='alert'; (ed4) Sparkline one-svg-two-elements (polygon + polyline, preserveAspectRatio none, ≥2-point guard, pure sparkPoints helper) + StatCard FLAT (surface + hairline, tabular-nums, uppercase label, party deltas); (icons) Megaphone/ChevronLeft/ChevronRight probed against the live lucide map; (showcase) FormField side-by-side + RadioCardGroup RSVP + Data view banner/KPI trio/Field Notes prose/clippings carousel, pack=43 (40 + editorial.css/js/d.ts), v2.3.0 safety diff empty beyond the owner-authorized 2.4.0 deltas AND tools/ fully frozen");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3): scaffold, wiring, pack=43 (UNCHANGED — the 2.4.1 patch adds zero new files), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.4.0 safety diff empty beyond the owner-authorized 2.4.1 deltas (data/forms/editorial growth + compiled pairs, umbrella re-exports; viz.css + signature-style.css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ fully frozen (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes (2.4.1: Info/TriangleExclamationPoint — NO TriangleAlert key in lucide 1.72.0, the AudioLines precedent), ambient-elevation markers + surface-scoped package shadow contract + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks, constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room and the Master Index; 2.2.0: promoted surface anatomy (s1) + umbrella SurfaceCard/PageHero (s2) + living telemetry-limits gate (v22); 2.3.0: (dd1) data.css anatomy, (dd2) umbrella re-exports, (dd3) forms additions, (dd4) the codex (title now v2.7), (dd5) the tabs showcase, (dd6) the cortex sweep; 2.4.0: (ed1) editorial.css anatomy (quote rule now MAUVE per the 2.4.1 owner override), (ed2) umbrella re-exports (AnnouncementVariant + AnnouncementBannerAction now), (ed3) forms additions (selected card now lifts to var(--bg-surface)), (ed4) Sparkline/StatCard, (showcase) banner variant=announcement + action + Contribution/prefix=$ + v2.4.1 copy; 2.4.1: (af1) DataTable align — ancestor-scoped .ptp-data-table__align-* utilities ((0,2,0) beats thead th (0,1,2): the header flushes over its values at last), align flows to BOTH th and td, compiled .d.ts factual, ledger numeric+align:right; (af2) FormField required (peach, visual-only, aria-hidden) + prefix (the justified __row/__prefix adornment composition), the visible switch label (.ptp-switch wrapper + .ptp-switch__pill migration audited: no pill property left on the bare wrapper, no aria-checked outside the pill, reduced-motion follows, __text text-main 0.875rem/500), the selected radio lift to var(--bg-surface) with the 2px Flamingo border kept; (af3) editorial deltas — mauve quote rule, h3 0.9375rem/600, kbd/code inline chip, tabular-nums indicator (rAF-throttled, owner formula), Teal-hover action button, variant/icon/action API factual in the compiled .d.ts, and the v2.7 codex needles (FormField/RadioCardGroup/ToggleSwitch/AnnouncementBanner/ProseBlock/Carousel recipes with align/lift/mauve/variant/prefix facts)");
