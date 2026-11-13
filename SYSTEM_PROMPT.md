@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v2.5
+# System Instruction: The Dynamic Signature Engine v2.6
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -75,6 +75,235 @@ Before you write a line of code, ask what line you can delete instead. The owner
 - **Minimalist Code:** Do not add "extra stuff" or decorative wrappers. If the UI looks clean and functions correctly with 3 lines of HTML instead of 10, use 3.
 
 When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<PartyBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
+
+## Universal AI Replication Contract:
+
+Any AI consuming `@edwyn/signature-style@2.3.0` can reproduce this signature verbatim — these snippets are the law. Every exported component, its exact props, one import, no invented props: read the snippet, copy the snippet.
+
+### <ThemeProvider>
+
+Wrap the app once; `theme` takes only whitelisted token keys with plain CSS values (no `{`, `}`, `;`, `\`):
+
+```tsx
+import { ThemeProvider } from "@edwyn/signature-style/react";
+
+<ThemeProvider theme={{ "--color-cake-primary": "#F2CDCD" }}>
+  <App />
+</ThemeProvider>
+```
+
+### <PageHero>
+
+The announcing header — serif display h1, optional muted mono subtitle, children slot for extras:
+
+```tsx
+<PageHero title="THE ENGINE" subtitle="every primitive, one dashboard · live showcase" />
+```
+
+### <SurfaceCard>
+
+The official surface: teal all-caps eyebrow + muted mono path share one meta row, ruled h2 title, children slot; `interactive` adds the hover lift:
+
+```tsx
+<SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
+  <Input placeholder="Guest name" />
+</SurfaceCard>
+```
+
+### <GlobalNav>
+
+Sticky navbar + mobile drawer. `activeHref` sets `aria-current="page"` on plain anchors only; with a router, pass `as={NavLink}` and let the ROUTER own active state — leave `activeHref` unset:
+
+```tsx
+const items = [{ href: "#/dashboard", label: "Dashboard" }];
+<GlobalNav items={items} activeHref="#/dashboard" />
+```
+
+### <Tabs>
+
+Controlled switcher — ZERO .is-active classes; `[aria-selected="true"]` IS the active state (Flamingo underline). Panels are yours: render the active branch yourself:
+
+```tsx
+const [moduleId, setModuleId] = useState("core");
+<Tabs
+  label="Dashboard modules"
+  tabs={[{ id: "core", label: "Core" }, { id: "data", label: "Data" }]}
+  activeId={moduleId}
+  onChange={setModuleId}
+/>
+```
+
+### <EventTimeline>
+
+Chronological alternating timeline; events group by `date`. `category` is strictly a `--party-*` token; `icon` must be a real lucide name:
+
+```tsx
+<EventTimeline
+  events={[{
+    id: "cake",
+    date: "October 2026",
+    time: "15:00",
+    title: "Cake cutting",
+    category: "--party-peach",
+    categoryLabel: "Birthday",
+    icon: "Cake",
+  }]}
+  onEventSelect={modal.open}
+/>
+```
+
+### useModal() + <EventModal>
+
+The hook owns selection state, the component owns the overlay (portal, Escape, backdrop click):
+
+```tsx
+const modal = useModal<PtpEvent>();
+{modal.selectedEvent !== null && (
+  <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
+)}
+```
+
+### <ProgressBar>
+
+Party-colored budget bar with the limit caption; `colorToken` accepts `--party-*` tokens only — anything else is refused at runtime:
+
+```tsx
+<ProgressBar value={72} colorToken="--party-green" label="Budget remaining" limitText="$720 / $1,000" />
+```
+
+### <StatRing>
+
+The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only:
+
+```tsx
+<StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
+```
+
+### <DataTable>
+
+The ledger table inside a scroll-containment wrapper; `numeric: true` right-aligns cells with tabular-nums; cell values are ReactNode, so a `<PartyBadge>` composes right in:
+
+```tsx
+<DataTable
+  columns={[
+    { key: "guest", header: "Guest" },
+    { key: "share", header: "Contribution", numeric: true },
+  ]}
+  rows={[
+    { guest: "Ana Souza", share: "$120" },
+    { guest: "Leo Martins", share: "$0" },
+  ]}
+  caption="Shared pot ledger · updated after every RSVP"
+/>
+```
+
+### <Callout>
+
+The persistent note — Toast's never-dismissing sibling; the 4px strip maps info → `--party-sky`, success → `--party-green`, warning → `--party-peach`:
+
+```tsx
+<Callout status="warning">3 pending RSVPs close Friday.</Callout>
+```
+
+### <Avatar>
+
+Initials disc — word-initials, max two, uppercased, derived from `name`; ring is an inline 2px `--party-*` BORDER (never a shadow); `size` is `32 | 40`:
+
+```tsx
+<Avatar name="Ana Souza" />
+<Avatar name="Priya Nair" size={40} ringToken="--party-mauve-soft" />
+```
+
+### <Input>
+
+The inset-well text field; `error` is a STATE flag — it only flips `aria-invalid` (peach border); render your own message beside it:
+
+```tsx
+<Input
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  error={name.length === 0 && "Name is required"}
+  aria-describedby="name-error"
+/>
+```
+
+### <TextArea>
+
+The same well, multi-line; identical error doctrine:
+
+```tsx
+<TextArea rows={4} value={bio} onChange={(e) => setBio(e.target.value)} />
+```
+
+### <Select>
+
+The native dropdown under a token chevron; `label` is the aria-label, `error` flips `aria-invalid`; the native `<option>` children are yours:
+
+```tsx
+<Select label="Dietary preference" value={diet} onChange={(e) => setDiet(e.target.value)}>
+  <option value="none">No preference</option>
+  <option value="vegetarian">Vegetarian</option>
+  <option value="vegan">Vegan</option>
+</Select>
+```
+
+### <Checkbox>
+
+Native check under `appearance: none` — checked paints the Teal fill and the dark on-cake checkmark:
+
+```tsx
+const [agreed, setAgreed] = useState(false);
+<Checkbox checked={agreed} onToggle={setAgreed} label="Send me the invite" />
+```
+
+### <ToggleSwitch>
+
+THE toggle — exactly ONE DOM element, the knob is a pseudo-element; `label` is the aria-label (the button has no visible text):
+
+```tsx
+const [on, setOn] = useState(false);
+<ToggleSwitch checked={on} onToggle={setOn} label="Make event public" />
+```
+
+### <ToastProvider> + useToast()
+
+Wrap once; push outcomes — status is `"success" | "error"`, mapped to `--party-green` / `--party-peach` strips, 3s auto-dismiss:
+
+```tsx
+<ToastProvider>
+  <RsvpForm />
+</ToastProvider>
+
+// inside <RsvpForm>:
+const toast = useToast();
+toast("success", "RSVP sent — see you there 🎉");
+```
+
+### <PartyBadge>
+
+Party-colored content badge — `colorToken` accepts ONLY `--party-*` tokens (compile error otherwise; runtime guard drops structural tokens):
+
+```tsx
+<PartyBadge colorToken="--party-peach" label="Birthday" />
+```
+
+### <Icon>
+
+Lucide exclusively — `name` must be a real lucide icon key (a typo is a compile error, not a blank square); stroke locked to 2:
+
+```tsx
+<Icon name="PartyPopper" size={16} />
+```
+
+### <EmptyState>
+
+The Pillar 4 empty state — icon, optional title, muted message, centered:
+
+```tsx
+<EmptyState icon="PackageOpen" title="Nothing here" message="Add your first event." />
+```
+
+The three doctrines, one line each: **Token Cascade** — every state derives from the core tokens via color-mix()/transforms, never hand-authored; **Override Protocol** — scoped utility classes alter one element, the global variables never move; **Rule of Engagement** — `--party-*` is content-only, Flamingo/Teal is structural-only, the families never cross. Never invent tokens; never hardcode hex.
 
 ## Execution Rules:
 - Use the Theme Provider Pattern for the base layout.
