@@ -1,0 +1,177 @@
+/* ==========================================================================
+   EDITORIAL — carousel, prose, announcements (2.4.0 "Form Wrappers &
+   Editorial Primitives"). Layered into `cascade` by signature-style.css
+   (imported after data.css).
+
+   THREE PATTERNS, THREE CLASS FAMILIES:
+   - .ptp-carousel (+ __track / __item / __btn) — the horizontal scroll
+     strip. THE JUSTIFIED WRAPPERS, documented: track + 2 buttons = the
+     mechanics. The track is the scroll container (flex, snap, thin
+     scrollbar); the buttons are the pointer affordance — keyboard
+     users scroll the track itself (tabIndex 0, role region). The
+     item's width is CONTENT-driven (flex: 0 0 auto); compose a
+     min-width to control the scroll rhythm.
+   - .ptp-prose — the editorial slot: ONE container, styled
+     DESCENDANTS. p (0.875rem, 1.6 line-height), blockquote (inset
+     well + 4px Flamingo left rule + italic bright ink), footer/cite
+     (mono muted attribution). No variant knobs — a typography
+     container, not a rich-text component.
+   - .ptp-announcement (+ __icon / __text / __close) — the full-width
+     announcement strip: 4px var(--status) left rule (the toast/
+     callout mechanism — react maps info/success/warning to --party-
+     sky/green/peach INLINE), inset-well body, ghost Teal-hover close
+     (the modal-close signature).
+
+   COLOR DOCTRINE: zero hex, zero box-shadow. Hairlines are 15-20%
+   color-mix derivations of --text-muted; the Flamingo blockquote rule
+   and the Teal hovers are the structural accents; the banner strip
+   reads var(--status) — content tokens for content outcomes (Rule of
+   Engagement), mapped in react/editorial.tsx exactly like the toasts
+   and callouts.
+
+   MOTION: button transitions ride --transition-standard;
+   prefers-reduced-motion turns them off. The carousel's smooth-scroll
+   behavior is JS-side (react/editorial.tsx reads matchMedia once and
+   falls back to behavior "auto") — the base layer's global reduced-
+   motion guard is the second net.
+   ========================================================================== */
+
+/* -- the carousel: track + 2 buttons = the mechanics ------------------------- */
+.ptp-carousel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
+.ptp-carousel__track {
+  display: flex;
+  gap: var(--space-standard);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  /* The focusable scroll region rings with the doctrine outline. */
+}
+.ptp-carousel__track:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+.ptp-carousel__item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+/* Ghost buttons — token-driven: transparent body, hairline border,
+   muted chevron; hover answers with the Teal (structural accent). */
+.ptp-carousel__btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-muted);
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+  transition: var(--transition-standard);
+}
+.ptp-carousel__btn:hover {
+  color: var(--color-cake-secondary);
+  border-color: var(--color-cake-secondary);
+}
+.ptp-carousel__btn:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* -- the prose block: the editorial slot (styled descendants) ---------------- */
+.ptp-prose p {
+  margin: 0 0 var(--space-standard);
+  color: var(--text-main);
+  font-size: 0.875rem; /* 14px — an 8px-grid half-step */
+  line-height: 1.6;
+}
+/* The last paragraph stands down — the container owns the bottom air. */
+.ptp-prose p:last-child {
+  margin-bottom: 0;
+}
+.ptp-prose blockquote {
+  margin: var(--space-standard) 0;
+  padding: var(--space-standard);
+  border-left: 4px solid var(--color-cake-primary);
+  background: var(--bg-inset);
+  border-radius: var(--radius-ui);
+  color: var(--text-bright);
+  font-style: italic;
+}
+.ptp-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+/* Attribution line(s) — mono, muted, their own row. cite sheds the UA
+   (and inherited blockquote) italics so the mono voice reads clean. */
+.ptp-prose footer,
+.ptp-prose cite {
+  display: block;
+  margin-top: var(--space-tight);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-style: normal;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+/* -- the announcement strip --------------------------------------------------- */
+.ptp-announcement {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-left: 4px solid var(--status);
+  border-radius: var(--radius-ui);
+  padding: var(--space-tight) var(--space-standard);
+  color: var(--text-main);
+  font-size: 0.875rem;
+}
+.ptp-announcement__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--status);
+}
+.ptp-announcement__text {
+  flex: 1;
+}
+/* The close: the modal-close signature — icon-only, muted, Teal hover. */
+.ptp-announcement__close {
+  appearance: none;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+  transition: var(--transition-standard);
+}
+.ptp-announcement__close:hover {
+  color: var(--color-cake-secondary);
+}
+.ptp-announcement__close:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* Motion is a gift, not a requirement (the smooth-scroll fallback is
+   JS-side; this kills the css half). */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-carousel__btn,
+  .ptp-announcement__close {
+    transition: none;
+  }
+}

@@ -15,3 +15,4 @@ export { Input, TextArea, ToggleSwitch, Select, Checkbox, Avatar, FormField, Rad
 export { ToastProvider, useToast, } from "./toast.js";
 export { SurfaceCard, PageHero, } from "./surface.js";
 export { DataTable, Tabs, Callout, } from "./data.js";
+export { Carousel, CarouselItem, ProseBlock, AnnouncementBanner, } from "./editorial.js";

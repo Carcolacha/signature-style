@@ -88,3 +88,14 @@ export {
   type CalloutProps,
   type CalloutStatus,
 } from "./data.js";
+export {
+  Carousel,
+  type CarouselProps,
+  CarouselItem,
+  type CarouselItemProps,
+  ProseBlock,
+  type ProseBlockProps,
+  AnnouncementBanner,
+  type AnnouncementBannerProps,
+  type AnnouncementStatus,
+} from "./editorial.js";
