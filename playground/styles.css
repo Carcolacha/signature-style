@@ -219,6 +219,39 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* ---- timeline header breathing room (2.1.0 — MEASURED, gate sp1) ----------
+   THE BUG (probe-proven, BEFORE table): the package reserves
+   --tl-header-clearance = 68px for each group's first node, but its own
+   sticky header slab renders 69px tall (16 pad-top + 36px text line +
+   16 pad-bottom + 1px hairline border) — every group-first node started
+   1px UNDER the glass slab (December/January/February all measured
+   gap = −1px). Two scoped levers, package file untouched:
+
+   1. THE SLAB BREATHES — the package shorthand gives the header 16px
+      under the month text; this override adds one --space-tight step
+      (bottom padding 16 → 24px, slab 69 → 77px). Writing the plain
+      var(--space-standard) here would be a NO-OP (the shorthand already
+      sets 16px) — the value is deliberately var(--space-standard)-based
+      and INCREMENTAL.
+   2. THE CLEARANCE MIRRORS THE GROWTH — group-first items (padding) and
+      nodes (margin) both move to calc(--tl-header-clearance +
+      --space-standard * 2) = 68 + 32 = 100px. Both must move TOGETHER
+      or the title drifts off the node (they are sibling grid children
+      aligned to the same row). Verdict: 100 − 77 = 23px of air under
+      the slab (≥16px mandate), every offset on the 4px grid
+      (24 / 100 = 6×4 / 25×4). */
+.hub__card--timeline .ptp-timeline__header {
+  padding-bottom: calc(var(--space-standard) + var(--space-tight));
+}
+
+.hub__card--timeline .ptp-timeline__item--group-first {
+  padding-top: calc(var(--tl-header-clearance) + var(--space-standard) * 2);
+}
+
+.hub__card--timeline .ptp-timeline__node--group-first {
+  margin-top: calc(var(--tl-header-clearance) + var(--space-standard) * 2);
+}
+
 /* ---- metric label rows (telemetry card) -----------------------------------
    1.8.0: space-between + flex-end (caption left, value flush right,
    shared bottom floor). 2.0.0 OWNER MANDATE: margin-bottom
