@@ -312,7 +312,10 @@ if (!stylesCss.includes("max-width: 768px")) {
   failures.push("(b4) styles.css must collapse the hub grid at max-width: 768px");
 }
 
-// ---- (b5) App shape: provider nesting + hero + 4 hub cards -----------------------
+// ---- (b5) App shape: provider nesting + PageHero + 4 SurfaceCards ----------------
+// 2.2.0 RETARGET: the cards ARE the package's <SurfaceCard> and the hero is
+// <PageHero> — the playground composes the official primitives. The b5
+// needles pin the composition surface, not the DOM spelling.
 const appSrc = readFileSync(join(playground, "App.tsx"), "utf8");
 const APP_REQUIREMENTS = [
   ['from "@edwyn/signature-style/react"', "App imports the package through the exports map"],
@@ -321,22 +324,25 @@ const APP_REQUIREMENTS = [
   ["useToast()", "the toast hook drives the feedback card"],
   ["useModal<", "the modal hook drives the timeline card"],
   ['<GlobalNav items={NAV_ITEMS} as={navLink} activeHref={VIEW_HREFS[view]} />', "the global nav tops the page (2.1.0: rendered through the HubLink factory)"],
-  ['<header className="hub__hero">', "the announcing hero header (n-hub2)"],
+  ["SurfaceCard,", "the surface primitive is imported from the package (2.2.0)"],
+  ["PageHero,", "the page hero primitive is imported from the package (2.2.0)"],
+  ["<PageHero title={hero.title} subtitle={hero.sub} />", "the announcing hero renders through the package primitive (n-hub2, 2.2.0)"],
   ['title: "THE ENGINE"', "the hero announces THE ENGINE (n-hub2, per-view HERO_COPY)"],
-  ['<p className="hub__hero-sub">', "the hero subtitle element (n-hub2)"],
   ["every primitive, one dashboard · live showcase", "the dashboard hero subtitle string (n-hub2)"],
   ['className="hub"', "the single hub grid container"],
-  ['<div className="hub__meta">', "the shed meta row on every card (n-hub3)"],
-  ['<span className="hub__label">', "the teal all-caps label (n-hub3)"],
-  ['<span className="hub__path">', "the muted mono source path (n-hub3)"],
-  ["hub__card--forms", "card 1 — form controls"],
-  ["hub__card--timeline", "card 2 — timeline + modal"],
-  ["hub__card--telemetry", "card 3 — telemetry"],
-  ["hub__card--palette", "card 4 — party palette"],
-  ["components/forms.tsx", "card 1 declares its source path"],
-  ["components/timeline.tsx", "card 2 declares its source path"],
-  ["components/viz.tsx", "card 3 declares its source path"],
-  ["components/primitives.tsx", "card 4 declares its source path"],
+  ['eyebrow="Forms"', "card 1 — the teal eyebrow (n-hub3 anatomy, package-owned)"],
+  ['eyebrow="Timeline"', "card 2 — the teal eyebrow"],
+  ['eyebrow="Telemetry"', "card 3 — the teal eyebrow"],
+  ['eyebrow="Palette"', "card 4 — the teal eyebrow"],
+  ['meta="components/forms.tsx"', "card 1 declares its source path"],
+  ['meta="components/timeline.tsx"', "card 2 declares its source path"],
+  ['meta="components/viz.tsx"', "card 3 declares its source path"],
+  ['meta="components/primitives.tsx"', "card 4 declares its source path"],
+  ['title="Form Controls"', "card 1's ruled title"],
+  ['title="The Chronology"', "card 2's ruled title"],
+  ['className="hub__card--timeline"', "card 2 keeps the playground grid-span modifier (composed ON the primitive)"],
+  ['title="Budget & RSVP"', "card 3's ruled title"],
+  ['title="The Party Palette"', "card 4's ruled title"],
   ['className="hub__btn"', "the primary action echoes btn-primary"],
   ["PartyBadge", "the palette card renders party badges"],
   ["StatRing", "the telemetry card renders the ring"],
@@ -347,17 +353,22 @@ for (const [needle, label] of APP_REQUIREMENTS) {
     failures.push(`(b5) App.tsx must contain ${needle} — ${label}`);
   }
 }
-// 2.1.0: the 4-card audit counts INSIDE the dashboard branch only — the
-// view switcher added placeholder/gateway cards elsewhere in the file.
+// 2.2.0: the 4-card audit counts <SurfaceCard INSIDE the dashboard branch
+// only — the view switcher legitimately renders SurfaceCards elsewhere
+// (the placeholder modules).
 const dashStart = appSrc.indexOf("function DashboardView");
 const dashEnd = appSrc.indexOf("function IndexView");
 if (dashStart === -1 || dashEnd === -1 || dashEnd < dashStart) {
   failures.push("(b5) DashboardView…IndexView functions missing — the dashboard branch cannot be audited");
 } else {
   const dashSlice = appSrc.slice(dashStart, dashEnd);
-  const sectionCount = (dashSlice.match(/<section className="hub__card /g) ?? []).length;
-  if (sectionCount !== 4) {
-    failures.push(`(b5) the dashboard branch must have exactly 4 card sections, found ${sectionCount}`);
+  const surfaceCount = (dashSlice.match(/<SurfaceCard/g) ?? []).length;
+  if (surfaceCount !== 4) {
+    failures.push(`(b5) the dashboard branch must render exactly 4 SurfaceCards, found ${surfaceCount}`);
+  }
+  const interactiveCount = (dashSlice.match(/interactive\s*(\/?>|className)/g) ?? []).length;
+  if (interactiveCount !== 4) {
+    failures.push(`(b5) all four dashboard cards must be interactive hover modules, found interactive on ${interactiveCount}`);
   }
 }
 
@@ -379,39 +390,45 @@ if (iconNames.length === 0) {
 }
 
 // ---- (h1) staggered load-in + reduced-motion escape + ruled headers --------------
+// 2.2.0 RETARGET: the stagger animates the package's .sig-surface-card
+// primitives (entry choreography is per-page); the ruled headers are
+// package-owned now (css/surface.css .sig-surface-card__title).
 if (!stylesCss.includes("@keyframes slideUpFade")) {
   failures.push("(h1) styles.css must declare @keyframes slideUpFade");
 }
 if (!stylesCss.includes("animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards")) {
   failures.push(
-    "(h1) .hub__card must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
+    "(h1) .sig-surface-card must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
   );
 }
-if (!/\.hub__card\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
-  failures.push("(h1) .hub__card needs the opacity: 0 animation base");
+if (!/\.sig-surface-card\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
+  failures.push("(h1) .sig-surface-card needs the opacity: 0 animation base");
 }
 for (const [child, delay] of [[1, "0.1s"], [2, "0.2s"], [3, "0.3s"], [4, "0.4s"]]) {
   const stagger = new RegExp(
-    `\\.hub__card:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
+    `\\.sig-surface-card:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
     "s",
   );
   if (!stagger.test(stylesCss)) {
-    failures.push(`(h1) .hub__card:nth-child(${child}) must stagger at animation-delay: ${delay}`);
+    failures.push(`(h1) .sig-surface-card:nth-child(${child}) must stagger at animation-delay: ${delay}`);
   }
 }
-const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.hub__card\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
+const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.sig-surface-card\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
 if (!reduceEscape.test(stylesCss)) {
   failures.push(
     "(h1) MANDATORY prefers-reduced-motion: reduce escape missing — without animation: none + opacity: 1, reduced-motion users get permanently invisible cards",
   );
 }
-if (!stylesCss.includes(".hub__card > h2")) {
-  failures.push("(h1) ruled headers expected on .hub__card > h2 (child combinator — package timeline h2s stay untouched)");
+// The ruled headers live in the package (css/surface.css) since 2.2.0 —
+// the class-on-the-h2 upgrade of the old `.hub__card > h2` child combinator.
+const surfaceCssH1 = readFileSync(resolve(root, "css/surface.css"), "utf8");
+if (!surfaceCssH1.includes(".sig-surface-card__title")) {
+  failures.push("(h1) ruled headers expected on .sig-surface-card__title (package-owned anatomy since 2.2.0)");
 }
-if (!stylesCss.includes("padding-bottom: var(--space-tight)")) {
+if (!surfaceCssH1.includes("padding-bottom: var(--space-tight)")) {
   failures.push("(h1) ruled headers need padding-bottom: var(--space-tight)");
 }
-if (!stylesCss.includes("border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent)")) {
+if (!surfaceCssH1.includes("border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent)")) {
   failures.push("(h1) ruled headers need the 10% color-mix hairline");
 }
 
@@ -733,15 +750,16 @@ if (typeof pkg.scripts?.["verify:mcp"] !== "string") {
 }
 
 // ---- (m3) data-testid wiring for the visual cortex -------------------------------
-// 2.0.0 RENAME: card hooks that contained "bento" become hub-card-*; the
-// metric and button hooks never referenced the grid name and stay.
+// 2.2.0 EVOLUTION: the four CARD hooks retired with the .hub__card section —
+// the cards are the package's .sig-surface-card primitives now, and the
+// cortex's stable card hook is the CLASS selector itself (the default sweep
+// carries ".sig-surface-card"; pinned by the server.ts needles in (s2)'s
+// compiled-dist check and the verify:mcp smoke's surface hits). What stays:
+// the metric hooks (plus the 2.2.0 guests row) and the primary toast button.
 const TESTID_NEEDLES = [
-  ['data-testid="hub-card-forms"', "the forms card hook"],
-  ['data-testid="hub-card-timeline"', "the timeline card hook"],
-  ['data-testid="hub-card-telemetry"', "the telemetry card hook"],
-  ['data-testid="hub-card-palette"', "the palette card hook"],
   ['data-testid="metric-budget-remaining"', "the budget-remaining metric hook"],
   ['data-testid="metric-budget-spent"', "the budget-spent metric hook"],
+  ['data-testid="metric-guests"', "the guests-confirmed metric hook (2.2.0)"],
   ['data-testid="metric-rsvp"', "the rsvp metric hook"],
   ['data-testid="btn-toast"', "the primary toast button hook"],
 ];
@@ -774,32 +792,37 @@ if (!hubSpan.test(stylesCss)) {
 }
 
 // ---- (n-hub2) THE ANNOUNCED HEADER — checked in (b5) App needles -----------------
-// (the hero strings live in APP_REQUIREMENTS; this comment anchors the
-// suite numbering — n-hub2 has no styles.css side)
+// (the hero strings live in APP_REQUIREMENTS; 2.2.0: the hero renders through
+// the package <PageHero> primitive. This comment anchors the suite numbering —
+// n-hub2 has no styles.css side; the .sig-page-hero css is package-owned and
+// pinned by (s1)/(n-hub3) style needles in css/surface.css.)
 
-// ---- (n-hub3) THE SHED CARD ANATOMY + TACTILE HOVER ------------------------------
-const metaRow = /\.hub__meta\s*\{[^}]*justify-content: space-between;[^}]*align-items: baseline;/s;
-if (!metaRow.test(stylesCss)) {
+// ---- (n-hub3) THE SHED CARD ANATOMY + TACTILE HOVER — package-owned (2.2.0) ------
+// The anatomy (meta row / teal eyebrow / mono path / ruled title / hover lift)
+// is css/surface.css's now; the METRIC AIR mandate stays playground-local.
+const surfaceCssMeta = readFileSync(resolve(root, "css/surface.css"), "utf8");
+const metaRow = /\.sig-surface-card__meta\s*\{[^}]*justify-content: space-between;[^}]*align-items: baseline;/s;
+if (!metaRow.test(surfaceCssMeta)) {
   failures.push(
-    "(n-hub3) .hub__meta must be space-between + baseline (teal label left, mono path right)",
+    "(n-hub3) .sig-surface-card__meta must be space-between + baseline (teal eyebrow left, mono path right)",
   );
 }
-const tealLabel = /\.hub__label\s*\{[^}]*color: var\(--color-cake-secondary\);[^}]*text-transform: uppercase;/s;
-if (!tealLabel.test(stylesCss)) {
+const tealLabel = /\.sig-surface-card__eyebrow\s*\{[^}]*color: var\(--color-cake-secondary\);[^}]*text-transform: uppercase;/s;
+if (!tealLabel.test(surfaceCssMeta)) {
   failures.push(
-    "(n-hub3) .hub__label must be the signature teal (var(--color-cake-secondary)) with text-transform: uppercase (content stays capitalized words)",
+    "(n-hub3) .sig-surface-card__eyebrow must be the signature teal (var(--color-cake-secondary)) with text-transform: uppercase (content stays capitalized words)",
   );
 }
-const monoPath = /\.hub__path\s*\{[^}]*font-family: var\(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace\);[^}]*color: var\(--text-muted\);/s;
-if (!monoPath.test(stylesCss)) {
+const monoPath = /\.sig-surface-card__path\s*\{[^}]*font-family: var\(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace\);[^}]*color: var\(--text-muted\);/s;
+if (!monoPath.test(surfaceCssMeta)) {
   failures.push(
-    '(n-hub3) .hub__path must be muted mono — font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace) + var(--text-muted)',
+    '(n-hub3) .sig-surface-card__path must be muted mono — font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace) + var(--text-muted)',
   );
 }
-const hoverLift = /\.hub__card:hover\s*\{[^}]*transform: translateY\(-2px\);[^}]*0 16px 40px rgba\(0, 0, 0, 0\.5\);/s;
-if (!hoverLift.test(stylesCss)) {
+const hoverLift = /\.sig-surface-card--interactive:hover\s*\{[^}]*transform: translateY\(-2px\);[^}]*0 16px 40px rgba\(0, 0, 0, 0\.5\);/s;
+if (!hoverLift.test(surfaceCssMeta)) {
   failures.push(
-    "(n-hub3) .hub__card:hover must lift translateY(-2px) with the deepened 0 16px 40px rgba(0, 0, 0, 0.5) ambient shadow — the tactile half of the owner elevation override",
+    "(n-hub3) .sig-surface-card--interactive:hover must lift translateY(-2px) with the deepened 0 16px 40px rgba(0, 0, 0, 0.5) ambient shadow — the tactile half of the owner elevation override",
   );
 }
 const metricAir = /\.hub__metric\s*\{[^}]*margin-bottom: var\(--space-standard\);/s;
@@ -823,10 +846,10 @@ for (const [needle, label] of GLASS_NEEDLES) {
     failures.push(`(g2) css/timeline.css must contain ${needle} — ${label}`);
   }
 }
-const nodeShadow = /\.hub__card \.ptp-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
+const nodeShadow = /\.sig-surface-card \.ptp-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
 if (!nodeShadow.test(stylesCss)) {
   failures.push(
-    "(g2) styles.css must carry the composition-layer node elevation — .hub__card .ptp-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }",
+    "(g2) styles.css must carry the composition-layer node elevation — .sig-surface-card .ptp-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); } (2.2.0: the ancestor is the package primitive)",
   );
 }
 // THE DOCTRINE BOUNDARY, enforced twice: the package file itself must still

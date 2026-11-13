@@ -1,45 +1,51 @@
 /**
- * THE ENGINE — hub styles (2.0.0 "The Hub Migration — Shed Aesthetic").
+ * THE ENGINE — hub styles (2.0.0 "The Hub Migration — Shed Aesthetic",
+ * 2.2.0 "Telemetry Limits & Official Surface Primitives").
  *
  * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
  * outside the package too). The only raw colors are the owner-mandated
- * rgba ELEVATION shadows, legal here by the same standing override:
+ * rgba ELEVATION shadows on the button and the timeline nodes, legal
+ * here by the same standing override:
  *
  * DOCTRINE BOUNDARY — OWNER OVERRIDE (1.6.0, reaffirmed 1.8.0 + 2.0.0):
- * elevation lives in THE COMPOSITION LAYER ONLY; THE PACKAGE STAYS FLAT
- * (gates f1/fb1/t1/v1/e1 enforce zero box-shadow across css/, and e1's
- * scan covers timeline.css). The inset top-highlight, the ambient
- * shadows and the hover lift below are rgba literals ALLOWED HERE —
- * elevation is how the composition organizes attention, never a
- * package concern.
+ * elevation lives in THE COMPOSITION LAYER — and, since 2.2.0, in the
+ * PACKAGE's css/surface.css (the .sig-surface-card primitive ships its
+ * ambient elevation contract; gate (e1) scopes the exception to that
+ * file). What remains HERE is the button pop and the timeline node
+ * elevation — how the composition organizes attention, never a package
+ * concern beyond the surface primitive itself.
  *
- * 2.0.0 — THE HUB MIGRATION. The bento grid read as scattered boxes
- * because it had cards but no discipline. The Shed's rules now govern
- * the whole page:
+ * 2.2.0 — THE PLAYGROUND BECOMES A CONSUMER. The card anatomy this
+ * layer invented (surface, meta row, ruled title, hover lift, the
+ * announcing hero) is now the package's OFFICIAL exports
+ * (css/surface.css: .sig-surface-card / .sig-page-hero) — the
+ * corresponding local styles are DELETED, the package owns them. What
+ * stays playground-local, each with its reason:
  *
- *   1. ONE CONSTRAINED CENTERED COLUMN — .hub is a max-width 1400px
- *      auto-fit minmax(400px, 1fr) grid (gap 2rem); no more hand-placed
- *      asymmetric coordinates.
- *   2. AN ANNOUNCED HEADER — .hub__hero centers THE ENGINE in the serif
- *      display stack (letter-spacing 0.35em) over a muted mono
- *      subtitle, so the page says what it is before the cards start.
- *   3. STRICT CARD ANATOMY — every .hub__card is meta (teal all-caps
- *      label + muted mono path) → ruled h2 title → content. Same
- *      skeleton on every module; content is the only variable.
- *   4. TACTILE HOVER — cards lift 2px and deepen their ambient shadow;
- *      the surface answers the pointer.
+ *   1. THE CONSTRAINED CENTERED COLUMN — .hub is a max-width 1400px
+ *      auto-fit minmax(400px, 1fr) grid (gap 2rem); grid packing is
+ *      THIS page's layout decision, not a primitive concern.
+ *   2. THE STAGGER — slideUpFade + nth-child delays + the MANDATORY
+ *      prefers-reduced-motion escape, retargeted 2.2.0 to
+ *      .sig-surface-card (the composition animates the package's
+ *      primitives; entry choreography is per-page).
+ *   3. THE METRIC ROWS — .hub__metric space-between/flex-end + the
+ *      ≥16px air mandate + the breathing bars (1.8.0, unchanged).
+ *   4. THE GATEWAY BUTTONS — v2.1.0 <button> cards kept local: a
+ *      button cannot be the package's <section>-rendering SurfaceCard,
+ *      so the buttons WEAR the package's sig classes and this layer
+ *      only neutralizes the UA button chrome (see App.tsx).
+ *   5. THE NODE ELEVATION — retargeted 2.2.0 to the .sig-surface-card
+ *      ancestor (1.8.0 doctrine boundary unchanged: the package stays
+ *      shadow-free outside surface.css).
+ *   6. THE BUTTON POP — .hub__btn's Flamingo fill + its own ambient
+ *      shadow (v1.6.0 hierarchy, unchanged).
  *
- * Kept from the bento era, selectors renamed bento→hub: the slideUpFade
- * stagger with its MANDATORY prefers-reduced-motion escape (1.5.1), the
- * breathing telemetry rows/bars (1.8.0), the timeline node elevation in
- * THIS layer only (1.8.0 doctrine boundary), and the 768px single-
- * column collapse (1.5.0) — now a natural fit for auto-fit, pinned as
- * an explicit reset of the timeline's grid-row span.
- *
- * 2.1.0 adds: the MEASURED timeline header breathing room (scoped slab
- * padding + mirrored group-first clearance, ≥16px probe-verified) and
- * the Master Index layer — a constrained 900px gateway grid reusing the
- * hub card skeleton, where the cards themselves are the doors.
+ * Kept from earlier eras: the 2.1.0 MEASURED timeline header breathing
+ * room (scoped slab padding + mirrored group-first clearance, ≥16px
+ * probe-verified — unchanged, composed on the hub__card--timeline
+ * modifier that now rides <SurfaceCard className>), the two-row
+ * timeline span with its 768px reset, and the 900px index column.
  */
 
 /* ---- the hub column (2.0.0) --------------------------------------------- */
@@ -55,33 +61,9 @@
   gap: 2rem;
 }
 
-/* ---- the announcing hero (2.0.0) ----------------------------------------- */
-.hub__hero {
-  text-align: center;
-  padding: var(--space-section) var(--space-section) 0;
-}
-
-.hub__hero h1 {
-  /* The Shed's serif display voice. Besley is the named face; Georgia
-     carries it wherever Besley is not installed. Wide tracking turns
-     the title into an announcement, not a label. */
-  font-family: "Besley", Georgia, serif;
-  font-size: clamp(2.25rem, 6vw, 4rem);
-  font-weight: 600;
-  letter-spacing: 0.35em;
-  color: var(--text-main);
-  margin: 0;
-}
-
-.hub__hero-sub {
-  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
-  color: var(--text-muted);
-  letter-spacing: 0.15em;
-  font-size: 0.875rem;
-  margin: var(--space-tight) 0 0;
-}
-
-/* ---- staggered load-in (1.5.1, selectors renamed 2.0.0) ------------------ */
+/* ---- staggered load-in (1.5.1, retargeted to the primitive 2.2.0) --------
+   The composition animates the PACKAGE's .sig-surface-card primitives:
+   entry choreography is a per-page decision, the primitive ships none. */
 @keyframes slideUpFade {
   from {
     opacity: 0;
@@ -93,99 +75,35 @@
   }
 }
 
-/* ---- card anatomy — the Shed skeleton (2.0.0) ----------------------------
-   Elevation (inset highlight + ambient shadow) is composition-layer
-   ONLY (owner override, see the file header). The hover lift is the
-   tactile half of the same decision: the surface answers the pointer
-   by rising 2px and deepening its ambient shadow, on the package's own
-   transition tokens. */
-.hub__card {
-  background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
-  border-radius: var(--radius-ui);
-  padding: var(--space-section);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-standard);
-  min-width: 0;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 32px rgba(0, 0, 0, 0.4);
-  transition:
-    transform var(--transition-transform),
-    box-shadow var(--transition-standard);
+.sig-surface-card {
   animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   opacity: 0;
 }
 
-.hub__card:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 16px 40px rgba(0, 0, 0, 0.5);
-}
-
-/* DOM order of the cards: forms, timeline, telemetry, palette. */
-.hub__card:nth-child(1) {
+/* DOM order of the dashboard cards: forms, timeline, telemetry, palette. */
+.sig-surface-card:nth-child(1) {
   animation-delay: 0.1s;
 }
 
-.hub__card:nth-child(2) {
+.sig-surface-card:nth-child(2) {
   animation-delay: 0.2s;
 }
 
-.hub__card:nth-child(3) {
+.sig-surface-card:nth-child(3) {
   animation-delay: 0.3s;
 }
 
-.hub__card:nth-child(4) {
+.sig-surface-card:nth-child(4) {
   animation-delay: 0.4s;
 }
 
 /* MANDATORY accessibility escape: `opacity: 0` + a running animation
    would leave reduced-motion users with permanently invisible cards. */
 @media (prefers-reduced-motion: reduce) {
-  .hub__card {
+  .sig-surface-card {
     animation: none;
     opacity: 1;
   }
-}
-
-/* ---- meta row — the Shed header (2.0.0) -----------------------------------
-   Teal all-caps label left, muted mono source path right. text-transform
-   owns the capitalization: content stays "Forms", the eye reads FORMS. */
-.hub__meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-}
-
-.hub__label {
-  color: var(--color-cake-secondary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.hub__path {
-  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
-  color: var(--text-muted);
-  font-size: 0.75rem;
-}
-
-/* ---- card titles — ruled headers (1.5.1, 1.125rem in 2.0.0) --------------
-   Child combinator on purpose: `.hub__card > h2` rules ONLY the card's
-   own title. A descendant selector would also hit the timeline's
-   package-rendered .ptp-timeline__header h2s (higher specificity, 0,1,1
-   vs 0,1,0) and override their sticky-header padding/border geometry. */
-.hub__card > h2 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-main);
-  margin: 0 0 var(--space-standard);
-  padding-bottom: var(--space-tight);
-  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
 }
 
 /* ---- the timeline takes two rows (2.0.0) ----------------------------------
@@ -194,7 +112,8 @@
    FALLBACK RULE (decided post-probe, see the release proof): if the
    span leaves a dead void LARGER than one card's area (auto-fit holes),
    this rule is dropped and the cards flow naturally. The 768px collapse
-   below resets the span where spanning makes no sense. */
+   below resets the span where spanning makes no sense. The modifier
+   rides <SurfaceCard className="hub__card--timeline"> since 2.2.0. */
 .hub__card--timeline {
   grid-row: span 2;
 }
@@ -213,14 +132,14 @@
 }
 
 /* ---- timeline node elevation (1.8.0 — composition layer) -----------------
-   DOCTRINE BOUNDARY — owner v1.8.0, renamed to the hub ancestor 2.0.0:
-   the timeline nodes float. The shadow is applied HERE, in the
-   PLAYGROUND layer, via the .hub__card descendant (specificity 0,2,0
-   outranks the package node rule's 0,1,0). THE PACKAGE STAYS
-   SHADOW-FREE: css/timeline.css declares NO box-shadow — gate (e1)
-   scans every css/ file and must stay green. Same override shape as the
-   card/button elevation above. */
-.hub__card .ptp-timeline__node {
+   DOCTRINE BOUNDARY — owner v1.8.0, hub ancestor since 2.0.0,
+   retargeted to the package primitive 2.2.0: the timeline nodes float.
+   The shadow is applied HERE, in the PLAYGROUND layer, via the
+   .sig-surface-card ancestor (specificity 0,2,0 outranks the package
+   node rule's 0,1,0). THE PACKAGE STAYS SHADOW-FREE outside
+   css/surface.css: gate (e1) scopes the surface sanction to
+   .sig-surface-card rules in that file only. */
+.sig-surface-card .ptp-timeline__node {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -271,12 +190,14 @@
 
 /* 1.8.0 breathing bars — each progress bar hangs a --space-tight step
    below its metric row (on top of the 2.0.0 metric margin-bottom).
-   SCOPED TO THE COMPOSITION: package css/viz.css is untouched. Two
-   arms, one rule: the descendant arm is the spec'd
+   SCOPED TO THE COMPOSITION: package css/viz.css stays metric-agnostic.
+   Two arms, one rule: the descendant arm is the spec'd
    `.hub__metric .ptp-progress` (future-proof if a bar is ever composed
    INSIDE a metric block); the adjacent-sibling arm is the DOM truth
    today — App.tsx renders ProgressBar as the NEXT sibling of the metric
-   div, which a descendant selector could never reach. */
+   div, which a descendant selector could never reach. (2.2.0: the
+   package caption carries its OWN margin-top — the arm below only
+   lifts the bare track the extra step.) */
 .hub__metric .ptp-progress,
 .hub__metric + .ptp-progress {
   margin-top: var(--space-tight);
@@ -300,23 +221,15 @@
   gap: var(--space-tight);
 }
 
-/* ---- form-stack breathing (1.6.0) ---------------------------------------
-   The forms card pins its OWN inter-control gap at var(--space-standard)
-   so inputs / textarea / switch / button keep breathing even if the base
-   card gap is ever retuned. Same value, dedicated decision — no new
-   wrappers, the flex gap reaches the bare package controls directly. */
-.hub__card--forms {
-  gap: var(--space-standard);
-}
-
 /* ---- the master index (2.1.0 — gate ix2/ix1 support) ----------------------
    Three gateway doors in the SAME hub language: the grid keeps the
    auto-fit minmax(400px, 1fr) packing but constrains the column to
    900px — three cards read better narrow (owner call, documented:
    unconstrained they stretch to 1400px and the trio stops reading as a
-   set of doors). The cards ARE <button>s in App.tsx: the UA button
-   styles are neutralized below so the hub surface + hover lift carry
-   the whole interaction, and keyboard focus presses the same door. */
+   set of doors). The cards ARE <button>s in App.tsx wearing the
+   package's .sig-surface-card classes; the UA button chrome is
+   neutralized below so the package surface + hover lift carry the
+   whole interaction, and keyboard focus presses the same door. */
 .hub--index {
   max-width: 900px;
 }

@@ -1,6 +1,19 @@
 /**
- * App — THE ENGINE + THE MASTER INDEX (2.1.0 "Timeline Breathing Room &
- * The Master Index").
+ * App — THE ENGINE + THE MASTER INDEX (2.2.0 "Telemetry Limits & Official
+ * Surface Primitives").
+ *
+ * 2.2.0 — THE PLAYGROUND BECOMES A CONSUMER OF ITS OWN PACKAGE. The Shed
+ * anatomy it invented in 2.0.0 is now the official <SurfaceCard> /
+ * <PageHero> exports (owner-mandated .sig-* classes), and the four
+ * dashboard cards + the placeholders + the shared hero render through
+ * them. styles.css DELETES the card/hero anatomy it used to own — the
+ * package owns it; the composition layer keeps only what is genuinely
+ * playground-local (the grid container, metric rows, buttons, stagger,
+ * node elevation, the gateway <button>s). Telemetry wears its limits:
+ * every ProgressBar carries a limitText caption, and the new guests row
+ * (170 / 200 on --party-sky, 85% — the RSVP ring's own ratio, coherent)
+ * is the limit caption's third live use. The ring shows its value now
+ * (showValue default true).
  *
  * 2.1.0 — TWO playground-layer moves, package frozen (safety diff vs
  * v2.0.0 is a release gate, tools/ frozen too):
@@ -14,31 +27,26 @@
  *
  *   2. THE MASTER INDEX — the hub becomes the "dashboard" VIEW of a
  *      state-based switcher: `type View` + a small HubLink renderer
- *      handed to <GlobalNav as={...}>. THE PACKAGE IS UNTOUCHED: the
- *      component-agnostic `as` contract receives { href, className,
- *      children, onClick? } (READ nav.tsx before touching this — the
- *      details are load-bearing):
+ *      handed to <GlobalNav as={...}>. (The package's `as` contract is
+ *      untouched — the details below are still load-bearing:)
  *
  *        · aria-current: GlobalNav only sets it on SELF-rendered plain
  *          anchors (plainAnchor = as === undefined). With a custom
  *          renderer the ROUTER owns active state — so HubLink owns it
  *          here: the factory closure (createHubLink) captures the
  *          activeHref and stamps aria-current="page" on the matching
- *          link. css/nav.css styling keeps working, zero package change.
+ *          link.
  *        · onClick: the drawer hands its close callback to the renderer;
  *          HubLink composes it AFTER its own preventDefault — a custom
  *          renderer that swallowed onClick would strand the drawer open.
  *        · preventDefault: hash hrefs would otherwise trigger native
  *          fragment jumps/full reloads; the SPA switch is state-only.
  *
- *      Views: "dashboard" (the 2.0.0 hub, unchanged), "index" (THE
- *      MASTER INDEX — three gateway cards with the Shed anatomy), and
- *      "events"/"guests"/"budget" placeholder modules that dogfood the
- *      package's <EmptyState> primitive inside a hub__card. The hero is
- *      shared across views; its copy switches per view (dashboard keeps
- *      THE ENGINE, index announces THE MASTER INDEX, the workshop
- *      modules get their own line). Default view stays "dashboard" so
- *      the cortex smoke finds the timeline on load.
+ *      Views: "dashboard", "index" (THE MASTER INDEX — three gateway
+ *      cards), and "events"/"guests"/"budget" placeholder modules that
+ *      dogfood the package's <EmptyState> primitive inside a
+ *      <SurfaceCard>. Default view stays "dashboard" so the cortex
+ *      smoke finds the timeline on load.
  *
  * TIMELINE HYDRATION (1.5.1, still load-bearing): the dashboard mirrors
  * the owner's real integration — source data lives in HIS shape
@@ -68,6 +76,8 @@ import {
   StatRing,
   PartyBadge,
   EmptyState,
+  SurfaceCard,
+  PageHero,
   type NavItem,
   type PtpEvent,
 } from "@edwyn/signature-style/react";
@@ -357,10 +367,7 @@ function Shell() {
   return (
     <>
       <GlobalNav items={NAV_ITEMS} as={navLink} activeHref={VIEW_HREFS[view]} />
-      <header className="hub__hero">
-        <h1>{hero.title}</h1>
-        <p className="hub__hero-sub">{hero.sub}</p>
-      </header>
+      <PageHero title={hero.title} subtitle={hero.sub} />
       {view === "dashboard" ? (
         <DashboardView />
       ) : view === "index" ? (
@@ -373,10 +380,12 @@ function Shell() {
 }
 
 /**
- * The hub dashboard — the 2.0.0 board, byte-for-byte in spirit: hero +
- * 4 cards with the Shed anatomy. Rendered INSIDE the providers so
- * useToast() and useModal() resolve. The fragment adds no DOM: the
- * cards' main.hub stays a sibling of the shell's nav/hero under #root.
+ * The hub dashboard — the 2.0.0 board, now rendered through the PACKAGE's
+ * own <SurfaceCard> (the Shed anatomy it inherited from this playground).
+ * All four cards are `interactive` — they are hover modules, timeline
+ * included. The chronology keeps the `hub__card--timeline` modifier via
+ * className: the grid span + the measured breathing-room overrides stay
+ * playground-scoped (styles.css), composed ON the primitive.
  */
 function DashboardView() {
   const toast = useToast();
@@ -385,12 +394,12 @@ function DashboardView() {
 
   return (
     <main className="hub">
-      <section className="hub__card hub__card--forms" data-testid="hub-card-forms">
-        <div className="hub__meta">
-          <span className="hub__label">Forms</span>
-          <span className="hub__path">components/forms.tsx</span>
-        </div>
-        <h2>Form Controls</h2>
+      <SurfaceCard
+        eyebrow="Forms"
+        meta="components/forms.tsx"
+        title="Form Controls"
+        interactive
+      >
         <Input placeholder="Guest name" />
         <TextArea placeholder="Notes for the host…" rows={3} />
         <ToggleSwitch
@@ -406,14 +415,15 @@ function DashboardView() {
         >
           Send test toast
         </button>
-      </section>
+      </SurfaceCard>
 
-      <section className="hub__card hub__card--timeline" data-testid="hub-card-timeline">
-        <div className="hub__meta">
-          <span className="hub__label">Timeline</span>
-          <span className="hub__path">components/timeline.tsx</span>
-        </div>
-        <h2>The Chronology</h2>
+      <SurfaceCard
+        eyebrow="Timeline"
+        meta="components/timeline.tsx"
+        title="The Chronology"
+        interactive
+        className="hub__card--timeline"
+      >
         <EventTimeline events={events} onEventSelect={modal.open} />
         {modal.selectedEvent !== null && (
           <EventModal
@@ -422,43 +432,63 @@ function DashboardView() {
             onClose={modal.close}
           />
         )}
-      </section>
+      </SurfaceCard>
 
-      <section className="hub__card hub__card--telemetry" data-testid="hub-card-telemetry">
-        <div className="hub__meta">
-          <span className="hub__label">Telemetry</span>
-          <span className="hub__path">components/viz.tsx</span>
-        </div>
-        <h2>Budget &amp; RSVP</h2>
+      <SurfaceCard
+        eyebrow="Telemetry"
+        meta="components/viz.tsx"
+        title="Budget & RSVP"
+        interactive
+      >
         <div className="hub__metric" data-testid="metric-budget-remaining">
           <span className="hub__metric-label">Budget remaining</span>
           <span className="hub__metric-value">72%</span>
         </div>
-        <ProgressBar value={72} colorToken="--party-green" label="Budget remaining" />
+        <ProgressBar
+          value={72}
+          colorToken="--party-green"
+          label="Budget remaining"
+          limitText="$1,440 / $2,000"
+        />
         <div className="hub__metric" data-testid="metric-budget-spent">
           <span className="hub__metric-label">Budget spent</span>
           <span className="hub__metric-value">45%</span>
         </div>
-        <ProgressBar value={45} colorToken="--party-peach" label="Budget spent" />
+        <ProgressBar
+          value={45}
+          colorToken="--party-peach"
+          label="Budget spent"
+          limitText="$1,325 / $2,000"
+        />
+        <div className="hub__metric" data-testid="metric-guests">
+          <span className="hub__metric-label">Guests confirmed</span>
+          <span className="hub__metric-value">170 / 200</span>
+        </div>
+        <ProgressBar
+          value={85}
+          colorToken="--party-sky"
+          label="Guests confirmed"
+          limitText="170 / 200 Guests"
+        />
         <div className="hub__metric" data-testid="metric-rsvp">
           <span className="hub__metric-label">RSVP ratio</span>
           <span className="hub__metric-value">85%</span>
         </div>
         <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
-      </section>
+      </SurfaceCard>
 
-      <section className="hub__card hub__card--palette" data-testid="hub-card-palette">
-        <div className="hub__meta">
-          <span className="hub__label">Palette</span>
-          <span className="hub__path">components/primitives.tsx</span>
-        </div>
-        <h2>The Party Palette</h2>
+      <SurfaceCard
+        eyebrow="Palette"
+        meta="components/primitives.tsx"
+        title="The Party Palette"
+        interactive
+      >
         <div className="hub__palette">
           {PALETTE.map(({ token, label }) => (
             <PartyBadge key={token} colorToken={token} label={label} />
           ))}
         </div>
-      </section>
+      </SurfaceCard>
     </main>
   );
 }
@@ -473,15 +503,19 @@ interface Gateway {
 }
 
 /**
- * THE MASTER INDEX — three gateway cards, exact Shed anatomy (teal
- * all-caps label / muted mono path / ruled title / description). The
- * PLANNER door is a REAL gateway (it navigates); STUDY and GAMES are
- * roadmap doors — DECISION (documented): clicking fires a success
- * toast ("on the roadmap") instead of routing to an EmptyState view,
- * because the nav's workshop entries ALREADY dogfood <EmptyState> as
- * placeholder views and a toast keeps the reader at the index. Cards
- * are <button>s for free keyboard/press semantics (strict phrasing-
- * content purity traded for a11y — renders identically everywhere).
+ * THE MASTER INDEX — three gateway cards. The v2.1.0 decision stands:
+ * the cards ARE <button>s (free keyboard/press semantics), kept LOCAL —
+ * a <button> cannot be the package's <section>-rendering SurfaceCard.
+ * So the buttons WEAR the package's own surface classes instead
+ * (.sig-surface-card + the --interactive modifier): the surface look,
+ * the elevation and the hover lift ride the package css, and this layer
+ * keeps only the button neutralization (cursor/text/font/color) + the
+ * description paragraph. The PLANNER door is a REAL gateway (it
+ * navigates); STUDY and GAMES are roadmap doors — DECISION (documented,
+ * 2.1.0): clicking fires a success toast ("on the roadmap") instead of
+ * routing to an EmptyState view. The meta row / ruled title inside each
+ * button are the package's OWN classes (sig-surface-card__*), styled by
+ * css/surface.css — the anatomy renders identically on a button.
  */
 function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
   const toast = useToast();
@@ -517,15 +551,15 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
         <button
           key={gateway.path}
           type="button"
-          className="hub__card hub__card--gateway"
+          className="sig-surface-card sig-surface-card--interactive hub__card--gateway"
           data-testid={`gateway-${gateway.label.toLowerCase()}`}
           onClick={gateway.action}
         >
-          <div className="hub__meta">
-            <span className="hub__label">{gateway.label}</span>
-            <span className="hub__path">{gateway.path}</span>
+          <div className="sig-surface-card__meta">
+            <span className="sig-surface-card__eyebrow">{gateway.label}</span>
+            <span className="sig-surface-card__path">{gateway.path}</span>
           </div>
-          <h2>{gateway.title}</h2>
+          <h2 className="sig-surface-card__title">{gateway.title}</h2>
           <p className="hub__gateway-desc">{gateway.description}</p>
         </button>
       ))}
@@ -535,25 +569,21 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
 
 /**
  * Placeholder modules (events / guests / budget) — the workshop dogfood:
- * the package's <EmptyState> primitive inside a hub__card with the full
- * Shed anatomy, so the doctrine shows even where the feature isn't yet.
+ * the package's <EmptyState> primitive inside the package's OWN
+ * <SurfaceCard> (2.2.0: the Shed anatomy is an official export now), so
+ * the doctrine shows even where the feature isn't yet.
  */
 function PlaceholderView({ view }: { view: WorkshopView }) {
   const mod = PLACEHOLDERS[view];
   return (
     <main className="hub">
-      <section className="hub__card hub__card--placeholder">
-        <div className="hub__meta">
-          <span className="hub__label">{mod.label}</span>
-          <span className="hub__path">{mod.path}</span>
-        </div>
-        <h2>{mod.title}</h2>
+      <SurfaceCard eyebrow={mod.label} meta={mod.path} title={mod.title}>
         <EmptyState
           icon="Hammer"
           title="In the workshop"
           message="This module ships in a future release."
         />
-      </section>
+      </SurfaceCard>
     </main>
   );
 }
