@@ -129,6 +129,82 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 1.8.0 — Bento Refinement & Spatial Harmony
+
+- **THE STORY — the composition gets its final polish, measured by the
+  cortex.** 1.7.0 gave sessions eyes; 1.8.0 is the first release
+  styled WITH them: every layout claim below is backed by a
+  BEFORE/AFTER `inspect_layout` rect table (one-off probe through the
+  MCP server, raw JSON-RPC), not by eyeballing. All changes are
+  composition-layer (`playground/`) plus ONE authorized package file
+  (`css/timeline.css`); every other package file is byte-frozen vs
+  1.7.0 (proved at the release gate), and `tokens.json` stays 1.4.0
+  per the standing decision.
+- **Asymmetric bento grid (composition)** — `.bento` moves from
+  `repeat(3, 1fr)` to
+  `minmax(300px, 1fr) minmax(400px, 1.5fr) minmax(300px, 1fr)`: the
+  center timeline takes the stage. Cortex-proven: the timeline card
+  renders 473.1px wide vs 315.4px side cards (was a flat 368px × 3 at
+  the 1280px probe viewport) — +28.5% for the date axis — while the
+  768px single-column collapse, placement resets, slideUpFade stagger
+  and reduced-motion escape are untouched.
+- **Glass header (the ONE authorized css/ change)** —
+  `.ptp-timeline__header` swaps its opaque `background: var(--bg-base)`
+  slab for `color-mix(in srgb, var(--bg-surface) 80%, transparent)` +
+  `backdrop-filter: blur(8px)` (webkit-prefixed): scrolled content
+  stays legible THROUGH the sticky date header. The 1.6.0 resurrection
+  contract is untouched and still load-bearing — `position: sticky`,
+  `top: 0`, `z-index: var(--z-sticky, 10)`, `align-self: start` (a
+  spanning grid item must not stretch into a cover slab). Cortex-proven
+  post-change: all three headers height 69px, visible, unchanged.
+- **Axis-aligned typography (css/timeline.css)** — text flows TOWARD
+  the axis: `.ptp-timeline__item--left` keeps `text-align: right`,
+  `.ptp-timeline__item--right` gains the explicit
+  `text-align: left`, and the 768px media query resets BOTH modifiers
+  to `text-align: left` explicitly (one right-hand stack, no axis to
+  hug).
+- **Node elevation — composition layer ONLY (doctrine boundary)** —
+  the nodes float: `.bento__card .ptp-timeline__node` gets
+  `box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)` in
+  `playground/styles.css` (owner-decided). THE PACKAGE KEEPS ITS
+  ZERO-BOX-SHADOW LAW: `css/timeline.css` gains backdrop-filter/
+  color-mix but ZERO box-shadow declarations this release, and gate
+  (e1)'s css/-wide scan stays green — same override shape as the 1.6.0
+  card/button elevation.
+- **Telemetry spacing (composition)** — `.bento__metric` is
+  `justify-content: space-between` + `align-items: flex-end` (caption
+  left, value flush right, shared bottom floor), and the progress bars
+  breathe: `margin-top: var(--space-tight)` scoped to the composition
+  via `.bento__metric .ptp-progress, .bento__metric + .ptp-progress`
+  (the adjacent-sibling arm is the DOM truth — App.tsx renders
+  ProgressBar as the metric row's next sibling, which a descendant
+  selector could never reach; package `css/viz.css` untouched).
+  Cortex-proven: bars shifted +8px (`--space-tight` = 0.5rem) below
+  their caption rows.
+- **Gate evolution (verify:playground)** — new gates: (g1) the
+  asymmetric grid string, (g2) glass needles in timeline.css + the
+  node-shadow needle ONLY in the playground styles + a targeted
+  re-assertion that timeline.css still declares zero box-shadow, (g3)
+  metric space-between/flex-end + the scoped breathing-bar margin.
+  **e2 AMENDMENT:** the v1.4.0-deletion guard now carries a ONE-LINE,
+  SINGLE-USE owner-sanctioned ALLOWLIST — exactly
+  `background: var(--bg-base);` (the header slab the glass header
+  replaced); every other deleted line must still trace to comments.
+  Negative test (falsifiability, restore-verified): reverting the grid
+  to `repeat(3, 1fr)` flips (g1) to FAIL; restore → PASS.
+- **Release proof** — `npm run verify:mcp` SMOKE ALL PASS (35 layout
+  hits, 6/6 timeline nodes with area, sample 44×44 @ x=617.98 — the
+  centered axis of the wider stage), proof screenshot
+  `/tmp/visual-cortex/v180-proof.png`; `vite build` exit 0; `npm pack`
+  still EXACTLY 34 files; `git diff v1.7.0 -- react/ tokens.json demo/
+  SYSTEM_PROMPT.md scripts/` EMPTY and `css/` shows ONLY
+  timeline.css changes. One operational lesson: on this box the vite
+  dev server lives on a Windows mount (`/mnt/c`) where inotify never
+  fires — a long-running server serves STALE transforms after edits
+  (the first AFTER probe measured the old grid until the server was
+  relaunched). When the cortex disagrees with the disk, restart the
+  server before doubting the CSS.
+
 ### 1.7.0 — The Visual Cortex (MCP Integration)
 
 - **THE STORY — the AI can now measure what it styles.** Every previous
