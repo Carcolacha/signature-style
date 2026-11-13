@@ -150,10 +150,28 @@
 }
 
 /* ---- metric label rows (telemetry card) -------------------------------- */
+/* 1.8.0 TELEMETRY — space-between was already the horizontal law
+   (caption left, value flush right); the change is vertical: flex-end
+   bottoms the value onto the caption's baseline row instead of
+   aligning type baselines, so multi-size label/value pairs sit on one
+   shared floor. */
 .bento__metric {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-end;
+}
+
+/* 1.8.0 breathing bars — each progress bar hangs a --space-tight step
+   below its metric row (on top of the card's --space-standard flex
+   gap). SCOPED TO THE COMPOSITION: package css/viz.css is untouched.
+   Two arms, one rule: the descendant arm is the spec'd
+   `.bento__metric .ptp-progress` (future-proof if a bar is ever
+   composed INSIDE a metric block); the adjacent-sibling arm is the
+   DOM truth today — App.tsx renders ProgressBar as the NEXT sibling of
+   the metric div, which a descendant selector could never reach. */
+.bento__metric .ptp-progress,
+.bento__metric + .ptp-progress {
+  margin-top: var(--space-tight);
 }
 
 .bento__metric-label {
