@@ -44,6 +44,10 @@ export {
   type ProgressBarProps,
   StatRing,
   type StatRingProps,
+  Sparkline,
+  type SparklineProps,
+  StatCard,
+  type StatCardProps,
 } from "./viz.js";
 export {
   Input,

@@ -10,7 +10,7 @@ export { Icon, type IconProps, type IconName, EmptyState, type EmptyStateProps, 
 export { EventTimeline, type EventTimelineProps, type PtpEvent, } from "./timeline.js";
 export { EventModal, useModal, type EventModalProps, type UseModalReturn, } from "./modal.js";
 export { GlobalNav, type NavItem, type GlobalNavProps, } from "./nav.js";
-export { ProgressBar, type ProgressBarProps, StatRing, type StatRingProps, } from "./viz.js";
+export { ProgressBar, type ProgressBarProps, StatRing, type StatRingProps, Sparkline, type SparklineProps, StatCard, type StatCardProps, } from "./viz.js";
 export { Input, type InputProps, TextArea, type TextAreaProps, ToggleSwitch, type ToggleSwitchProps, Select, type SelectProps, Checkbox, type CheckboxProps, Avatar, type AvatarProps, FormField, type FormFieldProps, RadioCardGroup, type RadioCardGroupProps, type RadioCardOption, } from "./forms.js";
 export { ToastProvider, useToast, type ToastFn, type ToastItem, type ToastStatus, } from "./toast.js";
 export { SurfaceCard, type SurfaceCardProps, PageHero, type PageHeroProps, } from "./surface.js";

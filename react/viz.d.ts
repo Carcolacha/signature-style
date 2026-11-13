@@ -1,18 +1,21 @@
 /**
  * viz — telemetry primitives (1.3.0 "Telemetry Module", 2.2.0
- * "Telemetry Limits & Official Surface Primitives").
+ * "Telemetry Limits & Official Surface Primitives", 2.4.0 grows
+ * Sparkline / StatCard).
  *
- * Two lightweight SVG/HTML charting primitives with ZERO external
+ * Four lightweight SVG/HTML charting primitives with ZERO external
  * charting dependencies — the data-ink doctrine in component form:
  * no grid lines, no drop shadows, no 3D. Tracks are structural chrome
  * (`var(--bg-inset)` since 2.2.0 — owner-authorized retarget: the old
  * `var(--bg-surface)` track was invisible on var(--bg-surface) cards);
  * data fills are STRICTLY `--party-*` content tokens (Rule of
  * Engagement: party colors are the content/data colors). The ring
- * needs no CSS at all — pure SVG attributes; the bar's classes live
- * in css/viz.css.
+ * needs no CSS at all — pure SVG attributes; the bar's and the stat
+ * card's classes live in css/viz.css. `<Sparkline>` is likewise pure
+ * SVG — EXACTLY two elements (area polygon + line polyline) over a
+ * normalized viewBox, geometry computed in a pure helper.
  *
- * Rule of Engagement, enforced twice per component: `colorToken` is
+ * Rule of Engagement, enforced per component: `colorToken` is
  * typed as `PartyTokenName` (an `Extract` on `KnownToken`), so passing
  * a structural token like `--color-cake-primary` is a compile error —
  * and a runtime guard (`startsWith("--party-")`) warns and renders
@@ -30,7 +33,10 @@
  * Pruning Protocol: ProgressBar renders EXACTLY two elements plus the
  * optional caption (no wrappers around the track); StatRing renders
  * ONE svg with EXACTLY three circles (track + progress + boundary
- * hairline) and the optional centered value text.
+ * hairline) and the optional centered value text; Sparkline renders
+ * ONE svg with EXACTLY two elements (polygon + polyline); StatCard is
+ * label + value + optional delta + optional sparkline — flat, no
+ * shadow (the e1 doctrine).
  */
 import type { PartyTokenName } from "./primitives.js";
 /**
@@ -128,3 +134,74 @@ export interface StatRingProps {
     label?: string;
 }
 export declare function StatRing({ value, colorToken, size, strokeWidth, showValue, label, }: StatRingProps): import("react").JSX.Element | null;
+export interface SparklineProps {
+    /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
+    data: number[];
+    /** A `--party-*` content token — the ONLY tokens allowed here. Default --party-sky. */
+    colorToken?: PartyTokenName;
+    /** Width in px (also the viewBox width). Default 120. */
+    width?: number;
+    /** Height in px (also the viewBox height). Default 36. */
+    height?: number;
+    /** The accessible name (role="img"); defaults to "trend". */
+    label?: string;
+}
+/**
+ * `<Sparkline>` — the inline trend (2.4.0).
+ *
+ * ONE `<svg role="img" aria-label>` with EXACTLY TWO elements: the
+ * area `<polygon>` (`color-mix(in srgb, var(colorToken) 15%,
+ * transparent)` — the line's ghost) and the `<polyline>` line itself
+ * (`var(colorToken)`, 2px, round cap/join). The data normalizes into
+ * the viewBox (0 0 w h) via the pure `sparkPoints` helper;
+ * `preserveAspectRatio="none"` lets the svg stretch to any box while
+ * the geometry stays exact. Guards: a series shorter than 2 points has
+ * no trend to draw (warn + null, the PartyBadge philosophy); a
+ * structural `colorToken` is refused (Rule of Engagement). No CSS at
+ * all — pure SVG attributes, like StatRing.
+ *
+ * @example
+ * ```tsx
+ * <Sparkline data={[1200, 1450, 1380, 1600, 1780, 2000]} colorToken="--party-green" label="Budget trend" />
+ * ```
+ */
+export declare function Sparkline({ data, colorToken, width, height, label, }: SparklineProps): import("react").JSX.Element | null;
+export interface StatCardProps {
+    /** The muted uppercase caption (e.g. "Total Budget"). */
+    label: string;
+    /** The headline figure (e.g. "$2,000") — rendered tabular-nums. */
+    value: string;
+    /** The optional change caption (e.g. "+$440"). */
+    delta?: string;
+    /** The delta's direction — up → --party-green, down → --party-peach. */
+    deltaDirection?: "up" | "down";
+    /** The optional inline trend — renders a <Sparkline> labeled "<label> trend". */
+    sparklineData?: number[];
+    /** A `--party-*` content token for the sparkline (passed through). */
+    colorToken?: PartyTokenName;
+}
+/**
+ * `<StatCard>` — the KPI card (2.4.0).
+ *
+ * `<div class="ptp-stat-card">` → the label span (muted, uppercase,
+ * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
+ * → optional delta span (`--up` → var(--party-green), `--down` →
+ * var(--party-peach) — content outcomes, party tokens) → optional
+ * `<Sparkline>` (labeled "<label> trend"). FLAT by the e1 doctrine:
+ * the card separates with the 20% hairline, NO shadow (css/viz.css).
+ * The sparkline's own token guard applies — a structural token drops
+ * just the trend, the figures stay.
+ *
+ * @example
+ * ```tsx
+ * <StatCard
+ *   label="Total Budget"
+ *   value="$2,000"
+ *   delta="+$440"
+ *   deltaDirection="up"
+ *   sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
+ *   colorToken="--party-green"
+ * />
+ * ```
+ */
+export declare function StatCard({ label, value, delta, deltaDirection, sparklineData, colorToken, }: StatCardProps): import("react").JSX.Element;

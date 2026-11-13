@@ -21,9 +21,15 @@
    - `.ptp-progress__caption` — the 2.2.0 limit caption (mono,
      tabular-nums so digits don't jitter as values tick).
 
-   <StatRing> is still pure SVG attributes — geometry lives on the
-   circles (its boundary hairline is an SVG circle, not css); this
-   file deliberately does not know the ring exists.
+   2.4.0 ADDITION — `.ptp-stat-card` (+ __label / __value / __delta
+   [--up/--down]) — the KPI card. FLAT: surface background, the 20%
+   hairline, NO shadow (the e1 doctrine extends to every new file).
+   Delta colors are content outcomes: up → --party-green, down →
+   --party-peach.
+
+   <StatRing> and <Sparkline> are still pure SVG attributes — geometry
+   lives on the circles/points (the ring's boundary hairline is an SVG
+   circle, not css); this file deliberately does not know they exist.
 
    THE ONE TRANSITION is owner-mandated physics: `width 0.3s ease-out`
    on the fill. `prefers-reduced-motion` turns it off outright — motion
@@ -69,4 +75,44 @@
   .ptp-progress__fill {
     transition: none;
   }
+}
+
+/* -- the stat card: the KPI card (2.4.0) --------------------------------------
+   FLAT by the e1 doctrine: surface background, the 20% hairline border,
+   NO shadow — separation is drawn with borders, never shadows. The
+   label is the muted uppercase caption; the value is the 1.5rem
+   tabular-nums headline; the delta colors are content outcomes (up →
+   party-green, down → party-peach — Rule of Engagement). The sparkline
+   it may contain needs no css (pure SVG, like the ring). */
+.ptp-stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  padding: var(--space-standard);
+}
+.ptp-stat-card__label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.ptp-stat-card__value {
+  color: var(--text-main);
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ptp-stat-card__delta {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.ptp-stat-card__delta--up {
+  color: var(--party-green);
+}
+.ptp-stat-card__delta--down {
+  color: var(--party-peach);
 }

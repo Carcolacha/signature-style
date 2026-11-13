@@ -100,6 +100,11 @@ import {
   DataTable,
   Callout,
   Avatar,
+  AnnouncementBanner,
+  Carousel,
+  CarouselItem,
+  ProseBlock,
+  StatCard,
   type NavItem,
   type PtpEvent,
   type DataTableColumn,
@@ -664,39 +669,122 @@ const AVATAR_CREW: Array<{
 ];
 
 /**
- * THE DATA & TABLES MODULE (2.3.0) — the package's <DataTable>, <Callout>
- * and <Avatar> dogfooded in one card: the ledger (with the composed
- * PartyBadge), the three persistent callout moods, and the crew discs.
+ * THE DATA & TABLES MODULE (2.3.0, grown 2.4.0) — the package's
+ * <DataTable>, <Callout> and <Avatar> dogfooded in one card: the ledger
+ * (with the composed PartyBadge), the three persistent callout moods,
+ * and the crew discs. 2.4.0 grows the view around the card: the
+ * release <AnnouncementBanner> at the top, the <StatCard> KPI trio,
+ * and the Field Notes editorial card (<ProseBlock> + a <Carousel> of
+ * palette clippings).
  */
 function DataModule() {
+  const [bannerVisible, setBannerVisible] = useState(true);
+
   return (
-    <SurfaceCard
-      eyebrow="Data"
-      meta="components/data.tsx"
-      title="Guest & Budget Ledger"
-      interactive
-    >
-      <div data-testid="data-table-ledger">
-        <DataTable
-          columns={LEDGER_COLUMNS}
-          rows={LEDGER_ROWS}
-          caption="Shared pot ledger · updated after every RSVP"
+    <>
+      {bannerVisible && (
+        <AnnouncementBanner
+          status="info"
+          dismissible
+          onDismiss={() => setBannerVisible(false)}
+        >
+          <span data-testid="banner-release">
+            v2.4.0 — six new editorial &amp; form primitives shipped.
+          </span>
+        </AnnouncementBanner>
+      )}
+      <div className="hub__kpis" data-testid="kpi-trio">
+        <StatCard
+          label="Total Budget"
+          value="$2,000"
+          delta="+$440"
+          deltaDirection="up"
+          sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
+          colorToken="--party-green"
+        />
+        <StatCard
+          label="Confirmed Guests"
+          value="170"
+          delta="+12"
+          deltaDirection="up"
+          sparklineData={[118, 126, 132, 141, 158, 170]}
+          colorToken="--party-sky"
+        />
+        <StatCard
+          label="Active Game Rooms"
+          value="6"
+          delta="+2"
+          deltaDirection="up"
+          sparklineData={[2, 3, 3, 4, 4, 6]}
+          colorToken="--party-mauve-soft"
         />
       </div>
-      <Callout status="info">
-        Payments settle via the shared pot — no cash at the door.
-      </Callout>
-      <Callout status="success">Final headcount locked for catering.</Callout>
-      <Callout status="warning">3 pending RSVPs close Friday.</Callout>
-      <div className="hub__avatars">
-        {AVATAR_CREW.map((person) => (
-          <div key={person.name} className="hub__avatar-row">
-            <Avatar name={person.name} size={person.size} ringToken={person.ringToken} />
-            <span>{person.name}</span>
-          </div>
-        ))}
-      </div>
-    </SurfaceCard>
+      <SurfaceCard
+        eyebrow="Data"
+        meta="components/data.tsx"
+        title="Guest & Budget Ledger"
+        interactive
+      >
+        <div data-testid="data-table-ledger">
+          <DataTable
+            columns={LEDGER_COLUMNS}
+            rows={LEDGER_ROWS}
+            caption="Shared pot ledger · updated after every RSVP"
+          />
+        </div>
+        <Callout status="info">
+          Payments settle via the shared pot — no cash at the door.
+        </Callout>
+        <Callout status="success">Final headcount locked for catering.</Callout>
+        <Callout status="warning">3 pending RSVPs close Friday.</Callout>
+        <div className="hub__avatars">
+          {AVATAR_CREW.map((person) => (
+            <div key={person.name} className="hub__avatar-row">
+              <Avatar name={person.name} size={person.size} ringToken={person.ringToken} />
+              <span>{person.name}</span>
+            </div>
+          ))}
+        </div>
+      </SurfaceCard>
+      <SurfaceCard
+        eyebrow="Editorial"
+        meta="components/editorial.tsx"
+        title="Field Notes"
+        interactive
+      >
+        <div data-testid="prose-notes">
+          <ProseBlock>
+            <p>
+              Every invitation in this planner starts as a row in the shared pot
+              ledger and ends as a night nobody has to Venmo-chase. The numbers
+              stay boring on purpose — boring numbers are the ones that survive
+              contact with a real guest list.
+            </p>
+            <p>
+              When a figure changes, it changes here first: the budget card, the
+              ring, the sparkline — and the story above stays honest. Design the
+              ledger well and the party practically plans itself.
+            </p>
+            <blockquote>
+              <p>
+                “Weeks of coding can save you hours of planning.”
+              </p>
+              <footer>— every developer who ever planned a wedding, probably</footer>
+            </blockquote>
+            <cite>PlanThenParty Field Notes, vol. 2 — the ledger chapters</cite>
+          </ProseBlock>
+        </div>
+        <div data-testid="carousel-clippings">
+          <Carousel label="Palette clippings">
+            {PALETTE.slice(0, 5).map(({ token, label }) => (
+              <CarouselItem key={token} className="hub__clipping">
+                <PartyBadge colorToken={token} label={label} />
+              </CarouselItem>
+            ))}
+          </Carousel>
+        </div>
+      </SurfaceCard>
+    </>
   );
 }
 
