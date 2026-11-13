@@ -202,7 +202,7 @@ function BentoDashboard() {
     <>
       <GlobalNav items={NAV_ITEMS} activeHref="#" />
       <main className="bento">
-        <section className="bento__card bento__card--forms">
+        <section className="bento__card bento__card--forms" data-testid="bento-card-forms">
           <h2>Form Controls</h2>
           <Input placeholder="Guest name" />
           <TextArea placeholder="Notes for the host…" rows={3} />
@@ -214,13 +214,14 @@ function BentoDashboard() {
           <button
             type="button"
             className="bento__btn"
+            data-testid="btn-toast"
             onClick={() => toast("success", "RSVP sent — see you there 🎉")}
           >
             Send test toast
           </button>
         </section>
 
-        <section className="bento__card bento__card--timeline">
+        <section className="bento__card bento__card--timeline" data-testid="bento-card-timeline">
           <h2>Timeline</h2>
           <EventTimeline events={events} onEventSelect={modal.open} />
           {modal.selectedEvent !== null && (
@@ -232,26 +233,26 @@ function BentoDashboard() {
           )}
         </section>
 
-        <section className="bento__card bento__card--telemetry">
+        <section className="bento__card bento__card--telemetry" data-testid="bento-card-telemetry">
           <h2>Telemetry</h2>
-          <div className="bento__metric">
+          <div className="bento__metric" data-testid="metric-budget-remaining">
             <span className="bento__metric-label">Budget remaining</span>
             <span className="bento__metric-value">72%</span>
           </div>
           <ProgressBar value={72} colorToken="--party-green" label="Budget remaining" />
-          <div className="bento__metric">
+          <div className="bento__metric" data-testid="metric-budget-spent">
             <span className="bento__metric-label">Budget spent</span>
             <span className="bento__metric-value">45%</span>
           </div>
           <ProgressBar value={45} colorToken="--party-peach" label="Budget spent" />
-          <div className="bento__metric">
+          <div className="bento__metric" data-testid="metric-rsvp">
             <span className="bento__metric-label">RSVP ratio</span>
             <span className="bento__metric-value">85%</span>
           </div>
           <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
         </section>
 
-        <section className="bento__card bento__card--palette">
+        <section className="bento__card bento__card--palette" data-testid="bento-card-palette">
           <h2>Party Palette</h2>
           <div className="bento__palette">
             {PALETTE.map(({ token, label }) => (
