@@ -1,10 +1,18 @@
 /**
- * Bento Box Showcase styles (1.5.0).
+ * Bento Box Showcase styles (1.5.1).
  *
  * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
  * outside the package too). The grid consumes ONLY spacing/radius/surface
  * tokens; the button matches the btn-primary doctrine (structural
  * Flamingo fill, on-cake text, press physics scale(0.97)).
+ *
+ * 1.5.1 — staggered load-in: cards rise 20px and fade in, 0.1s apart.
+ * The `opacity: 0` base + `forwards` fill make the keyframe end-state
+ * the resting state; the prefers-reduced-motion escape is MANDATORY —
+ * without it, reduced-motion users would get permanently invisible
+ * cards. Spacing modernization: ruled card headers (token margins,
+ * hairline divider via color-mix) on breathing-room --space-section
+ * cards.
  */
 
 /* ---- the bento grid ---------------------------------------------------- */
@@ -17,6 +25,18 @@
   margin: 0 auto;
 }
 
+/* ---- staggered load-in (1.5.1) ------------------------------------------ */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .bento__card {
   background: var(--bg-surface);
   border-radius: var(--radius-ui);
@@ -26,6 +46,34 @@
   flex-direction: column;
   gap: var(--space-standard);
   min-width: 0;
+  animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0;
+}
+
+/* DOM order of the cards: forms, timeline, telemetry, palette. */
+.bento__card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.bento__card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.bento__card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.bento__card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+/* MANDATORY accessibility escape: `opacity: 0` + a running animation
+   would leave reduced-motion users with permanently invisible cards. */
+@media (prefers-reduced-motion: reduce) {
+  .bento__card {
+    animation: none;
+    opacity: 1;
+  }
 }
 
 /* desktop placements — asymmetric bento */
