@@ -60,3 +60,9 @@ export {
   type ToastItem,
   type ToastStatus,
 } from "./toast.js";
+export {
+  SurfaceCard,
+  type SurfaceCardProps,
+  PageHero,
+  type PageHeroProps,
+} from "./surface.js";

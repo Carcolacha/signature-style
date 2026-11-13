@@ -1,0 +1,123 @@
+/* ==========================================================================
+   SURFACE — the official surface primitives (2.2.0 "Telemetry Limits &
+   Official Surface Primitives"). Layered into `cascade` by
+   signature-style.css (imported after toast.css).
+
+   PROMOTION STORY: this anatomy lived in the v2.0.0 playground layer
+   (the Shed's .hub__card / .hub__meta / .hub__hero) and is promoted
+   HERE as the OFFICIAL exports, owner-mandated `.sig-*` class prefix:
+   the dashboard proved the skeleton for two releases; the package now
+   owns it and any consumer gets it through one import.
+
+   DOCTRINE BOUNDARY — OWNER SANCTION (v2.2.0): the rgba ELEVATION
+   literals below (the inset top-highlight rgba(255, 255, 255, 0.05),
+   the ambient rgba(0, 0, 0, 0.4) / rgba(0, 0, 0, 0.5) hover shadow)
+   are OWNER-SANCTIONED in THIS FILE ONLY — the ambient elevation
+   contract ships WITH the surface primitive (a surface card without
+   its elevation is not the Shed surface). Everywhere else the package
+   border doctrine holds: elevation is composition-layer, and the gate
+   (e1) now scopes the zero-shadow law per-file. The earlier rgba
+   precedent — the modal scrim (css/modal.css, 0.7.0) — is unchanged.
+
+   Hex literals remain BANNED here: 100% var()/color-mix plus the
+   sanctioned rgba elevation literals, nothing else.
+
+   ANATOMY (the Shed skeleton, byte-honest from the playground):
+   meta row (teal all-caps eyebrow + muted mono path) → ruled title →
+   content slot. The interactive modifier carries the tactile half:
+   the surface answers the pointer by rising 2px and deepening its
+   ambient shadow, on the package's own transition tokens.
+   ========================================================================== */
+
+/* ---- the surface card ------------------------------------------------------ */
+.sig-surface-card {
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  padding: var(--space-section);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+  min-width: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* The tactile modifier — the surface answers the pointer. The transition
+   lives HERE, on the modifier, so a static card pays no transition cost. */
+.sig-surface-card--interactive {
+  transition:
+    transform var(--transition-transform),
+    box-shadow var(--transition-standard);
+}
+
+.sig-surface-card--interactive:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ---- meta row — the Shed header -------------------------------------------
+   Teal all-caps eyebrow left, muted mono path right. text-transform owns
+   the capitalization: content stays "Forms", the eye reads FORMS. */
+.sig-surface-card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.sig-surface-card__eyebrow {
+  color: var(--color-cake-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.sig-surface-card__path {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+/* ---- ruled title ------------------------------------------------------------
+   The class (not a child combinator) is the 2.2.0 upgrade over the
+   playground's `.hub__card > h2`: the rule travels ON the h2, so package
+   components rendering their own h2s (timeline headers) are safe by
+   construction — no specificity contest to lose. */
+.sig-surface-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0 0 var(--space-standard);
+  padding-bottom: var(--space-tight);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+}
+
+/* ---- the page hero ----------------------------------------------------------
+   The announcing header: serif display voice (Besley is the named face;
+   Georgia carries it wherever Besley is not installed), wide tracking
+   turns the title into an announcement, not a label. The subtitle is
+   muted mono. */
+.sig-page-hero {
+  text-align: center;
+  padding: var(--space-section) 0;
+}
+
+.sig-page-hero h1 {
+  font-family: "Besley", Georgia, serif;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.sig-page-hero__sub {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  letter-spacing: 0.15em;
+}

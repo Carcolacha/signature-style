@@ -36,7 +36,8 @@
     "!react/nav.tsx",
     "!react/viz.tsx",
     "!react/forms.tsx",
-    "!react/toast.tsx"
+    "!react/toast.tsx",
+    "!react/surface.tsx"
   ],
   "sideEffects": [
     "*.css"

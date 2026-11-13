@@ -13,3 +13,4 @@ export { GlobalNav, type NavItem, type GlobalNavProps, } from "./nav.js";
 export { ProgressBar, type ProgressBarProps, StatRing, type StatRingProps, } from "./viz.js";
 export { Input, type InputProps, TextArea, type TextAreaProps, ToggleSwitch, type ToggleSwitchProps, } from "./forms.js";
 export { ToastProvider, useToast, type ToastFn, type ToastItem, type ToastStatus, } from "./toast.js";
+export { SurfaceCard, type SurfaceCardProps, PageHero, type PageHeroProps, } from "./surface.js";
