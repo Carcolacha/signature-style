@@ -166,15 +166,31 @@
   gap: var(--space-tight);
 }
 
+/* ---- form-stack breathing (1.6.0) ---------------------------------------
+   The forms card pins its OWN inter-control gap at var(--space-standard)
+   so inputs / textarea / switch / button keep breathing even if the base
+   card gap is ever retuned. Same value, dedicated decision — no new
+   wrappers, the flex gap reaches the bare package controls directly. */
+.bento__card--forms {
+  gap: var(--space-standard);
+}
+
 /* ---- the doctrine button (btn-primary echo) ----------------------------- */
+/* 1.6.0 hierarchy: the primary action pops against the elevated cards —
+   Flamingo fill, on-cake ink, weight 600 (was 500), and a small ambient
+   shadow of its own (0 4px 16px rgba(0, 0, 0, 0.3) — composition-layer
+   rgba, covered by the same owner elevation override as the cards).
+   Press physics unchanged: :active scale(0.97) + the 0.15s transition
+   tokens. */
 .bento__btn {
   background: var(--color-cake-primary);
   color: var(--color-on-cake);
   border: none;
   border-radius: var(--radius-ui);
   padding: var(--space-tight) var(--space-standard);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   transition: var(--transition-standard), var(--transition-transform);
 }
 
