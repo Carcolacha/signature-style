@@ -1,6 +1,20 @@
 /**
- * App — THE ENGINE + THE MASTER INDEX (2.2.0 "Telemetry Limits & Official
- * Surface Primitives").
+ * App — THE ENGINE + THE MASTER INDEX (2.3.0 "Universal Web Components
+ * & AI Signature Codex").
+ *
+ * 2.3.0 — THE DASHBOARD GROWS MODULE TABS. The dashboard view gains the
+ * package's <Tabs> (attribute-driven: aria-selected, ZERO .is-active
+ * classes — the nav contract) switching three modules: "core" (the
+ * unchanged 4-SurfaceCard board), "data" (the Guest & Budget Ledger —
+ * <DataTable> with a composed <PartyBadge> status cell, the three
+ * persistent <Callout> moods, five <Avatar> discs, two wearing party
+ * rings), and "forms" (the Input Matrix — Input/TextArea/Select/
+ * Checkbox/ToggleSwitch stacked in the v2.1.0 spacing pattern). The
+ * tab bar lives in .hub__module ABOVE the .hub grid so the four core
+ * cards stay direct grid children — the nth-child stagger choreography
+ * is untouched (styles.css h1 gate). Testid hooks: tabs-module,
+ * data-table-ledger (the cortex probe clicks the Data tab; the default
+ * sweep is core — the table only exists after that click).
  *
  * 2.2.0 — THE PLAYGROUND BECOMES A CONSUMER OF ITS OWN PACKAGE. The Shed
  * anatomy it invented in 2.0.0 is now the official <SurfaceCard> /
@@ -69,6 +83,8 @@ import {
   Input,
   TextArea,
   ToggleSwitch,
+  Select,
+  Checkbox,
   EventTimeline,
   EventModal,
   useModal,
@@ -78,12 +94,27 @@ import {
   EmptyState,
   SurfaceCard,
   PageHero,
+  Tabs,
+  DataTable,
+  Callout,
+  Avatar,
   type NavItem,
   type PtpEvent,
+  type DataTableColumn,
+  type PartyTokenName,
 } from "@edwyn/signature-style/react";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract). */
 type View = "dashboard" | "index" | "events" | "guests" | "budget";
+
+/** The dashboard's Tabs modules (2.3.0) — id union + the Tabs contract. */
+type ModuleId = "core" | "data" | "forms";
+
+const MODULE_TABS: Array<{ id: ModuleId; label: string }> = [
+  { id: "core", label: "Core Dashboard" },
+  { id: "data", label: "Data & Tables" },
+  { id: "forms", label: "Form & Input Matrix" },
+];
 
 /** The workshop modules — nav destinations without a view yet (2.1.0). */
 type WorkshopView = Exclude<View, "dashboard" | "index">;
@@ -391,105 +422,131 @@ function DashboardView() {
   const toast = useToast();
   const modal = useModal<PtpEvent>();
   const [isPublic, setIsPublic] = useState(true);
+  const [moduleId, setModuleId] = useState<ModuleId>("core");
 
   return (
-    <main className="hub">
-      <SurfaceCard
-        eyebrow="Forms"
-        meta="components/forms.tsx"
-        title="Form Controls"
-        interactive
-      >
-        <Input placeholder="Guest name" />
-        <TextArea placeholder="Notes for the host…" rows={3} />
-        <ToggleSwitch
-          checked={isPublic}
-          onToggle={setIsPublic}
-          label="Make event public"
+    <>
+      <div className="hub__module" data-testid="tabs-module">
+        <Tabs
+          label="Dashboard modules"
+          tabs={MODULE_TABS}
+          activeId={moduleId}
+          // Tabs.onChange hands back the raw string id; the playground
+          // owns the narrower ModuleId union and narrows here (the only
+          // ids reachable are the ones MODULE_TABS declared).
+          onChange={(id) => setModuleId(id as ModuleId)}
         />
-        <button
-          type="button"
-          className="hub__btn"
-          data-testid="btn-toast"
-          onClick={() => toast("success", "RSVP sent — see you there 🎉")}
-        >
-          Send test toast
-        </button>
-      </SurfaceCard>
+      </div>
+      {moduleId === "data" ? (
+        <div className="hub__tabs-content">
+          <DataModule />
+        </div>
+      ) : moduleId === "forms" ? (
+        <div className="hub__tabs-content">
+          <FormsModule />
+        </div>
+      ) : (
+        <div className="hub__tabs-content">
+          <main className="hub">
+            <SurfaceCard
+              eyebrow="Forms"
+              meta="components/forms.tsx"
+              title="Form Controls"
+              interactive
+            >
+              <Input placeholder="Guest name" />
+              <TextArea placeholder="Notes for the host…" rows={3} />
+              <ToggleSwitch
+                checked={isPublic}
+                onToggle={setIsPublic}
+                label="Make event public"
+              />
+              <button
+                type="button"
+                className="hub__btn"
+                data-testid="btn-toast"
+                onClick={() => toast("success", "RSVP sent — see you there 🎉")}
+              >
+                Send test toast
+              </button>
+            </SurfaceCard>
 
-      <SurfaceCard
-        eyebrow="Timeline"
-        meta="components/timeline.tsx"
-        title="The Chronology"
-        interactive
-        className="hub__card--timeline"
-      >
-        <EventTimeline events={events} onEventSelect={modal.open} />
-        {modal.selectedEvent !== null && (
-          <EventModal
-            event={modal.selectedEvent}
-            open={modal.isOpen}
-            onClose={modal.close}
-          />
-        )}
-      </SurfaceCard>
+            <SurfaceCard
+              eyebrow="Timeline"
+              meta="components/timeline.tsx"
+              title="The Chronology"
+              interactive
+              className="hub__card--timeline"
+            >
+              <EventTimeline events={events} onEventSelect={modal.open} />
+              {modal.selectedEvent !== null && (
+                <EventModal
+                  event={modal.selectedEvent}
+                  open={modal.isOpen}
+                  onClose={modal.close}
+                />
+              )}
+            </SurfaceCard>
 
-      <SurfaceCard
-        eyebrow="Telemetry"
-        meta="components/viz.tsx"
-        title="Budget & RSVP"
-        interactive
-      >
-        <div className="hub__metric" data-testid="metric-budget-remaining">
-          <span className="hub__metric-label">Budget remaining</span>
-          <span className="hub__metric-value">72%</span>
-        </div>
-        <ProgressBar
-          value={72}
-          colorToken="--party-green"
-          label="Budget remaining"
-          limitText="$1,440 / $2,000"
-        />
-        <div className="hub__metric" data-testid="metric-budget-spent">
-          <span className="hub__metric-label">Budget spent</span>
-          <span className="hub__metric-value">45%</span>
-        </div>
-        <ProgressBar
-          value={45}
-          colorToken="--party-peach"
-          label="Budget spent"
-          limitText="$1,325 / $2,000"
-        />
-        <div className="hub__metric" data-testid="metric-guests">
-          <span className="hub__metric-label">Guests confirmed</span>
-          <span className="hub__metric-value">170 / 200</span>
-        </div>
-        <ProgressBar
-          value={85}
-          colorToken="--party-sky"
-          label="Guests confirmed"
-          limitText="170 / 200 Guests"
-        />
-        <div className="hub__metric" data-testid="metric-rsvp">
-          <span className="hub__metric-label">RSVP ratio</span>
-          <span className="hub__metric-value">85%</span>
-        </div>
-        <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
-      </SurfaceCard>
+            <SurfaceCard
+              eyebrow="Telemetry"
+              meta="components/viz.tsx"
+              title="Budget & RSVP"
+              interactive
+            >
+              <div className="hub__metric" data-testid="metric-budget-remaining">
+                <span className="hub__metric-label">Budget remaining</span>
+                <span className="hub__metric-value">72%</span>
+              </div>
+              <ProgressBar
+                value={72}
+                colorToken="--party-green"
+                label="Budget remaining"
+                limitText="$1,440 / $2,000"
+              />
+              <div className="hub__metric" data-testid="metric-budget-spent">
+                <span className="hub__metric-label">Budget spent</span>
+                <span className="hub__metric-value">45%</span>
+              </div>
+              <ProgressBar
+                value={45}
+                colorToken="--party-peach"
+                label="Budget spent"
+                limitText="$1,325 / $2,000"
+              />
+              <div className="hub__metric" data-testid="metric-guests">
+                <span className="hub__metric-label">Guests confirmed</span>
+                <span className="hub__metric-value">170 / 200</span>
+              </div>
+              <ProgressBar
+                value={85}
+                colorToken="--party-sky"
+                label="Guests confirmed"
+                limitText="170 / 200 Guests"
+              />
+              <div className="hub__metric" data-testid="metric-rsvp">
+                <span className="hub__metric-label">RSVP ratio</span>
+                <span className="hub__metric-value">85%</span>
+              </div>
+              <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
+            </SurfaceCard>
 
-      <SurfaceCard
-        eyebrow="Palette"
-        meta="components/primitives.tsx"
-        title="The Party Palette"
-        interactive
-      >
-        <div className="hub__palette">
-          {PALETTE.map(({ token, label }) => (
-            <PartyBadge key={token} colorToken={token} label={label} />
-          ))}
+            <SurfaceCard
+              eyebrow="Palette"
+              meta="components/primitives.tsx"
+              title="The Party Palette"
+              interactive
+            >
+              <div className="hub__palette">
+                {PALETTE.map(({ token, label }) => (
+                  <PartyBadge key={token} colorToken={token} label={label} />
+                ))}
+              </div>
+            </SurfaceCard>
+          </main>
         </div>
-      </SurfaceCard>
-    </main>
+      )}
+    </>
   );
 }
 
@@ -564,6 +621,114 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
         </button>
       ))}
     </main>
+  );
+}
+
+/**
+ * THE LEDGER — the data module's table contract (2.3.0). Status cells
+ * are ReactNode: one row composes a <PartyBadge> to show a badge living
+ * inside the table, the rest stay plain text (keep td text simple —
+ * composition is demonstrated once, not everywhere).
+ */
+const LEDGER_COLUMNS: DataTableColumn[] = [
+  { key: "guest", header: "Guest" },
+  { key: "status", header: "Status" },
+  { key: "share", header: "Contribution", numeric: true },
+];
+
+const LEDGER_ROWS: Array<Record<string, ReactNode>> = [
+  {
+    guest: "Ana Souza",
+    status: <PartyBadge colorToken="--party-green" label="Confirmed" />,
+    share: "$120",
+  },
+  { guest: "Leo Martins", status: "Pending", share: "$0" },
+  { guest: "Priya Nair", status: "Confirmed", share: "$200" },
+  { guest: "Tom Weller", status: "Declined", share: "$0" },
+  { guest: "Ana + 1", status: "Pending", share: "$120" },
+];
+
+/** The data module's five crew discs — 32px ×3, 40px ×2, two party rings. */
+const AVATAR_CREW: Array<{
+  name: string;
+  size?: 32 | 40;
+  ringToken?: PartyTokenName;
+}> = [
+  { name: "Ana Souza", ringToken: "--party-mauve-soft" },
+  { name: "Leo Martins" },
+  { name: "Priya Nair" },
+  { name: "Tom Weller", size: 40, ringToken: "--party-sky" },
+  { name: "Ana + 1", size: 40 },
+];
+
+/**
+ * THE DATA & TABLES MODULE (2.3.0) — the package's <DataTable>, <Callout>
+ * and <Avatar> dogfooded in one card: the ledger (with the composed
+ * PartyBadge), the three persistent callout moods, and the crew discs.
+ */
+function DataModule() {
+  return (
+    <SurfaceCard
+      eyebrow="Data"
+      meta="components/data.tsx"
+      title="Guest & Budget Ledger"
+      interactive
+    >
+      <div data-testid="data-table-ledger">
+        <DataTable
+          columns={LEDGER_COLUMNS}
+          rows={LEDGER_ROWS}
+          caption="Shared pot ledger · updated after every RSVP"
+        />
+      </div>
+      <Callout status="info">
+        Payments settle via the shared pot — no cash at the door.
+      </Callout>
+      <Callout status="success">Final headcount locked for catering.</Callout>
+      <Callout status="warning">3 pending RSVPs close Friday.</Callout>
+      <div className="hub__avatars">
+        {AVATAR_CREW.map((person) => (
+          <div key={person.name} className="hub__avatar-row">
+            <Avatar name={person.name} size={person.size} ringToken={person.ringToken} />
+            <span>{person.name}</span>
+          </div>
+        ))}
+      </div>
+    </SurfaceCard>
+  );
+}
+
+/**
+ * THE FORM & INPUT MATRIX MODULE (2.3.0) — every input control on ONE
+ * card, stacked in the v2.1.0 spacing pattern (the SurfaceCard's own
+ * --space-standard flex gap IS the rhythm; no extra wrappers).
+ */
+function FormsModule() {
+  const [diet, setDiet] = useState("none");
+  const [invited, setInvited] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
+
+  return (
+    <SurfaceCard
+      eyebrow="Forms"
+      meta="components/forms.tsx"
+      title="The Input Matrix"
+      interactive
+    >
+      <Input placeholder="Guest name" aria-label="Guest name" />
+      <TextArea placeholder="Notes for the host…" rows={3} aria-label="Notes" />
+      <Select
+        label="Dietary preference"
+        value={diet}
+        onChange={(event) => setDiet(event.target.value)}
+      >
+        <option value="none">No preference</option>
+        <option value="vegetarian">Vegetarian</option>
+        <option value="vegan">Vegan</option>
+      </Select>
+      <Checkbox checked={invited} onToggle={setInvited} label="Send me the invite" />
+      <ToggleSwitch checked={isPublic} onToggle={setIsPublic} label="Make event public" />
+    </SurfaceCard>
   );
 }
 

@@ -248,6 +248,34 @@
   line-height: 1.5;
 }
 
+/* ---- 2.3.0 module tabs ----------------------------------------------------
+   The tab bar lives ABOVE the .hub grid (a .hub__module container with
+   the same max-width/section padding) so the four core cards stay direct
+   grid children — the nth-child stagger above is untouched. The branch
+   content hangs one --space-standard step below the tabs' hairline. */
+.hub__module {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-section) var(--space-standard);
+}
+
+.hub__tabs-content {
+  margin-top: var(--space-standard);
+}
+
+/* The data module's crew list: discs with names beside them. */
+.hub__avatars {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.hub__avatar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
 /* ---- doctrine button (btn-primary echo, v1.6.0 shape) --------------------- */
 /* 1.6.0 hierarchy, unchanged in 2.0.0: the primary action pops against
    the elevated cards — Flamingo fill, on-cake ink, weight 600, and a
