@@ -1,6 +1,6 @@
 /**
- * Bento Box Showcase styles (1.6.0 "Ambient Elevation & Timeline
- * Resurrection").
+ * Bento Box Showcase styles (1.8.0 "Bento Refinement & Spatial
+ * Harmony").
  *
  * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
  * outside the package too). The grid consumes ONLY spacing/radius/surface
@@ -28,7 +28,13 @@
 /* ---- the bento grid ---------------------------------------------------- */
 .bento {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  /* 1.8.0 ASYMMETRIC STAGE — the timeline takes the middle. 1fr /
+     1.5fr / 1fr with hard floors (300px sides, 400px center) so the
+     date axis breathes instead of being squeezed to equal thirds. The
+     768px single-column collapse + placement resets below are
+     untouched, as are the slideUpFade stagger and its
+     prefers-reduced-motion escape. */
+  grid-template-columns: minmax(300px, 1fr) minmax(400px, 1.5fr) minmax(300px, 1fr);
   gap: var(--space-section);
   padding: var(--space-section);
   max-width: 75rem;
