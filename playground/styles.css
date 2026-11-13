@@ -1,0 +1,112 @@
+/**
+ * Bento Box Showcase styles (1.5.0).
+ *
+ * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
+ * outside the package too). The grid consumes ONLY spacing/radius/surface
+ * tokens; the button matches the btn-primary doctrine (structural
+ * Flamingo fill, on-cake text, press physics scale(0.97)).
+ */
+
+/* ---- the bento grid ---------------------------------------------------- */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-section);
+  padding: var(--space-section);
+  max-width: 75rem;
+  margin: 0 auto;
+}
+
+.bento__card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-ui);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  padding: var(--space-section);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+  min-width: 0;
+}
+
+/* desktop placements — asymmetric bento */
+.bento__card--forms {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.bento__card--timeline {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.bento__card--telemetry {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.bento__card--palette {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* Pillar 2 — single-column stack below 768px, placements reset */
+@media (max-width: 768px) {
+  .bento {
+    grid-template-columns: 1fr;
+  }
+
+  .bento__card--forms,
+  .bento__card--timeline,
+  .bento__card--telemetry,
+  .bento__card--palette {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* ---- card titles ------------------------------------------------------- */
+.bento__card h2 {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ---- metric label rows (telemetry card) -------------------------------- */
+.bento__metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.bento__metric-label {
+  color: var(--text-muted);
+}
+
+.bento__metric-value {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* ---- party palette cluster --------------------------------------------- */
+.bento__palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+}
+
+/* ---- the doctrine button (btn-primary echo) ----------------------------- */
+.bento__btn {
+  background: var(--color-cake-primary);
+  color: var(--color-on-cake);
+  border: none;
+  border-radius: var(--radius-ui);
+  padding: var(--space-tight) var(--space-standard);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-standard), var(--transition-transform);
+}
+
+.bento__btn:active {
+  transform: scale(0.97);
+}
