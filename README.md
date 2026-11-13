@@ -129,6 +129,62 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 1.5.1 — Bento Modernization & Timeline Patch
+
+- **Root cause of the "empty headers without events" report** — the
+  owner's source records arrive in HIS shape (`id`, `month`, `title`,
+  `time`, `colorToken`, `iconName`) and were passed to `<EventTimeline>`
+  without a mapping layer. Field-by-field against `PtpEvent`, two
+  required fields never arrive: with `date` `undefined`,
+  `groupEvents` buckets every record under the single key `undefined`
+  (`react/timeline.js`: `const key = event.dateKey ?? event.date`) and
+  the sticky header prints no text — the **empty header**; with
+  `category` `undefined`, `PartyBadge`'s
+  `!colorToken.startsWith("--party-")` guard
+  (`react/primitives.js:25`) throws on the `undefined` dereference and
+  React unmounts the timeline — **without events**. Both halves were
+  reproduced by an SSR probe against the compiled package modules; the
+  1.5.0 playground's own `SAMPLE_EVENTS` was field-complete and renders
+  correctly — the defect was the missing owner-data → package-contract
+  mapping pattern, which the playground never demonstrated.
+- **The hydration fix** — `playground/App.tsx` now mirrors the real
+  integration: `mockEvents` in the owner's shape (6 complete entries,
+  3 month buckets, 4 modal descriptions), mapped to `PtpEvent` in ONE
+  explicit layer at the render boundary (`month → date`,
+  `colorToken → category`, `iconName → icon`, badge labels derived from
+  a token-exhaustive `CATEGORY_LABELS` table). `Music` looked like a
+  lucide icon but is NOT a key of the installed lucide-react 1.72.0
+  icons map — `AudioLines` is the live-map-valid stand-in; the new
+  (h3) gate probes every `iconName` against the live map so a
+  plausible-but-wrong name fails the build, not the runtime.
+- **Staggered load-in** — `@keyframes slideUpFade` (opacity 0→1,
+  translateY 20px→0); `.bento__card` animates
+  `0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards` from an `opacity: 0`
+  base; `nth-child(1..4)` stagger 0.1s–0.4s in DOM order.
+- **The mandatory reduced-motion escape** — `@media
+  (prefers-reduced-motion: reduce)` sets `animation: none;
+  opacity: 1`. Without it, the `opacity: 0` base would leave
+  reduced-motion users with permanently invisible cards. The negative
+  test proves the gate: deleting the escape flips
+  `verify:playground` to FAIL.
+- **Spacing modernization** — ruled card headers:
+  `.bento__card > h2 { margin: 0 0 var(--space-standard);
+  padding-bottom: var(--space-tight); border-bottom: 1px solid
+  color-mix(in srgb, var(--text-muted) 10%, transparent); }` on
+  breathing-room `var(--space-section)` cards. The child combinator is
+  deliberate — a descendant selector would also hit the timeline's
+  package-rendered `.ptp-timeline__header` h2s (0,1,1 beats 0,1,0) and
+  override their sticky-header geometry. The `bento__btn` press physics
+  are untouched: `:active { transform: scale(0.97) }` +
+  `transition: var(--transition-standard), var(--transition-transform)`.
+- **Release gates** — `verify:playground` now runs b1–b7 PLUS h1–h3:
+  the stagger/escape/hairline strings in `styles.css`, complete
+  owner-shaped `mockEvents` (≥4 entries, ≥2 buckets, every field
+  present, `--party-*` tokens only) + the mapping layer greps, and
+  live-map icon probes. Core package untouched: `git diff v1.5.0 -- css/
+  react/ tokens.json SYSTEM_PROMPT.md demo/ scripts/` empty, `npm pack`
+  still exactly 34 files.
+
 ### 1.5.0 — Bento Box Showcase
 
 - **The playground** — a real consumer app (`npm run playground` →
