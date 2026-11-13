@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 /**
- * verify-playground.mjs — the 1.5.0 "Bento Box Showcase" gates plus the
- * 1.5.1 hydration/animation gates.
+ * verify-playground.mjs — the hub gates: 1.5.0 "Bento Box Showcase"
+ * foundations evolved through 1.5.1 hydration/animation, 1.6.0 ambient
+ * elevation + resurrection, 1.7.0 visual cortex, 1.8.0 spatial harmony,
+ * and now 2.0.0 "The Hub Migration (Shed Aesthetic)".
  *
- * scripts/verify.mjs is byte-frozen (core safety rule), so the bento
+ * scripts/verify.mjs is byte-frozen (core safety rule), so the playground
  * gates live HERE, inside the playground directory. Asserts:
  *
  *   (b1)  playground/ exists with App.tsx + vite.config.ts (plus
@@ -13,22 +15,21 @@
  *         exports/files/main/peerDependencies keys are deep-equal to
  *         v1.4.0 (the distribution surface is untouched);
  *   (b3)  `npm pack --dry-run` still packs EXACTLY 34 files —
- *         playground/ is auto-excluded by the files array;
+ *         playground/ AND tools/ are auto-excluded by the files array;
  *   (b4)  playground/styles.css contains ZERO hex literals — 100%
  *         var()/color-mix (rgba literals from the 1.6.0 elevation
  *         override are not hex and stay legal); the card hairline is the
- *         1.6.0 elevation border (15% token mix — was 20% in 1.5.1);
- *         the bento grid collapses at max-width: 768px;
+ *         elevation border (15% token mix); the grid collapses at
+ *         max-width: 768px;
  *   (b5)  App.tsx imports from "@edwyn/signature-style/react" and uses
- *         ThemeProvider > ToastProvider > GlobalNav + main.bento with
- *         exactly 4 card sections;
+ *         ThemeProvider > ToastProvider > GlobalNav + the announcing
+ *         .hub__hero + main.hub with exactly 4 card sections;
  *   (b6)  EVERY lucide icon name used in App.tsx (icon:/iconName:) exists
  *         in the installed lucide-react icons map — the strict IconName
  *         contract, verified at gate time;
- *   (b7)  SAFETY PROOF: `git diff v1.4.0 -- css/ react/ tokens.json
- *         SYSTEM_PROMPT.md demo/ scripts/` is EMPTY — EXCEPT
- *         css/timeline.css, which 1.6.0 may only touch per (e2):
- *         additions plus comment-prose rewrites, never CSS code.
+ *   (b7)  SAFETY PROOF (v1.4.0 baseline): `git diff v1.4.0 -- css/
+ *         react/ tokens.json SYSTEM_PROMPT.md demo/ scripts/` is EMPTY —
+ *         EXCEPT css/timeline.css, governed by (e2).
  *
  * 1.5.1 gates:
  *   (h1)  styles.css carries the staggered load-in: @keyframes
@@ -60,8 +61,8 @@
  *         sticky header (kills the full-group cover slab) and
  *         `position: relative` on the node (paints nodes over the
  *         ::before center line), plus the documented WHY comment
- *         marker; and the v1.4.0→worktree timeline diff deletes NO CSS
- *         code (braces/declarations) — only comment prose was rewritten.
+ *         marker; and the timeline diff deletes NO CSS code
+ *         (braces/declarations) — only comment prose may be rewritten.
  *
  * 1.7.0 gates ("The Visual Cortex (MCP Integration)"):
  *   (m1)  tools/mcp-viz/dist/server.js EXISTS — the compiled MCP server
@@ -72,33 +73,57 @@
  *         runs the smoke (raw JSON-RPC: exactly two tools, a
  *         .ptp-timeline__node with real area, non-empty screenshot);
  *   (m3)  data-testid wiring in App.tsx — the stable hooks the cortex
- *         greps for: four bento cards, three telemetry metrics, and the
- *         primary toast button.
+ *         greps for: four hub cards, three telemetry metrics, and the
+ *         primary toast button. 2.0.0: the card hooks were renamed
+ *         bento-card-* → hub-card-* (they contained "bento"); the
+ *         metric and button hooks are unchanged.
  *
- * 1.8.0 gates ("Bento Refinement & Spatial Harmony"):
- *   (g1)  ASYMMETRIC STAGE — styles.css declares the asymmetric bento
- *         grid: minmax(300px, 1fr) minmax(400px, 1.5fr) minmax(300px,
- *         1fr) — the center timeline breathes; the 768px collapse and
- *         placement resets stay (b4 continues to pin the breakpoint).
+ * 1.8.0 gates ("Bento Refinement & Spatial Harmony"), re-needled 2.0.0:
  *   (g2)  GLASS HEADER + NODE ELEVATION, doctrine boundary —
  *         css/timeline.css carries the 1.8.0 glass header needles
  *         (color-mix(in srgb, var(--bg-surface) 80%, transparent) +
  *         backdrop-filter: blur(8px), webkit-prefixed too) while
  *         playground/styles.css ALONE carries the node-shadow needle
- *         (`.bento__card .ptp-timeline__node` → 0 4px 12px
+ *         (`.hub__card .ptp-timeline__node` → 0 4px 12px
  *         rgba(0, 0, 0, 0.2)); a targeted scan re-asserts timeline.css
  *         declares ZERO box-shadow — the package keeps its shadow law,
  *         elevation lives in the composition layer (e1 stays green).
- *   (g3)  TELEMETRY — .bento__metric is space-between + flex-end
- *         (caption left, value flush right, shared bottom floor) and
- *         the progress bars breathe via the composition-scoped
- *         margin-top: var(--space-tight) rule (package viz.css
- *         untouched).
- *   (e2 AMENDMENT)  the v1.4.0-deletion guard gains a ONE-LINE,
- *         SINGLE-USE ALLOWLIST: `background: var(--bg-base);` — the
- *         sticky header's opaque slab, deleted by the 1.8.0 glass
- *         header and sanctioned by the owner. Every other deleted line
- *         must still trace to comments.
+ *   (g3)  TELEMETRY — .hub__metric is space-between + flex-end (caption
+ *         left, value flush right, shared bottom floor) and the
+ *         progress bars breathe via the composition-scoped margin-top:
+ *         var(--space-tight) rule (package viz.css untouched).
+ *         2.0.0 adds the owner mandate: margin-bottom var(--space-
+ *         standard) — ≥16px air under every metric label row.
+ *
+ * 2.0.0 gates ("The Hub Migration — Shed Aesthetic"):
+ *   (n-hub1) THE CONSTRAINED COLUMN — styles.css declares the .hub
+ *         container: max-width 1400px, centered, auto-fit
+ *         minmax(400px, 1fr) grid (the 1.8.0 hand-placed asymmetric
+ *         stage is retired; discipline comes from the column). The
+ *         768px collapse stays pinned by (b4).
+ *   (n-hub2) THE ANNOUNCED HEADER — App.tsx carries
+ *         <header className="hub__hero"> announcing THE ENGINE with the
+ *         subtitle "every primitive, one dashboard · live showcase".
+ *   (n-hub3) THE SHED CARD ANATOMY + TACTILE HOVER — styles.css: every
+ *         .hub__card is meta (.hub__meta space-between/baseline:
+ *         .hub__label teal --color-cake-secondary, all-caps via
+ *         text-transform, 0.2em tracking + .hub__path muted mono) under
+ *         a ruled h2; the surface answers the pointer with
+ *         translateY(-2px) and the deepened 0 16px 40px rgba(0,0,0,0.5)
+ *         ambient shadow.
+ *   (n-hub4) THE V2.0.0 FROZEN PROOF — `git diff v1.8.0 -- css/ react/
+ *         tokens.json demo/ SYSTEM_PROMPT.md scripts/ tools/` is EMPTY.
+ *         The hub migration touches the playground presentation layer
+ *         ONLY; tools/ joins the freeze this release (the cortex server
+ *         stays byte-identical — its default bento selectors are
+ *         historical now, but custom selectors keep it fully useful).
+ *   (e2 AMENDMENT 2.0.0)  the deletion guard REBASES to the v1.8.0
+ *         baseline and the v1.8.0 single-use allowlist entry
+ *         ("background: var(--bg-base);") is CONSUMED — gone with that
+ *         release. The v2.0.0 allowlist is EMPTY: timeline.css may only
+ *         gain changes traceable to comments vs v1.8.0. It was not
+ *         touched this release, so (e2) passes trivially while still
+ *         guarding every future release.
  *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
@@ -177,7 +202,7 @@ if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
 } else if (totalFiles[1] !== "34") {
   failures.push(
-    `(b3) npm pack must yield exactly 34 files (playground excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 34 files (playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -190,13 +215,13 @@ if (styleHexes !== null) {
   );
 }
 if (!stylesCss.includes("color-mix(in srgb, var(--text-muted) 15%, transparent)")) {
-  failures.push("(b4) styles.css must draw the 1.6.0 elevation card border with the 15% color-mix token blend");
+  failures.push("(b4) styles.css must draw the elevation card border with the 15% color-mix token blend");
 }
 if (!stylesCss.includes("max-width: 768px")) {
-  failures.push("(b4) styles.css must collapse the bento grid at max-width: 768px");
+  failures.push("(b4) styles.css must collapse the hub grid at max-width: 768px");
 }
 
-// ---- (b5) App shape: provider nesting + 4 bento cards ----------------------------
+// ---- (b5) App shape: provider nesting + hero + 4 hub cards -----------------------
 const appSrc = readFileSync(join(playground, "App.tsx"), "utf8");
 const APP_REQUIREMENTS = [
   ['from "@edwyn/signature-style/react"', "App imports the package through the exports map"],
@@ -204,11 +229,24 @@ const APP_REQUIREMENTS = [
   ["<ToastProvider>", "the ToastProvider wraps the dashboard"],
   ["useToast()", "the toast hook drives the feedback card"],
   ["useModal<", "the modal hook drives the timeline card"],
-  ['className="bento"', "the single bento grid container"],
-  ["bento__card--forms", "card 1 — form controls"],
-  ["bento__card--timeline", "card 2 — timeline + modal"],
-  ["bento__card--telemetry", "card 3 — telemetry"],
-  ["bento__card--palette", "card 4 — party palette"],
+  ['<GlobalNav items={NAV_ITEMS} activeHref="#" />', "the global nav tops the page"],
+  ['<header className="hub__hero">', "the announcing hero header (n-hub2)"],
+  ["<h1>THE ENGINE</h1>", "the hero announces THE ENGINE (n-hub2)"],
+  ['<p className="hub__hero-sub">', "the hero subtitle element (n-hub2)"],
+  ["every primitive, one dashboard · live showcase", "the hero subtitle string (n-hub2)"],
+  ['className="hub"', "the single hub grid container"],
+  ['<div className="hub__meta">', "the shed meta row on every card (n-hub3)"],
+  ['<span className="hub__label">', "the teal all-caps label (n-hub3)"],
+  ['<span className="hub__path">', "the muted mono source path (n-hub3)"],
+  ["hub__card--forms", "card 1 — form controls"],
+  ["hub__card--timeline", "card 2 — timeline + modal"],
+  ["hub__card--telemetry", "card 3 — telemetry"],
+  ["hub__card--palette", "card 4 — party palette"],
+  ["components/forms.tsx", "card 1 declares its source path"],
+  ["components/timeline.tsx", "card 2 declares its source path"],
+  ["components/viz.tsx", "card 3 declares its source path"],
+  ["components/primitives.tsx", "card 4 declares its source path"],
+  ['className="hub__btn"', "the primary action echoes btn-primary"],
   ["PartyBadge", "the palette card renders party badges"],
   ["StatRing", "the telemetry card renders the ring"],
   ["onEventSelect={modal.open}", "timeline nodes open the modal"],
@@ -218,9 +256,9 @@ for (const [needle, label] of APP_REQUIREMENTS) {
     failures.push(`(b5) App.tsx must contain ${needle} — ${label}`);
   }
 }
-const sectionCount = (appSrc.match(/<section className="bento__card /g) ?? []).length;
+const sectionCount = (appSrc.match(/<section className="hub__card /g) ?? []).length;
 if (sectionCount !== 4) {
-  failures.push(`(b5) main.bento must have exactly 4 card sections, found ${sectionCount}`);
+  failures.push(`(b5) main.hub must have exactly 4 card sections, found ${sectionCount}`);
 }
 
 // ---- (b6) every icon name used in App.tsx exists in lucide's icons map ----------
@@ -246,29 +284,29 @@ if (!stylesCss.includes("@keyframes slideUpFade")) {
 }
 if (!stylesCss.includes("animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards")) {
   failures.push(
-    "(h1) .bento__card must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
+    "(h1) .hub__card must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
   );
 }
-if (!/\.bento__card\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
-  failures.push("(h1) .bento__card needs the opacity: 0 animation base");
+if (!/\.hub__card\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
+  failures.push("(h1) .hub__card needs the opacity: 0 animation base");
 }
 for (const [child, delay] of [[1, "0.1s"], [2, "0.2s"], [3, "0.3s"], [4, "0.4s"]]) {
   const stagger = new RegExp(
-    `\\.bento__card:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
+    `\\.hub__card:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
     "s",
   );
   if (!stagger.test(stylesCss)) {
-    failures.push(`(h1) .bento__card:nth-child(${child}) must stagger at animation-delay: ${delay}`);
+    failures.push(`(h1) .hub__card:nth-child(${child}) must stagger at animation-delay: ${delay}`);
   }
 }
-const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.bento__card\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
+const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.hub__card\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
 if (!reduceEscape.test(stylesCss)) {
   failures.push(
     "(h1) MANDATORY prefers-reduced-motion: reduce escape missing — without animation: none + opacity: 1, reduced-motion users get permanently invisible cards",
   );
 }
-if (!stylesCss.includes(".bento__card > h2")) {
-  failures.push("(h1) ruled headers expected on .bento__card > h2 (child combinator)");
+if (!stylesCss.includes(".hub__card > h2")) {
+  failures.push("(h1) ruled headers expected on .hub__card > h2 (child combinator — package timeline h2s stay untouched)");
 }
 if (!stylesCss.includes("padding-bottom: var(--space-tight)")) {
   failures.push("(h1) ruled headers need padding-bottom: var(--space-tight)");
@@ -331,12 +369,12 @@ if (mockIconNames.length === 0) {
 }
 
 // ---- (e1) AMBIENT ELEVATION markers + package css/ ZERO-box-shadow scan ----------
-// OWNER OVERRIDE (1.6.0): the elevation styles below are REQUIRED in the
-// composition layer (playground/styles.css) — and REQUIRED TO STAY OUT of
-// the package (css/), where the zero-box-shadow border doctrine holds.
+// OWNER OVERRIDE (1.6.0, reaffirmed 1.8.0 + 2.0.0): the elevation styles below
+// are REQUIRED in the composition layer (playground/styles.css) — and REQUIRED
+// TO STAY OUT of the package (css/), where the zero-box-shadow doctrine holds.
 const ELEVATION_REQUIREMENTS = [
-  ["inset 0 1px 0 rgba(255, 255, 255, 0.05)", "the glass inset top-highlight on .bento__card"],
-  ["0 12px 32px rgba(0, 0, 0, 0.4)", "the soft ambient shadow on .bento__card"],
+  ["inset 0 1px 0 rgba(255, 255, 255, 0.05)", "the glass inset top-highlight on .hub__card"],
+  ["0 12px 32px rgba(0, 0, 0, 0.4)", "the soft ambient shadow on .hub__card"],
   ["color-mix(in srgb, var(--text-muted) 15%, transparent)", "the 15% elevation card border"],
   ["font-weight: 600", "the button hierarchy pop (was 500)"],
   ["0 4px 16px rgba(0, 0, 0, 0.3)", "the button's own elevation"],
@@ -358,9 +396,13 @@ for (const rel of readdirSync(resolve(root, "css")).map((f) => join("css", f))) 
   }
 }
 
-// ---- (e2) TIMELINE RESURRECTION needles ------------------------------------------
-// The probe-proven fixes must be present and the timeline diff must be
-// additions-only vs v1.4.0 (nothing pre-existing rewritten or dropped).
+// ---- (e2) TIMELINE RESURRECTION needles + v1.8.0-baseline deletion guard ----------
+// The probe-proven fixes must be present, and the timeline diff vs the NEW
+// baseline (v1.8.0, rebased for 2.0.0) must delete NO CSS code — only comment
+// prose may be rewritten. The allowlist is RESET for v2.0.0: the v1.8.0
+// single-use entry ("background: var(--bg-base);") was consumed by THAT
+// release. v2.0.0 sanctions nothing — timeline.css was untouched this
+// release, so the diff is empty and (e2) passes trivially.
 const timelineCss16 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
 const RESURRECTION_NEEDLES = [
   ["align-self: start", "the spanning sticky header must not stretch into a cover slab"],
@@ -376,34 +418,24 @@ let timelineDiffLines = [];
 try {
   timelineDiffLines = execFileSync(
     "git",
-    ["diff", "v1.4.0", "--", "css/timeline.css"],
+    ["diff", "v1.8.0", "--", "css/timeline.css"],
     { cwd: root, encoding: "utf8" },
   ).split("\n");
 } catch (error) {
-  failures.push(`(e2) could not diff css/timeline.css vs v1.4.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(e2) could not diff css/timeline.css vs v1.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 const deletions = timelineDiffLines.filter((l) => l.startsWith("-") && !l.startsWith("---"));
-// Comment PROSE may be rewritten (the parse-error fix REQUIRED deleting the
-// poisoned comment), but no CSS CODE may be deleted. Precise check: map each
-// deleted line back to its position in the v1.4.0 file (via `git diff -U0`
-// hunk headers) and fail if any deleted line sat OUTSIDE a /* */ comment.
-//
-// 1.8.0 e2 AMENDMENT — OWNER-SANCTIONED DELETION ALLOWLIST. Exactly ONE
-// pre-existing CSS-code line is sanctioned to have been deleted vs
-// v1.4.0: the sticky header's opaque slab
-//     background: var(--bg-base);
-// replaced by the 1.8.0 glass header (color-mix 80% + backdrop-filter,
-// gate g2) per the owner's "Bento Refinement & Spatial Harmony"
-// decision. The entry is SINGLE-USE: the same line deleted twice, or
-// any OTHER code deletion, still fails the gate. Everything else must
-// keep tracing to comments (commentMask below).
-const E2_DELETED_ALLOWLIST = ["background: var(--bg-base);"];
+// Precise check: map each deleted line back to its position in the v1.8.0
+// file (via `git diff -U0` hunk headers) and fail if any deleted line sat
+// OUTSIDE a /* */ comment — unless it is explicitly allowlisted, and the
+// v2.0.0 allowlist is deliberately EMPTY (see the header).
+const E2_DELETED_ALLOWLIST = [];
 let allowlist = [...E2_DELETED_ALLOWLIST];
 let oldTimeline = null;
 try {
-  oldTimeline = execFileSync("git", ["show", "v1.4.0:css/timeline.css"], { cwd: root, encoding: "utf8" }).split("\n");
+  oldTimeline = execFileSync("git", ["show", "v1.8.0:css/timeline.css"], { cwd: root, encoding: "utf8" }).split("\n");
 } catch (error) {
-  failures.push(`(e2) could not read v1.4.0:css/timeline.css — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(e2) could not read v1.8.0:css/timeline.css — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 /** Per-line "inside a block comment" flags for the old file. */
 function commentMask(lines) {
@@ -449,7 +481,7 @@ if (oldTimeline !== null) {
         const deletedCode = l.slice(1).trim();
         const allowIdx = allowlist.indexOf(deletedCode);
         if (allowIdx === -1) {
-          failures.push(`(e2) css/timeline.css diff vs v1.4.0 DELETES CSS code (old line ${oldLine + 1}): ${l} — only comment prose may be rewritten (the single e2 ALLOWLIST entry is "background: var(--bg-base);", owner v1.8.0, single-use)`);
+          failures.push(`(e2) css/timeline.css diff vs v1.8.0 DELETES CSS code (old line ${oldLine + 1}): ${l} — only comment prose may be rewritten (the v2.0.0 allowlist is EMPTY: the v1.8.0 single-use entry was consumed by that release)`);
           codeDeleted = true;
         } else {
           // sanctioned — consume the single-use allowance
@@ -466,7 +498,7 @@ if (oldTimeline !== null) {
     // already reported per line
   }
 } else {
-  failures.push("(e2) cannot run the code-deletion check — v1.4.0:css/timeline.css unavailable");
+  failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
 // ---- (b7) SAFETY PROOF: core files untouched since v1.4.0 ------------------------
@@ -486,6 +518,28 @@ try {
 if (safetyDiff.trim() !== "") {
   failures.push(
     "(b7) SAFETY: core package files changed since v1.4.0 — css/ (except timeline.css per e2) react/ tokens.json SYSTEM_PROMPT.md demo/ scripts/ are LOCKED",
+  );
+}
+
+// ---- (n-hub4) THE V2.0.0 FROZEN PROOF — v1.8.0 baseline, tools/ included ---------
+// The hub migration is a PLAYGROUND-ONLY release: every package file plus
+// tools/ must be byte-identical to v1.8.0. (e2) governs timeline.css's
+// additions-only rule within that freeze; the blanket scan here must stay
+// empty — and it is, because nothing under these paths changed.
+const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
+let v2SafetyDiff = "";
+try {
+  v2SafetyDiff = execFileSync(
+    "git",
+    ["diff", "v1.8.0", "--", ...V2_LOCKED_PATHS],
+    { cwd: root, encoding: "utf8" },
+  );
+} catch (error) {
+  failures.push(`(n-hub4) could not diff against v1.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+}
+if (v2SafetyDiff.trim() !== "") {
+  failures.push(
+    "(n-hub4) SAFETY: files changed since v1.8.0 — css/ react/ tokens.json demo/ SYSTEM_PROMPT.md scripts/ AND tools/ are LOCKED for the hub migration (playground presentation layer only)",
   );
 }
 
@@ -522,11 +576,13 @@ if (typeof pkg.scripts?.["verify:mcp"] !== "string") {
 }
 
 // ---- (m3) data-testid wiring for the visual cortex -------------------------------
+// 2.0.0 RENAME: card hooks that contained "bento" become hub-card-*; the
+// metric and button hooks never referenced the grid name and stay.
 const TESTID_NEEDLES = [
-  ['data-testid="bento-card-forms"', "the forms card hook"],
-  ['data-testid="bento-card-timeline"', "the timeline card hook"],
-  ['data-testid="bento-card-telemetry"', "the telemetry card hook"],
-  ['data-testid="bento-card-palette"', "the palette card hook"],
+  ['data-testid="hub-card-forms"', "the forms card hook"],
+  ['data-testid="hub-card-timeline"', "the timeline card hook"],
+  ['data-testid="hub-card-telemetry"', "the telemetry card hook"],
+  ['data-testid="hub-card-palette"', "the palette card hook"],
   ['data-testid="metric-budget-remaining"', "the budget-remaining metric hook"],
   ['data-testid="metric-budget-spent"', "the budget-spent metric hook"],
   ['data-testid="metric-rsvp"', "the rsvp metric hook"],
@@ -537,14 +593,63 @@ for (const [needle, label] of TESTID_NEEDLES) {
     failures.push(`(m3) App.tsx must carry ${needle} — ${label}`);
   }
 }
+// The bento era must be gone from the DOM CONTRACT — classes and testids.
+// Comments may still tell the migration story (App.tsx's header does).
+if (/(className|data-testid)="[^"]*bento/.test(appSrc)) {
+  failures.push("(m3) App.tsx still wires bento-era classes/testids — the hub migration must be complete");
+}
 
-// ---- (g1) ASYMMETRIC STAGE — the 1.8.0 bento grid -------------------------------
-// The timeline takes the middle: hard floors (300px sides / 400px center)
-// with 1fr / 1.5fr / 1fr weighting. The 768px collapse + placement resets
-// and the stagger stay pinned by (b4)/(h1) — this gate pins the columns.
-const ASYMMETRIC_GRID = "grid-template-columns: minmax(300px, 1fr) minmax(400px, 1.5fr) minmax(300px, 1fr);";
-if (!stylesCss.includes(ASYMMETRIC_GRID)) {
-  failures.push("(g1) styles.css must declare the asymmetric bento grid — " + ASYMMETRIC_GRID);
+// ---- (n-hub1) THE CONSTRAINED COLUMN — the 2.0.0 hub grid ------------------------
+// max-width 1400px, centered; auto-fit minmax(400px, 1fr) packs the cards —
+// the 1.8.0 hand-placed asymmetric stage is retired. The 768px collapse and
+// the stagger stay pinned by (b4)/(h1).
+const hubContainer = /^\.hub \{[^}]*max-width: 1400px;[^}]*grid-template-columns: repeat\(auto-fit, minmax\(400px, 1fr\)\);/sm;
+if (!hubContainer.test(stylesCss)) {
+  failures.push(
+    "(n-hub1) styles.css must declare the constrained hub column — .hub { max-width: 1400px; … grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }",
+  );
+}
+const hubSpan = /\.hub__card--timeline\s*\{[^}]*grid-row: span 2;/s;
+if (!hubSpan.test(stylesCss)) {
+  failures.push(
+    "(n-hub1) .hub__card--timeline must span two rows (grid-row: span 2) — cortex-probed: the single auto-fit void equals one card's area, so the owner fallback does NOT trigger",
+  );
+}
+
+// ---- (n-hub2) THE ANNOUNCED HEADER — checked in (b5) App needles -----------------
+// (the hero strings live in APP_REQUIREMENTS; this comment anchors the
+// suite numbering — n-hub2 has no styles.css side)
+
+// ---- (n-hub3) THE SHED CARD ANATOMY + TACTILE HOVER ------------------------------
+const metaRow = /\.hub__meta\s*\{[^}]*justify-content: space-between;[^}]*align-items: baseline;/s;
+if (!metaRow.test(stylesCss)) {
+  failures.push(
+    "(n-hub3) .hub__meta must be space-between + baseline (teal label left, mono path right)",
+  );
+}
+const tealLabel = /\.hub__label\s*\{[^}]*color: var\(--color-cake-secondary\);[^}]*text-transform: uppercase;/s;
+if (!tealLabel.test(stylesCss)) {
+  failures.push(
+    "(n-hub3) .hub__label must be the signature teal (var(--color-cake-secondary)) with text-transform: uppercase (content stays capitalized words)",
+  );
+}
+const monoPath = /\.hub__path\s*\{[^}]*font-family: var\(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace\);[^}]*color: var\(--text-muted\);/s;
+if (!monoPath.test(stylesCss)) {
+  failures.push(
+    '(n-hub3) .hub__path must be muted mono — font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace) + var(--text-muted)',
+  );
+}
+const hoverLift = /\.hub__card:hover\s*\{[^}]*transform: translateY\(-2px\);[^}]*0 16px 40px rgba\(0, 0, 0, 0\.5\);/s;
+if (!hoverLift.test(stylesCss)) {
+  failures.push(
+    "(n-hub3) .hub__card:hover must lift translateY(-2px) with the deepened 0 16px 40px rgba(0, 0, 0, 0.5) ambient shadow — the tactile half of the owner elevation override",
+  );
+}
+const metricAir = /\.hub__metric\s*\{[^}]*margin-bottom: var\(--space-standard\);/s;
+if (!metricAir.test(stylesCss)) {
+  failures.push(
+    "(n-hub3) .hub__metric must carry margin-bottom: var(--space-standard) — the owner mandate of ≥16px air under every metric label row",
+  );
 }
 
 // ---- (g2) GLASS HEADER + NODE ELEVATION — the doctrine boundary ------------------
@@ -561,10 +666,10 @@ for (const [needle, label] of GLASS_NEEDLES) {
     failures.push(`(g2) css/timeline.css must contain ${needle} — ${label}`);
   }
 }
-const nodeShadow = /\.bento__card \.ptp-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
+const nodeShadow = /\.hub__card \.ptp-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
 if (!nodeShadow.test(stylesCss)) {
   failures.push(
-    "(g2) styles.css must carry the composition-layer node elevation — .bento__card .ptp-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }",
+    "(g2) styles.css must carry the composition-layer node elevation — .hub__card .ptp-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }",
   );
 }
 // THE DOCTRINE BOUNDARY, enforced twice: the package file itself must still
@@ -579,16 +684,16 @@ if (tlNonNone.length > 0) {
 }
 
 // ---- (g3) TELEMETRY — space-between metrics + breathing bars ---------------------
-const metricRow = /\.bento__metric\s*\{[^}]*justify-content: space-between;[^}]*align-items: flex-end;/s;
+const metricRow = /\.hub__metric\s*\{[^}]*justify-content: space-between;[^}]*align-items: flex-end;/s;
 if (!metricRow.test(stylesCss)) {
   failures.push(
-    "(g3) .bento__metric must be space-between + flex-end (caption left, value flush right, shared bottom floor)",
+    "(g3) .hub__metric must be space-between + flex-end (caption left, value flush right, shared bottom floor)",
   );
 }
-const breathingBars = /\.bento__metric \.ptp-progress,\s*\.bento__metric \+ \.ptp-progress\s*\{[^}]*margin-top: var\(--space-tight\);/s;
+const breathingBars = /\.hub__metric \.ptp-progress,\s*\.hub__metric \+ \.ptp-progress\s*\{[^}]*margin-top: var\(--space-tight\);/s;
 if (!breathingBars.test(stylesCss)) {
   failures.push(
-    "(g3) the composition-scoped breathing-bars rule is missing — .bento__metric .ptp-progress, .bento__metric + .ptp-progress { margin-top: var(--space-tight); } (package viz.css untouched)",
+    "(g3) the composition-scoped breathing-bars rule is missing — .hub__metric .ptp-progress, .hub__metric + .ptp-progress { margin-top: var(--space-tight); } (package viz.css untouched)",
   );
 }
 
@@ -598,4 +703,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g1)-(g3): scaffold, wiring, pack=34, zero hex + elevation border, bento shape, icons, safety diff empty (timeline.css additions-only per e2, single-use glass-header allowlist), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles, visual cortex dist + smoke wiring + testid hooks, asymmetric grid + glass header/node-elevation doctrine boundary + telemetry spacing");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4): scaffold, wiring, pack=34, zero hex + elevation border, hub shape + hero + shed anatomy, icons, v1.4.0 safety diff empty (timeline.css additions-only per e2) AND v1.8.0 frozen proof incl. tools/ (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks (bento era fully retired), constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing");
