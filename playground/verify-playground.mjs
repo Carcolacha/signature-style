@@ -63,6 +63,18 @@
  *         marker; and the v1.4.0→worktree timeline diff deletes NO CSS
  *         code (braces/declarations) — only comment prose was rewritten.
  *
+ * 1.7.0 gates ("The Visual Cortex (MCP Integration)"):
+ *   (m1)  tools/mcp-viz/dist/server.js EXISTS — the compiled MCP server
+ *         is built (run `npm run build` inside tools/mcp-viz);
+ *   (m2)  SMOKE PROOF ARTIFACT wired — tools/mcp-viz/smoke.mjs exists,
+ *         the package is the private @edwyn/visual-cortex-mcp, and root
+ *         package.json carries the "verify:mcp" script that actually
+ *         runs the smoke (raw JSON-RPC: exactly two tools, a
+ *         .ptp-timeline__node with real area, non-empty screenshot);
+ *   (m3)  data-testid wiring in App.tsx — the stable hooks the cortex
+ *         greps for: four bento cards, three telemetry metrics, and the
+ *         primary toast button.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -433,10 +445,59 @@ if (safetyDiff.trim() !== "") {
   );
 }
 
+// ---- (m1) the compiled MCP server exists -----------------------------------------
+// The Visual Cortex is source-of-truth tools/mcp-viz/server.ts → tsc →
+// dist/server.js. tools/ is never packed (files array + gate b3 prove it);
+// this gate only asks that the build artifact is present.
+const mcpDistServer = resolve(root, "tools/mcp-viz/dist/server.js");
+if (!existsSync(mcpDistServer)) {
+  failures.push(
+    "(m1) tools/mcp-viz/dist/server.js is missing — build it: cd tools/mcp-viz && npm run build",
+  );
+}
+
+// ---- (m2) smoke-proof artifact wired ---------------------------------------------
+// The release-blocker proof lives in tools/mcp-viz/smoke.mjs (raw JSON-RPC
+// over stdio); root package.json must expose it as verify:mcp. The actual
+// run is the separate `npm run verify:mcp` gate — needs the dev server.
+const mcpPkgPath = resolve(root, "tools/mcp-viz/package.json");
+const mcpSmokePath = resolve(root, "tools/mcp-viz/smoke.mjs");
+if (!existsSync(mcpSmokePath)) {
+  failures.push("(m2) tools/mcp-viz/smoke.mjs is missing — no smoke proof artifact");
+}
+try {
+  const mcpPkg = JSON.parse(readFileSync(mcpPkgPath, "utf8"));
+  if (mcpPkg.name !== "@edwyn/visual-cortex-mcp" || mcpPkg.private !== true) {
+    failures.push('(m2) tools/mcp-viz/package.json must be private "@edwyn/visual-cortex-mcp"');
+  }
+} catch (error) {
+  failures.push(`(m2) cannot read tools/mcp-viz/package.json — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+}
+if (typeof pkg.scripts?.["verify:mcp"] !== "string") {
+  failures.push('(m2) root package.json scripts["verify:mcp"] is missing — the smoke must be runnable');
+}
+
+// ---- (m3) data-testid wiring for the visual cortex -------------------------------
+const TESTID_NEEDLES = [
+  ['data-testid="bento-card-forms"', "the forms card hook"],
+  ['data-testid="bento-card-timeline"', "the timeline card hook"],
+  ['data-testid="bento-card-telemetry"', "the telemetry card hook"],
+  ['data-testid="bento-card-palette"', "the palette card hook"],
+  ['data-testid="metric-budget-remaining"', "the budget-remaining metric hook"],
+  ['data-testid="metric-budget-spent"', "the budget-spent metric hook"],
+  ['data-testid="metric-rsvp"', "the rsvp metric hook"],
+  ['data-testid="btn-toast"', "the primary toast button hook"],
+];
+for (const [needle, label] of TESTID_NEEDLES) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(m3) App.tsx must carry ${needle} — ${label}`);
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2): scaffold, wiring, pack=34, zero hex + elevation border, bento shape, icons, safety diff empty (timeline.css additions-only per e2), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3): scaffold, wiring, pack=34, zero hex + elevation border, bento shape, icons, safety diff empty (timeline.css additions-only per e2), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles, visual cortex dist + smoke wiring + testid hooks");

@@ -1,6 +1,6 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Harmonized — 100% official Catppuccin, per-theme (Mocha dark default, Latte light mode) with the signature Flamingo/Teal accents.",
   "type": "module",
   "license": "MIT",
@@ -46,6 +46,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "verify": "node scripts/verify.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
+    "verify:mcp": "npm --prefix tools/mcp-viz run build && node tools/mcp-viz/smoke.mjs",
+    "inspect": "node tools/mcp-viz/dist/server.js",
     "playground": "vite --config playground/vite.config.ts",
     "playground:build": "vite build --config playground/vite.config.ts"
   },

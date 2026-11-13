@@ -129,6 +129,82 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 1.7.0 — The Visual Cortex (MCP Integration)
+
+- **THE STORY — the AI can now measure what it styles.** Every previous
+  release fixed layout defects the hard way: spin up a scratch headless
+  browser, probe rects by hand, eyeball numbers, throw the harness away
+  (the 1.6.0 cover-slab hunt is the canonical example). 1.7.0 promotes
+  that ritual into a permanent tool: `tools/mcp-viz/` ships an MCP stdio
+  server — `@edwyn/visual-cortex-mcp`, `private: true`, never packed
+  (the 34-file pack proof now also proves `tools/` is excluded) — that
+  any AI session can attach to and ask "what does the dashboard actually
+  look like right now?" before touching another CSS token.
+- **Tool `inspect_layout`** — params `url` (default
+  `http://localhost:5173`) and `selectors` (default: the dashboard
+  anatomy — `[data-testid]`, `.ptp-timeline__node`,
+  `.ptp-timeline__item`, `.ptp-timeline__header`, `.ptp-progress`,
+  `.ptp-progress__fill`, `.bento__card`, `.bento__metric`,
+  `.bento__btn`). Headless Playwright Chromium navigates with
+  `waitUntil: networkidle` **plus a 600ms settle** (the 1.5.1
+  slideUpFade stagger taught us mid-animation rects lie), then returns,
+  per matched element: `{ selector, tag, classes[], rect {x, y, width,
+  height}, text (first 40 chars, trimmed), visible (width>0 &&
+  height>0) }` — plus a per-unique-class coverage summary
+  (`total`/`visible`/`notVisible`). Unreachable URL → graceful MCP error
+  telling the session to run `npm run playground`.
+- **Tool `capture_screenshot`** — params `url`, `fullPage` (default
+  `true`), `path` (optional; ALSO writes the PNG to disk, default
+  `/tmp/opencode/dashboard-mcp.png`, dirs created). Returns MCP image
+  content (`{ type: "image", data: <base64>, mimeType: "image/png" }`)
+  plus the written path as text. Graceful degrade: if the requested path
+  is unwritable (this box ships a root-owned `/tmp/opencode`), it falls
+  back to `/tmp/visual-cortex/<name>` and says so.
+- **Prerequisite** — the playground dev server must be running
+  (`npm run playground`); both tools fail with a pointer to that command
+  otherwise. **No npm token needed** — nothing is published; all
+  dependencies resolve from the public registry.
+- **One browser per server lifetime** — Chromium launches lazily on
+  first tool call and is closed on SIGINT/SIGTERM/process exit.
+  Server built with the official `@modelcontextprotocol/sdk` (^1.32.2,
+  current `registerTool` API — the older `tool()` overloads are
+  deprecated), TypeScript strict, `npx tsc` exit 0. The smoke harness
+  (`tools/mcp-viz/smoke.mjs`) spawns the compiled server and speaks RAW
+  newline-delimited JSON-RPC over stdio — initialize → tools/list →
+  tools/call × 2 — asserting exactly the two tools, at least one
+  `.ptp-timeline__node` with width>0 && height>0, and non-empty
+  screenshot base64. Proof run: 27 layout hits, 6/6 timeline nodes with
+  area (sample 44×44 at x=618,y=241), 150,676 base64 chars / 113,005
+  bytes on disk.
+- **Attach configs** (full copies in `tools/mcp-viz/README.md`) —
+  OpenCode V2 puts server names under `mcp.servers` (NOT directly under
+  `mcp`; verified against the V2 docs at
+  <https://opencode.ai/docs/mcp-servers> and the local OpenCode skill):
+  `{ "$schema": "https://opencode.ai/config.json", "mcp": { "servers":
+  { "visual-cortex": { "type": "local", "command": ["node",
+  "<abs>/tools/mcp-viz/dist/server.js"] } } } }`; Claude-Desktop-style
+  hosts use `{ "mcpServers": { "visual-cortex": { "command": "node",
+  "args": ["<abs>/tools/mcp-viz/dist/server.js"] } } }`. Convenience
+  script: `npm run inspect` (starts the server over stdio from the repo
+  root).
+- **data-testid wiring (playground layer only)** — stable hooks for the
+  cortex's default `[data-testid]` sweep: `bento-card-forms`,
+  `bento-card-timeline`, `bento-card-telemetry`, `bento-card-palette`,
+  `metric-budget-remaining`, `metric-budget-spent`, `metric-rsvp`,
+  `btn-toast`. Timeline nodes/items/headers stay covered by the class
+  defaults; `App.tsx` remains a pure consumer otherwise.
+- **Release gates** — `verify:playground` now runs b1–b7, h1–h3, e1–e2
+  PLUS m1 (compiled `tools/mcp-viz/dist/server.js` exists), m2 (smoke
+  artifact + private package identity + `verify:mcp` script wired), and
+  m3 (all eight testid needles). New `npm run verify:mcp` builds the
+  server and runs the smoke for real. Negative test
+  (falsifiability, restore-verified): deleting
+  `tools/mcp-viz/dist/server.js` flips (m1) to FAIL. `npm pack` still
+  EXACTLY 34 files; core files byte-frozen vs v1.6.0
+  (`git diff v1.6.0 -- css/ react/ tokens.json SYSTEM_PROMPT.md demo/
+  scripts/` is EMPTY); `tokens.json` stays 1.4.0 per the standing
+  decision.
+
 ### 1.6.0 — Ambient Elevation & Timeline Resurrection
 
 - **TIMELINE ROOT CAUSE — two stacked defects, both probe-proven with a
