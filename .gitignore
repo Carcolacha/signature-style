@@ -2,3 +2,4 @@ node_modules/
 *.tsbuildinfo
 .DS_Store
 tools/mcp-viz/dist/
+playground/dist/
