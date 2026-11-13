@@ -8,6 +8,7 @@
 @import "./forms.css" layer(cascade);
 @import "./toast.css" layer(cascade);
 @import "./surface.css" layer(cascade);
+@import "./data.css" layer(cascade);
 @import "./cascade.css";
 @import "./overrides.css";
 

@@ -1,0 +1,137 @@
+/* ==========================================================================
+   DATA — tables, tabs, callouts (2.3.0 "Universal Web Components & AI
+   Signature Codex"). Layered into `cascade` by signature-style.css
+   (imported after surface.css).
+
+   THREE PATTERNS, THREE CLASS FAMILIES:
+   - .ptp-data-table — the ledger table: uppercase letter-spaced headers,
+     hairline row rules, a subtle Flamingo hover wash, and numeric cells
+     pinned to tabular-nums so digits never jitter between rows.
+   - .ptp-tabs — THE module switcher. Same contract as the nav: there is
+     NO .is-active class anywhere — [aria-selected="true"] IS the active
+     state and css answers it directly (the attribute is the state
+     machine). The selected underline is var(--color-cake-primary) —
+     THE nav visual contract, attribute-driven.
+   - .ptp-callout — the persistent note: a 4px var(--status) left strip
+     (the toast strip's persistent sibling — a callout never auto-
+     dismisses), inset-well body, --radius-ui corners.
+
+   MOBILE STRATEGY — NO 768px MEDIA QUERY HERE, DELIBERATELY: the table's
+   mobile answer is scroll containment — .ptp-table-scroll wraps the bare
+   <table> in overflow-x: auto, so wide ledgers pan inside their card on
+   a phone instead of blowing the grid. A bare table cannot scroll itself
+   (table layout ignores overflow on the table element; the scroll must
+   live on a block ancestor — the wrapper is structural, not decorative).
+   Tabs and callouts are inherently single-column; there is nothing to
+   collapse.
+
+   COLOR DOCTRINE: zero hex, zero box-shadow. The hover wash and every
+   hairline are color-mix() derivations of core tokens; the tab underline
+   and the callout status strip carry the ONLY accents (Flamingo for the
+   selected tab — structural; --status for callouts — content, mapped in
+   react to --party-* tokens exactly like the toast strips).
+
+   MOTION: transitions ride the package tokens; reduced-motion users get
+   transitions: none.
+   ========================================================================== */
+
+@layer cascade {
+
+  /* -- scroll containment: the table's mobile strategy (see header) -------- */
+  .ptp-table-scroll {
+    overflow-x: auto;
+  }
+
+  /* -- the ledger table ------------------------------------------------------ */
+  .ptp-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem; /* 14px — an 8px-grid half-step */
+  }
+  .ptp-data-table thead th {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+    padding: var(--space-tight) var(--space-standard);
+    border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  }
+  .ptp-data-table td {
+    padding: var(--space-tight) var(--space-standard);
+    border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+    color: var(--text-main);
+  }
+  /* The subtle hover wash — Flamingo at 8%, barely-there row tracking. */
+  .ptp-data-table tbody tr:hover {
+    background: color-mix(in srgb, var(--color-cake-primary) 8%, transparent);
+  }
+  /* Numeric columns: right-aligned, digits pinned to the same grid. */
+  .ptp-data-table__num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  /* The caption sits UNDER the table (data provenance, not a title),
+     muted mono — the viz caption's sibling (css/viz.css). */
+  .ptp-data-table caption {
+    caption-side: bottom;
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    padding-top: var(--space-tight);
+    text-align: left;
+  }
+
+  /* -- the module switcher: attribute-driven, exactly like the nav ----------- */
+  .ptp-tabs {
+    display: flex;
+    gap: var(--space-tight);
+    border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  }
+  .ptp-tabs__tab {
+    appearance: none; /* the button reset */
+    background: transparent;
+    color: var(--text-muted);
+    padding: var(--space-tight) var(--space-standard);
+    border: none;
+    border-bottom: 2px solid transparent;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-standard), var(--transition-transform);
+  }
+  .ptp-tabs__tab:hover {
+    color: var(--text-main);
+  }
+  .ptp-tabs__tab:active {
+    transform: scale(0.97); /* the press physics */
+  }
+  /* THE active mechanism — no .is-active class exists in the system. */
+  .ptp-tabs__tab[aria-selected="true"] {
+    color: var(--text-main);
+    border-bottom-color: var(--color-cake-primary);
+  }
+  .ptp-tabs__tab:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+
+  /* -- the persistent note: the toast strip's never-dismissing sibling ------- */
+  .ptp-callout {
+    border-left: 4px solid var(--status);
+    background: var(--bg-inset);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+    color: var(--text-main);
+    font-size: 0.875rem;
+  }
+
+  /* Motion is a gift, not a requirement. */
+  @media (prefers-reduced-motion: reduce) {
+    .ptp-tabs__tab {
+      transition: none;
+    }
+  }
+}
