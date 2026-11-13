@@ -75,6 +75,31 @@
  *         greps for: four bento cards, three telemetry metrics, and the
  *         primary toast button.
  *
+ * 1.8.0 gates ("Bento Refinement & Spatial Harmony"):
+ *   (g1)  ASYMMETRIC STAGE — styles.css declares the asymmetric bento
+ *         grid: minmax(300px, 1fr) minmax(400px, 1.5fr) minmax(300px,
+ *         1fr) — the center timeline breathes; the 768px collapse and
+ *         placement resets stay (b4 continues to pin the breakpoint).
+ *   (g2)  GLASS HEADER + NODE ELEVATION, doctrine boundary —
+ *         css/timeline.css carries the 1.8.0 glass header needles
+ *         (color-mix(in srgb, var(--bg-surface) 80%, transparent) +
+ *         backdrop-filter: blur(8px), webkit-prefixed too) while
+ *         playground/styles.css ALONE carries the node-shadow needle
+ *         (`.bento__card .ptp-timeline__node` → 0 4px 12px
+ *         rgba(0, 0, 0, 0.2)); a targeted scan re-asserts timeline.css
+ *         declares ZERO box-shadow — the package keeps its shadow law,
+ *         elevation lives in the composition layer (e1 stays green).
+ *   (g3)  TELEMETRY — .bento__metric is space-between + flex-end
+ *         (caption left, value flush right, shared bottom floor) and
+ *         the progress bars breathe via the composition-scoped
+ *         margin-top: var(--space-tight) rule (package viz.css
+ *         untouched).
+ *   (e2 AMENDMENT)  the v1.4.0-deletion guard gains a ONE-LINE,
+ *         SINGLE-USE ALLOWLIST: `background: var(--bg-base);` — the
+ *         sticky header's opaque slab, deleted by the 1.8.0 glass
+ *         header and sanctioned by the owner. Every other deleted line
+ *         must still trace to comments.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -362,6 +387,18 @@ const deletions = timelineDiffLines.filter((l) => l.startsWith("-") && !l.starts
 // poisoned comment), but no CSS CODE may be deleted. Precise check: map each
 // deleted line back to its position in the v1.4.0 file (via `git diff -U0`
 // hunk headers) and fail if any deleted line sat OUTSIDE a /* */ comment.
+//
+// 1.8.0 e2 AMENDMENT — OWNER-SANCTIONED DELETION ALLOWLIST. Exactly ONE
+// pre-existing CSS-code line is sanctioned to have been deleted vs
+// v1.4.0: the sticky header's opaque slab
+//     background: var(--bg-base);
+// replaced by the 1.8.0 glass header (color-mix 80% + backdrop-filter,
+// gate g2) per the owner's "Bento Refinement & Spatial Harmony"
+// decision. The entry is SINGLE-USE: the same line deleted twice, or
+// any OTHER code deletion, still fails the gate. Everything else must
+// keep tracing to comments (commentMask below).
+const E2_DELETED_ALLOWLIST = ["background: var(--bg-base);"];
+let allowlist = [...E2_DELETED_ALLOWLIST];
 let oldTimeline = null;
 try {
   oldTimeline = execFileSync("git", ["show", "v1.4.0:css/timeline.css"], { cwd: root, encoding: "utf8" }).split("\n");
@@ -409,8 +446,15 @@ if (oldTimeline !== null) {
     }
     if (l.startsWith("-") && !l.startsWith("---")) {
       if (mask[oldLine] !== true) {
-        failures.push(`(e2) css/timeline.css diff vs v1.4.0 DELETES CSS code (old line ${oldLine + 1}): ${l} — only comment prose may be rewritten`);
-        codeDeleted = true;
+        const deletedCode = l.slice(1).trim();
+        const allowIdx = allowlist.indexOf(deletedCode);
+        if (allowIdx === -1) {
+          failures.push(`(e2) css/timeline.css diff vs v1.4.0 DELETES CSS code (old line ${oldLine + 1}): ${l} — only comment prose may be rewritten (the single e2 ALLOWLIST entry is "background: var(--bg-base);", owner v1.8.0, single-use)`);
+          codeDeleted = true;
+        } else {
+          // sanctioned — consume the single-use allowance
+          allowlist.splice(allowIdx, 1);
+        }
       }
       oldLine += 1;
     } else if (!l.startsWith("+")) {
@@ -494,10 +538,64 @@ for (const [needle, label] of TESTID_NEEDLES) {
   }
 }
 
+// ---- (g1) ASYMMETRIC STAGE — the 1.8.0 bento grid -------------------------------
+// The timeline takes the middle: hard floors (300px sides / 400px center)
+// with 1fr / 1.5fr / 1fr weighting. The 768px collapse + placement resets
+// and the stagger stay pinned by (b4)/(h1) — this gate pins the columns.
+const ASYMMETRIC_GRID = "grid-template-columns: minmax(300px, 1fr) minmax(400px, 1.5fr) minmax(300px, 1fr);";
+if (!stylesCss.includes(ASYMMETRIC_GRID)) {
+  failures.push("(g1) styles.css must declare the asymmetric bento grid — " + ASYMMETRIC_GRID);
+}
+
+// ---- (g2) GLASS HEADER + NODE ELEVATION — the doctrine boundary ------------------
+// css/timeline.css: the 1.8.0 glass header needles (translucent 80% surface
+// + blur). playground/styles.css: the node-shadow needle — and ONLY there.
+const timelineCss18 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
+const GLASS_NEEDLES = [
+  ["color-mix(in srgb, var(--bg-surface) 80%, transparent)", "the 80% translucent glass surface on .ptp-timeline__header"],
+  ["-webkit-backdrop-filter: blur(8px)", "the webkit-prefixed glass blur"],
+  ["backdrop-filter: blur(8px)", "the glass blur behind the sticky header"],
+];
+for (const [needle, label] of GLASS_NEEDLES) {
+  if (!timelineCss18.includes(needle)) {
+    failures.push(`(g2) css/timeline.css must contain ${needle} — ${label}`);
+  }
+}
+const nodeShadow = /\.bento__card \.ptp-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
+if (!nodeShadow.test(stylesCss)) {
+  failures.push(
+    "(g2) styles.css must carry the composition-layer node elevation — .bento__card .ptp-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }",
+  );
+}
+// THE DOCTRINE BOUNDARY, enforced twice: the package file itself must still
+// declare ZERO box-shadow (belt-and-braces with the (e1) css/-wide scan —
+// this one names the boundary: elevation is composition-layer ONLY).
+const tlShadowDecls = timelineCss18.match(/box-shadow\s*:\s*[^;]+;/g) ?? [];
+const tlNonNone = tlShadowDecls.filter((d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d));
+if (tlNonNone.length > 0) {
+  failures.push(
+    `(g2) css/timeline.css declares a box-shadow (${tlNonNone.join(" ")}) — node elevation is composition-layer ONLY; the package keeps its zero-shadow law`,
+  );
+}
+
+// ---- (g3) TELEMETRY — space-between metrics + breathing bars ---------------------
+const metricRow = /\.bento__metric\s*\{[^}]*justify-content: space-between;[^}]*align-items: flex-end;/s;
+if (!metricRow.test(stylesCss)) {
+  failures.push(
+    "(g3) .bento__metric must be space-between + flex-end (caption left, value flush right, shared bottom floor)",
+  );
+}
+const breathingBars = /\.bento__metric \.ptp-progress,\s*\.bento__metric \+ \.ptp-progress\s*\{[^}]*margin-top: var\(--space-tight\);/s;
+if (!breathingBars.test(stylesCss)) {
+  failures.push(
+    "(g3) the composition-scoped breathing-bars rule is missing — .bento__metric .ptp-progress, .bento__metric + .ptp-progress { margin-top: var(--space-tight); } (package viz.css untouched)",
+  );
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3): scaffold, wiring, pack=34, zero hex + elevation border, bento shape, icons, safety diff empty (timeline.css additions-only per e2), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles, visual cortex dist + smoke wiring + testid hooks");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g1)-(g3): scaffold, wiring, pack=34, zero hex + elevation border, bento shape, icons, safety diff empty (timeline.css additions-only per e2, single-use glass-header allowlist), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles, visual cortex dist + smoke wiring + testid hooks, asymmetric grid + glass header/node-elevation doctrine boundary + telemetry spacing");
