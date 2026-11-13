@@ -112,12 +112,18 @@
   }
 }
 
-/* ---- card titles ------------------------------------------------------- */
-.bento__card h2 {
+/* ---- card titles — 1.5.1 ruled headers ----------------------------------
+   Child combinator on purpose: `.bento__card > h2` rules ONLY the card's
+   own title. A descendant selector would also hit the timeline's
+   package-rendered .ptp-timeline__header h2s (higher specificity, 0,1,1
+   vs 0,1,0) and override their sticky-header padding/border geometry. */
+.bento__card > h2 {
   font-weight: 600;
   color: var(--text-main);
   font-size: 1rem;
-  margin: 0;
+  margin: 0 0 var(--space-standard);
+  padding-bottom: var(--space-tight);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
 }
 
 /* ---- metric label rows (telemetry card) -------------------------------- */
