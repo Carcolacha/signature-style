@@ -206,6 +206,60 @@
  *         the var(--bg-surface) migration marker in the viz.css header
  *         — see (b7).)
  *
+ * 2.3.0 gates ("Universal Web Components & AI Signature Codex"):
+ *   (b2 AMENDMENT)  the frozen files array evolves ONE more step:
+ *         v1.4.0 + "!react/surface.tsx" + "!react/data.tsx" (the
+ *         negations precedent — the new data source never ships, its
+ *         compiled .js/.d.ts do).
+ *   (b3)  npm pack now packs EXACTLY 40 files (37 + css/data.css +
+ *         react/data.js + react/data.d.ts).
+ *   (b7)  SAFETY PROOF REBASED to the v2.2.0 baseline (each release
+ *         that legitimately touches core rebases the floor): diff vs
+ *         v2.2.0 over css/ react/ tokens.json demo/ scripts/ must be
+ *         EMPTY except the owner-authorized 2.3.0 deltas — css/data.css
+ *         (NEW), css/forms.css (grows), css/signature-style.css (the
+ *         data.css import), react/data.{tsx,js,d.ts} (NEW),
+ *         react/forms.{tsx,js,d.ts} (grow), react/index.{ts,js,d.ts}
+ *         (re-exports), SYSTEM_PROMPT.md (the codex — content pinned
+ *         by (dd4)). scripts/verify.mjs stays BYTE-FROZEN.
+ *   (n-hub4)  V2.3.0 FROZEN PROOF, rebased to v2.2.0 incl tools/: same
+ *         authorized deltas plus tools/mcp-viz/server.ts (owner-editable
+ *         this release: the cortex sweep grows the data-module
+ *         selectors; the compiled dist/ is gitignored).
+ *   (m3)  the 2.3.0 hooks join: data-testid="tabs-module" and
+ *         data-testid="data-table-ledger".
+ *   (dd1) DATA CSS — css/data.css carries the ledger/tab/callout
+ *         anatomy: uppercase letter-spaced thead, tabular-nums numeric
+ *         cells, the 8% Flamingo hover wash, the aria-selected tab
+ *         contract (attribute-driven, Flamingo underline), the callout
+ *         var(--status) strip, the scroll-containment wrapper (the
+ *         mobile strategy — the file must NOT declare a 768px media
+ *         query), reduced-motion, zero hex; and signature-style.css
+ *         imports ./data.css layer(cascade) AFTER ./surface.css.
+ *   (dd2) UMBRELLA RE-EXPORTS — all six new names (DataTable, Tabs,
+ *         Callout, Select, Checkbox, Avatar) re-exported from BOTH
+ *         react/index.d.ts AND react/index.js (+ their prop types).
+ *   (dd3) FORMS ADDITIONS — css/forms.css: appearance-none select +
+ *         checkbox, the :checked Teal fill, the ::after on-cake
+ *         checkmark, the chevron wrapper anatomy, the avatar disc;
+ *         react/forms.tsx: the ChevronDown icon (gate-probed against
+ *         the live lucide map), the ring as an inline BORDER (never a
+ *         box-shadow), the runtime --party-* ring guard.
+ *   (dd4) THE CODEX — SYSTEM_PROMPT.md contains the "Universal AI
+ *         Replication Contract" section, ≥15 component snippet
+ *         headings, and the closing law ("never invent tokens; never
+ *         hardcode hex"); the engine title moves to v2.6.
+ *   (dd5) THE TABS SHOWCASE — App.tsx: the Tabs module switcher
+ *         (label "Dashboard modules", the three module ids), the Data
+ *         branch (DataTable ledger with the five crew rows + the
+ *         composed PartyBadge, the three Callout moods, five Avatars,
+ *         two party rings), the Forms branch (Select with three
+ *         options, Checkbox, the v2.1.0 matrix).
+ *   (dd6) CORTEX SWEEP — tools/mcp-viz/server.ts DEFAULT_SELECTORS
+ *         carries .ptp-data-table / .ptp-tabs__tab / .ptp-callout
+ *         (plus the 2.2.0 .sig-surface-card) and the server version
+ *         string is 2.3.0.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -247,10 +301,12 @@ if (!selfWired) {
 
 // exports/main/peerDependencies(Meta) must be deep-equal to v1.4.0.
 // 2.2.0 AMENDMENT: the files array froze at v1.4.0 for six releases;
-// the surface promotion adds exactly ONE negation ("!react/surface.tsx",
-// the negations precedent) — asserted as the ONLY allowed delta below.
+// the surface promotion added the first negation ("!react/surface.tsx").
+// 2.3.0 AMENDMENT: the data promotion adds the second, per the
+// negations precedent ("!react/data.tsx" — the new source never ships,
+// its compiled .js/.d.ts do) — asserted as the ONLY allowed deltas.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
-const FILES_NEGATIONS_220 = ["!react/surface.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -264,16 +320,16 @@ if (v140pkg !== null) {
       failures.push(`(b2) package.json "${key}" changed vs v1.4.0 — the distribution surface is FROZEN`);
     }
   }
-  // files = v1.4.0's array + the 2.2.0 negations, exactly, in order.
-  const expectedFiles = [...(v140pkg.files ?? []), ...FILES_NEGATIONS_220];
+  // files = v1.4.0's array + the 2.2.0/2.3.0 negations, exactly, in order.
+  const expectedFiles = [...(v140pkg.files ?? []), ...FILES_NEGATIONS];
   if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
     failures.push(
-      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the 2.2.0 negation !react/surface.tsx — the packing contract evolves one documented step",
+      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the negations !react/surface.tsx + !react/data.tsx — the packing contract evolves documented steps",
     );
   }
 }
 
-// ---- (b3) npm pack still exactly 37 files (2.2.0: 34 + surface.css/js/d.ts) ----
+// ---- (b3) npm pack still exactly 40 files (2.3.0: 37 + data.css/js/d.ts) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -292,9 +348,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "37") {
+} else if (totalFiles[1] !== "40") {
   failures.push(
-    `(b3) npm pack must yield exactly 37 files (2.2.0 = 34 + css/surface.css + react/surface.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 40 files (2.3.0 = 37 + css/data.css + react/data.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -646,56 +702,58 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.1.0 ------------------------
-// 2.2.0 REBASE (the release that legitimately touches core rebases the floor —
-// v1.4.0 → v2.1.0). The owner-authorized 2.2.0 deltas, and NOTHING else:
-//   css/viz.css + react/viz.tsx        — telemetry limits (the track fix)
-//   react/viz.js + react/viz.d.ts      — compiled artifacts OF viz.tsx
-//   react/index.ts + index.js/.d.ts    — the umbrella re-exports (+ compiled)
-//   css/surface.css                    — NEW promoted primitive stylesheet
-//   css/signature-style.css            — the layered surface.css import
-//   react/surface.{tsx,js,d.ts}        — NEW promoted primitive source/compiled
-// css/timeline.css stays e2-governed. scripts/verify.mjs stays BYTE-FROZEN
-// (its v1 needle reads the migration marker in viz.css; the LIVING 2.2.0 viz
-// gate lives here as (v22)). Everything else must be byte-identical to v2.1.0.
+// ---- (b7) SAFETY PROOF: core files untouched since v2.2.0 ------------------------
+// 2.3.0 REBASE (the release that legitimately touches core rebases the floor —
+// v2.1.0 → v2.2.0). The owner-authorized 2.3.0 deltas, and NOTHING else:
+//   css/data.css                      — NEW data stylesheet (dd1 pins content)
+//   css/forms.css                     — grows: Select/Checkbox/Avatar (dd3)
+//   css/signature-style.css           — the layered data.css import (dd1)
+//   react/data.{tsx,js,d.ts}          — NEW data primitives + compiled
+//   react/forms.{tsx,js,d.ts}         — grow: Select/Checkbox/Avatar + compiled
+//   react/index.{ts,js,d.ts}          — the umbrella re-exports (+ compiled)
+//   SYSTEM_PROMPT.md                  — the Universal AI Replication Contract
+//                                       (content pinned by dd4, not byte-here)
+// css/timeline.css stays e2-governed. scripts/verify.mjs stays BYTE-FROZEN.
+// Everything else must be byte-identical to v2.2.0.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 const B7_AUTHORIZED = [
   ":(exclude)css/timeline.css",
-  ":(exclude)css/viz.css",
-  ":(exclude)css/surface.css",
+  ":(exclude)css/data.css",
+  ":(exclude)css/forms.css",
   ":(exclude)css/signature-style.css",
-  ":(exclude)react/viz.tsx",
-  ":(exclude)react/viz.js",
-  ":(exclude)react/viz.d.ts",
+  ":(exclude)react/data.tsx",
+  ":(exclude)react/data.js",
+  ":(exclude)react/data.d.ts",
+  ":(exclude)react/forms.tsx",
+  ":(exclude)react/forms.js",
+  ":(exclude)react/forms.d.ts",
   ":(exclude)react/index.ts",
   ":(exclude)react/index.js",
   ":(exclude)react/index.d.ts",
-  ":(exclude)react/surface.tsx",
-  ":(exclude)react/surface.js",
-  ":(exclude)react/surface.d.ts",
+  ":(exclude)SYSTEM_PROMPT.md",
 ];
 let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.1.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.2.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.2.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.1.0 beyond the owner-authorized 2.2.0 deltas (viz limits, surface promotion, e2-governed timeline.css) — css/ react/ tokens.json SYSTEM_PROMPT.md demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.2.0 beyond the owner-authorized 2.3.0 deltas (data layer, forms growth, umbrella re-exports, the codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.2.0 FROZEN PROOF — v2.1.0 baseline, tools/ included ---------
-// Rebased v1.8.0 → v2.1.0 for 2.2.0 (same authorized deltas as (b7)) plus ONE
+// ---- (n-hub4) THE V2.3.0 FROZEN PROOF — v2.2.0 baseline, tools/ included ---------
+// Rebased v2.1.0 → v2.2.0 for 2.3.0 (same authorized deltas as (b7)) plus ONE
 // tooling delta: tools/mcp-viz/server.ts is owner-editable this release (the
-// cortex default sweep retargets .bento__* → the sig-* surface contract; the
-// compiled dist/ is gitignored). Everything under the locked paths beyond
-// those deltas must stay byte-identical to v2.1.0.
+// cortex default sweep grows the data-module selectors; the compiled dist/ is
+// gitignored). Everything under the locked paths beyond those deltas must stay
+// byte-identical to v2.2.0.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 const N_HUB4_AUTHORIZED = [
   ...B7_AUTHORIZED,
@@ -705,15 +763,15 @@ let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.1.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.2.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.2.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.1.0 beyond the owner-authorized 2.2.0 deltas (viz limits, surface promotion, cortex sweep) — css/ react/ tokens.json demo/ SYSTEM_PROMPT.md scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.2.0 beyond the owner-authorized 2.3.0 deltas (data layer, forms growth, umbrella re-exports, the codex, cortex sweep) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -762,6 +820,8 @@ const TESTID_NEEDLES = [
   ['data-testid="metric-guests"', "the guests-confirmed metric hook (2.2.0)"],
   ['data-testid="metric-rsvp"', "the rsvp metric hook"],
   ['data-testid="btn-toast"', "the primary toast button hook"],
+  ['data-testid="tabs-module"', "the 2.3.0 module-switcher hook"],
+  ['data-testid="data-table-ledger"', "the 2.3.0 ledger-table hook"],
 ];
 for (const [needle, label] of TESTID_NEEDLES) {
   if (!appSrc.includes(needle)) {
@@ -1050,10 +1110,240 @@ if (!indexColumn.test(stylesCss)) {
   );
 }
 
+// ---- (dd1) DATA CSS — the ledger/tab/callout anatomy (2.3.0) ---------------------
+// css/data.css is the NEW data stylesheet: scroll-containment wrapper (the
+// mobile strategy — the file must NOT declare a 768px media query), the
+// uppercase ledger header, tabular numeric cells, the 8% Flamingo hover
+// wash, the attribute-driven tab contract, the var(--status) callout strip,
+// reduced-motion, zero hex — and the bundle imports it layer(cascade)
+// AFTER ./surface.css.
+const dataCssPath = resolve(root, "css/data.css");
+if (!existsSync(dataCssPath)) {
+  failures.push("(dd1) css/data.css is missing — the data primitives ship their own stylesheet");
+} else {
+  const dataCss = readFileSync(dataCssPath, "utf8");
+  const DATA_REQUIREMENTS = [
+    [".ptp-table-scroll", "the scroll-containment wrapper (the mobile strategy)"],
+    ["overflow-x: auto", "the horizontal scroll containment"],
+    ["text-transform: uppercase", "the uppercase ledger header"],
+    ["letter-spacing: 0.1em", "the letter-spaced header"],
+    ["font-variant-numeric: tabular-nums", "the tabular numeric cells (digits never jitter)"],
+    ["color-mix(in srgb, var(--color-cake-primary) 8%, transparent)", "the subtle 8% Flamingo row hover wash"],
+    ['[aria-selected="true"]', "THE tab active mechanism — the attribute IS the state (no .is-active class)"],
+    ["border-bottom-color: var(--color-cake-primary)", "the Flamingo underline on the selected tab (THE nav visual contract)"],
+    ["border-left: 4px solid var(--status)", "the callout status strip (the toast mechanism, persistent)"],
+    ["caption-side: bottom", "the table caption sits UNDER the table"],
+    ["scale(0.97)", "the tab press physics"],
+    ["prefers-reduced-motion", "the reduced-motion guard on tab transitions"],
+    ["var(--bg-inset)", "the callout body token"],
+  ];
+  for (const [needle, label] of DATA_REQUIREMENTS) {
+    if (!dataCss.includes(needle)) {
+      failures.push(`(dd1) css/data.css must contain ${needle} — ${label}`);
+    }
+  }
+  if (dataCss.includes("max-width: 768px")) {
+    failures.push(
+      "(dd1) css/data.css must NOT declare a 768px media query — scroll containment IS the mobile strategy for tables (the wrapper pans; tabs/callouts are single-column)",
+    );
+  }
+  // The class-usage scan runs on comment-stripped text: prose may EXPLAIN
+  // the doctrine ("no .is-active class"), only rule selectors may use it.
+  if (/\.is-active/.test(dataCss.replace(/\/\*[\s\S]*?\*\//g, ""))) {
+    failures.push(
+      '(dd1) css/data.css uses .is-active — the tab state is [aria-selected="true"] ONLY (attribute-driven, the nav contract)',
+    );
+  }
+  const dataHexes = dataCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (dataHexes !== null) {
+    failures.push(
+      `(dd1) css/data.css contains hex literal(s) ${[...new Set(dataHexes)].join(", ")} — the data layer is token-driven, zero hex`,
+    );
+  }
+  const dataShadowDecls = dataCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (dataShadowDecls !== null) {
+    failures.push(
+      `(dd1) css/data.css declares a box-shadow (${dataShadowDecls.join(" ")}) — the border doctrine bans drop shadows everywhere`,
+    );
+  }
+}
+const bundleCss = readFileSync(resolve(root, "css/signature-style.css"), "utf8");
+const dataImportIndex = bundleCss.indexOf('@import "./data.css" layer(cascade);');
+if (dataImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./data.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const surfaceImportIndex = bundleCss.indexOf('@import "./surface.css" layer(cascade);');
+  if (surfaceImportIndex !== -1 && dataImportIndex < surfaceImportIndex) {
+    failures.push(
+      "css/signature-style.css must import ./data.css AFTER ./surface.css (surface styles load first)",
+    );
+  }
+}
+
+// ---- (dd2) UMBRELLA RE-EXPORTS — all six new names, .d.ts AND .js (2.3.0) --------
+// DataTable, Tabs, Callout, Select, Checkbox, Avatar — types live in
+// index.d.ts, the value exports additionally in index.js; the prop types
+// ride the .d.ts. The compiled react/data.{js,d.ts} must exist on disk.
+const dataJsPath = resolve(root, "react/data.js");
+const dataDtsPath = resolve(root, "react/data.d.ts");
+if (!existsSync(dataJsPath)) {
+  failures.push("(dd2) react/data.js is missing — build it: npx tsc -p tsconfig.json");
+}
+if (!existsSync(dataDtsPath)) {
+  failures.push("(dd2) react/data.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+const DD2_TYPES = ["DataTableColumn", "DataTableProps", "TabsProps", "CalloutProps", "CalloutStatus"];
+for (const dataExport of ["DataTable", "Tabs", "Callout", "Select", "Checkbox", "Avatar"]) {
+  if (!new RegExp(`\\b${dataExport}\\b`).test(umbrellaDts)) {
+    failures.push(
+      `react/index.d.ts must re-export ${dataExport} from the umbrella entry point`,
+    );
+  }
+  if (!new RegExp(`\\b${dataExport}\\b`).test(umbrellaJs)) {
+    failures.push(
+      `react/index.js must re-export ${dataExport} from the umbrella entry point`,
+    );
+  }
+}
+for (const dataType of DD2_TYPES) {
+  if (!new RegExp(`\\b${dataType}\\b`).test(umbrellaDts)) {
+    failures.push(
+      `react/index.d.ts must re-export the ${dataType} type from the umbrella entry point`,
+    );
+  }
+}
+
+// ---- (dd3) FORMS ADDITIONS — Select / Checkbox / Avatar needles (2.3.0) ----------
+// css/forms.css: appearance-none select + checkbox, :checked Teal fill, the
+// ::after on-cake checkmark, the positioned chevron, the avatar disc;
+// react/forms.tsx: the live-map-probed ChevronDown, the ring as an inline
+// BORDER (never box-shadow), the runtime --party-* ring guard.
+const formsCss23 = readFileSync(resolve(root, "css/forms.css"), "utf8");
+const FORMS_23_REQUIREMENTS = [
+  [".ptp-select", "the justified chevron-anchor wrapper"],
+  [".ptp-select__native", "the native select wearing the token skin"],
+  ["appearance: none", "the UA chrome stripped (select + checkbox)"],
+  [".ptp-select__chevron", "the token chevron"],
+  ["pointer-events: none", "the chevron lets clicks fall through to the select"],
+  [".ptp-checkbox__input:checked", "the checked state machine"],
+  [".ptp-checkbox__input::after", "the checkmark as a pseudo-element (appearance-none inputs support pseudo-elements)"],
+  ["border-right: 2px solid var(--color-on-cake)", "the checkmark ink — dark on-cake on the Teal fill"],
+  [".ptp-avatar", "the initials disc"],
+  ["border-radius: 50%", "the avatar is a circle"],
+];
+for (const [needle, label] of FORMS_23_REQUIREMENTS) {
+  if (!formsCss23.includes(needle)) {
+    failures.push(`(dd3) css/forms.css must contain ${needle} — ${label}`);
+  }
+}
+const checkedTeal = /\.ptp-checkbox__input:checked\s*\{[^}]*background: var\(--color-cake-secondary\);/s;
+if (!checkedTeal.test(formsCss23)) {
+  failures.push(
+    "(dd3) .ptp-checkbox__input:checked must paint the Teal fill — background: var(--color-cake-secondary) (the aria-checked answer, echoed)",
+  );
+}
+const formsSrc23 = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
+const FORMS_TSX_23_REQUIREMENTS = [
+  ['name="ChevronDown"', 'the lucide chevron (gate-probed: "ChevronDown" exists in the installed icons map)'],
+  ["ringStyle.border = `2px solid var(${ringToken})`", "the avatar ring drawn as an inline BORDER — never box-shadow (e1 doctrine)"],
+  ['startsWith("--party-")', "the runtime ring guard — structural tokens warn and render WITHOUT the ring"],
+];
+for (const [needle, label] of FORMS_TSX_23_REQUIREMENTS) {
+  if (!formsSrc23.includes(needle)) {
+    failures.push(`react/forms.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+// Shadow ban on DECLARATIONS only (React inline style key boxShadow:) —
+// comment prose explaining the border-not-shadow doctrine is legitimate.
+if (/boxShadow\s*:/.test(formsSrc23)) {
+  failures.push(
+    "react/forms.tsx declares a boxShadow — the avatar ring is a border, never a shadow",
+  );
+}
+
+// ---- (dd4) THE CODEX — the Universal AI Replication Contract (2.3.0) -------------
+const systemPrompt = readFileSync(resolve(root, "SYSTEM_PROMPT.md"), "utf8");
+if (!systemPrompt.includes("Universal AI Replication Contract")) {
+  failures.push(
+    'SYSTEM_PROMPT.md must contain the "Universal AI Replication Contract" section — the codex ships with the package',
+  );
+}
+const snippetHeadings = (systemPrompt.match(/^### .*</gm) ?? []).length;
+if (snippetHeadings < 15) {
+  failures.push(
+    `SYSTEM_PROMPT.md must carry ≥15 component snippet headings (### …<Component>), found ${snippetHeadings}`,
+  );
+}
+if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
+  failures.push(
+    'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
+  );
+}
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.6")) {
+  failures.push(
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.6 (the codex is a major doctrine addition)",
+  );
+}
+
+// ---- (dd5) THE TABS SHOWCASE — the playground data/forms modules (2.3.0) ---------
+const TABS_REQUIREMENTS = [
+  ['label="Dashboard modules"', 'the tablist accessible name'],
+  ['id: "core", label: "Core Dashboard"', "the core module tab"],
+  ['id: "data", label: "Data & Tables"', "the data module tab"],
+  ['id: "forms", label: "Form & Input Matrix"', "the forms module tab"],
+  ["function DataModule", "the data branch component"],
+  ["function FormsModule", "the forms branch component"],
+  ["<DataTable", "the ledger table"],
+  ['title="Guest & Budget Ledger"', "the ledger card title"],
+  ['title="The Input Matrix"', "the matrix card title"],
+  ['guest: "Ana Souza"', "ledger row 1"],
+  ['guest: "Leo Martins"', "ledger row 2"],
+  ['guest: "Priya Nair"', "ledger row 3"],
+  ['guest: "Tom Weller"', "ledger row 4"],
+  ['guest: "Ana + 1"', "ledger row 5"],
+  ['colorToken="--party-green" label="Confirmed"', "the composed PartyBadge status cell"],
+  ['<Callout status="info">', "the info callout"],
+  ['<Callout status="success">', "the success callout"],
+  ['<Callout status="warning">', "the warning callout"],
+  ["<Avatar name={person.name}", "the avatar crew (rendered from AVATAR_CREW)"],
+  ['ringToken: "--party-mauve-soft"', "crew ring 1 (party token)"],
+  ['ringToken: "--party-sky"', "crew ring 2 (party token)"],
+  ["<Select", "the native dropdown in the matrix"],
+  ['value="none"', "select option 1"],
+  ['value="vegetarian"', "select option 2"],
+  ['value="vegan"', "select option 3"],
+  ["<Checkbox", "the native check in the matrix"],
+  ["<ToggleSwitch", "the switch in the matrix"],
+];
+for (const [needle, label] of TABS_REQUIREMENTS) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(dd5) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+
+// ---- (dd6) CORTEX SWEEP — the data-module selectors + version (2.3.0) ------------
+// tools/ is owner-editable tooling (noted in the changelog); the sweep grows
+// the data-module contract and the server version moves to 2.3.0.
+const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
+for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card"]) {
+  if (!mcpServerSrc.includes(`"${selector}"`)) {
+    failures.push(
+      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module`,
+    );
+  }
+}
+if (!mcpServerSrc.includes('version: "2.3.0"')) {
+  failures.push(
+    'tools/mcp-viz/server.ts server version string must be 2.3.0 (tooling-only bump; tokens.json stays 1.4.0)',
+  );
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22): scaffold, wiring, pack=37 (34 + surface.css/js/d.ts), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.1.0 safety diff empty beyond the owner-authorized 2.2.0 deltas (viz limits, surface promotion; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ frozen beyond the cortex sweep retarget (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + surface-scoped package shadow contract (css/surface.css: sig-surface-card rules ONLY, hex banned) + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks (bento era fully retired), constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room (slab + mirrored group-first clearance, ≥16px contract) and the Master Index (View switcher + HubLink factory + preventDefault + EmptyState dogfood + three exact gateways in the 900px column); 2.2.0: the promoted surface anatomy needles (s1: 15% border, inset highlight, ambient shadow, hover lift, teal eyebrow, ruled title, tabular-nums viz caption) + umbrella SurfaceCard/PageHero re-exports with compiled artifacts (s2) + the living telemetry-limits gate (v22: inset track + 20% hairline boundary + caption; limitText, ring hairline circle, centered tabular-nums readout)");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6): scaffold, wiring, pack=40 (37 + data.css/js/d.ts), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.2.0 safety diff empty beyond the owner-authorized 2.3.0 deltas (data layer, forms growth, umbrella re-exports, codex; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ frozen beyond the cortex sweep growth (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + surface-scoped package shadow contract (css/surface.css: sig-surface-card rules ONLY, hex banned) + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks incl. tabs-module + data-table-ledger, constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room and the Master Index; 2.2.0: promoted surface anatomy (s1) + umbrella SurfaceCard/PageHero (s2) + living telemetry-limits gate (v22); 2.3.0: (dd1) data.css anatomy — scroll containment (NO 768px query: the wrapper IS the mobile strategy), uppercase thead, tabular-nums, 8% Flamingo hover wash, aria-selected tab contract (attribute-driven, Flamingo underline, zero .is-active), var(--status) callout strip, layered import after surface.css, zero hex/zero shadow; (dd2) umbrella re-exports all six new names (DataTable/Tabs/Callout/Select/Checkbox/Avatar + types) in .d.ts AND .js with compiled artifacts; (dd3) forms additions — appearance-none select/checkbox, :checked Teal fill, ::after on-cake checkmark, positioned chevron, avatar disc, inline-border ring + runtime --party-* guard, live-map-probed ChevronDown; (dd4) the Universal AI Replication Contract (≥15 snippet headings, engine v2.6, the closing law); (dd5) the tabs showcase — module switcher + ledger (5 crew rows, composed PartyBadge) + three callout moods + avatar crew (2 party rings) + input matrix (Select 3 options/Checkbox/Switch); (dd6) cortex sweep grows .ptp-data-table/.ptp-tabs__tab/.ptp-callout + server version 2.3.0");

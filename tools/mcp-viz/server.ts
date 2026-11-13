@@ -9,6 +9,10 @@
  * 1.4.0). tools/ is our tooling: owner-editable, noted in the release
  * changelog.
  *
+ * 2.3.0: the sweep grows the data-module contract — .ptp-data-table,
+ * .ptp-tabs__tab, .ptp-callout — and the server version moves to 2.3.0
+ * (same owner-editable tooling note).
+ *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
  * Signature Style dashboard. Two tools:
  *
@@ -43,7 +47,9 @@ const DEFAULT_URL = "http://localhost:5173";
  * Default selector sweep — everything the dashboard's CSS contract knows
  * about: testid hooks, timeline anatomy, progress bars, the official
  * surface primitives + the hub-local metric/button classes (2.2.0 —
- * the bento era is long retired, the hub classes are playground-local).
+ * the bento era is long retired, the hub classes are playground-local),
+ * and since 2.3.0 the data-module contract: the ledger table, the tab
+ * bar, the callouts.
  */
 const DEFAULT_SELECTORS: readonly string[] = [
   "[data-testid]",
@@ -55,6 +61,9 @@ const DEFAULT_SELECTORS: readonly string[] = [
   ".sig-surface-card",
   ".hub__metric",
   ".hub__btn",
+  ".ptp-data-table",
+  ".ptp-tabs__tab",
+  ".ptp-callout",
 ];
 
 /** Settle time after networkidle, letting entry animations finish. */
@@ -195,7 +204,7 @@ async function persistPng(
 }
 
 /** The shared McpServer instance advertising the visual cortex tools. */
-const server = new McpServer({ name: "visual-cortex", version: "2.2.0" });
+const server = new McpServer({ name: "visual-cortex", version: "2.3.0" });
 
 server.registerTool(
   "inspect_layout",

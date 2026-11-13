@@ -129,6 +129,147 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.3.0 — Universal Web Components & AI Signature Codex
+
+- **THE STORY — the package learns to show data, and teaches AI to
+  reproduce itself.** Six new components: `<DataTable>`, `<Tabs>`,
+  `<Callout>` (NEW css/data.css + react/data.tsx) and `<Select>`,
+  `<Checkbox>`, `<Avatar>` (forms grows). SYSTEM_PROMPT.md gains the
+  **Universal AI Replication Contract** — copy-paste JSX for all 21
+  exported components, factual against the .d.ts — and the engine
+  title moves to v2.6 (owner decision made by the implementor: the
+  contract is a major DOCTRINE addition, and this file's version has
+  always tracked doctrine, not package releases). `tokens.json` stays
+  1.4.0; `npm pack` now packs EXACTLY 40 files (37 + css/data.css +
+  react/data.js/.d.ts; `!react/data.tsx` joins the files-array
+  negations, the 2.2.0 precedent).
+- **`<DataTable>` — the ledger table inside its justified wrapper.**
+  `<div class="ptp-table-scroll">` (STRUCTURAL: a bare `<table>`
+  ignores overflow in table layout, so scroll containment — the
+  mobile strategy, NO 768px media query in data.css — needs a block
+  ancestor) → `<table class="ptp-data-table">` → optional
+  `<caption>` (caption-side bottom, mono muted 0.75rem), thead th
+  (scope="col", uppercase, 0.1em tracking, muted 0.75rem/600,
+  20%-mix hairline), tbody td (10%-mix hairline, --text-main),
+  `tbody tr:hover` → the subtle 8% Flamingo wash
+  (`color-mix(in srgb, var(--color-cake-primary) 8%, transparent)`),
+  and `.ptp-data-table__num` (right-aligned tabular-nums) on both
+  the th and td of `numeric: true` columns. Cell values are
+  ReactNode — a `<PartyBadge>` composes straight into a status
+  column. No sorting, no pagination: a static table IS the feature.
+- **`<Tabs>` — the module switcher, attribute-driven like the nav.**
+  `<div role="tablist" aria-label class="ptp-tabs">` of
+  `<button type="button" role="tab" aria-selected>`; ZERO .is-active
+  classes — `[aria-selected="true"]` IS the active state and
+  css/data.css answers it with the Flamingo underline
+  (`border-bottom-color: var(--color-cake-primary)`), THE nav visual
+  contract. Controlled (`activeId` + `onChange(id)`, the component
+  owns no state); hover = --text-main, press = scale(0.97),
+  focus-visible = the doctrine ring, reduced-motion = none. Panels
+  are the consumer's: render the active branch yourself.
+- **`<Callout>` — Toast's persistent sibling.** ONE
+  `<div class="ptp-callout" role="note">` with `--status` set INLINE
+  from the status map (info → `--party-sky`, success →
+  `--party-green`, warning → `--party-peach`) — the css/toast.css
+  strip mechanism, but a callout NEVER auto-dismisses: no timer, no
+  close button. Inset-well body, --radius-ui corners, 0.875rem.
+- **`<Select>` / `<Checkbox>` / `<Avatar>` — the forms grow.**
+  `<Select>` wraps its native select in a justified `<span
+  class="ptp-select">` (STRUCTURAL: `appearance: none` strips the UA
+  arrow and the `ChevronDown` icon — live-map-probed, exists in the
+  installed lucide-react — needs a positioned ancestor; pointer-
+  events none, muted, 16px); aria-invalid → the peach error border
+  (v1.4.0 doctrine), :focus-visible → the Flamingo ring. `<Checkbox>`
+  wraps a native input in a `<label>` (SEMANTIC necessity — native
+  label association is the feature); `appearance: none`, 16px box,
+  `:checked` → the Teal fill + the ::after checkmark (6×10 L of two
+  2px `--color-on-cake` borders rotated 45°, opacity-swapped) — dark
+  ink on bright cake, the on-cake doctrine. `<Avatar>` derives
+  initials (word-initials, ≤2, uppercase; empty name → empty span)
+  into ONE `<span class="ptp-avatar">` (32|40 px, INLINE width/
+  height); `ringToken` is PartyTokenName-typed AND runtime-guarded —
+  a structural token warns and renders WITHOUT the ring (documented
+  choice: an avatar without its ring is still an avatar, unlike
+  PartyBadge/ProgressBar where the token IS the content); the ring
+  is an inline `border: 2px solid var(--party-token)` — BORDER,
+  never box-shadow (probe-proven: computed box-shadow "none").
+- **The playground grows module tabs.** The dashboard gains `<Tabs
+  label="Dashboard modules">` (core / data / forms, local state,
+  testid `tabs-module`) over three branches: **core** (the unchanged
+  4-SurfaceCard board — the tab bar lives in .hub__module ABOVE the
+  grid so the nth-child stagger is untouched), **data** (the Guest &
+  Budget Ledger: DataTable with the five crew rows — Ana Souza
+  Confirmed $120 as the composed `<PartyBadge>`, Leo Martins Pending
+  $0, Priya Nair Confirmed $200, Tom Weller Declined $0, Ana + 1
+  Pending $120, tabular contribution column, provenance caption;
+  the three callout moods; five Avatars, 32px ×3 / 40px ×2, mauve-
+  soft + sky rings; testid `data-table-ledger`), **forms** (The
+  Input Matrix: Input, TextArea, Select with three options,
+  Checkbox, ToggleSwitch stacked in the v2.1.0 spacing pattern).
+- **The codex — SYSTEM_PROMPT.md § Universal AI Replication
+  Contract.** "Any AI consuming @edwyn/signature-style@2.3.0 can
+  reproduce this signature verbatim — these snippets are the law":
+  21 copy-paste JSX snippets (ThemeProvider, PageHero, SurfaceCard,
+  GlobalNav + the as={NavLink}/activeHref note, Tabs, EventTimeline,
+  useModal+EventModal, ProgressBar + limitText, StatRing, DataTable,
+  Callout, Avatar, Input, TextArea, Select, Checkbox, ToggleSwitch,
+  ToastProvider+useToast, PartyBadge, Icon, EmptyState), each
+  one-line-preambled and FACTUAL against the shipped .d.ts (no
+  invented props), ending on the three doctrines one-liner +
+  "never invent tokens; never hardcode hex".
+- **Cortex sweep grown (tools/ is our tooling — owner-editable).**
+  DEFAULT_SELECTORS add `.ptp-data-table`, `.ptp-tabs__tab`,
+  `.ptp-callout`; server version → 2.3.0. HONEST SWEEP NOTE: the
+  default view is dashboard/core, so table/tab/callout hits do NOT
+  appear in the default sweep — module content mounts on click. The
+  shipped smoke is UNCHANGED (it asserts timeline nodes, which the
+  default view renders); the release proof ran a one-off probe that
+  CLICKS the Data tab first.
+- **Gate evolution (verify:playground)** — (b2 AMENDMENT) files =
+  v1.4.0 + `!react/surface.tsx` + `!react/data.tsx`; (b3) 37 → 40;
+  (b7)/(n-hub4) REBASED to the v2.2.0 baseline with the authorized
+  2.3.0 deltas enumerated (data layer, forms growth, umbrella
+  re-exports, codex, cortex sweep) — scripts/verify.mjs stays
+  BYTE-FROZEN; (m3) += `tabs-module` + `data-table-ledger`; NEW:
+  (dd1) data.css anatomy (scroll containment AND the ABSENCE of a
+  768px query, uppercase thead, tabular-nums, 8% hover wash,
+  aria-selected contract, comment-stripped .is-active ban, zero
+  hex/shadow, layered import after surface.css); (dd2) all six new
+  names re-exported in index.d.ts AND index.js (+ types + compiled
+  artifacts); (dd3) forms additions (appearance:none, :checked
+  Teal, ::after on-cake checkmark, positioned chevron, avatar disc,
+  inline-border ring, runtime --party-* guard, declaration-scoped
+  boxShadow ban); (dd4) the codex (section present, ≥15 snippet
+  headings, engine v2.6 title, the closing law); (dd5) the tabs
+  showcase (switcher ids, ledger rows, composed badge, three
+  callouts, avatar rings, matrix); (dd6) the cortex selectors +
+  server version. Negative test (falsifiability, restore-verified):
+  removing the `[aria-selected="true"]` Flamingo-underline rule from
+  css/data.css flips (dd1) to FAIL — "must contain
+  border-bottom-color: var(--color-cake-primary)" — restore → PASS
+  (git-verified byte-identical).
+- **Release proof** — `npm run verify` PASS (the frozen floor);
+  `npm run verify:playground` PASS (with (dd1)–(dd6)); `npm run
+  verify:mcp` SMOKE ALL PASS (39 layout hits, 6/6 timeline nodes
+  with area); `vite build` exit 0; `npm pack` exactly 40 files;
+  `git diff v2.2.0 -- css/ react/` = EXACTLY css/data.css (new),
+  css/forms.css, css/signature-style.css (+1 import line),
+  react/data.{tsx,js,d.ts} (new), react/forms.{tsx,js,d.ts},
+  react/index.{ts,js,d.ts} — nothing else. `package.json`/lock →
+  2.3.0, `tokens.json` stays 1.4.0. Relaunch proof (dev server
+  killed and restarted fresh — the /mnt/c inotify lesson; HTTP 200)
+  and the one-off cortex probe (click-path: Data & Tables tab →
+  aria-selected=true, underline computed #F2CDCD Mocha Flamingo;
+  .ptp-data-table: 5 tbody rows, thead uppercase/1.2px tracking,
+  numeric cells tabular-nums right-aligned, caption-side bottom;
+  callouts: 4px strips computed #04a5e5 / #a6d189 / #fe640b on the
+  #282A36 inset body, role="note" ×3; avatars: AS/LM/PN/TW/A+
+  initials, inline `border: 2px solid var(--party-mauve-soft)` /
+  `var(--party-sky)` on the two ringed discs, radius 50%, computed
+  box-shadow "none"). Honest note: the 8% hover wash is gate-
+  asserted (dd1 needle), not probe-computed — a synthetic
+  mouseover does not trip the browser's :hover state.
+
 ### 2.2.0 — Telemetry Limits & Official Surface Primitives
 
 - **THE STORY — the tracks become visible, and the playground's
