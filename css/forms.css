@@ -2,7 +2,7 @@
    FORMS — input & feedback primitives (1.4.0 "Input & Feedback Layer").
    Layered into `cascade` by signature-style.css (imported after viz.css).
 
-   THREE PRIMITIVES, THREE CLASSES:
+   SIX CONTROLS (1.4.0 three, 2.3.0 adds three):
    - .ptp-input / .ptp-textarea — inset wells: the field interior is
      --bg-inset (the keeper's semantic job since 0.2.0), separated from
      the page by the border doctrine hairline, NOT a shadow.
@@ -11,6 +11,13 @@
      No wrapper div, no inner span, no input/label pair — the state is
      the attribute ([aria-checked]), exactly like the nav's
      [aria-current="page"]: the attribute IS the state machine.
+   - .ptp-select (+ .ptp-select__native / __chevron) — the native
+     dropdown with the token chevron; the <span> wrapper is STRUCTURAL
+     (the absolute-positioned chevron needs its positioned anchor).
+   - .ptp-checkbox (+ __input / __text) — the native check; the <label>
+     wrapper is a SEMANTIC necessity (native label association).
+   - .ptp-avatar — the initials disc; the party ring arrives INLINE as
+     border (never box-shadow).
 
    ERROR DOCTRINE: invalid fields wear [aria-invalid="true"] — attribute-
    driven, so the state survives any DOM shape. The error border is
@@ -133,12 +140,135 @@
     outline-offset: 2px;
   }
 
+  /* -- the select: native dropdown, token chevron (2.3.0) ----------------------
+     THE WRAPPER IS STRUCTURAL: appearance: none strips the UA arrow and
+     the custom chevron needs a positioned ancestor to hang off — without
+     the .ptp-select span the absolutely-positioned icon would anchor to
+     the nearest positioned ancestor (a card), landing anywhere but the
+     field's right edge. The native <select> keeps every native behavior. */
+  .ptp-select {
+    position: relative;
+    width: 100%;
+  }
+  .ptp-select__native {
+    appearance: none;
+    -webkit-appearance: none; /* older Safari still honors only the prefix */
+    background: var(--bg-inset);
+    color: var(--text-main);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-tight) var(--space-standard);
+    /* extra right pad reserves the chevron's lane */
+    padding-right: calc(var(--space-standard) + 1.25rem);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 400;
+    width: 100%;
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  .ptp-select__native:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+  .ptp-select__native[aria-invalid="true"] {
+    border-color: var(--party-peach); /* the v1.4.0 error doctrine */
+  }
+  .ptp-select__chevron {
+    position: absolute;
+    right: var(--space-standard);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1rem;  /* 16px */
+    height: 1rem;
+    pointer-events: none; /* clicks fall through to the native select */
+    color: var(--text-muted);
+  }
+
+  /* -- the checkbox: native input, on-cake checkmark (2.3.0) -------------------
+     appearance-none inputs support pseudo-elements in modern browsers —
+     the ::after checkmark below relies on it (the UA chrome is gone, the
+     box is ours). The <label> wrapper is the COMPONENT's semantic
+     necessity: label association wires pointer + screen-reader clicks to
+     the input with zero JS. */
+  .ptp-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-tight);
+    color: var(--text-main);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  .ptp-checkbox__input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1rem;  /* 16px box */
+    height: 1rem;
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: 0.25rem;
+    position: relative;
+    cursor: pointer;
+    flex: none;
+    transition: var(--transition-standard);
+  }
+  /* :checked = the Teal fill (the switch's aria-checked answer, echoed) */
+  .ptp-checkbox__input:checked {
+    background: var(--color-cake-secondary);
+    border-color: var(--color-cake-secondary);
+  }
+  /* The checkmark: an L of two borders, rotated 45°. Dark --color-on-cake
+     ink on the Teal fill — the on-cake doctrine (dark ink on bright cake).
+     Geometry: box 16px (border-box, the base layer's universal rule);
+     mark 0.375rem × 0.625rem → left = (16 − 6) / 2 = 5px,
+     top = (16 − 10) / 2 = 3px; opacity swaps on :checked. */
+  .ptp-checkbox__input::after {
+    content: "";
+    position: absolute;
+    width: 0.375rem;
+    height: 0.625rem;
+    border-right: 2px solid var(--color-on-cake);
+    border-bottom: 2px solid var(--color-on-cake);
+    transform: rotate(45deg);
+    top: 0.1875rem;
+    left: 0.3125rem;
+    opacity: 0;
+    transition: opacity var(--transition-standard);
+  }
+  .ptp-checkbox__input:checked::after {
+    opacity: 1;
+  }
+  .ptp-checkbox__input:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+
+  /* -- the avatar: the initials disc (2.3.0) -----------------------------------
+     The ring arrives INLINE from react/forms.tsx as border: 2px solid
+     var(--party-token) — border, NEVER box-shadow (the e1 doctrine:
+     separation is drawn with borders; this file stays shadow-free and
+     the scan below would fail it otherwise). */
+  .ptp-avatar {
+    border-radius: 50%;
+    background: var(--bg-inset);
+    color: var(--text-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex: none;
+  }
+
   /* Motion is a gift, not a requirement. */
   @media (prefers-reduced-motion: reduce) {
     .ptp-input,
     .ptp-textarea,
     .ptp-switch,
-    .ptp-switch::before {
+    .ptp-switch::before,
+    .ptp-select__native,
+    .ptp-checkbox__input,
+    .ptp-checkbox__input::after {
       transition: none;
     }
   }

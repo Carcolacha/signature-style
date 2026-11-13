@@ -11,7 +11,7 @@ export { EventTimeline, } from "./timeline.js";
 export { EventModal, useModal, } from "./modal.js";
 export { GlobalNav, } from "./nav.js";
 export { ProgressBar, StatRing, } from "./viz.js";
-export { Input, TextArea, ToggleSwitch, } from "./forms.js";
+export { Input, TextArea, ToggleSwitch, Select, Checkbox, Avatar, } from "./forms.js";
 export { ToastProvider, useToast, } from "./toast.js";
 export { SurfaceCard, PageHero, } from "./surface.js";
 export { DataTable, Tabs, Callout, } from "./data.js";

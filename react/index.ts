@@ -52,6 +52,12 @@ export {
   type TextAreaProps,
   ToggleSwitch,
   type ToggleSwitchProps,
+  Select,
+  type SelectProps,
+  Checkbox,
+  type CheckboxProps,
+  Avatar,
+  type AvatarProps,
 } from "./forms.js";
 export {
   ToastProvider,
