@@ -260,6 +260,67 @@
  *         (plus the 2.2.0 .sig-surface-card) and the server version
  *         string is 2.3.0.
  *
+ * 2.4.0 gates ("Form Wrappers & Editorial Primitives"):
+ *   (b2 AMENDMENT)  the frozen files array evolves ONE more step:
+ *         v1.4.0 + "!react/surface.tsx" + "!react/data.tsx" +
+ *         "!react/editorial.tsx" (the negations precedent — the new
+ *         editorial source never ships, its compiled .js/.d.ts do).
+ *   (b3)  npm pack now packs EXACTLY 43 files (40 + css/editorial.css
+ *         + react/editorial.js + react/editorial.d.ts).
+ *   (b7)  SAFETY PROOF REBASED to the v2.3.0 baseline (each release
+ *         that legitimately touches core rebases the floor): diff vs
+ *         v2.3.0 over css/ react/ tokens.json demo/ scripts/ must be
+ *         EMPTY except the owner-authorized 2.4.0 deltas —
+ *         css/editorial.css (NEW), css/forms.css (grows), css/viz.css
+ *         (grows), css/signature-style.css (the editorial.css import),
+ *         react/editorial.{tsx,js,d.ts} (NEW), react/forms.{tsx,js,d.ts}
+ *         (grow), react/viz.{tsx,js,d.ts} (grow), react/index.{ts,js,d.ts}
+ *         (re-exports). scripts/verify.mjs stays BYTE-FROZEN.
+ *   (n-hub4)  V2.4.0 FROZEN PROOF, rebased to v2.3.0 incl tools/: tools/
+ *         is UNTOUCHED this release (the cortex sweep's class targets
+ *         are unchanged — ptp- prefixes only), so no tools exclusion
+ *         delta is authorized; the sweep needles (dd6) stay pinned.
+ *   (m3)  the 2.4.0 hooks join: data-testid="kpi-trio",
+ *         data-testid="banner-release", data-testid="carousel-clippings".
+ *   (ed1) EDITORIAL CSS — css/editorial.css carries the carousel snap
+ *         (scroll-snap-type x mandatory + scroll-snap-align start),
+ *         the prose blockquote (inset well + 4px Flamingo rule +
+ *         italic), the banner var(--status) strip, the ghost Teal-hover
+ *         buttons, zero hex AND zero box-shadow (the e1 scope extends:
+ *         ALL css/ files stay shadow-free except surface.css's
+ *         sanctioned .sig-surface-card rules — editorial included);
+ *         signature-style.css imports ./editorial.css layer(cascade)
+ *         AFTER ./data.css.
+ *   (ed2) UMBRELLA RE-EXPORTS — the six new primitives + the Sparkline
+ *         engine (FormField, RadioCardGroup, Carousel, CarouselItem,
+ *         ProseBlock, AnnouncementBanner, StatCard, Sparkline + prop
+ *         types) re-exported from BOTH react/index.d.ts AND
+ *         react/index.js; react/editorial.{js,d.ts} compiled on disk.
+ *   (ed3) FORMS ADDITIONS — css/forms.css: the :has() focus ring
+ *         (.ptp-radio-card:has(input:focus-visible) → the Flamingo
+ *         outline; the no-:has degrade documented), the radio selected
+ *         contract (--selected class + :has(input:checked) → 2px
+ *         Flamingo border + the 10% cake-tint background), the visually
+ *         hidden input, the auto-fit minmax(140px,1fr) grid, the form
+ *         field label/hint/error anatomy (error = --party-peach);
+ *         react/forms.tsx: the FormField hint-XOR-error slot and the
+ *         radiogroup/aria-label contract.
+ *   (ed4) VIZ ADDITIONS — react/viz.tsx: Sparkline renders ONE svg
+ *         (role="img", preserveAspectRatio="none") with EXACTLY two
+ *         elements (polygon + polyline) plus the --party-* runtime
+ *         guard and the ≥2-point guard; css/viz.css: .ptp-stat-card is
+ *         FLAT (surface background + 20% hairline, zero shadow —
+ *         e1-scanned) with tabular-nums value + uppercase label +
+ *         up/down party delta colors.
+ *   (icons) SDK-LUCIDE PROBE — Megaphone, ChevronLeft, ChevronRight
+ *         exist in the installed lucide-react icons map (the "Music"
+ *         lesson: editorial.tsx renders three new icon names).
+ *   (showcase) THE EDITORIAL SHOWCASE — App.tsx: the FormField
+ *         side-by-side (Name + $ Contribution), the RadioCardGroup
+ *         RSVP sample (Attending/Maybe/Can't make it), the Data view
+ *         banner + KPI trio + ProseBlock Field Notes + palette
+ *         clippings Carousel.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -305,8 +366,10 @@ if (!selfWired) {
 // 2.3.0 AMENDMENT: the data promotion adds the second, per the
 // negations precedent ("!react/data.tsx" — the new source never ships,
 // its compiled .js/.d.ts do) — asserted as the ONLY allowed deltas.
+// 2.4.0 AMENDMENT: the editorial promotion adds the third
+// ("!react/editorial.tsx"), same precedent.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
-const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -329,7 +392,7 @@ if (v140pkg !== null) {
   }
 }
 
-// ---- (b3) npm pack still exactly 40 files (2.3.0: 37 + data.css/js/d.ts) ----
+// ---- (b3) npm pack still exactly 43 files (2.4.0: 40 + editorial.css/js/d.ts) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -348,9 +411,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "40") {
+} else if (totalFiles[1] !== "43") {
   failures.push(
-    `(b3) npm pack must yield exactly 40 files (2.3.0 = 37 + css/data.css + react/data.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 43 files (2.4.0 = 40 + css/editorial.css + react/editorial.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -702,24 +765,26 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.2.0 ------------------------
-// 2.3.0 REBASE (the release that legitimately touches core rebases the floor —
-// v2.1.0 → v2.2.0). The owner-authorized 2.3.0 deltas, and NOTHING else:
-//   css/data.css                      — NEW data stylesheet (dd1 pins content)
-//   css/forms.css                     — grows: Select/Checkbox/Avatar (dd3)
-//   css/signature-style.css           — the layered data.css import (dd1)
-//   react/data.{tsx,js,d.ts}          — NEW data primitives + compiled
-//   react/forms.{tsx,js,d.ts}         — grow: Select/Checkbox/Avatar + compiled
+// ---- (b7) SAFETY PROOF: core files untouched since v2.3.0 ------------------------
+// 2.4.0 REBASE (the release that legitimately touches core rebases the floor —
+// v2.2.0 → v2.3.0). The owner-authorized 2.4.0 deltas, and NOTHING else:
+//   css/editorial.css                 — NEW editorial stylesheet (ed1 pins content)
+//   css/forms.css                     — grows: FormField/RadioCardGroup (ed3)
+//   css/viz.css                       — grows: StatCard (ed4)
+//   css/signature-style.css           — the layered editorial.css import (ed1)
+//   react/editorial.{tsx,js,d.ts}     — NEW editorial primitives + compiled
+//   react/forms.{tsx,js,d.ts}         — grow: FormField/RadioCardGroup + compiled
+//   react/viz.{tsx,js,d.ts}           — grow: Sparkline/StatCard + compiled
 //   react/index.{ts,js,d.ts}          — the umbrella re-exports (+ compiled)
-//   SYSTEM_PROMPT.md                  — the Universal AI Replication Contract
-//                                       (content pinned by dd4, not byte-here)
 // css/timeline.css stays e2-governed. scripts/verify.mjs stays BYTE-FROZEN.
-// Everything else must be byte-identical to v2.2.0.
+// Everything else must be byte-identical to v2.3.0.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 const B7_AUTHORIZED = [
   ":(exclude)css/timeline.css",
   ":(exclude)css/data.css",
   ":(exclude)css/forms.css",
+  ":(exclude)css/viz.css",
+  ":(exclude)css/editorial.css",
   ":(exclude)css/signature-style.css",
   ":(exclude)react/data.tsx",
   ":(exclude)react/data.js",
@@ -727,6 +792,12 @@ const B7_AUTHORIZED = [
   ":(exclude)react/forms.tsx",
   ":(exclude)react/forms.js",
   ":(exclude)react/forms.d.ts",
+  ":(exclude)react/viz.tsx",
+  ":(exclude)react/viz.js",
+  ":(exclude)react/viz.d.ts",
+  ":(exclude)react/editorial.tsx",
+  ":(exclude)react/editorial.js",
+  ":(exclude)react/editorial.d.ts",
   ":(exclude)react/index.ts",
   ":(exclude)react/index.js",
   ":(exclude)react/index.d.ts",
@@ -736,42 +807,39 @@ let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.2.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.3.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.2.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.2.0 beyond the owner-authorized 2.3.0 deltas (data layer, forms growth, umbrella re-exports, the codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.3.0 beyond the owner-authorized 2.4.0 deltas (editorial layer, forms/viz growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.3.0 FROZEN PROOF — v2.2.0 baseline, tools/ included ---------
-// Rebased v2.1.0 → v2.2.0 for 2.3.0 (same authorized deltas as (b7)) plus ONE
-// tooling delta: tools/mcp-viz/server.ts is owner-editable this release (the
-// cortex default sweep grows the data-module selectors; the compiled dist/ is
-// gitignored). Everything under the locked paths beyond those deltas must stay
-// byte-identical to v2.2.0.
+// ---- (n-hub4) THE V2.4.0 FROZEN PROOF — v2.3.0 baseline, tools/ included ---------
+// Rebased v2.2.0 → v2.3.0 for 2.4.0. tools/ is UNTOUCHED this release — the
+// cortex sweep's class targets are unchanged (the new primitives keep the
+// ptp- prefix), so NO tools exclusion is authorized: any tools/ diff now
+// fails. Everything under the locked paths beyond the (b7) deltas must stay
+// byte-identical to v2.3.0.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
-const N_HUB4_AUTHORIZED = [
-  ...B7_AUTHORIZED,
-  ":(exclude)tools/mcp-viz/server.ts",
-];
+const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.2.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.3.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.2.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.2.0 beyond the owner-authorized 2.3.0 deltas (data layer, forms growth, umbrella re-exports, the codex, cortex sweep) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.3.0 beyond the owner-authorized 2.4.0 deltas (editorial layer, forms/viz growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -822,6 +890,9 @@ const TESTID_NEEDLES = [
   ['data-testid="btn-toast"', "the primary toast button hook"],
   ['data-testid="tabs-module"', "the 2.3.0 module-switcher hook"],
   ['data-testid="data-table-ledger"', "the 2.3.0 ledger-table hook"],
+  ['data-testid="kpi-trio"', "the 2.4.0 StatCard KPI trio hook"],
+  ['data-testid="banner-release"', "the 2.4.0 announcement banner hook"],
+  ['data-testid="carousel-clippings"', "the 2.4.0 palette clippings carousel hook"],
 ];
 for (const [needle, label] of TESTID_NEEDLES) {
   if (!appSrc.includes(needle)) {
@@ -1340,10 +1411,275 @@ if (!mcpServerSrc.includes('version: "2.3.0"')) {
   );
 }
 
+// ---- (ed1) EDITORIAL CSS — the carousel/prose/banner anatomy (2.4.0) --------------
+// css/editorial.css is the NEW editorial stylesheet: the carousel snap contract
+// (track + thin scrollbar + snap-start items), the prose blockquote (inset well
+// + 4px Flamingo rule + italic bright ink + mono muted attribution), the
+// banner var(--status) strip (the toast/callout mechanism) with the ghost
+// Teal-hover close — reduced-motion respected, ZERO hex, ZERO box-shadow
+// (the e1 scope extends to every css/ file; surface.css's .sig-surface-card
+// sanction is the ONLY exception, editorial included). The bundle imports it
+// layer(cascade) AFTER ./data.css.
+const editorialCssPath = resolve(root, "css/editorial.css");
+if (!existsSync(editorialCssPath)) {
+  failures.push("(ed1) css/editorial.css is missing — the editorial primitives ship their own stylesheet");
+} else {
+  const editorialCss = readFileSync(editorialCssPath, "utf8");
+  const EDITORIAL_REQUIREMENTS = [
+    ["scroll-snap-type: x mandatory", "the carousel snap contract"],
+    ["scroll-snap-align: start", "the snap-start items"],
+    ["scrollbar-width: thin", "the thin scrollbar on the track"],
+    [".ptp-carousel__item", "the item slot (flex 0 0 auto)"],
+    ["flex: 0 0 auto", "items keep content width"],
+    [".ptp-prose blockquote", "the prose blockquote anatomy"],
+    ["border-left: 4px solid var(--color-cake-primary)", "the Flamingo quote rule (structural)"],
+    ["font-style: italic", "the quote voice"],
+    ["border-left: 4px solid var(--status)", "the banner status strip (the toast/callout mechanism)"],
+    ["var(--bg-inset)", "the inset-well bodies (quote + banner)"],
+    ["var(--color-cake-secondary)", "the Teal hover accent (ghost buttons, structural)"],
+    ["prefers-reduced-motion", "the reduced-motion guard on transitions"],
+  ];
+  for (const [needle, label] of EDITORIAL_REQUIREMENTS) {
+    if (!editorialCss.includes(needle)) {
+      failures.push(`(ed1) css/editorial.css must contain ${needle} — ${label}`);
+    }
+  }
+  const editorialHexes = editorialCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (editorialHexes !== null) {
+    failures.push(
+      `(ed1) css/editorial.css contains hex literal(s) ${[...new Set(editorialHexes)].join(", ")} — the editorial layer is token-driven, zero hex`,
+    );
+  }
+  const editorialShadowDecls = editorialCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  const editorialNonNone = (editorialShadowDecls ?? []).filter(
+    (d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d),
+  );
+  if (editorialNonNone.length > 0) {
+    failures.push(
+      `(ed1) css/editorial.css declares a box-shadow (${editorialNonNone.join(" ")}) — the border doctrine bans drop shadows everywhere (the e1 scope extends: editorial included)`,
+    );
+  }
+}
+const editorialImportIndex = bundleCss.indexOf('@import "./editorial.css" layer(cascade);');
+if (editorialImportIndex === -1) {
+  failures.push(
+    'css/signature-style.css must import "./editorial.css" layer(cascade) — cascade membership is the layered-import doctrine',
+  );
+} else {
+  const dataImportIndexForEditorial = bundleCss.indexOf('@import "./data.css" layer(cascade);');
+  if (dataImportIndexForEditorial !== -1 && editorialImportIndex < dataImportIndexForEditorial) {
+    failures.push(
+      "css/signature-style.css must import ./editorial.css AFTER ./data.css (data styles load first)",
+    );
+  }
+}
+
+// ---- (ed2) UMBRELLA RE-EXPORTS — the 2.4.0 names, .d.ts AND .js -------------------
+// The six new primitives + the Sparkline engine + the CarouselItem helper.
+// Types live in index.d.ts, the value exports additionally in index.js; the
+// compiled react/editorial.{js,d.ts} must exist on disk.
+const editorialJsPath = resolve(root, "react/editorial.js");
+const editorialDtsPath = resolve(root, "react/editorial.d.ts");
+if (!existsSync(editorialJsPath)) {
+  failures.push("(ed2) react/editorial.js is missing — build it: npx tsc -p tsconfig.json");
+}
+if (!existsSync(editorialDtsPath)) {
+  failures.push("(ed2) react/editorial.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+const ED2_VALUES = [
+  "FormField",
+  "RadioCardGroup",
+  "Carousel",
+  "CarouselItem",
+  "ProseBlock",
+  "AnnouncementBanner",
+  "StatCard",
+  "Sparkline",
+];
+const ED2_TYPES = [
+  "FormFieldProps",
+  "RadioCardGroupProps",
+  "RadioCardOption",
+  "CarouselProps",
+  "CarouselItemProps",
+  "ProseBlockProps",
+  "AnnouncementBannerProps",
+  "AnnouncementStatus",
+  "SparklineProps",
+  "StatCardProps",
+];
+for (const name of ED2_VALUES) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${name} from the umbrella entry point`);
+  }
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${name} from the umbrella entry point`);
+  }
+}
+for (const name of ED2_TYPES) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+    failures.push(
+      `react/index.d.ts must re-export the ${name} type from the umbrella entry point`,
+    );
+  }
+}
+
+// ---- (ed3) FORMS ADDITIONS — FormField / RadioCardGroup needles (2.4.0) -----------
+// css/forms.css: the :has() focus ring (with the documented no-:has degrade),
+// the radio selected contract (class + :has(input:checked)), the visually
+// hidden input, the auto-fit card grid, the field label/hint/error anatomy.
+// react/forms.tsx: the hint-XOR-error slot and the radiogroup contract.
+const formsCss24 = readFileSync(resolve(root, "css/forms.css"), "utf8");
+const FORMS_24_REQUIREMENTS = [
+  [".ptp-form-field", "the accessible wrapper root (the __field contract: flex column + tight gap)"],
+  [".ptp-form-field__label", "the label element"],
+  [".ptp-form-field__hint", "the muted hint slot"],
+  [".ptp-form-field__error", "the error slot"],
+  [".ptp-radio-cards", "the radiogroup container"],
+  ["repeat(auto-fit, minmax(140px, 1fr))", "the responsive card grid"],
+  [".ptp-radio-card__input", "the visually hidden native radio"],
+  ["position: absolute", "the input's hiding mechanism (with opacity: 0)"],
+  [".ptp-radio-card:has(input:focus-visible)", "THE :has() focus ring — the keyboard focus lands on the hidden input, the CARD rings"],
+  [".ptp-radio-card:has(input:checked)", "the selected state machine — the attribute IS the state"],
+  [".ptp-radio-card.ptp-radio-card--selected", "the selected class mirror (consumer convenience, specificity-safe vs :hover)"],
+  ["color-mix(in srgb, var(--color-cake-primary) 10%, var(--bg-inset))", "the 10% cake-tint selected background"],
+  ["var(--party-peach)", "the error message token (the v1.4.0 doctrine, message slot)"],
+];
+for (const [needle, label] of FORMS_24_REQUIREMENTS) {
+  if (!formsCss24.includes(needle)) {
+    failures.push(`(ed3) css/forms.css must contain ${needle} — ${label}`);
+  }
+}
+if (!formsCss24.includes(":has(")) {
+  failures.push("(ed3) css/forms.css must use :has() — the modern focus/checked lifting selector");
+}
+// The degrade must be DOCUMENTED (the fallback note is part of the contract).
+if (!/Firefox 121/.test(formsCss24)) {
+  failures.push(
+    "(ed3) css/forms.css must document the no-:has() fallback note (browsers without :has() lose only the card focus ring — the degrade is a documented contract)",
+  );
+}
+const selectedFlamingo = /\.ptp-radio-card\.ptp-radio-card--selected,\s*\.ptp-radio-card:has\(input:checked\)\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*border-width: 2px;/s;
+if (!selectedFlamingo.test(formsCss24)) {
+  failures.push(
+    "(ed3) the radio selected contract must paint the 2px Flamingo border — .ptp-radio-card--selected / :has(input:checked) → border-color: var(--color-cake-primary) + border-width: 2px",
+  );
+}
+const focusRing = /\.ptp-radio-card:has\(input:focus-visible\)\s*\{[^}]*outline: 2px solid var\(--color-cake-primary\);/s;
+if (!focusRing.test(formsCss24)) {
+  failures.push(
+    "(ed3) the :has() focus ring must be the doctrine ring — .ptp-radio-card:has(input:focus-visible) → outline: 2px solid var(--color-cake-primary)",
+  );
+}
+const formsSrc24 = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
+const FORMS_TSX_24_REQUIREMENTS = [
+  ['role="radiogroup"', "the radiogroup role"],
+  ["aria-label={label}", "the radiogroup accessible name"],
+  ['className="ptp-form-field__error" role="alert"', 'the error slot announces itself (role="alert")'],
+  ["ptp-radio-card--selected", "the selected class mirror on the card label"],
+  ['type="radio"', "the native radio (keyboard + forms for free)"],
+];
+for (const [needle, label] of FORMS_TSX_24_REQUIREMENTS) {
+  if (!formsSrc24.includes(needle)) {
+    failures.push(`react/forms.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+
+// ---- (ed4) VIZ ADDITIONS — Sparkline two-element svg + StatCard flatness (2.4.0) --
+const vizSrc24 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
+const VIZ_TSX_24_REQUIREMENTS = [
+  ['role="img"', "the sparkline svg's role"],
+  ["aria-label={label ?? \"trend\"}", "the sparkline accessible name (defaults to \"trend\")"],
+  ["preserveAspectRatio=\"none\"", "the stretch-to-box viewBox contract"],
+  ["<polygon", "sparkline element 1 of 2 — the area ghost"],
+  ["<polyline", "sparkline element 2 of 2 — the line"],
+  ["strokeWidth={2}", "the 2px line ink"],
+  ["color-mix(in srgb, var(${colorToken}) 15%, transparent)", "the 15% area fill"],
+  ["data.length < 2", "the ≥2-point guard (no trend, no ink)"],
+  ["sparkPoints", "the PURE geometry helper (data in, viewBox points out)"],
+];
+for (const [needle, label] of VIZ_TSX_24_REQUIREMENTS) {
+  if (!vizSrc24.includes(needle)) {
+    failures.push(`react/viz.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+const vizCss24 = readFileSync(resolve(root, "css/viz.css"), "utf8");
+const VIZ_CSS_24_REQUIREMENTS = [
+  [".ptp-stat-card", "the KPI card"],
+  ["font-variant-numeric: tabular-nums", "the value's tabular digits (never jitter)"],
+  ["text-transform: uppercase", "the label's uppercase caption"],
+  ["letter-spacing: 0.1em", "the label's tracking"],
+  ["font-size: 1.5rem", "the value's headline size"],
+  [".ptp-stat-card__delta--up", "the up delta (party-green via the modifier)"],
+  [".ptp-stat-card__delta--down", "the down delta (party-peach via the modifier)"],
+];
+for (const [needle, label] of VIZ_CSS_24_REQUIREMENTS) {
+  if (!vizCss24.includes(needle)) {
+    failures.push(`(ed4) css/viz.css must contain ${needle} — ${label}`);
+  }
+}
+// StatCard FLATNESS: the stat-card rule block must carry NO box-shadow
+// (belt-and-braces with the (e1) css/-wide scan — this one names the class).
+const statCardBlock = vizCss24.match(/\.ptp-stat-card\s*\{[^}]*\}/s);
+if (statCardBlock === null) {
+  failures.push("(ed4) css/viz.css has no parseable .ptp-stat-card rule block");
+} else if (/box-shadow/.test(statCardBlock[0])) {
+  failures.push(
+    "(ed4) .ptp-stat-card mentions box-shadow — the KPI card is FLAT (surface + hairline, the e1 doctrine)",
+  );
+}
+
+// ---- (icons) SDK-LUCIDE PROBE — the editorial icon names exist (2.4.0) ------------
+// Megaphone, ChevronLeft, ChevronRight (+ X for the banner close): a name that
+// is not a key in the installed icons map renders a blank square (the "Music"
+// lesson), so the probe runs against the LIVE map at gate time.
+try {
+  const { icons } = await import("lucide-react");
+  for (const name of ["Megaphone", "ChevronLeft", "ChevronRight", "X"]) {
+    if (!(name in icons)) {
+      failures.push(`(icons) icon "${name}" does not exist in the lucide-react icons map — editorial.tsx would render a blank square`);
+    }
+  }
+} catch (error) {
+  failures.push(`(icons) could not load lucide-react — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+}
+
+// ---- (showcase) THE EDITORIAL SHOWCASE — the playground wiring (2.4.0) ------------
+const SHOWCASE_REQUIREMENTS = [
+  ["<FormField", "the accessible wrapper in the matrix"],
+  ['label="Name"', "the Name field"],
+  ['label="$ Contribution"', "the $ Contribution field"],
+  ['htmlFor="matrix-name"', "the consumer-wired label association (field 1)"],
+  ['htmlFor="matrix-share"', "the consumer-wired label association (field 2)"],
+  ["hint=\"As it appears on the invite\"", "the hint slot demoed"],
+  ["<RadioCardGroup", "the card radios in the matrix"],
+  ['name="rsvp"', "the radio group name"],
+  ['{ value: "attending", label: "Attending", description: "See you there" }', "RSVP option 1 (with description)"],
+  ['{ value: "maybe", label: "Maybe" }', "RSVP option 2"],
+  ['{ value: "declined", label: "Can\'t make it" }', "RSVP option 3"],
+  ["<AnnouncementBanner", "the banner at the top of the Data view"],
+  ["v2.4.0 — six new editorial &amp; form primitives shipped.", "the release banner copy"],
+  ["<StatCard", "the KPI trio"],
+  ['label="Total Budget"', "KPI 1"],
+  ['label="Confirmed Guests"', "KPI 2"],
+  ['label="Active Game Rooms"', "KPI 3"],
+  ['colorToken="--party-green"', "KPI 1 sparkline token"],
+  ["<ProseBlock", "the Field Notes prose container"],
+  ["<blockquote>", "the prose quote"],
+  ["<Carousel", "the palette clippings strip"],
+  ["<CarouselItem", "the snap slots"],
+  ["className=\"hub__clipping\"", "the composed min-width clipping modifier"],
+];
+for (const [needle, label] of SHOWCASE_REQUIREMENTS) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(showcase) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6): scaffold, wiring, pack=40 (37 + data.css/js/d.ts), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.2.0 safety diff empty beyond the owner-authorized 2.3.0 deltas (data layer, forms growth, umbrella re-exports, codex; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ frozen beyond the cortex sweep growth (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + surface-scoped package shadow contract (css/surface.css: sig-surface-card rules ONLY, hex banned) + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks incl. tabs-module + data-table-ledger, constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room and the Master Index; 2.2.0: promoted surface anatomy (s1) + umbrella SurfaceCard/PageHero (s2) + living telemetry-limits gate (v22); 2.3.0: (dd1) data.css anatomy — scroll containment (NO 768px query: the wrapper IS the mobile strategy), uppercase thead, tabular-nums, 8% Flamingo hover wash, aria-selected tab contract (attribute-driven, Flamingo underline, zero .is-active), var(--status) callout strip, layered import after surface.css, zero hex/zero shadow; (dd2) umbrella re-exports all six new names (DataTable/Tabs/Callout/Select/Checkbox/Avatar + types) in .d.ts AND .js with compiled artifacts; (dd3) forms additions — appearance-none select/checkbox, :checked Teal fill, ::after on-cake checkmark, positioned chevron, avatar disc, inline-border ring + runtime --party-* guard, live-map-probed ChevronDown; (dd4) the Universal AI Replication Contract (≥15 snippet headings, engine v2.6, the closing law); (dd5) the tabs showcase — module switcher + ledger (5 crew rows, composed PartyBadge) + three callout moods + avatar crew (2 party rings) + input matrix (Select 3 options/Checkbox/Switch); (dd6) cortex sweep grows .ptp-data-table/.ptp-tabs__tab/.ptp-callout + server version 2.3.0");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase): scaffold, wiring, pack=43 (40 + editorial.css/js/d.ts), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.3.0 safety diff empty beyond the owner-authorized 2.4.0 deltas (editorial layer, forms/viz growth, umbrella re-exports; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ fully frozen (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + surface-scoped package shadow contract (css/surface.css: sig-surface-card rules ONLY, hex banned) + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks incl. tabs-module + data-table-ledger, constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room and the Master Index; 2.2.0: promoted surface anatomy (s1) + umbrella SurfaceCard/PageHero (s2) + living telemetry-limits gate (v22); 2.3.0: (dd1) data.css anatomy — scroll containment (NO 768px query: the wrapper IS the mobile strategy), uppercase thead, tabular-nums, 8% Flamingo hover wash, aria-selected tab contract (attribute-driven, Flamingo underline, zero .is-active), var(--status) callout strip, layered import after surface.css, zero hex/zero shadow; (dd2) umbrella re-exports all six new names (DataTable/Tabs/Callout/Select/Checkbox/Avatar + types) in .d.ts AND .js with compiled artifacts; (dd3) forms additions — appearance-none select/checkbox, :checked Teal fill, ::after on-cake checkmark, positioned chevron, avatar disc, inline-border ring + runtime --party-* guard, live-map-probed ChevronDown; (dd4) the Universal AI Replication Contract (≥15 snippet headings, engine v2.6, the closing law); (dd5) the tabs showcase — module switcher + ledger (5 crew rows, composed PartyBadge) + three callout moods + avatar crew (2 party rings) + input matrix (Select 3 options/Checkbox/Switch); (dd6) cortex sweep grows .ptp-data-table/.ptp-tabs__tab/.ptp-callout + server version 2.3.0; 2.4.0: (ed1) editorial.css anatomy — carousel snap (mandatory + snap-start + thin scrollbar), prose blockquote (inset well + 4px Flamingo rule + italic + mono attribution), banner var(--status) strip + ghost Teal-hover close, layered import after data.css, zero hex/zero shadow (the e1 scope extends: ALL css/ files flat except surface.css's sanctioned sig-surface-card rules); (ed2) umbrella re-exports the 2.4.0 names (FormField/RadioCardGroup/Carousel/CarouselItem/ProseBlock/AnnouncementBanner/StatCard/Sparkline + types) in .d.ts AND .js with compiled artifacts; (ed3) forms additions — :has() focus ring + documented no-:has degrade, radio selected contract (class mirror + :has(input:checked) → 2px Flamingo + 10% cake tint), visually hidden input, auto-fit minmax(140px,1fr) grid, hint-XOR-error slot with role='alert'; (ed4) Sparkline one-svg-two-elements (polygon + polyline, preserveAspectRatio none, ≥2-point guard, pure sparkPoints helper) + StatCard FLAT (surface + hairline, tabular-nums, uppercase label, party deltas); (icons) Megaphone/ChevronLeft/ChevronRight probed against the live lucide map; (showcase) FormField side-by-side + RadioCardGroup RSVP + Data view banner/KPI trio/Field Notes prose/clippings carousel, pack=43 (40 + editorial.css/js/d.ts), v2.3.0 safety diff empty beyond the owner-authorized 2.4.0 deltas AND tools/ fully frozen");

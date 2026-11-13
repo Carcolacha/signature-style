@@ -129,6 +129,147 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.4.0 — Form Wrappers & Editorial Primitives
+
+- **THE STORY — the scaffold around the control, and the slots around
+  the text.** Seven new exports: `<FormField>` and `<RadioCardGroup>`
+  (forms grows), `<Carousel>`, `<ProseBlock>`, `<AnnouncementBanner>`
+  (NEW css/editorial.css + react/editorial.tsx), and `<StatCard>` +
+  `<Sparkline>` (viz grows). These primitives exist to serve the
+  v2.5.0 12-column bento rebuild coming next. `tokens.json` stays
+  1.4.0 (the 33-token whitelist is FROZEN — zero new tokens); `npm
+  pack` now packs EXACTLY 43 files (40 + css/editorial.css +
+  react/editorial.js/.d.ts; `!react/editorial.tsx` joins the
+  files-array negations, the 2.2.0/2.3.0 precedent).
+- **`<FormField>` — the accessible around-the-control scaffold.**
+  `<div class="ptp-form-field">` (flex column, tight gap — the
+  `__field` slot contract lives ON the root, one class fewer) →
+  `<label class="ptp-form-field__label" htmlFor={htmlFor}>` (muted
+  0.75rem, weight 500) → children (the bare control, untouched) →
+  hint (`.ptp-form-field__hint`, muted 0.75rem) OR error
+  (`.ptp-form-field__error`, role="alert", --party-peach 0.75rem).
+  ERROR REPLACES HINT — one message slot, two states; a field shows
+  one message. THE CONSUMER WIRES id/htmlFor: pass the same `id` to
+  the child control and `htmlFor` to the field — the package renders
+  no ids it cannot verify. The v1.4.0 "no message slot" doctrine
+  still holds for the CONTROL (`<Input>` stays ONE element); the
+  FIELD wrapper is the sanctioned scaffold around it.
+- **`<RadioCardGroup>` — the card-metaphor radio.**
+  `<div role="radiogroup" aria-label class="ptp-radio-cards">` (grid
+  auto-fit minmax(140px, 1fr)) → one `<label class="ptp-radio-card
+  [--selected]">` per option — the wrapper is a SEMANTIC necessity
+  (native label association, the `<Checkbox>` doctrine) → visually
+  hidden `<input type="radio">` (position absolute + opacity 0;
+  arrow-key navigation and forms stay native) + the body span
+  (label 0.875rem/600 + optional muted description). Cards: inset
+  background, 20% hairline, --radius-ui, teal hover; selected → 2px
+  Flamingo border + 10% cake-tint background via BOTH the `--selected`
+  class mirror (specificity-safe vs :hover) and
+  `:has(input:checked)` — the attribute is the state. THE :HAS()
+  FOCUS RING + FALLBACK NOTE: keyboard focus lands on the hidden
+  input and the CARD rings through
+  `.ptp-radio-card:has(input:focus-visible)` → the doctrine outline.
+  :has() needs Chrome 105+ / Safari 15.4+ / Firefox 121+; without it
+  the card loses ONLY the visible ring — the selected card still
+  reads via the Flamingo border (:checked is universal) and the group
+  stays fully keyboard operable. Documented degrade. The 2px border
+  is padding-compensated (−1px) so the card never shifts.
+- **`<Carousel>` — the scroll strip with three justified elements.**
+  `<div class="ptp-carousel">` → ghost previous button (ChevronLeft)
+  → `<div class="ptp-carousel__track" ref tabIndex={0} role="region"
+  aria-label>` (flex, gap, overflow-x auto, scroll-snap-type x
+  mandatory, scrollbar-width thin) → ghost next button (ChevronRight).
+  The buttons ARE the mechanics — keyboard users scroll the track
+  itself (it is focusable). Children must already be
+  `.ptp-carousel__item` elements; the tiny `<CarouselItem>` helper
+  renders exactly that div (flex 0 0 auto, snap-align start).
+  Buttons scroll by one item width via ref (`scrollBy({ left:
+  ±itemWidth })`, snap re-snaps to the item start); reduced motion →
+  `behavior: "auto"` (matchMedia read ONCE per instance). Ghost
+  buttons: transparent body, hairline border, Teal hover.
+- **`<ProseBlock>` — the editorial slot.** ONE `<div class="ptp-prose">`,
+  no props beyond className passthrough — a pure typography container
+  with styled DESCENDANTS: `p` (0.875rem, 1.6 line-height),
+  `blockquote` (inset well, 4px Flamingo left rule, italic
+  --text-bright), `footer`/`cite` (mono muted 0.75rem attribution,
+  display block). No variants, no knobs — you bring the markup, the
+  block makes it read.
+- **`<AnnouncementBanner>` — the toast strip's announcing sibling.**
+  `<div class="ptp-announcement" role="status">` (live region —
+  unlike `<Callout>`'s static role="note", a banner announces itself)
+  with `--status` set INLINE from the SAME party map as Callout
+  (info → `--party-sky`, success → `--party-green`, warning →
+  `--party-peach`): full width, inset body, 15% hairline, 4px
+  --status left rule. Megaphone icon tinted var(--status); optional
+  `dismissible` renders the ghost close (aria-label "Dismiss", the
+  modal-close signature: muted, Teal hover). Dismissal is YOUR state
+  — the component never unmounts itself.
+- **`<Sparkline>` + `<StatCard>` — the KPI pair.** `<Sparkline>` is
+  ONE `<svg role="img" aria-label viewBox="0 0 w h"
+  preserveAspectRatio="none">` with EXACTLY TWO elements: the area
+  `<polygon>` (`color-mix(in srgb, var(colorToken) 15%, transparent)`)
+  and the `<polyline>` line (2px, round cap/join) — geometry computed
+  in the pure `sparkPoints` helper (data in, viewBox points out; flat
+  series rides the midline; ≥2 points enforced — fewer warns and
+  renders null; --party-* tokens only, the runtime guard refuses
+  structural tokens). No CSS at all — pure SVG attributes, like
+  StatRing. `<StatCard>`: `<div class="ptp-stat-card">` → muted
+  uppercase label (0.1em tracking) → 1.5rem weight-600 tabular-nums
+  value → optional delta span (`--up` → --party-green, `--down` →
+  --party-peach) → optional Sparkline labeled "<label> trend". FLAT
+  by the e1 doctrine: surface background + 20% hairline, NO shadow.
+- **The playground grows the showcase (light touch — the big layout
+  rebuild is v2.5.0).** The Form & Input Matrix card wraps Name /
+  $ Contribution side-by-side in `<FormField>` (hint demoed on the
+  first, error-replaces-hint + aria-invalid on the second) and adds
+  the RSVP `<RadioCardGroup>` (Attending "See you there" / Maybe /
+  Can't make it). The Data view gains the release
+  `<AnnouncementBanner>` ("v2.4.0 — six new editorial & form
+  primitives shipped." — dismissible), the `<StatCard>` KPI trio
+  (Total Budget $2,000 +$440 on green / Confirmed Guests 170 +12 on
+  sky / Active Game Rooms 6 +2 on mauve-soft, each with its
+  sparkline), and the Field Notes card — a `<ProseBlock>` (two
+  paragraphs + the "Weeks of coding can save you hours of planning"
+  blockquote + a PlanThenParty citation) and a `<Carousel>` of five
+  palette clippings (real scrollable overflow, probe-scrolled).
+  New testids: `kpi-trio`, `banner-release`, `carousel-clippings`.
+- **Gate evolution (verify:playground)** — (b2 AMENDMENT) files =
+  v1.4.0 + `!react/surface.tsx` + `!react/data.tsx` +
+  `!react/editorial.tsx`; (b3) 40 → 43; (b7)/(n-hub4) REBASED to the
+  v2.3.0 baseline with the authorized 2.4.0 deltas enumerated
+  (editorial layer, forms/viz growth, umbrella re-exports) — tools/
+  is FULLY frozen this release (the cortex sweep's class targets are
+  unchanged; ptp- prefixes only); scripts/verify.mjs stays
+  BYTE-FROZEN; (m3) += the three new hooks. NEW gates: (ed1)
+  editorial.css anatomy (carousel snap, prose blockquote, banner
+  --status strip, layered import after data.css, zero hex AND zero
+  box-shadow — the e1 scope extends: ALL css/ files stay flat except
+  surface.css's sanctioned .sig-surface-card rules, editorial
+  included); (ed2) umbrella re-exports the 2.4.0 names in .d.ts AND
+  .js with compiled artifacts; (ed3) forms additions (:has() focus
+  ring + the DOCUMENTED no-:has degrade, radio selected contract,
+  hidden input, card grid, field anatomy); (ed4) Sparkline
+  one-svg-two-elements + StatCard flatness; (icons) Megaphone /
+  ChevronLeft / ChevronRight probed against the live lucide map;
+  (showcase) the FormField/RadioCardGroup/Data-view wiring. Negative
+  test (falsifiability, restore-verified): removing the
+  `:has(input:checked)` Flamingo selected rule from css/forms.css
+  flips (ed3) to FAIL — restore → PASS (git-verified byte-identical).
+- **Release proof** — `npm run verify` PASS (the frozen floor);
+  `npm run verify:playground` PASS (with (ed1)–(ed4), (icons),
+  (showcase)); `npm run verify:mcp` SMOKE ALL PASS; the one-off
+  cortex probe (clicks the Data tab) measured the new primitives
+  live: 3/3 `.ptp-stat-card` visible, `.ptp-carousel__track`
+  scrollable (scrollWidth > clientWidth), the banner present with
+  role="status"; `vite build` exit 0; `npm pack` exactly 43 files;
+  `git diff v2.3.0 -- css/ react/` = EXACTLY css/editorial.css (new),
+  css/forms.css + css/viz.css (grow), css/signature-style.css (the
+  editorial.css import), react/editorial.{tsx,js,d.ts} (new),
+  react/forms.{tsx,js,d.ts} + react/viz.{tsx,js,d.ts} (grow),
+  react/index.{ts,js,d.ts} (re-exports) — nothing else; tokens.json
+  1.4.0; dev server relaunched detached with `--config
+  playground/vite.config.ts`, `curl localhost:5173` → 200.
+
 ### 2.3.0 — Universal Web Components & AI Signature Codex
 
 - **THE STORY — the package learns to show data, and teaches AI to

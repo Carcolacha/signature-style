@@ -1,6 +1,6 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Harmonized — 100% official Catppuccin, per-theme (Mocha dark default, Latte light mode) with the signature Flamingo/Teal accents.",
   "type": "module",
   "license": "MIT",
@@ -38,7 +38,8 @@
     "!react/forms.tsx",
     "!react/toast.tsx",
     "!react/surface.tsx",
-    "!react/data.tsx"
+    "!react/data.tsx",
+    "!react/editorial.tsx"
   ],
   "sideEffects": [
     "*.css"
