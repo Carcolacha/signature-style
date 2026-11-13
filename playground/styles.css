@@ -1,5 +1,6 @@
 /**
- * Bento Box Showcase styles (1.5.1).
+ * Bento Box Showcase styles (1.6.0 "Ambient Elevation & Timeline
+ * Resurrection").
  *
  * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
  * outside the package too). The grid consumes ONLY spacing/radius/surface
@@ -13,6 +14,15 @@
  * cards. Spacing modernization: ruled card headers (token margins,
  * hairline divider via color-mix) on breathing-room --space-section
  * cards.
+ *
+ * 1.6.0 DOCTRINE AMENDMENT — OWNER-MANDATED (ambient elevation): the
+ * zero-box-shadow border doctrine is OVERRIDDEN FOR THIS FILE ONLY, by
+ * explicit owner decision. ELEVATION LIVES IN THE COMPOSITION LAYER
+ * ONLY; THE PACKAGE STAYS FLAT (gates f1/fb1/t1/v1 enforce zero
+ * box-shadow across css/, and no package gate scans this file). The
+ * shadows below are rgba literals, ALLOWED HERE by the same override
+ * (white 5% inset top-highlight + black 40% ambient). The package css/
+ * directory remains byte-clean: zero shadows, zero hex, gates green.
  */
 
 /* ---- the bento grid ---------------------------------------------------- */
@@ -37,10 +47,17 @@
   }
 }
 
+/* 1.6.0 ambient elevation — OWNER OVERRIDE (see the file header): the
+   15% token-mix hairline, the 5% white inset top-highlight and the 40%
+   black ambient shadow exist ONLY in this composition layer. The
+   package (css/) stays flat — zero box-shadow, gates f1/fb1/t1/v1. */
 .bento__card {
   background: var(--bg-surface);
   border-radius: var(--radius-ui);
-  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 12px 32px rgba(0, 0, 0, 0.4);
   padding: var(--space-section);
   display: flex;
   flex-direction: column;
