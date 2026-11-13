@@ -1,5 +1,5 @@
 /**
- * App — the Bento Box Showcase dashboard (1.5.0).
+ * App — the Bento Box Showcase dashboard (1.5.1).
  *
  * Every shipped module on ONE asymmetric grid: form controls, the event
  * timeline + modal composition, telemetry viz, and the full Party
@@ -7,6 +7,21 @@
  * each card is header (h2) + module elements. All imports come from
  * "@edwyn/signature-style/react" — the playground is a consumer, not a
  * contributor.
+ *
+ * 1.5.1 — timeline hydration fix. The dashboard now mirrors the owner's
+ * real integration: source data lives in HIS shape (`mockEvents`: id,
+ * month, title, time, colorToken, iconName) and is mapped to the package
+ * contract (`PtpEvent`: date, category, icon) in ONE explicit layer at
+ * the render boundary. ROOT CAUSE (SSR-probe verified against the
+ * package): the 1.5.0-era integration passed owner-shaped records
+ * (`month`/`colorToken`/`iconName`) straight as PtpEvent[] — with
+ * `date` undefined, `groupEvents` buckets everything under the single
+ * key `undefined` (react/timeline.js: `const key = event.dateKey ??
+ * event.date`) and the sticky header prints NO text — the "empty
+ * header"; with `category` undefined, PartyBadge's `!colorToken
+ * .startsWith("--party-")` guard (react/primitives.js:25) throws on the
+ * undefined dereference and React unmounts the timeline — "without
+ * events".
  */
 import { useState } from "react";
 import {
@@ -35,69 +50,119 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 /**
- * Six sample events across two date buckets. Icon names are the STRICT
- * IconName keys of lucide-react's icons map (verified at build time —
- * a typo is a compile error via `keyof typeof icons`).
+ * The OWNER's source-data contract — the shape his records actually
+ * arrive in (month/colorToken/iconName), kept byte-honest: mockEvents is
+ * NOT a PtpEvent array. Every entry carries all six required fields;
+ * optional `description` feeds the <EventModal> About row. Icon names are
+ * strict lucide keys (gate-verified against the live icons map — a typo
+ * fails `verify:playground` (h3), not a blank node at runtime).
  */
-const SAMPLE_EVENTS: PtpEvent[] = [
+interface MockEvent {
+  id: string;
+  month: string;
+  title: string;
+  time: string;
+  colorToken: PtpEvent["category"];
+  iconName: NonNullable<PtpEvent["icon"]>;
+  description?: string;
+}
+
+export const mockEvents: MockEvent[] = [
   {
-    id: "venue-walkthrough",
-    date: "December 2026",
-    time: "10:00",
+    id: "evt-001",
+    month: "December 2026",
     title: "Venue walkthrough",
-    category: "--party-blue",
-    categoryLabel: "Venue",
-    icon: "MapPin",
+    time: "18:00",
+    colorToken: "--party-mauve-bright",
+    iconName: "MapPin",
     description:
       "Walk the floor plan with the coordinator: staging, catering lane, and the photo corner. Bring the seating sketch.",
   },
   {
-    id: "catering-tasting",
-    date: "December 2026",
-    time: "13:30",
+    id: "evt-002",
+    month: "December 2026",
+    title: "Band sound check",
+    time: "19:30",
+    colorToken: "--party-sky",
+    // NOT "Music" — that key does not exist in the installed lucide-react
+    // 1.72.0 icons map (gate-probed); "AudioLines" is the live-map-valid
+    // equivalent, verified by the (h3) icon gate.
+    iconName: "AudioLines",
+  },
+  {
+    id: "evt-003",
+    month: "December 2026",
     title: "Catering tasting",
-    category: "--party-peach",
-    categoryLabel: "Catering",
-    icon: "Utensils",
+    time: "13:00",
+    colorToken: "--party-peach",
+    iconName: "Utensils",
     description:
       "Three menu candidates. Confirm the vegan plate travels well and lock the dessert choice.",
   },
   {
-    id: "dj-contract",
-    date: "December 2026",
-    title: "DJ contract signed",
-    category: "--party-mauve-soft",
-    categoryLabel: "Admin",
-    icon: "Signature",
-  },
-  {
-    id: "guest-list",
-    date: "January 2027",
-    title: "Assemble guest list",
-    category: "--party-pink-bright",
-    categoryLabel: "Guests",
-    icon: "Users",
-  },
-  {
-    id: "send-invitations",
-    date: "January 2027",
-    time: "09:00",
+    id: "evt-004",
+    month: "January 2027",
     title: "Send invitations",
-    category: "--party-pink-bright",
-    categoryLabel: "Guests",
-    icon: "MailOpen",
+    time: "09:00",
+    colorToken: "--party-pink-bright",
+    iconName: "MailOpen",
     description:
       "Paper invites for family, digital for everyone else. RSVP window closes January 24.",
   },
   {
-    id: "final-headcount",
-    date: "January 2027",
+    id: "evt-005",
+    month: "January 2027",
     title: "Final headcount",
-    category: "--party-green",
-    categoryLabel: "RSVP",
-    icon: "ClipboardCheck",
+    time: "17:00",
+    colorToken: "--party-green",
+    iconName: "ClipboardCheck",
+  },
+  {
+    id: "evt-006",
+    month: "February 2027",
+    title: "The wedding day",
+    time: "16:00",
+    colorToken: "--party-lavender",
+    iconName: "PartyPopper",
+    description:
+      "Ceremony at four, dinner at six. The timeline ends where the party begins.",
   },
 ];
+
+/**
+ * Short category words for the badge, derived from the owner's
+ * colorToken so his records stay untouched by presentation concerns.
+ */
+const CATEGORY_LABELS: Record<PtpEvent["category"], string> = {
+  "--party-pink-bright": "Invites",
+  "--party-pink-soft": "Guests",
+  "--party-pink-alt": "Decor",
+  "--party-mauve-bright": "Venue",
+  "--party-mauve-soft": "Admin",
+  "--party-lavender": "Ceremony",
+  "--party-sky": "Music",
+  "--party-blue": "Logistics",
+  "--party-peach": "Catering",
+  "--party-green": "RSVP",
+};
+
+/**
+ * THE MAPPING LAYER — the one place where the owner's source contract
+ * meets the package contract. `month → date`, `colorToken → category`,
+ * `iconName → icon`. 1.5.0's root cause was this layer not existing:
+ * `date`/`category`/`icon` came through undefined and the timeline
+ * rendered empty headers with no events.
+ */
+export const events: PtpEvent[] = mockEvents.map((e) => ({
+  id: e.id,
+  date: e.month,
+  time: e.time,
+  title: e.title,
+  category: e.colorToken,
+  categoryLabel: CATEGORY_LABELS[e.colorToken],
+  icon: e.iconName,
+  ...(e.description !== undefined && { description: e.description }),
+}));
 
 /** All ten Party Palette tokens with their human names (content-only rule). */
 const PALETTE: ReadonlyArray<{ token: PtpEvent["category"]; label: string }> = [
@@ -157,7 +222,7 @@ function BentoDashboard() {
 
         <section className="bento__card bento__card--timeline">
           <h2>Timeline</h2>
-          <EventTimeline events={SAMPLE_EVENTS} onEventSelect={modal.open} />
+          <EventTimeline events={events} onEventSelect={modal.open} />
           {modal.selectedEvent !== null && (
             <EventModal
               event={modal.selectedEvent}
