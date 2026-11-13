@@ -129,6 +129,110 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.1.0 — Timeline Breathing Room & The Master Index
+
+- **THE STORY — the timeline learns personal space, and the hub becomes
+  a place you can leave and return to.** Two playground-layer moves:
+  a MEASURED spacing fix for the sticky timeline headers, and the
+  Master Index — a state-based view system that turns the dashboard
+  into one door among several. **The package is untouched**:
+  `git diff v2.0.0 -- css/ react/ tokens.json demo/ SYSTEM_PROMPT.md
+  scripts/ tools/` is EMPTY at the release gate, `npm pack` still packs
+  EXACTLY 34 files, and `tokens.json` stays 1.4.0.
+- **Timeline header breathing room (MEASURED — the release blocker).**
+  The sticky month headers crowded the first event node beneath them.
+  Probe-proven (playwright + the cortex's Chromium, 1280px viewport,
+  scrollY 0): the package reserves `--tl-header-clearance` = 68px of
+  group-first clearance, but its own header slab renders **69px** tall
+  (16px pad-top + 36px text line + 16px pad-bottom + 1px hairline) —
+  every group's first node started **1px UNDER the glass slab**. The
+  fix is composition-layer only, two scoped levers in
+  `playground/styles.css`: the slab grows one `--space-tight` step
+  (padding-bottom 16 → 24px, slab 69 → 77px) and the group-first
+  clearance mirrors the growth on BOTH siblings (item padding-top AND
+  node margin-top = `calc(var(--tl-header-clearance) +
+  var(--space-standard) * 2)` = 100px — siblings move together or the
+  title drifts off the node). BEFORE → AFTER clearance per group
+  (headerRect.bottom → first `.ptp-timeline__node` rect.top):
+
+  | Group | BEFORE | AFTER |
+  |---|---|---|
+  | December 2026 | **−1px (overlap)** | **23px** |
+  | January 2027 | **−1px (overlap)** | **23px** |
+  | February 2027 | **−1px (overlap)** | **23px** |
+
+  All ≥16px, every offset on the 4px grid (24 = 6×4, 100 = 25×4).
+  Documented deviation: the brief's literal
+  `padding-bottom: var(--space-standard)` would have been a NO-OP (the
+  package shorthand already sets 16px there) — the shipped override is
+  `calc(var(--space-standard) + var(--space-tight))`, var-based and
+  actually incremental. The first `.ptp-timeline__item` BOX still sits
+  under the slab (−77px) by design: its group-first padding is empty
+  space; the node is the visual invariant.
+- **The Master Index — a state-based view switcher.** `type View =
+  "dashboard" | "index" | "events" | "guests" | "budget"`, default
+  `"dashboard"` (the cortex smoke must find the timeline on load). The
+  nav goes through GlobalNav's component-agnostic `as` prop — **no
+  package change**, but the contract has two load-bearing details
+  (read from `react/nav.tsx` before wiring): a custom renderer receives
+  `{ href, className, children, onClick? }` and NEVER `aria-current`
+  (GlobalNav only self-annotates plain anchors), and the drawer hands
+  its close callback through `onClick`. So the playground ships
+  `HubLink` + `createHubLink(onNavigate, activeHref)` — a factory
+  closure that stamps `aria-current="page"` on the active link (css/
+  nav.css styling keeps working) and composes GlobalNav's onClick after
+  its own `event.preventDefault()` (no full-reload fragment jumps; the
+  switch is state-only). Nav order per owner: Dashboard, Events,
+  Guests, Budget, Index — hrefs `#/dashboard` … `#/index`, one explicit
+  routing table. The hero is shared across views, its copy switches:
+  THE ENGINE stays on the dashboard, THE MASTER INDEX ("three doors ·
+  one engine · zero dead ends") announces the index, THE WORKSHOP the
+  placeholder modules.
+- **The index view — three gateway cards, exact Shed anatomy** (teal
+  all-caps label / muted mono path / ruled title / description) in a
+  900px-constrained column (`.hub--index`; owner call, documented:
+  three doors read better narrow than stretched to 1400px): PLANNER /
+  views/planner.tsx / Event Planner Bento — a REAL gateway, clicking
+  returns to the dashboard; STUDY / modules/study.tsx / Study &
+  Flashcard Generator and GAMES / modules/games.tsx / Party Game
+  Modules — roadmap doors. **Decision (documented):** the roadmap doors
+  fire a success toast ("… is on the roadmap.") instead of routing to
+  an EmptyState view, because the nav's workshop entries already
+  dogfood `<EmptyState>` as placeholder views and a toast keeps the
+  reader at the index. Cards are `<button>`s for free keyboard/press
+  semantics; the hub hover lift carries the interaction.
+- **Placeholder doctrine — the workshop dogfood.** The Events / Guests
+  / Budget views render the package's `<EmptyState icon="Hammer"
+  title="In the workshop" message="This module ships in a future
+  release." />` inside a `hub__card` with the full Shed anatomy (real
+  label / mono path / ruled title per module) — the doctrine shows even
+  where the feature isn't yet.
+- **Gate evolution (verify:playground)** — (sp1) the MEASURED breathing
+  room: the scoped slab padding AND both mirrored group-first
+  clearances (100px); (ix1) the view switcher: `type View`, the
+  `"dashboard"` default (cortex contract), HubLink +
+  `createHubLink` factory wiring, `event.preventDefault()`, the
+  EmptyState dogfood, the per-view hero copy; (ix2) the three exact
+  gateway label/path/title strings and the 900px index column. The
+  (b5) 4-section audit now counts INSIDE the dashboard branch
+  (`function DashboardView` … `function IndexView`) — the switcher
+  legitimately adds cards elsewhere in the file. Negative test
+  (falsifiability, restore-verified): removing `event.preventDefault()`
+  from App.tsx flips (ix1) to FAIL; restore → PASS.
+- **Release proof** — `npm run verify` PASS; `npm run verify:playground`
+  PASS; `npm run verify:mcp` SMOKE ALL PASS (the default view stays
+  "dashboard", so the smoke's `.ptp-timeline` assertions still hold);
+  `vite build` exit 0; `npm pack` exactly 34 files; safety diff vs
+  v2.0.0 (incl. tools/) EMPTY; `package.json`/lock → 2.1.0,
+  `tokens.json` stays 1.4.0. Relaunch proof: dev server killed and
+  restarted fresh (the `/mnt/c` inotify lesson — vite never sees file
+  edits on the Windows mount, every probe below ran against a freshly
+  started server), then a one-off playwright probe: (a) dashboard
+  clearance 23px/23px/23px (all ≥16px); (b) Index nav click → THE
+  MASTER INDEX hero + 3 gateway cards with exact anatomy + aria-current
+  tracking; (c) PLANNER click → dashboard with 6 nodes; plus Events →
+  EmptyState placeholder and GAMES → roadmap toast.
+
 ### 2.0.0 — The Hub Migration (Shed Aesthetic)
 
 - **THE STORY — the dashboard finally has discipline.** The diagnosis:
