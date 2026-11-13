@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 tools/mcp-viz/dist/
 playground/dist/
+.dev-server.log
+.vite-*.log
