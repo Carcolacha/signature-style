@@ -151,6 +151,61 @@
  *         column is the constrained .hub--index (900px — three doors
  *         read better narrow, owner call, documented).
  *
+ * 2.2.0 gates ("Telemetry Limits & Official Surface Primitives"):
+ *   (b2 AMENDMENT)  the FROZEN-KEYS contract evolves ONE step: exports/
+ *         main/peerDependencies(Meta) stay deep-equal to v1.4.0, but
+ *         the files array is v1.4.0's EXACTLY PLUS the single negation
+ *         "!react/surface.tsx" (the negations precedent — the new
+ *         surface source never ships, its compiled .js/.d.ts do).
+ *   (b3)  npm pack now packs EXACTLY 37 files (34 + css/surface.css +
+ *         react/surface.js + react/surface.d.ts).
+ *   (b4)  the 15% elevation-border needle MOVED to (s1) — the card
+ *         border is package-owned now (css/surface.css); styles.css
+ *         keeps the zero-hex + 768px contract.
+ *   (b7)  SAFETY PROOF REBASED to the v2.1.0 baseline (each release
+ *         that legitimately touches core rebases the floor): diff vs
+ *         v2.1.0 over css/ react/ tokens.json SYSTEM_PROMPT.md demo/
+ *         scripts/ must be EMPTY except the owner-authorized 2.2.0
+ *         deltas — css/viz.css + react/viz.tsx (telemetry limits),
+ *         react/index.ts (re-exports), the NEW css/surface.css +
+ *         react/surface.{tsx,js,d.ts}, and timeline.css (e2-governed).
+ *         scripts/verify.mjs stays BYTE-FROZEN (its v1 needle reads the
+ *         migration marker in viz.css; the LIVING 2.2.0 viz gate lives
+ *         here as (v22)).
+ *   (n-hub4)  V2.2.0 FROZEN PROOF, rebased to v2.1.0 incl tools/: same
+ *         authorized-delta exclusions plus tools/mcp-viz/server.ts
+ *         (the cortex sweep is our tooling, owner-editable this
+ *         release: .bento__* selectors → the sig-* surface contract).
+ *   (e1 AMENDMENT)  AMBIENT ELEVATION, rescoped — the package css/
+ *         zero-box-shadow scan now carries ONE owner-sanctioned
+ *         exception: css/surface.css may declare box-shadow ONLY
+ *         inside selector blocks whose selector contains
+ *         `.sig-surface-card` (the ambient elevation contract ships
+ *         with the primitive; parsed per rule block, comments
+ *         stripped). Every OTHER css file stays ABSOLUTE ZERO. The
+ *         hex-ban extends to surface.css: the rgba elevation literals
+ *         are sanctioned, hex literals are not. styles.css keeps the
+ *         composition-layer elevations it still owns (the button pop,
+ *         the node shadow).
+ *   (s1)  SURFACE PRIMITIVES — css/surface.css carries the promoted
+ *         Shed anatomy: the 15% token-mix border, the inset
+ *         rgba(255,255,255,0.05) top-highlight, the ambient
+ *         rgba(0,0,0,0.4) shadow, the hover translateY(-2px) +
+ *         rgba(0,0,0,0.5) deepen, the teal eyebrow; and css/viz.css
+ *         carries the tabular-nums limit caption (2.2.0 telemetry
+ *         limits).
+ *   (s2)  UMBRELLA RE-EXPORTS — react/index.d.ts re-exports
+ *         SurfaceCard/PageHero (+ prop types), react/index.js the
+ *         values, and the compiled react/surface.{js,d.ts} exist.
+ *   (v22) TELEMETRY LIMITS, the LIVING v1 evolution — css/viz.css:
+ *         track on var(--bg-inset) + the 20% hairline boundary +
+ *         .ptp-progress__caption (mono, tabular-nums, muted, 0.75rem);
+ *         react/viz.tsx: the limitText caption prop, the ring boundary
+ *         hairline circle, the centered showValue readout with
+ *         tabular-nums. (scripts/verify.mjs's frozen v1 floor reads
+ *         the var(--bg-surface) migration marker in the viz.css header
+ *         — see (b7).)
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -190,8 +245,12 @@ if (!selfWired) {
   );
 }
 
-// exports/files/main/peerDependencies must be deep-equal to v1.4.0.
-const FROZEN_KEYS = ["exports", "files", "main", "peerDependencies", "peerDependenciesMeta"];
+// exports/main/peerDependencies(Meta) must be deep-equal to v1.4.0.
+// 2.2.0 AMENDMENT: the files array froze at v1.4.0 for six releases;
+// the surface promotion adds exactly ONE negation ("!react/surface.tsx",
+// the negations precedent) — asserted as the ONLY allowed delta below.
+const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
+const FILES_NEGATIONS_220 = ["!react/surface.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -205,9 +264,16 @@ if (v140pkg !== null) {
       failures.push(`(b2) package.json "${key}" changed vs v1.4.0 — the distribution surface is FROZEN`);
     }
   }
+  // files = v1.4.0's array + the 2.2.0 negations, exactly, in order.
+  const expectedFiles = [...(v140pkg.files ?? []), ...FILES_NEGATIONS_220];
+  if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
+    failures.push(
+      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the 2.2.0 negation !react/surface.tsx — the packing contract evolves one documented step",
+    );
+  }
 }
 
-// ---- (b3) npm pack still exactly 34 files ---------------------------------------
+// ---- (b3) npm pack still exactly 37 files (2.2.0: 34 + surface.css/js/d.ts) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -226,22 +292,21 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "34") {
+} else if (totalFiles[1] !== "37") {
   failures.push(
-    `(b3) npm pack must yield exactly 34 files (playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 37 files (2.2.0 = 34 + css/surface.css + react/surface.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
 // ---- (b4) styles.css zero hex ----------------------------------------------------
+// 2.2.0: the 15% elevation-border needle MOVED to (s1) — the card border is
+// package-owned now (css/surface.css carries the promoted anatomy).
 const stylesCss = readFileSync(join(playground, "styles.css"), "utf8");
 const styleHexes = stylesCss.match(/#[0-9a-f]{3,8}\b/gi);
 if (styleHexes !== null) {
   failures.push(
     `(b4) playground/styles.css contains hex literal(s) ${[...new Set(styleHexes)].join(", ")} — 100% var()/color-mix only`,
   );
-}
-if (!stylesCss.includes("color-mix(in srgb, var(--text-muted) 15%, transparent)")) {
-  failures.push("(b4) styles.css must draw the elevation card border with the 15% color-mix token blend");
 }
 if (!stylesCss.includes("max-width: 768px")) {
   failures.push("(b4) styles.css must collapse the hub grid at max-width: 768px");
@@ -403,14 +468,17 @@ if (mockIconNames.length === 0) {
   }
 }
 
-// ---- (e1) AMBIENT ELEVATION markers + package css/ ZERO-box-shadow scan ----------
-// OWNER OVERRIDE (1.6.0, reaffirmed 1.8.0 + 2.0.0): the elevation styles below
-// are REQUIRED in the composition layer (playground/styles.css) — and REQUIRED
-// TO STAY OUT of the package (css/), where the zero-box-shadow doctrine holds.
+// ---- (e1) AMBIENT ELEVATION markers + the surface-scoped shadow contract -------
+// OWNER OVERRIDE (1.6.0, reaffirmed 1.8.0 + 2.0.0): elevation lives in THE
+// COMPOSITION LAYER — and, since 2.2.0, in css/surface.css, where the ambient
+// elevation contract ships WITH the promoted .sig-surface-card primitive.
+// 2.2.0 RESCOPE: every css/ file stays ABSOLUTE ZERO on box-shadow EXCEPT
+// css/surface.css, where shadow declarations are permitted ONLY inside rule
+// blocks whose selector contains `.sig-surface-card` (parsed per rule block,
+// comments stripped). Hex literals stay banned EVERYWHERE — surface.css's
+// sanctioned literals are rgba only. styles.css keeps the composition
+// elevations it still owns: the button pop (600 weight + its own shadow).
 const ELEVATION_REQUIREMENTS = [
-  ["inset 0 1px 0 rgba(255, 255, 255, 0.05)", "the glass inset top-highlight on .hub__card"],
-  ["0 12px 32px rgba(0, 0, 0, 0.4)", "the soft ambient shadow on .hub__card"],
-  ["color-mix(in srgb, var(--text-muted) 15%, transparent)", "the 15% elevation card border"],
   ["font-weight: 600", "the button hierarchy pop (was 500)"],
   ["0 4px 16px rgba(0, 0, 0, 0.3)", "the button's own elevation"],
 ];
@@ -419,14 +487,39 @@ for (const [needle, label] of ELEVATION_REQUIREMENTS) {
     failures.push(`(e1) styles.css must contain ${needle} — ${label}`);
   }
 }
-// The doctrine boundary, enforced: EVERY package css file stays flat.
 for (const rel of readdirSync(resolve(root, "css")).map((f) => join("css", f))) {
   const text = readFileSync(resolve(root, rel), "utf8");
+  const isSurface = rel === join("css", "surface.css");
   const shadowDecls = text.match(/box-shadow\s*:\s*[^;]+;/g);
   const nonNoneShadows = (shadowDecls ?? []).filter((d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d));
-  if (nonNoneShadows.length > 0) {
+  if (isSurface) {
+    // THE OWNER SANCTION, scoped: strip comments, then audit each rule
+    // block — a shadow may only appear under a `.sig-surface-card`
+    // selector (covers the base class and the --interactive modifier).
+    if (nonNoneShadows.length > 0) {
+      const noComments = text.replace(/\/\*[\s\S]*?\*\//g, "");
+      for (const block of noComments.split("}")) {
+        if (!/box-shadow\s*:\s*[^;]+;/.test(block)) continue;
+        const braceIdx = block.indexOf("{");
+        const selector = braceIdx === -1 ? "" : block.slice(0, braceIdx).trim();
+        if (!selector.includes(".sig-surface-card")) {
+          failures.push(
+            `(e1) css/surface.css declares a box-shadow OUTSIDE a .sig-surface-card rule (selector: ${selector || "?"}) — the owner elevation sanction covers .sig-surface-card rules ONLY`,
+          );
+        }
+      }
+    }
+    // Hex-ban holds in the sanctioned file too: rgba literals are the
+    // documented exception, hex is not.
+    const surfaceHexes = text.match(/#[0-9a-f]{3,8}\b/gi);
+    if (surfaceHexes !== null) {
+      failures.push(
+        `(e1) css/surface.css contains hex literal(s) ${[...new Set(surfaceHexes)].join(", ")} — the owner sanction covers the rgba elevation literals ONLY, hex stays banned`,
+      );
+    }
+  } else if (nonNoneShadows.length > 0) {
     failures.push(
-      `(e1) ${rel} declares a box-shadow (${nonNoneShadows.join(" ")}) — ambient elevation is composition-layer ONLY; the package stays flat`,
+      `(e1) ${rel} declares a box-shadow (${nonNoneShadows.join(" ")}) — ambient elevation is composition-layer/surface.css ONLY; this file stays flat`,
     );
   }
 }
@@ -536,45 +629,74 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v1.4.0 ------------------------
-// 1.6.0 exception: css/timeline.css is governed by (e2) — additions-only,
-// whitelisted properties — so the blanket freeze excludes it.
+// ---- (b7) SAFETY PROOF: core files untouched since v2.1.0 ------------------------
+// 2.2.0 REBASE (the release that legitimately touches core rebases the floor —
+// v1.4.0 → v2.1.0). The owner-authorized 2.2.0 deltas, and NOTHING else:
+//   css/viz.css + react/viz.tsx        — telemetry limits (the track fix)
+//   react/viz.js + react/viz.d.ts      — compiled artifacts OF viz.tsx
+//   react/index.ts + index.js/.d.ts    — the umbrella re-exports (+ compiled)
+//   css/surface.css                    — NEW promoted primitive stylesheet
+//   css/signature-style.css            — the layered surface.css import
+//   react/surface.{tsx,js,d.ts}        — NEW promoted primitive source/compiled
+// css/timeline.css stays e2-governed. scripts/verify.mjs stays BYTE-FROZEN
+// (its v1 needle reads the migration marker in viz.css; the LIVING 2.2.0 viz
+// gate lives here as (v22)). Everything else must be byte-identical to v2.1.0.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
+const B7_AUTHORIZED = [
+  ":(exclude)css/timeline.css",
+  ":(exclude)css/viz.css",
+  ":(exclude)css/surface.css",
+  ":(exclude)css/signature-style.css",
+  ":(exclude)react/viz.tsx",
+  ":(exclude)react/viz.js",
+  ":(exclude)react/viz.d.ts",
+  ":(exclude)react/index.ts",
+  ":(exclude)react/index.js",
+  ":(exclude)react/index.d.ts",
+  ":(exclude)react/surface.tsx",
+  ":(exclude)react/surface.js",
+  ":(exclude)react/surface.d.ts",
+];
 let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v1.4.0", "--", ...LOCKED_PATHS, ":(exclude)css/timeline.css"],
+    ["diff", "v2.1.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v1.4.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v1.4.0 — css/ (except timeline.css per e2) react/ tokens.json SYSTEM_PROMPT.md demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.1.0 beyond the owner-authorized 2.2.0 deltas (viz limits, surface promotion, e2-governed timeline.css) — css/ react/ tokens.json SYSTEM_PROMPT.md demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.0.0 FROZEN PROOF — v1.8.0 baseline, tools/ included ---------
-// The hub migration is a PLAYGROUND-ONLY release: every package file plus
-// tools/ must be byte-identical to v1.8.0. (e2) governs timeline.css's
-// additions-only rule within that freeze; the blanket scan here must stay
-// empty — and it is, because nothing under these paths changed.
+// ---- (n-hub4) THE V2.2.0 FROZEN PROOF — v2.1.0 baseline, tools/ included ---------
+// Rebased v1.8.0 → v2.1.0 for 2.2.0 (same authorized deltas as (b7)) plus ONE
+// tooling delta: tools/mcp-viz/server.ts is owner-editable this release (the
+// cortex default sweep retargets .bento__* → the sig-* surface contract; the
+// compiled dist/ is gitignored). Everything under the locked paths beyond
+// those deltas must stay byte-identical to v2.1.0.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
+const N_HUB4_AUTHORIZED = [
+  ...B7_AUTHORIZED,
+  ":(exclude)tools/mcp-viz/server.ts",
+];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v1.8.0", "--", ...V2_LOCKED_PATHS],
+    ["diff", "v2.1.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v1.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v1.8.0 — css/ react/ tokens.json demo/ SYSTEM_PROMPT.md scripts/ AND tools/ are LOCKED for the hub migration (playground presentation layer only)",
+    "(n-hub4) SAFETY: files changed since v2.1.0 beyond the owner-authorized 2.2.0 deltas (viz limits, surface promotion, cortex sweep) — css/ react/ tokens.json demo/ SYSTEM_PROMPT.md scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -732,6 +854,97 @@ if (!breathingBars.test(stylesCss)) {
   );
 }
 
+// ---- (s1) SURFACE PRIMITIVES — the promoted Shed anatomy (2.2.0) -----------------
+// css/surface.css is the OFFICIAL home of the card anatomy (moved out of the
+// playground layer): 15% token-mix border, inset top-highlight, ambient
+// shadow, tactile hover, teal eyebrow. Plus the 2.2.0 telemetry-limits
+// caption needle in css/viz.css (tabular-nums — digits never jitter).
+const surfaceCssPath = resolve(root, "css/surface.css");
+if (!existsSync(surfaceCssPath)) {
+  failures.push("(s1) css/surface.css is missing — the surface primitives ship their own stylesheet");
+} else {
+  const surfaceCss = readFileSync(surfaceCssPath, "utf8");
+  const SURFACE_REQUIREMENTS = [
+    ["color-mix(in srgb, var(--text-muted) 15%, transparent)", "the 15% elevation card border"],
+    ["inset 0 1px 0 rgba(255, 255, 255, 0.05)", "the glass inset top-highlight on .sig-surface-card"],
+    ["0 12px 32px rgba(0, 0, 0, 0.4)", "the soft ambient shadow on .sig-surface-card"],
+    ["transform: translateY(-2px)", "the tactile hover lift on the --interactive modifier"],
+    ["0 16px 40px rgba(0, 0, 0, 0.5)", "the deepened hover ambient shadow"],
+    ["color: var(--color-cake-secondary)", "the signature teal eyebrow"],
+    ["text-transform: uppercase", "the all-caps eyebrow (content stays capitalized words)"],
+    ["border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent)", "the ruled title hairline"],
+  ];
+  for (const [needle, label] of SURFACE_REQUIREMENTS) {
+    if (!surfaceCss.includes(needle)) {
+      failures.push(`(s1) css/surface.css must contain ${needle} — ${label}`);
+    }
+  }
+}
+const vizCss22 = readFileSync(resolve(root, "css/viz.css"), "utf8");
+const captionRule = /\.ptp-progress__caption\s*\{[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-muted\);[^}]*font-size: 0\.75rem;/s;
+if (!captionRule.test(vizCss22)) {
+  failures.push(
+    "(s1) css/viz.css must carry the limit caption — .ptp-progress__caption { font-variant-numeric: tabular-nums; color: var(--text-muted); font-size: 0.75rem; } (digits never jitter)",
+  );
+}
+
+// ---- (s2) UMBRELLA RE-EXPORTS — SurfaceCard + PageHero (2.2.0) -------------------
+// Types live in index.d.ts, values additionally in index.js (same surface
+// split as every other export), and the compiled react/surface.{js,d.ts}
+// must exist on disk — the build artifact contract.
+const umbrellaDts = readFileSync(resolve(root, "react/index.d.ts"), "utf8");
+const umbrellaJs = readFileSync(resolve(root, "react/index.js"), "utf8");
+const surfaceJsPath = resolve(root, "react/surface.js");
+const surfaceDtsPath = resolve(root, "react/surface.d.ts");
+if (!existsSync(surfaceJsPath)) {
+  failures.push("(s2) react/surface.js is missing — build it: npx tsc -p tsconfig.json");
+}
+if (!existsSync(surfaceDtsPath)) {
+  failures.push("(s2) react/surface.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+for (const surfaceExport of ["SurfaceCard", "SurfaceCardProps", "PageHero", "PageHeroProps"]) {
+  if (!new RegExp(`\\b${surfaceExport}\\b`).test(umbrellaDts)) {
+    failures.push(
+      `react/index.d.ts must re-export ${surfaceExport} from the umbrella entry point`,
+    );
+  }
+}
+for (const surfaceValueExport of ["SurfaceCard", "PageHero"]) {
+  if (!new RegExp(`\\b${surfaceValueExport}\\b`).test(umbrellaJs)) {
+    failures.push(
+      `react/index.js must re-export ${surfaceValueExport} from the umbrella entry point`,
+    );
+  }
+}
+
+// ---- (v22) TELEMETRY LIMITS — the LIVING v1 evolution (2.2.0) --------------------
+// scripts/verify.mjs is byte-frozen; its v1 floor reads the viz.css migration
+// marker. THIS gate carries the 2.2.0 contract: the inset track + 20% hairline
+// boundary in css/viz.css, and the react/viz.tsx surface (limitText caption,
+// ring boundary hairline circle, centered tabular-nums readout).
+const vizSrc22 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
+const vizTrack = /\.ptp-progress\s*\{[^}]*background: var\(--bg-inset\);[^}]*border: 1px solid color-mix\(in srgb, var\(--text-muted\) 20%, transparent\);/s;
+if (!vizTrack.test(vizCss22)) {
+  failures.push(
+    "(v22) css/viz.css must retarget the track — .ptp-progress { background: var(--bg-inset); border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent); } (the surface-on-surface fix; the 100% boundary reads on any card)",
+  );
+}
+const VIZ_TSX_REQUIREMENTS = [
+  ["limitText", "the limit caption prop (ProgressBar)"],
+  ["ptp-progress__caption", "the caption class the third element wears"],
+  ["r={47.5}", "the ring boundary hairline circle (SVG-native border)"],
+  ['stroke="color-mix(in srgb, var(--text-muted) 20%, transparent)"', "the 20% hairline boundary stroke"],
+  ["showValue", "the optional centered ring readout (default true)"],
+  ['textAnchor="middle"', "the centered readout anchoring"],
+  ["dominantBaseline=\"central\"", "the centered readout vertical alignment"],
+  ["fontVariantNumeric: \"tabular-nums\"", "the readout's tabular digits"],
+];
+for (const [needle, label] of VIZ_TSX_REQUIREMENTS) {
+  if (!vizSrc22.includes(needle)) {
+    failures.push(`react/viz.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+
 // ---- (sp1) TIMELINE HEADER BREATHING ROOM — the MEASURED override ------------
 // The package reserves --tl-header-clearance (68px) under each sticky
 // header, but its own slab renders 69px — every group-first node started
@@ -820,4 +1033,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2): scaffold, wiring, pack=34, zero hex + elevation border, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v1.4.0 safety diff empty (timeline.css additions-only per e2) AND v1.8.0 frozen proof incl. tools/ (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks (bento era fully retired), constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room (slab + mirrored group-first clearance, ≥16px contract) and the Master Index (View switcher + HubLink factory + preventDefault + EmptyState dogfood + three exact gateways in the 900px column)");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22): scaffold, wiring, pack=37 (34 + surface.css/js/d.ts), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.1.0 safety diff empty beyond the owner-authorized 2.2.0 deltas (viz limits, surface promotion; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ frozen beyond the cortex sweep retarget (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + surface-scoped package shadow contract (css/surface.css: sig-surface-card rules ONLY, hex banned) + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks (bento era fully retired), constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room (slab + mirrored group-first clearance, ≥16px contract) and the Master Index (View switcher + HubLink factory + preventDefault + EmptyState dogfood + three exact gateways in the 900px column); 2.2.0: the promoted surface anatomy needles (s1: 15% border, inset highlight, ambient shadow, hover lift, teal eyebrow, ruled title, tabular-nums viz caption) + umbrella SurfaceCard/PageHero re-exports with compiled artifacts (s2) + the living telemetry-limits gate (v22: inset track + 20% hairline boundary + caption; limitText, ring hairline circle, centered tabular-nums readout)");
