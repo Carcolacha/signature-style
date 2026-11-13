@@ -129,6 +129,131 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.2.0 — Telemetry Limits & Official Surface Primitives
+
+- **THE STORY — the tracks become visible, and the playground's
+  anatomy graduates into the package.** Two moves: the telemetry
+  primitives get their LIMITS (visible track boundaries, limit
+  captions, ring readouts), and the Shed card anatomy the playground
+  invented in 2.0.0 is promoted into OFFICIAL exports —
+  `<SurfaceCard>` / `<PageHero>` with the owner-mandated `.sig-*`
+  class prefix. The playground becomes a consumer of its own package.
+  `tokens.json` stays 1.4.0; `npm pack` now packs EXACTLY 37 files
+  (34 + css/surface.css + react/surface.js/.d.ts).
+- **Track-contrast fix (the telemetry limit story).** The
+  `--bg-surface` tracks were INVISIBLE on `--bg-surface` cards —
+  surface-on-surface meant zero contrast, and the 100% boundary of a
+  half-filled bar simply disappeared the moment it sat on a card. The
+  fix (owner-authorized in css/viz.css + react/viz.tsx): the track
+  retargets to `var(--bg-inset)` AND draws a hairline —
+  `border: 1px solid color-mix(in srgb, var(--text-muted) 20%,
+  transparent)` — so the full boundary reads on ANY card. StatRing's
+  track retargets identically, plus an SVG-native boundary hairline
+  (a THIRD circle, r 47.5, fixed 1.5 viewBox-unit stroke of the same
+  20% mix, fill none, drawn over the ink) — the ring's DOM is now 3
+  circles + the optional value text.
+- **`limitText` + `showValue` — the telemetry grows its readouts.**
+  `<ProgressBar limitText="…">` renders a THIRD element after the
+  track — `.ptp-progress__caption`, a mono `tabular-nums` muted
+  0.75rem caption inside a fragment (no wrapper around the track;
+  the ARIA contract is unchanged). `<StatRing showValue>` (default
+  true) renders the centered readout — `<text>` at the exact center
+  in viewBox units (scales with `size`), `var(--text-main)`,
+  tabular-nums, weight 600 — showing the CLAMPED value, so text,
+  geometry and `aria-valuenow` can never disagree. The 2.1.0
+  "consumers place their own numbers" pruning is relaxed BY THE
+  OWNER for the readout only.
+- **The promotion — SurfaceCard + PageHero.** css/surface.css +
+  react/surface.tsx are the official home of the Shed skeleton:
+  `.sig-surface-card` (surface + 15% token-mix border + inset
+  top-highlight + ambient shadow), `.sig-surface-card--interactive`
+  (translateY(-2px) hover + deepened shadow, on the package's own
+  transition tokens), `__meta`/`__eyebrow` (teal all-caps)/`__path`
+  (muted mono)/`__title` (ruled), `.sig-page-hero` (serif display
+  h1, clamp 2.25rem → 4rem, 0.35em tracking + muted mono subtitle).
+  The component renders EXACTLY ONE `<section>` (meta row only when
+  eyebrow/meta given, ruled h2 only when title given, children slot
+  bare); `<PageHero>` renders ONE `<header>` (h1 + optional sub +
+  children slot). The class-on-the-h2 upgrade: the ruled title rides
+  `__title` itself, so the old `.hub__card > h2` child-combinator
+  specificity contest is gone by construction. Re-exported from the
+  umbrella (+ compiled artifacts; `!react/surface.tsx` joins the
+  files-array negations).
+- **DOCTRINE — the owner elevation sanction, scoped.** The rgba
+  elevation literals (inset top-highlight + ambient shadows) are
+  OWNER-SANCTIONED in css/surface.css ONLY — the ambient elevation
+  contract ships WITH the surface primitive. Gate (e1) is rescoped
+  accordingly: every other css/ file stays ABSOLUTE ZERO on
+  box-shadow, and surface.css may declare shadows only inside
+  `.sig-surface-card` rules (parsed per rule block; a shadow on
+  `.sig-page-hero` fails). Hex stays banned everywhere, sanctioned
+  file included. The rgba-scrim precedent (modal.css) is unchanged.
+- **The playground consumes its package.** All four dashboard cards
+  render `<SurfaceCard eyebrow=… meta=… title=… interactive>`
+  (timeline included — they're hover modules; the chronology keeps
+  its `hub__card--timeline` grid modifier via className), the hero
+  is `<PageHero title="THE ENGINE" subtitle="every primitive, one
+  dashboard · live showcase" />`, and the placeholder modules
+  dogfood `<SurfaceCard>` + `<EmptyState>`. The gateway cards keep
+  their v2.1.0 `<button>` semantics — a button cannot be the
+  `<section>`-rendering SurfaceCard — so they WEAR the package's
+  sig classes and the local css only neutralizes the UA button
+  chrome. styles.css DELETES the anatomy/hero it used to own
+  (package-owned now) and keeps the genuinely local: the 1400px
+  auto-fit grid, the metric rows (+ the ≥16px air mandate), the
+  stagger (retargeted to `.sig-surface-card:nth-child`, reduced-
+  motion escape intact), the node elevation (retargeted to the
+  `.sig-surface-card` ancestor), the button pop, the 900px index
+  column, the 2.1.0 measured breathing room (unchanged, composed on
+  the className modifier). The telemetry card wears its limits:
+  budget-remaining "$1,440 / $2,000", spent "$1,325 / $2,000", and
+  a NEW guests row — 170 / 200 on `--party-sky` at 85%, the RSVP
+  ring's own ratio, coherent.
+- **Cortex sweep updated (tools/ is our tooling — owner-editable).**
+  The MCP server's DEFAULT_SELECTORS retarget the retired
+  `.bento__*` classes to the live contract — `.sig-surface-card`,
+  `.hub__metric`, `.hub__btn` — and the server version string moves
+  to 2.2.0. Card-level data-testids retired with the `.hub__card`
+  section: the cortex's stable card hook is the class selector
+  itself; metric + button hooks stay (plus the new
+  `metric-guests`).
+- **Gate evolution (verify:playground)** — (b2 AMENDMENT) the frozen
+  files array evolves exactly one step (v1.4.0 + `!react/surface.tsx`);
+  (b3) 34 → 37; (b7)/(n-hub4) safety proofs REBASED to the v2.1.0
+  baseline with the authorized deltas enumerated (viz limits, surface
+  promotion incl. compiled artifacts + the bundle import, cortex
+  sweep) — scripts/verify.mjs stays BYTE-FROZEN (its frozen v1 floor
+  reads the migration marker in the viz.css header; the LIVING 2.2.0
+  viz gate is (v22) here: inset track + hairline boundary + caption
+  needles, limitText/ring-hairline/centered-readout needles);
+  (e1 AMENDMENT) the surface-scoped shadow contract (above);
+  (s1) the promoted anatomy needles; (s2) the umbrella re-exports +
+  compiled artifacts; (b4)/(h1)/(g2)/(n-hub2)/(n-hub3)/(m3)/(b5)
+  retargeted to the package-owned anatomy with intent kept
+  (4 SurfaceCards audited inside the dashboard branch, all
+  interactive). Negative tests (falsifiability, restore-verified):
+  (1) a box-shadow appended to css/forms.css flips (e1) to FAIL;
+  (2) a shadow on `.sig-page-hero` in css/surface.css flips (e1) to
+  FAIL (the sanction is scoped to `.sig-surface-card` rules);
+  (3) dropping `tabular-nums` from the viz caption flips (s1) to
+  FAIL. Restore → PASS each time.
+- **Release proof** — `npm run verify` PASS (the frozen floor);
+  `npm run verify:playground` PASS; `npm run verify:mcp` SMOKE ALL
+  PASS (the default sweep now reports `.sig-surface-card` hits; 6/6
+  timeline nodes with area); `vite build` exit 0; `npm pack` exactly
+  37 files; safety diff vs v2.1.0 (`react/ tokens.json demo/
+  SYSTEM_PROMPT.md scripts/`) EMPTY beyond the authorized deltas:
+  react/surface.{tsx,js,d.ts} (the promotion), react/viz.{tsx,js,d.ts}
+  (the telemetry limits, owner-authorized), react/index.{ts,js,d.ts}
+  (the umbrella re-exports, compiled); css/ deltas
+  (css/surface.css NEW, css/viz.css retarget, css/signature-style.css
+  import) are outside that pathspec. `package.json`/lock → 2.2.0,
+  `tokens.json` stays 1.4.0. Relaunch proof: dev server killed and
+  restarted fresh (the `/mnt/c` inotify lesson — vite never sees file
+  edits on the Windows mount), computed-style probe: the progress
+  track measures `background-color` = the inset token and a 1px
+  20%-mix border; the ring SVG carries the centered "85%" text.
+
 ### 2.1.0 — Timeline Breathing Room & The Master Index
 
 - **THE STORY — the timeline learns personal space, and the hub becomes
