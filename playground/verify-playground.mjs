@@ -125,6 +125,32 @@
  *         touched this release, so (e2) passes trivially while still
  *         guarding every future release.
  *
+ * 2.1.0 gates ("Timeline Breathing Room & The Master Index"):
+ *   (sp1) TIMELINE HEADER BREATHING ROOM — styles.css carries the
+ *         scoped composition override: the sticky header slab's
+ *         padding-bottom grows to calc(var(--space-standard) +
+ *         var(--space-tight)) (16 → 24px under the month text) AND the
+ *         group-first clearance mirrors the growth on BOTH siblings —
+ *         item padding-top AND node margin-top =
+ *         calc(var(--tl-header-clearance) + var(--space-standard) * 2)
+ *         = 100px. Measured contract (probe, release blocker): every
+ *         group's header→first-node gap ≥ 16px (was −1px OVERLAP: the
+ *         package reserves 68px but its slab renders 69px).
+ *   (ix1) THE VIEW SWITCHER — App.tsx declares `type View` with the
+ *         default `useState<View>("dashboard")` (the cortex smoke must
+ *         find the timeline on load), the HubLink renderer with
+ *         `event.preventDefault()` (no full-reload anchor — the
+ *         negative-test target), the `as={navLink}` factory wiring into
+ *         GlobalNav, and the <EmptyState> placeholder dogfood
+ *         (icon="Hammer"). Hero copy is per-view: THE ENGINE stays on
+ *         the dashboard, THE MASTER INDEX announces the index.
+ *   (ix2) THE THREE GATEWAYS — exact Shed anatomy strings: PLANNER /
+ *         views/planner.tsx / Event Planner Bento (the real gateway),
+ *         STUDY / modules/study.tsx / Study & Flashcard Generator,
+ *         GAMES / modules/games.tsx / Party Game Modules; the index
+ *         column is the constrained .hub--index (900px — three doors
+ *         read better narrow, owner call, documented).
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -229,11 +255,11 @@ const APP_REQUIREMENTS = [
   ["<ToastProvider>", "the ToastProvider wraps the dashboard"],
   ["useToast()", "the toast hook drives the feedback card"],
   ["useModal<", "the modal hook drives the timeline card"],
-  ['<GlobalNav items={NAV_ITEMS} activeHref="#" />', "the global nav tops the page"],
+  ['<GlobalNav items={NAV_ITEMS} as={navLink} activeHref={VIEW_HREFS[view]} />', "the global nav tops the page (2.1.0: rendered through the HubLink factory)"],
   ['<header className="hub__hero">', "the announcing hero header (n-hub2)"],
-  ["<h1>THE ENGINE</h1>", "the hero announces THE ENGINE (n-hub2)"],
+  ['title: "THE ENGINE"', "the hero announces THE ENGINE (n-hub2, per-view HERO_COPY)"],
   ['<p className="hub__hero-sub">', "the hero subtitle element (n-hub2)"],
-  ["every primitive, one dashboard · live showcase", "the hero subtitle string (n-hub2)"],
+  ["every primitive, one dashboard · live showcase", "the dashboard hero subtitle string (n-hub2)"],
   ['className="hub"', "the single hub grid container"],
   ['<div className="hub__meta">', "the shed meta row on every card (n-hub3)"],
   ['<span className="hub__label">', "the teal all-caps label (n-hub3)"],
@@ -256,9 +282,18 @@ for (const [needle, label] of APP_REQUIREMENTS) {
     failures.push(`(b5) App.tsx must contain ${needle} — ${label}`);
   }
 }
-const sectionCount = (appSrc.match(/<section className="hub__card /g) ?? []).length;
-if (sectionCount !== 4) {
-  failures.push(`(b5) main.hub must have exactly 4 card sections, found ${sectionCount}`);
+// 2.1.0: the 4-card audit counts INSIDE the dashboard branch only — the
+// view switcher added placeholder/gateway cards elsewhere in the file.
+const dashStart = appSrc.indexOf("function DashboardView");
+const dashEnd = appSrc.indexOf("function IndexView");
+if (dashStart === -1 || dashEnd === -1 || dashEnd < dashStart) {
+  failures.push("(b5) DashboardView…IndexView functions missing — the dashboard branch cannot be audited");
+} else {
+  const dashSlice = appSrc.slice(dashStart, dashEnd);
+  const sectionCount = (dashSlice.match(/<section className="hub__card /g) ?? []).length;
+  if (sectionCount !== 4) {
+    failures.push(`(b5) the dashboard branch must have exactly 4 card sections, found ${sectionCount}`);
+  }
 }
 
 // ---- (b6) every icon name used in App.tsx exists in lucide's icons map ----------
@@ -697,10 +732,92 @@ if (!breathingBars.test(stylesCss)) {
   );
 }
 
+// ---- (sp1) TIMELINE HEADER BREATHING ROOM — the MEASURED override ------------
+// The package reserves --tl-header-clearance (68px) under each sticky
+// header, but its own slab renders 69px — every group-first node started
+// 1px UNDER the glass (BEFORE probe: −1px on all three groups). The
+// composition layer grows the slab one --space-tight step AND mirrors the
+// growth into the group-first clearance; both group-first siblings (item
+// padding + node margin) must move TOGETHER or the title drifts off the
+// node. AFTER probe: 100px offset − 77px slab = 23px air (≥16px), all on
+// the 4px grid (24 / 100). Package css/timeline.css stays untouched.
+const headerAir = /\.hub__card--timeline \.ptp-timeline__header\s*\{[^}]*padding-bottom: calc\(var\(--space-standard\) \+ var\(--space-tight\)\);/s;
+if (!headerAir.test(stylesCss)) {
+  failures.push(
+    "(sp1) styles.css must grow the sticky slab — .hub__card--timeline .ptp-timeline__header { padding-bottom: calc(var(--space-standard) + var(--space-tight)); }",
+  );
+}
+const itemClearance = /\.hub__card--timeline \.ptp-timeline__item--group-first\s*\{[^}]*padding-top: calc\(var\(--tl-header-clearance\) \+ var\(--space-standard\) \* 2\);/s;
+if (!itemClearance.test(stylesCss)) {
+  failures.push(
+    "(sp1) styles.css must mirror the clearance into group-first ITEMS — padding-top: calc(var(--tl-header-clearance) + var(--space-standard) * 2) = 100px",
+  );
+}
+const nodeClearance = /\.hub__card--timeline \.ptp-timeline__node--group-first\s*\{[^}]*margin-top: calc\(var\(--tl-header-clearance\) \+ var\(--space-standard\) \* 2\);/s;
+if (!nodeClearance.test(stylesCss)) {
+  failures.push(
+    "(sp1) styles.css must mirror the clearance into group-first NODES — margin-top: calc(var(--tl-header-clearance) + var(--space-standard) * 2) = 100px (siblings move together)",
+  );
+}
+
+// ---- (ix1) THE VIEW SWITCHER — View type, HubLink, EmptyState dogfood --------
+const INDEX_REQUIREMENTS = [
+  ['type View = "dashboard" | "index" | "events" | "guests" | "budget"', "the view union type"],
+  ['useState<View>("dashboard")', 'the default view stays "dashboard" — the cortex smoke must find the timeline on load'],
+  ["function HubLink(", "the playground's link renderer for GlobalNav's as prop"],
+  ["onNavigate: (href: string) => void", "the navigation callback contract"],
+  ["event.preventDefault()", "no full-reload anchor navigation (negative-test target)"],
+  ["function createHubLink(", "the factory closure feeding onNavigate/activeHref through GlobalNav's as contract"],
+  ["as={navLink}", "the nav renders through the HubLink factory"],
+  ['{ href: VIEW_HREFS.index, label: "Index" }', "the Index nav destination"],
+  ['"#/index": "index"', "the index routing entry"],
+  ["<EmptyState", "the workshop placeholders dogfood the package EmptyState primitive"],
+  ['icon="Hammer"', "the workshop icon"],
+  ['title: "THE MASTER INDEX"', "the index hero title"],
+  ["three doors · one engine · zero dead ends", "the index hero subtitle"],
+];
+for (const [needle, label] of INDEX_REQUIREMENTS) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(ix1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+
+// ---- (ix2) THE THREE GATEWAYS — exact Shed anatomy strings -------------------
+const GATEWAYS = [
+  ["PLANNER", "views/planner.tsx", "Event Planner Bento"],
+  ["STUDY", "modules/study.tsx", "Study & Flashcard Generator"],
+  ["GAMES", "modules/games.tsx", "Party Game Modules"],
+];
+for (const [label, path, title] of GATEWAYS) {
+  for (const [needle, what] of [
+    [`label: "${label}"`, `label ${label}`],
+    [`path: "${path}"`, `path ${path}`],
+    [`title: "${title}"`, `title ${title}`],
+  ]) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(ix2) App.tsx must declare the gateway ${what} — ${JSON.stringify(needle)}`);
+    }
+  }
+}
+// The three cards come from ONE mapped wiring; the per-card count lives in
+// the runtime probe — here we pin the wiring + the gateways array shape.
+if (!appSrc.includes("const gateways: Gateway[] = [")) {
+  failures.push("(ix2) App.tsx must declare `const gateways: Gateway[]` — the master index card list");
+}
+if (!appSrc.includes('data-testid={`gateway-${gateway.label.toLowerCase()}`}') && !appSrc.includes('data-testid={`gateway-${')) {
+  failures.push("(ix2) App.tsx must wire data-testid={`gateway-<label> hooks on the gateway cards");
+}
+const indexColumn = /\.hub--index\s*\{[^}]*max-width: 900px;/s;
+if (!indexColumn.test(stylesCss)) {
+  failures.push(
+    "(ix2) styles.css must constrain the index column — .hub--index { max-width: 900px; } (three doors read better narrow, owner call)",
+  );
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4): scaffold, wiring, pack=34, zero hex + elevation border, hub shape + hero + shed anatomy, icons, v1.4.0 safety diff empty (timeline.css additions-only per e2) AND v1.8.0 frozen proof incl. tools/ (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks (bento era fully retired), constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2): scaffold, wiring, pack=34, zero hex + elevation border, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v1.4.0 safety diff empty (timeline.css additions-only per e2) AND v1.8.0 frozen proof incl. tools/ (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes, ambient-elevation markers + package css/ zero-box-shadow scan, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks (bento era fully retired), constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room (slab + mirrored group-first clearance, ≥16px contract) and the Master Index (View switcher + HubLink factory + preventDefault + EmptyState dogfood + three exact gateways in the 900px column)");
