@@ -640,7 +640,9 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
 const LEDGER_COLUMNS: DataTableColumn[] = [
   { key: "guest", header: "Guest" },
   { key: "status", header: "Status" },
-  { key: "share", header: "Contribution", numeric: true },
+  // 2.4.1: align flows to BOTH th and td — the CONTRIBUTION header sits
+  // flush over the $120 values (numeric alone left the header behind).
+  { key: "share", header: "Contribution", numeric: true, align: "right" },
 ];
 
 const LEDGER_ROWS: Array<Record<string, ReactNode>> = [

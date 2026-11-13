@@ -6,7 +6,10 @@
    THREE PATTERNS, THREE CLASS FAMILIES:
    - .ptp-data-table — the ledger table: uppercase letter-spaced headers,
      hairline row rules, a subtle Flamingo hover wash, and numeric cells
-     pinned to tabular-nums so digits never jitter between rows.
+     pinned to tabular-nums so digits never jitter between rows. 2.4.1
+     adds the .ptp-data-table__align-{left,center,right} utilities —
+     explicit per-column alignment on BOTH th and td (the ancestor-
+     scoped specificity fix; see the rule comment below).
    - .ptp-tabs — THE module switcher. Same contract as the nav: there is
      NO .is-active class anywhere — [aria-selected="true"] IS the active
      state and css answers it directly (the attribute is the state
@@ -71,6 +74,25 @@
   .ptp-data-table__num {
     text-align: right;
     font-variant-numeric: tabular-nums;
+  }
+  /* Column alignment utilities (2.4.1 "Intuitive Form Anatomy &
+     Alignment Fix") — class-based (gate-able), applied per column by
+     react/data.tsx to BOTH the th and the td. THE ANCESTOR PREFIX IS
+     LOAD-BEARING: `.ptp-data-table thead th` is specificity (0,1,2) and
+     outranks a bare `.__align-*` class (0,1,0) — that cascade loss is
+     exactly why the v2.4.0 numeric HEADER stayed left while its cells
+     went right (the reported bug). Scoping under `.ptp-data-table`
+     (0,2,0) puts the utility back on top. `__num` stays the
+     tabular-nums numeric convenience and COMPOSES with these (align
+     owns geometry, numeric owns digits). */
+  .ptp-data-table .ptp-data-table__align-left {
+    text-align: left;
+  }
+  .ptp-data-table .ptp-data-table__align-center {
+    text-align: center;
+  }
+  .ptp-data-table .ptp-data-table__align-right {
+    text-align: right;
   }
   /* The caption sits UNDER the table (data provenance, not a title),
      muted mono — the viz caption's sibling (css/viz.css). */

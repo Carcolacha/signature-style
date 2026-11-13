@@ -1,6 +1,7 @@
 /**
  * data — data-display primitives (2.3.0 "Universal Web Components & AI
- * Signature Codex").
+ * Signature Codex"; 2.4.1 "Intuitive Form Anatomy & Alignment Fix" grows
+ * DataTableColumn.align).
  *
  * Three flat components wired to the styles in css/data.css:
  * `<DataTable>`, `<Tabs>`, `<Callout>`.
@@ -39,6 +40,19 @@ export interface DataTableColumn {
     header: string;
     /** Numeric column → right-aligned tabular-nums cells. */
     numeric?: boolean;
+    /**
+     * Explicit column alignment, applied to BOTH the th and the td of
+     * this column via the .ptp-data-table__align-* utility classes
+     * (css/data.css). 2.4.1 — the intuitive-anatomy fix: `numeric` alone
+     * right-aligned the CELLS but left the HEADER left-aligned (the
+     * `.ptp-data-table thead th` rule outranks the bare `__num` class in
+     * the cascade — 0,1,2 beats 0,1,0), so a numeric column read as two
+     * disconnected halves. `align` is the owner-spec'd repair: state it
+     * explicitly and the header sits flush over its values. COMPOSES with
+     * `numeric` — keep both on money columns: `align` owns the geometry,
+     * `numeric` owns the tabular digits.
+     */
+    align?: "left" | "right" | "center";
 }
 export interface DataTableProps {
     /** The column contract — order is render order. */
@@ -60,8 +74,10 @@ export interface DataTableProps {
  * `<table class="ptp-data-table">` → optional `<caption>`,
  * `<thead>><tr><th scope="col">`, `<tbody>><tr><td>`. Numeric columns
  * wear .ptp-data-table__num on BOTH the th and the td (right-aligned,
- * tabular-nums). No sorting, no pagination, no virtualization — the
- * pruning protocol: a static table is the feature.
+ * tabular-nums); an explicit `align` wears the .ptp-data-table__align-*
+ * utility on both too (2.4.1 — the header finally sits flush over its
+ * values). No sorting, no pagination, no virtualization —
+ * the pruning protocol: a static table is the feature.
  *
  * @example
  * ```tsx
@@ -69,7 +85,7 @@ export interface DataTableProps {
  *   columns={[
  *     { key: "guest", header: "Guest" },
  *     { key: "status", header: "Status" },
- *     { key: "share", header: "Contribution", numeric: true },
+ *     { key: "share", header: "Contribution", numeric: true, align: "right" },
  *   ]}
  *   rows={[
  *     { guest: "Ana Souza", status: "Confirmed", share: "$120" },

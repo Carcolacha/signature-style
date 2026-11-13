@@ -1,5 +1,20 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
+ * Column → cell className (2.4.1). The numeric convenience composes
+ * with the alignment utility — a money column carries BOTH classes.
+ * Class-based (not inline style) so css/data.css owns the paint and
+ * the release gates can probe the needle.
+ */
+function dataTableCellClass(column) {
+    const classes = [
+        column.numeric === true ? "ptp-data-table__num" : undefined,
+        column.align !== undefined
+            ? `ptp-data-table__align-${column.align}`
+            : undefined,
+    ].filter((name) => name !== undefined);
+    return classes.length > 0 ? classes.join(" ") : undefined;
+}
+/**
  * `<DataTable>` — the ledger table.
  *
  * `<div class="ptp-table-scroll">` (the justified scroll-containment
@@ -7,8 +22,10 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * `<table class="ptp-data-table">` → optional `<caption>`,
  * `<thead>><tr><th scope="col">`, `<tbody>><tr><td>`. Numeric columns
  * wear .ptp-data-table__num on BOTH the th and the td (right-aligned,
- * tabular-nums). No sorting, no pagination, no virtualization — the
- * pruning protocol: a static table is the feature.
+ * tabular-nums); an explicit `align` wears the .ptp-data-table__align-*
+ * utility on both too (2.4.1 — the header finally sits flush over its
+ * values). No sorting, no pagination, no virtualization —
+ * the pruning protocol: a static table is the feature.
  *
  * @example
  * ```tsx
@@ -16,7 +33,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *   columns={[
  *     { key: "guest", header: "Guest" },
  *     { key: "status", header: "Status" },
- *     { key: "share", header: "Contribution", numeric: true },
+ *     { key: "share", header: "Contribution", numeric: true, align: "right" },
  *   ]}
  *   rows={[
  *     { guest: "Ana Souza", status: "Confirmed", share: "$120" },
@@ -27,7 +44,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * ```
  */
 export function DataTable({ columns, rows, caption }) {
-    return (_jsx("div", { className: "ptp-table-scroll", children: _jsxs("table", { className: "ptp-data-table", children: [caption !== undefined && _jsx("caption", { children: caption }), _jsx("thead", { children: _jsx("tr", { children: columns.map((column) => (_jsx("th", { scope: "col", className: column.numeric === true ? "ptp-data-table__num" : undefined, children: column.header }, column.key))) }) }), _jsx("tbody", { children: rows.map((row, index) => (_jsx("tr", { children: columns.map((column) => (_jsx("td", { className: column.numeric === true ? "ptp-data-table__num" : undefined, children: row[column.key] }, column.key))) }, index))) })] }) }));
+    return (_jsx("div", { className: "ptp-table-scroll", children: _jsxs("table", { className: "ptp-data-table", children: [caption !== undefined && _jsx("caption", { children: caption }), _jsx("thead", { children: _jsx("tr", { children: columns.map((column) => (_jsx("th", { scope: "col", className: dataTableCellClass(column), children: column.header }, column.key))) }) }), _jsx("tbody", { children: rows.map((row, index) => (_jsx("tr", { children: columns.map((column) => (_jsx("td", { className: dataTableCellClass(column), children: row[column.key] }, column.key))) }, index))) })] }) }));
 }
 /**
  * `<Tabs>` — the controlled module switcher.
