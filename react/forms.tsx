@@ -1,7 +1,9 @@
 /**
  * forms — input & feedback primitives (1.4.0 "Input & Feedback Layer";
  * 2.3.0 grows Select / Checkbox / Avatar; 2.4.0 "Form Wrappers &
- * Editorial Primitives" grows FormField / RadioCardGroup).
+ * Editorial Primitives" grows FormField / RadioCardGroup; 2.4.1
+ * "Intuitive Form Anatomy & Alignment Fix" grows FormField.required /
+ * FormField.prefix and the visible switch label).
  *
  * Eight controls + the accessible wrapper, wired to the form styles in
  * css/forms.css: `<FormField>`, `<Input>`, `<TextArea>`,
@@ -379,36 +381,91 @@ export interface FormFieldProps {
   error?: string;
   /** The control (an `<Input>`, `<TextArea>`, `<Select>`, …). */
   children?: ReactNode;
+  /**
+   * Marks the field visually required (2.4.1): a `--party-peach` `*`
+   * renders AFTER the label text. VISUAL ONLY — the asterisk span is
+   * aria-hidden and the FIELD renders no aria-required of its own;
+   * the CONTROL owns that contract. Pass it on the child yourself,
+   * e.g. `<Input required aria-required="true" …>` (native inputs
+   * derive aria-required from `required`) — the wrapper never speaks
+   * for a control it cannot verify, the same doctrine as id/htmlFor.
+   */
+  required?: boolean;
+  /**
+   * A literal adornment rendered BEFORE the control (2.4.1), e.g.
+   * `prefix="$"` for money fields. When present the children are
+   * wrapped in `.ptp-form-field__row` (flex, align-center, tight gap —
+   * THE JUSTIFIED WRAPPER: an adornment composition needs a flex
+   * parent, and the bare control must stay untouched inside it) with
+   * the `.ptp-form-field__prefix` span (mono, muted, weight 600)
+   * ahead of the control. The prefix is DECORATION — the value's
+   * currency belongs to the consumer's placeholder/validation, not
+   * to the input's value.
+   */
+  prefix?: string;
 }
 
 /**
- * `<FormField>` — the accessible wrapper (2.4.0).
+ * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1).
  *
  * `<div class="ptp-form-field">` (flex column, tight gap — the css
  * carries the `__field` slot contract ON the root, one class fewer) →
- * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` → children
- * (the bare control, untouched) → hint OR error. Error replaces hint —
- * never both: a field shows ONE message. The error span is
- * `role="alert"` (--party-peach, the v1.4.0 error token — owner spec).
- * The v1.4.0 "no message slot" doctrine applies to the CONTROL
- * (`<Input>` stays ONE element); the FIELD wrapper is the sanctioned
- * around-the-control scaffold for consumers who want label+message
- * wiring without hand-rolling it.
+ * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` (+ the
+ * optional aria-hidden `__required` peach asterisk) → children (the
+ * bare control, untouched — or the justified `__row`/`__prefix`
+ * adornment composition when `prefix` is set) → hint OR error. Error
+ * replaces hint — never both: a field shows ONE message. The error
+ * span is `role="alert"` (--party-peach, the v1.4.0 error token —
+ * owner spec). The v1.4.0 "no message slot" doctrine applies to the
+ * CONTROL (`<Input>` stays ONE element); the FIELD wrapper is the
+ * sanctioned around-the-control scaffold for consumers who want
+ * label+message wiring without hand-rolling it.
  *
  * @example
  * ```tsx
- * <FormField label="Guest name" htmlFor="guest-name" hint="As it appears on the invite">
- *   <Input id="guest-name" value={name} onChange={(e) => setName(e.target.value)} />
+ * <FormField
+ *   label="Contribution"
+ *   htmlFor="share"
+ *   prefix="$"
+ *   required
+ *   hint="Suggested $50"
+ * >
+ *   <Input id="share" required inputMode="numeric" />
  * </FormField>
  * ```
  */
-export function FormField({ label, htmlFor, hint, error, children }: FormFieldProps) {
+export function FormField({
+  label,
+  htmlFor,
+  hint,
+  error,
+  required = false,
+  prefix,
+  children,
+}: FormFieldProps) {
+  // The adornment composition (2.4.1): prefix present → the control
+  // rides in the justified __row flex wrapper, mono prefix first. No
+  // prefix → children stay DIRECT children (zero new DOM, peak pruning).
+  const control =
+    prefix !== undefined ? (
+      <span className="ptp-form-field__row">
+        <span className="ptp-form-field__prefix">{prefix}</span>
+        {children}
+      </span>
+    ) : (
+      children
+    );
   return (
     <div className="ptp-form-field">
       <label className="ptp-form-field__label" htmlFor={htmlFor}>
         {label}
+        {required && (
+          <span className="ptp-form-field__required" aria-hidden="true">
+            *
+          </span>
+        )}
       </label>
-      {children}
+      {control}
       {error !== undefined ? (
         <span className="ptp-form-field__error" role="alert">
           {error}

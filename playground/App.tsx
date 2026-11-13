@@ -826,9 +826,13 @@ function FormsModule() {
             onChange={(event) => setGuestName(event.target.value)}
           />
         </FormField>
+        {/* 2.4.1: label="Contribution" + prefix="$" — the adornment
+            composition demo (the dollar sign moved OUT of the label and
+            INTO the mono prefix slot, flush with the input). */}
         <FormField
-          label="$ Contribution"
+          label="Contribution"
           htmlFor="matrix-share"
+          prefix="$"
           error={
             contribution.trim() === ""
               ? "Every share keeps the pot honest — enter an amount"

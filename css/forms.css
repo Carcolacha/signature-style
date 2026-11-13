@@ -40,6 +40,18 @@
    - .ptp-avatar — the initials disc; the party ring arrives INLINE as
      border (never box-shadow).
 
+   2.4.1 ADDITIONS (Intuitive Form Anatomy & Alignment Fix):
+    - .ptp-form-field__required / __row / __prefix — the peach required
+      asterisk (visual only, aria-hidden) and the justified prefix
+      adornment row (mono, muted, weight 600) that wraps the control.
+    - the switch grows a visible label: .ptp-switch becomes the wrapper
+      (flex, align-center, tight gap) around .ptp-switch__pill (the
+      SAME pill geometry, every selector migrated) + .ptp-switch__text
+      (0.875rem, weight 500, text-main). The pill stays the ONLY
+      interactive element.
+    - the selected radio card lifts to var(--bg-surface) over its inset
+      siblings (owner override of the 2.4.0 10% cake tint).
+
    ERROR DOCTRINE: invalid fields wear [aria-invalid="true"] — attribute-
    driven, so the state survives any DOM shape. The error border is
    --party-peach, the ONE sanctioned use of a party token on structural
@@ -306,6 +318,30 @@
   .ptp-form-field__error {
     color: var(--party-peach); /* the v1.4.0 error doctrine, message slot */
     font-size: 0.75rem;
+  }
+  /* 2.4.1 — required marker: the peach asterisk AFTER the label text.
+     VISUAL ONLY (aria-hidden in react): the control's aria-required is
+     the consumer's wiring, never the wrapper's assumption. The 0.25rem
+     lead is glyph geometry (the checkbox-mark precedent), not layout
+     spacing — the 8px-grid tokens stay reserved for layout. */
+  .ptp-form-field__required {
+    color: var(--party-peach);
+    margin-left: 0.25rem;
+  }
+  /* 2.4.1 — the prefix adornment composition: `prefix="$"` wraps the
+     control in this justified flex row (THE WRAPPER IS JUSTIFIED: an
+     adornment composition needs a flex parent; the bare control stays
+     untouched inside it) with the mono muted prefix span ahead of it. */
+  .ptp-form-field__row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-tight);
+  }
+  .ptp-form-field__prefix {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    color: var(--text-muted);
+    font-weight: 600;
+    flex: none;
   }
 
   /* -- the radio cards: the LABEL is the card (2.4.0) --------------------------

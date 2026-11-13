@@ -144,28 +144,40 @@ export function Avatar({ name, size = 32, ringToken }) {
     return (_jsx("span", { className: "ptp-avatar", style: { width: size, height: size, ...ringStyle }, "aria-label": name, children: initials }));
 }
 /**
- * `<FormField>` — the accessible wrapper (2.4.0).
+ * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1).
  *
  * `<div class="ptp-form-field">` (flex column, tight gap — the css
  * carries the `__field` slot contract ON the root, one class fewer) →
- * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` → children
- * (the bare control, untouched) → hint OR error. Error replaces hint —
- * never both: a field shows ONE message. The error span is
- * `role="alert"` (--party-peach, the v1.4.0 error token — owner spec).
- * The v1.4.0 "no message slot" doctrine applies to the CONTROL
- * (`<Input>` stays ONE element); the FIELD wrapper is the sanctioned
- * around-the-control scaffold for consumers who want label+message
- * wiring without hand-rolling it.
+ * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` (+ the
+ * optional aria-hidden `__required` peach asterisk) → children (the
+ * bare control, untouched — or the justified `__row`/`__prefix`
+ * adornment composition when `prefix` is set) → hint OR error. Error
+ * replaces hint — never both: a field shows ONE message. The error
+ * span is `role="alert"` (--party-peach, the v1.4.0 error token —
+ * owner spec). The v1.4.0 "no message slot" doctrine applies to the
+ * CONTROL (`<Input>` stays ONE element); the FIELD wrapper is the
+ * sanctioned around-the-control scaffold for consumers who want
+ * label+message wiring without hand-rolling it.
  *
  * @example
  * ```tsx
- * <FormField label="Guest name" htmlFor="guest-name" hint="As it appears on the invite">
- *   <Input id="guest-name" value={name} onChange={(e) => setName(e.target.value)} />
+ * <FormField
+ *   label="Contribution"
+ *   htmlFor="share"
+ *   prefix="$"
+ *   required
+ *   hint="Suggested $50"
+ * >
+ *   <Input id="share" required inputMode="numeric" />
  * </FormField>
  * ```
  */
-export function FormField({ label, htmlFor, hint, error, children }) {
-    return (_jsxs("div", { className: "ptp-form-field", children: [_jsx("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: label }), children, error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : hint !== undefined ? (_jsx("span", { className: "ptp-form-field__hint", children: hint })) : null] }));
+export function FormField({ label, htmlFor, hint, error, required = false, prefix, children, }) {
+    // The adornment composition (2.4.1): prefix present → the control
+    // rides in the justified __row flex wrapper, mono prefix first. No
+    // prefix → children stay DIRECT children (zero new DOM, peak pruning).
+    const control = prefix !== undefined ? (_jsxs("span", { className: "ptp-form-field__row", children: [_jsx("span", { className: "ptp-form-field__prefix", children: prefix }), children] })) : (children);
+    return (_jsxs("div", { className: "ptp-form-field", children: [_jsxs("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "ptp-form-field__required", "aria-hidden": "true", children: "*" }))] }), control, error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : hint !== undefined ? (_jsx("span", { className: "ptp-form-field__hint", children: hint })) : null] }));
 }
 /**
  * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).
