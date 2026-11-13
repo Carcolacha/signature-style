@@ -15,4 +15,4 @@ export { Input, type InputProps, TextArea, type TextAreaProps, ToggleSwitch, typ
 export { ToastProvider, useToast, type ToastFn, type ToastItem, type ToastStatus, } from "./toast.js";
 export { SurfaceCard, type SurfaceCardProps, PageHero, type PageHeroProps, } from "./surface.js";
 export { DataTable, type DataTableProps, type DataTableColumn, Tabs, type TabsProps, type TabsTab, Callout, type CalloutProps, type CalloutStatus, } from "./data.js";
-export { Carousel, type CarouselProps, CarouselItem, type CarouselItemProps, ProseBlock, type ProseBlockProps, AnnouncementBanner, type AnnouncementBannerProps, type AnnouncementStatus, } from "./editorial.js";
+export { Carousel, type CarouselProps, CarouselItem, type CarouselItemProps, ProseBlock, type ProseBlockProps, AnnouncementBanner, type AnnouncementBannerProps, type AnnouncementVariant, type AnnouncementBannerAction, } from "./editorial.js";

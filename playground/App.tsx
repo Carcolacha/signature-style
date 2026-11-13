@@ -681,17 +681,26 @@ const AVATAR_CREW: Array<{
  */
 function DataModule() {
   const [bannerVisible, setBannerVisible] = useState(true);
+  const toast = useToast();
 
   return (
     <>
       {bannerVisible && (
         <AnnouncementBanner
-          status="info"
+          variant="announcement"
           dismissible
           onDismiss={() => setBannerVisible(false)}
+          action={{
+            label: "See what shipped",
+            onClick: () =>
+              toast(
+                "success",
+                "v2.4.1 — DataTable align, FormField required/prefix, visible switch labels, banner variants + action, mauve quote bars, carousel indicator.",
+              ),
+          }}
         >
           <span data-testid="banner-release">
-            v2.4.0 — six new editorial &amp; form primitives shipped.
+            v2.4.1 — intuitive form anatomy &amp; the alignment fix shipped.
           </span>
         </AnnouncementBanner>
       )}

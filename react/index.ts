@@ -101,5 +101,6 @@ export {
   type ProseBlockProps,
   AnnouncementBanner,
   type AnnouncementBannerProps,
-  type AnnouncementStatus,
+  type AnnouncementVariant,
+  type AnnouncementBannerAction,
 } from "./editorial.js";

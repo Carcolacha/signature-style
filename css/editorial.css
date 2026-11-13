@@ -1,33 +1,40 @@
 /* ==========================================================================
    EDITORIAL — carousel, prose, announcements (2.4.0 "Form Wrappers &
-   Editorial Primitives"). Layered into `cascade` by signature-style.css
+   Editorial Primitives"; 2.4.1 "Intuitive Form Anatomy & Alignment
+   Fix" grows the indicator, the mauve bar, kbd/code, h3, and the
+   banner action). Layered into `cascade` by signature-style.css
    (imported after data.css).
 
    THREE PATTERNS, THREE CLASS FAMILIES:
-   - .ptp-carousel (+ __track / __item / __btn) — the horizontal scroll
-     strip. THE JUSTIFIED WRAPPERS, documented: track + 2 buttons = the
-     mechanics. The track is the scroll container (flex, snap, thin
-     scrollbar); the buttons are the pointer affordance — keyboard
-     users scroll the track itself (tabIndex 0, role region). The
-     item's width is CONTENT-driven (flex: 0 0 auto); compose a
-     min-width to control the scroll rhythm.
+   - .ptp-carousel (+ __track / __item / __btn / __indicator) — the
+     horizontal scroll strip. THE JUSTIFIED WRAPPERS, documented:
+     track + 2 buttons + the page indicator = the mechanics and the
+     position readout. The track is the scroll container (flex, snap,
+     thin scrollbar); the buttons are the pointer affordance —
+     keyboard users scroll the track itself (tabIndex 0, role region).
+     The indicator ("n / count") rides aria-live polite. The item's
+     width is CONTENT-driven (flex: 0 0 auto); compose a min-width to
+     control the scroll rhythm.
    - .ptp-prose — the editorial slot: ONE container, styled
-     DESCENDANTS. p (0.875rem, 1.6 line-height), blockquote (inset
-     well + 4px Flamingo left rule + italic bright ink), footer/cite
-     (mono muted attribution). No variant knobs — a typography
-     container, not a rich-text component.
-   - .ptp-announcement (+ __icon / __text / __close) — the full-width
-     announcement strip: 4px var(--status) left rule (the toast/
-     callout mechanism — react maps info/success/warning to --party-
-     sky/green/peach INLINE), inset-well body, ghost Teal-hover close
-     (the modal-close signature).
+     DESCENDANTS. p (0.875rem, 1.6 line-height), h3 (0.9375rem/600),
+     blockquote (inset well + 4px MAUVE left rule — owner override,
+     content voice — + italic bright ink), code/kbd (mono, inset,
+     hairline chip), footer/cite (mono muted attribution). No variant
+     knobs — a typography container, not a rich-text component.
+   - .ptp-announcement (+ __icon / __text / __action / __close) — the
+     full-width announcement strip: 4px var(--status) left rule (the
+     toast/callout mechanism — react maps variant info/warning/
+     announcement to sky/peach/Flamingo INLINE), inset-well body, the
+     ghost Teal-hover action button (2.4.1) and close (the modal-close
+     signature).
 
    COLOR DOCTRINE: zero hex, zero box-shadow. Hairlines are 15-20%
-   color-mix derivations of --text-muted; the Flamingo blockquote rule
-   and the Teal hovers are the structural accents; the banner strip
-   reads var(--status) — content tokens for content outcomes (Rule of
-   Engagement), mapped in react/editorial.tsx exactly like the toasts
-   and callouts.
+   color-mix derivations of --text-muted; the Teal hovers are the
+   structural accents; the banner strip reads var(--status) — content
+   tokens for content outcomes (Rule of Engagement), mapped in
+   react/editorial.tsx; the blockquote rule is the ONE party token on
+   prose chrome, by owner override (quotes are content — see the rule
+   comment).
 
    MOTION: button transitions ride --transition-standard;
    prefers-reduced-motion turns them off. The carousel's smooth-scroll
@@ -87,6 +94,18 @@
   outline-offset: 2px;
 }
 
+/* 2.4.1 — the page indicator: "n / count" between the two buttons,
+   mono tabular-nums muted (digits never jitter; the position readout
+   is metadata, not a headline). */
+.ptp-carousel__indicator {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  flex: none;
+  white-space: nowrap;
+}
+
 /* -- the prose block: the editorial slot (styled descendants) ---------------- */
 .ptp-prose p {
   margin: 0 0 var(--space-standard);
@@ -101,7 +120,12 @@
 .ptp-prose blockquote {
   margin: var(--space-standard) 0;
   padding: var(--space-standard);
-  border-left: 4px solid var(--color-cake-primary);
+  /* OWNER OVERRIDE (2.4.1): the quote rule moves Flamingo →
+     --party-mauve. A blockquote IS editorial content, so the Rule of
+     Engagement reads FOR the party token here — v2.4.0's Flamingo rule
+     borrowed the structural action color for a content block; the
+     owner moved it to the mauve editorial voice. */
+  border-left: 4px solid var(--party-mauve);
   background: var(--bg-inset);
   border-radius: var(--radius-ui);
   color: var(--text-bright);
@@ -110,7 +134,7 @@
 .ptp-prose blockquote p:last-child {
   margin-bottom: 0;
 }
-/* Attribution line(s) — mono, muted, their own row. cite sheds the UA
+/* The attribution line(s) — mono, muted, their own row. cite sheds the UA
    (and inherited blockquote) italics so the mono voice reads clean. */
 .ptp-prose footer,
 .ptp-prose cite {
@@ -120,6 +144,30 @@
   font-style: normal;
   color: var(--text-muted);
   font-size: 0.75rem;
+}
+
+/* 2.4.1 — h3 joins the styled descendants: a sub-section voice between
+   the ruled card titles (0.9375rem = 15px, the half-step above the p). */
+.ptp-prose h3 {
+  margin: var(--space-standard) 0 var(--space-tight);
+  color: var(--text-main);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* 2.4.1 — inline code & keyboard: the mono voice inside prose. Inset
+   well body + 15% hairline (the card-border derivation at the banner's
+   ratio), 0.25rem radius, tight glyph padding (0.125rem × 0.375rem —
+   glyph geometry, not layout spacing), bright ink. */
+.ptp-prose code,
+.ptp-prose kbd {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: 0.25rem; /* 4px */
+  padding: 0.125rem 0.375rem;
+  font-size: 0.8125rem;
+  color: var(--text-bright);
 }
 
 /* -- the announcement strip --------------------------------------------------- */
@@ -143,6 +191,32 @@
 }
 .ptp-announcement__text {
   flex: 1;
+}
+/* 2.4.1 — the action slot: a small ghost button after the text,
+   token-driven (transparent body, 20% hairline, 0.75rem label); hover
+   answers with the Teal border+ink (structural accent, the ghost-btn
+   signature). Focus rides the doctrine ring. */
+.ptp-announcement__action {
+  appearance: none;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: var(--space-tight) var(--space-standard);
+  cursor: pointer;
+  flex: none;
+  transition: var(--transition-standard);
+}
+.ptp-announcement__action:hover {
+  color: var(--color-cake-secondary);
+  border-color: var(--color-cake-secondary);
+}
+.ptp-announcement__action:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
 }
 /* The close: the modal-close signature — icon-only, muted, Teal hover. */
 .ptp-announcement__close {
@@ -171,6 +245,7 @@
    JS-side; this kills the css half). */
 @media (prefers-reduced-motion: reduce) {
   .ptp-carousel__btn,
+  .ptp-announcement__action,
   .ptp-announcement__close {
     transition: none;
   }
