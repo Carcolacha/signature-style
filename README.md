@@ -129,6 +129,70 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 1.6.0 — Ambient Elevation & Timeline Resurrection
+
+- **TIMELINE ROOT CAUSE — two stacked defects, both probe-proven with a
+  headless-Chrome harness (puppeteer in a scratch dir, never shipped)**:
+  1. **The cover slab** — `.ptp-timeline__header` is a *spanning* grid
+     item (inline `grid-row: "1 / 5"` group spans from
+     `react/timeline.tsx:118`) with no explicit block size, so the
+     implicit **`align-self: stretch`** stretched its opaque box
+     (`background: var(--bg-base)`, `z-index: var(--z-sticky, 10)`)
+     across the ENTIRE group span: measured `headerH == groupH`
+     (slabRatio 1.00 — a 553.5px header slab over a 553.5px group).
+     Every node, title, badge and the `::before` line painted BENEATH
+     it. This is why headers rendered while nothing else did — and it
+     was host-independent, NOT a bento-container bug: the EventTimeline
+     grid was never collapsing (probe: all node/item rects were
+     non-zero; hit-tests resolved to the header).
+  2. **The dropped node rule** — the `.ptp-timeline__node` rule's own
+     comment contained a stray comment-terminator mid-sentence
+     (`.btn-` + `*/` + `[data-cascade]`). That early terminator turned
+     the trailing prose into live CSS tokens, malformed the selector
+     list, and **every browser silently dropped the entire rule since
+     0.6.0** — computed style was `display: block`, `width: 40px`, no
+     circle, no Flamingo ring, no size, in ANY host.
+- **The resurrection fix (css/timeline.css, generic — not
+  bento-specific)**: `align-self: start` on the header returns the box
+  to content height (69px; the grid-area span still provides the
+  sticky travel room, and the 68px `--tl-header-clearance` now
+  outranks it exactly as designed) — plus the comment rewrite that
+  lets the node rule apply again (44px Flamingo circles), plus
+  `position: relative` on nodes so they paint over the absolutely
+  positioned `::before` center line instead of the 2px stripe
+  crossing their icon centers. Probe after the fix: all 6 nodes
+  44×44 hit-visible, all 6 items hit-visible, line absolute inside
+  the card. The (t1) needles in `scripts/verify.mjs` are untouched;
+  `cascade.css`/`overrides.css` remain byte-frozen vs v0.3.0.
+- **DOCTRINE AMENDMENT — OWNER-MANDATED (ambient elevation)**: the
+  zero-box-shadow border doctrine is OVERRIDDEN FOR THE COMPOSITION
+  LAYER ONLY, by explicit owner decision. `.bento__card` now wears
+  `border: 1px solid color-mix(in srgb, var(--text-muted) 15%,
+  transparent)` and `box-shadow: inset 0 1px 0 rgba(255, 255, 255,
+  0.05), 0 12px 32px rgba(0, 0, 0, 0.4)` (glass top-highlight + soft
+  ambient). The rgba literals are allowed by the same override. THE
+  PACKAGE STAYS FLAT: gates f1/fb1/t1/v1 keep enforcing zero
+  box-shadow across `css/`, and the new (e1) gate scans every package
+  css file (timeline.css included) for shadow declarations. Radius,
+  padding, the slideUpFade stagger and the mandatory reduced-motion
+  escape from 1.5.1 are unchanged.
+- **Visual hierarchy**: the forms card pins `gap:
+  var(--space-standard)` explicitly (inputs/textarea/switch/button
+  breathe; no new wrappers), and `.bento__btn` pops against the
+  elevated cards — `font-weight: 600` (was 500) plus its own ambient
+  shadow `0 4px 16px rgba(0, 0, 0, 0.3)`. Flamingo fill, on-cake ink,
+  `:active scale(0.97)` and the 0.15s transition tokens unchanged.
+- **Release gates** — `verify:playground` now runs b1–b7, h1–h3 PLUS
+  e1–e2 (elevation markers + package zero-shadow scan; resurrection
+  needles + a precise code-deletion guard that maps every deleted
+  timeline.css line back to v1.4.0 and requires it to have lived
+  inside a comment). The blanket (b7) freeze excludes
+  css/timeline.css, governed by (e2) instead. Negative tests
+  (falsifiability, restore-verified): stripping the elevation flips
+  (e1) to FAIL; appending a shadow to package css flips the doctrine
+  scan to FAIL. `npm pack` still exactly 34 files; `tokens.json`
+  stays 1.4.0 per the standing decision.
+
 ### 1.5.1 — Bento Modernization & Timeline Patch
 
 - **Root cause of the "empty headers without events" report** — the
