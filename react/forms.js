@@ -143,3 +143,67 @@ export function Avatar({ name, size = 32, ringToken }) {
     }
     return (_jsx("span", { className: "ptp-avatar", style: { width: size, height: size, ...ringStyle }, "aria-label": name, children: initials }));
 }
+/**
+ * `<FormField>` — the accessible wrapper (2.4.0).
+ *
+ * `<div class="ptp-form-field">` (flex column, tight gap — the css
+ * carries the `__field` slot contract ON the root, one class fewer) →
+ * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` → children
+ * (the bare control, untouched) → hint OR error. Error replaces hint —
+ * never both: a field shows ONE message. The error span is
+ * `role="alert"` (--party-peach, the v1.4.0 error token — owner spec).
+ * The v1.4.0 "no message slot" doctrine applies to the CONTROL
+ * (`<Input>` stays ONE element); the FIELD wrapper is the sanctioned
+ * around-the-control scaffold for consumers who want label+message
+ * wiring without hand-rolling it.
+ *
+ * @example
+ * ```tsx
+ * <FormField label="Guest name" htmlFor="guest-name" hint="As it appears on the invite">
+ *   <Input id="guest-name" value={name} onChange={(e) => setName(e.target.value)} />
+ * </FormField>
+ * ```
+ */
+export function FormField({ label, htmlFor, hint, error, children }) {
+    return (_jsxs("div", { className: "ptp-form-field", children: [_jsx("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: label }), children, error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : hint !== undefined ? (_jsx("span", { className: "ptp-form-field__hint", children: hint })) : null] }));
+}
+/**
+ * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).
+ *
+ * `<div role="radiogroup" aria-label={label} class="ptp-radio-cards">`
+ * → one `<label class="ptp-radio-card [--selected]">` per option — THE
+ * WRAPPER IS A SEMANTIC NECESSITY (same doctrine as `<Checkbox>`: the
+ * label element wires pointer and screen-reader clicks to the native
+ * input with zero JS) → `<input type="radio" class="ptp-radio-card__input">`
+ * (visually hidden — position absolute, opacity 0) + the body span with
+ * the label and the optional description. THE NATIVE INPUT KEEPS THE
+ * CONTRACT: arrow-key group navigation, form submission, `checked` —
+ * nothing re-implemented. The card's selected state rides BOTH a class
+ * (`--selected`, for consumers) and the attribute path
+ * (`:has(input:checked)`, the state machine — the attribute is the
+ * state). Keyboard focus lands on the hidden input and css/forms.css
+ * rings the CARD via `:has(input:focus-visible)` — the flamingo ring
+ * doctrine through one modern selector (browsers without `:has()` lose
+ * only that ring; the group stays fully operable — documented degrade).
+ *
+ * @example
+ * ```tsx
+ * const [rsvp, setRsvp] = useState("attending");
+ * <RadioCardGroup
+ *   label="RSVP"
+ *   name="rsvp"
+ *   value={rsvp}
+ *   onChange={setRsvp}
+ *   options={[
+ *     { value: "attending", label: "Attending", description: "See you there" },
+ *     { value: "maybe", label: "Maybe" },
+ *     { value: "declined", label: "Can't make it" },
+ *   ]}
+ * />
+ * ```
+ */
+export function RadioCardGroup({ name, options, value, onChange, label }) {
+    return (_jsx("div", { role: "radiogroup", "aria-label": label, className: "ptp-radio-cards", children: options.map((option) => (_jsxs("label", { className: value === option.value
+                ? "ptp-radio-card ptp-radio-card--selected"
+                : "ptp-radio-card", children: [_jsx("input", { type: "radio", className: "ptp-radio-card__input", name: name, value: option.value, checked: value === option.value, onChange: () => onChange(option.value) }), _jsxs("span", { className: "ptp-radio-card__body", children: [_jsx("span", { className: "ptp-radio-card__label", children: option.label }), option.description !== undefined && (_jsx("span", { className: "ptp-radio-card__desc", children: option.description }))] })] }, option.value))) }));
+}

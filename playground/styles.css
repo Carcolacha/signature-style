@@ -276,6 +276,16 @@
   gap: var(--space-tight);
 }
 
+/* ---- 2.4.0 form matrix grid -----------------------------------------------
+   Name / $ Contribution sit side-by-side in the FormField preview;
+   auto-fit minmax packs them to one column on narrow cards with no
+   media query (the grid IS the collapse). Zero hex, zero shadow. */
+.hub__form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-standard);
+}
+
 /* ---- doctrine button (btn-primary echo, v1.6.0 shape) --------------------- */
 /* 1.6.0 hierarchy, unchanged in 2.0.0: the primary action pops against
    the elevated cards — Flamingo fill, on-cake ink, weight 600, and a

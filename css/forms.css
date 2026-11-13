@@ -16,6 +16,27 @@
      (the absolute-positioned chevron needs its positioned anchor).
    - .ptp-checkbox (+ __input / __text) — the native check; the <label>
      wrapper is a SEMANTIC necessity (native label association).
+
+   2.4.0 ADDITIONS:
+    - .ptp-form-field (+ __label / __hint / __error) — the accessible
+      around-the-control scaffold. The __field slot contract (flex
+      column + tight gap) lives ON the root — one class fewer; the
+      label keeps its display:block + margin-bottom so the wrapper
+      still reads correctly if a consumer strips the flex. Error
+      replaces hint in the ONE message slot (react side renders either
+      or, never both).
+    - .ptp-radio-cards / .ptp-radio-card (+ __input / __body / __label /
+      __desc) — card-metaphor radios. The LABEL is the card; the input
+      is visually hidden (position absolute + opacity 0). THE :HAS()
+      DOCTRINE + FALLBACK NOTE: the keyboard focus ring is painted on
+      the CARD via .ptp-radio-card:has(input:focus-visible) — :has()
+      needs Chrome 105+ / Safari 15.4+ / Firefox 121+. On browsers
+      without :has() the card loses ONLY the visible focus ring; the
+      selected card still reads via the Flamingo border (:checked is
+      universal) and the group stays fully keyboard operable (native
+      arrow-key radios). Accepted, documented degrade. Selected state:
+      border goes 2px Flamingo with padding compensated by -1px so the
+      card never shifts (border-box keeps the outer box fixed).
    - .ptp-avatar — the initials disc; the party ring arrives INLINE as
      border (never box-shadow).
 
@@ -260,6 +281,94 @@
     flex: none;
   }
 
+  /* -- the form field: the accessible scaffold (2.4.0) ------------------------
+     The ROOT carries the __field slot contract (flex column + tight gap)
+     — one class fewer. The label is display:block with its own
+     margin-bottom so the anatomy survives even if a consumer strips the
+     flex. ONE message slot: react renders hint XOR error, never both —
+     an erroring field shows the error, the hint stands down. */
+  .ptp-form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tight);
+  }
+  .ptp-form-field__label {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: var(--space-tight);
+    display: block;
+  }
+  .ptp-form-field__hint {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+  .ptp-form-field__error {
+    color: var(--party-peach); /* the v1.4.0 error doctrine, message slot */
+    font-size: 0.75rem;
+  }
+
+  /* -- the radio cards: the LABEL is the card (2.4.0) --------------------------
+     The input is visually hidden (position absolute + opacity 0) and the
+     native radio keeps EVERY behavior: arrow-key group navigation, form
+     submission, checked. The selected state rides the attribute path
+     (:has(input:checked)) AND the --selected class react stamps (the
+     attribute is the state; the class is a consumer convenience mirror).
+     The 2px selected border is compensated by -1px padding so the card
+     never shifts (border-box keeps the outer box fixed). */
+  .ptp-radio-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--space-tight);
+  }
+  .ptp-radio-card {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-tight);
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+    cursor: pointer;
+    transition: var(--transition-standard);
+  }
+  .ptp-radio-card:hover {
+    border-color: var(--color-cake-secondary); /* teal hover — structural */
+  }
+  .ptp-radio-card.ptp-radio-card--selected,
+  .ptp-radio-card:has(input:checked) {
+    border-color: var(--color-cake-primary);
+    border-width: 2px;
+    padding: calc(var(--space-standard) - 1px);
+    background: color-mix(in srgb, var(--color-cake-primary) 10%, var(--bg-inset));
+  }
+  /* The keyboard focus ring lands on the hidden INPUT — :has() lifts it
+     onto the card (flamingo ring doctrine). Fallback: no :has(), no ring
+     — the group stays operable (see the header note). */
+  .ptp-radio-card:has(input:focus-visible) {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+  .ptp-radio-card__input {
+    position: absolute;
+    opacity: 0;
+    margin: 0;
+  }
+  .ptp-radio-card__body {
+    display: flex;
+    flex-direction: column;
+  }
+  .ptp-radio-card__label {
+    color: var(--text-main);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .ptp-radio-card__desc {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+
   /* Motion is a gift, not a requirement. */
   @media (prefers-reduced-motion: reduce) {
     .ptp-input,
@@ -268,7 +377,8 @@
     .ptp-switch::before,
     .ptp-select__native,
     .ptp-checkbox__input,
-    .ptp-checkbox__input::after {
+    .ptp-checkbox__input::after,
+    .ptp-radio-card {
       transition: none;
     }
   }

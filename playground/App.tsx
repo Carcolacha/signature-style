@@ -85,6 +85,8 @@ import {
   ToggleSwitch,
   Select,
   Checkbox,
+  FormField,
+  RadioCardGroup,
   EventTimeline,
   EventModal,
   useModal,
@@ -699,14 +701,20 @@ function DataModule() {
 }
 
 /**
- * THE FORM & INPUT MATRIX MODULE (2.3.0) — every input control on ONE
- * card, stacked in the v2.1.0 spacing pattern (the SurfaceCard's own
- * --space-standard flex gap IS the rhythm; no extra wrappers).
+ * THE FORM & INPUT MATRIX MODULE (2.3.0, grown 2.4.0) — every input
+ * control on ONE card, stacked in the v2.1.0 spacing pattern (the
+ * SurfaceCard's own --space-standard flex gap IS the rhythm; no extra
+ * wrappers). 2.4.0: Name / $ Contribution preview the <FormField>
+ * wrapper side-by-side (hint on the first, error-replaces-hint on the
+ * second), and the RSVP sample is a <RadioCardGroup>.
  */
 function FormsModule() {
   const [diet, setDiet] = useState("none");
   const [invited, setInvited] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
+  const [guestName, setGuestName] = useState("");
+  const [contribution, setContribution] = useState("");
+  const [rsvp, setRsvp] = useState("attending");
 
   return (
     <SurfaceCard
@@ -715,7 +723,38 @@ function FormsModule() {
       title="The Input Matrix"
       interactive
     >
-      <Input placeholder="Guest name" aria-label="Guest name" />
+      <div className="hub__form-grid">
+        <FormField
+          label="Name"
+          htmlFor="matrix-name"
+          hint="As it appears on the invite"
+        >
+          <Input
+            id="matrix-name"
+            placeholder="Guest name"
+            value={guestName}
+            onChange={(event) => setGuestName(event.target.value)}
+          />
+        </FormField>
+        <FormField
+          label="$ Contribution"
+          htmlFor="matrix-share"
+          error={
+            contribution.trim() === ""
+              ? "Every share keeps the pot honest — enter an amount"
+              : undefined
+          }
+        >
+          <Input
+            id="matrix-share"
+            placeholder="120"
+            inputMode="numeric"
+            aria-invalid={contribution.trim() === "" || undefined}
+            value={contribution}
+            onChange={(event) => setContribution(event.target.value)}
+          />
+        </FormField>
+      </div>
       <TextArea placeholder="Notes for the host…" rows={3} aria-label="Notes" />
       <Select
         label="Dietary preference"
@@ -728,6 +767,17 @@ function FormsModule() {
       </Select>
       <Checkbox checked={invited} onToggle={setInvited} label="Send me the invite" />
       <ToggleSwitch checked={isPublic} onToggle={setIsPublic} label="Make event public" />
+      <RadioCardGroup
+        label="RSVP"
+        name="rsvp"
+        value={rsvp}
+        onChange={setRsvp}
+        options={[
+          { value: "attending", label: "Attending", description: "See you there" },
+          { value: "maybe", label: "Maybe" },
+          { value: "declined", label: "Can't make it" },
+        ]}
+      />
     </SurfaceCard>
   );
 }

@@ -1,9 +1,12 @@
 /**
  * forms — input & feedback primitives (1.4.0 "Input & Feedback Layer";
- * 2.3.0 grows Select / Checkbox / Avatar).
+ * 2.3.0 grows Select / Checkbox / Avatar; 2.4.0 "Form Wrappers &
+ * Editorial Primitives" grows FormField / RadioCardGroup).
  *
- * Six controls wired to the form styles in css/forms.css: `<Input>`,
- * `<TextArea>`, `<ToggleSwitch>`, `<Select>`, `<Checkbox>`, `<Avatar>`.
+ * Eight controls + the accessible wrapper, wired to the form styles in
+ * css/forms.css: `<FormField>`, `<Input>`, `<TextArea>`,
+ * `<ToggleSwitch>`, `<Select>`, `<Checkbox>`, `<Avatar>`,
+ * `<RadioCardGroup>`.
  *
  * THE ERROR FLAG: `error` is a STATE FLAG, never rendered as text.
  * `<Input error>` / `<TextArea error>` only flip the DOM attribute
@@ -12,6 +15,17 @@
  * aria-current). Consumers render their own error message next to the
  * field, where they control its id/aria-describedby wiring. This keeps
  * the components flat: ONE element, no message slot, no wrapper.
+ *
+ * 2.4.0 — THE WRAPPER ARRIVES: `<FormField>` is the ACCESSIBLE wrapper
+ * for the bare controls (label + control + hint/error slot). The v1.4.0
+ * doctrine still holds — the CONTROL stays wrapper-free — but the
+ * around-the-control scaffold (label element, hint, role="alert" error)
+ * is now one import. THE CONSUMER WIRES id/htmlFor: pass the same id to
+ * the control and htmlFor to the field; the package renders no ids it
+ * cannot verify. `<RadioCardGroup>` is the card-metaphor radio: a
+ * native input per option (keyboard + forms for free), visually hidden,
+ * with the LABEL as the card — `:has()` paints the focus ring and the
+ * selected state (css/forms.css documents the no-:has degrade).
  *
  * PEAK PRUNING: `<ToggleSwitch>` renders EXACTLY ONE element — a
  * `<button role="switch">` whose knob is the CSS ::before pseudo-element
@@ -23,6 +37,7 @@
 import type {
   CSSProperties,
   InputHTMLAttributes,
+  ReactNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
@@ -330,5 +345,167 @@ export function Avatar({ name, size = 32, ringToken }: AvatarProps) {
     >
       {initials}
     </span>
+  );
+}
+
+/**
+ * Props for `<FormField>` — the accessible around-the-control scaffold.
+ *
+ * THE CONSUMER WIRES id/htmlFor: pass the SAME `id` to the control you
+ * render as `children` and the same string as `htmlFor` here. The field
+ * deliberately renders no ids of its own — a generated id it cannot
+ * verify against the child would be an a11y lie with extra steps.
+ */
+export interface FormFieldProps {
+  /** The visible label text (rendered in the `.ptp-form-field__label`). */
+  label: string;
+  /**
+   * The control's `id` — YOU also pass it to the child control; this
+   * prop only wires the label's `htmlFor` to it.
+   */
+  htmlFor?: string;
+  /**
+   * The muted helper line under the control. REPLACED by `error` when
+   * both are present — a field in the error state shows the error,
+   * never the hint (one message slot, two states).
+   */
+  hint?: string;
+  /**
+   * The error message — rendered with role="alert" (announced without a
+   * focus change) and REPLACING the hint. This is the MESSAGE slot; the
+   * control's own error STATE is still `aria-invalid` (v1.4.0 doctrine).
+   * Wire them together: `error` here + `aria-invalid` on the child.
+   */
+  error?: string;
+  /** The control (an `<Input>`, `<TextArea>`, `<Select>`, …). */
+  children?: ReactNode;
+}
+
+/**
+ * `<FormField>` — the accessible wrapper (2.4.0).
+ *
+ * `<div class="ptp-form-field">` (flex column, tight gap — the css
+ * carries the `__field` slot contract ON the root, one class fewer) →
+ * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` → children
+ * (the bare control, untouched) → hint OR error. Error replaces hint —
+ * never both: a field shows ONE message. The error span is
+ * `role="alert"` (--party-peach, the v1.4.0 error token — owner spec).
+ * The v1.4.0 "no message slot" doctrine applies to the CONTROL
+ * (`<Input>` stays ONE element); the FIELD wrapper is the sanctioned
+ * around-the-control scaffold for consumers who want label+message
+ * wiring without hand-rolling it.
+ *
+ * @example
+ * ```tsx
+ * <FormField label="Guest name" htmlFor="guest-name" hint="As it appears on the invite">
+ *   <Input id="guest-name" value={name} onChange={(e) => setName(e.target.value)} />
+ * </FormField>
+ * ```
+ */
+export function FormField({ label, htmlFor, hint, error, children }: FormFieldProps) {
+  return (
+    <div className="ptp-form-field">
+      <label className="ptp-form-field__label" htmlFor={htmlFor}>
+        {label}
+      </label>
+      {children}
+      {error !== undefined ? (
+        <span className="ptp-form-field__error" role="alert">
+          {error}
+        </span>
+      ) : hint !== undefined ? (
+        <span className="ptp-form-field__hint">{hint}</span>
+      ) : null}
+    </div>
+  );
+}
+
+/** One option of a `<RadioCardGroup>`: the value it submits, its visible label, an optional description line. */
+export interface RadioCardOption {
+  /** The value `onChange` receives when this card's radio is picked. */
+  value: string;
+  /** The card's visible label. */
+  label: string;
+  /** The muted second line under the label (rendered only when present). */
+  description?: string;
+}
+
+export interface RadioCardGroupProps {
+  /** The native radio group name — every input in the group wears it. */
+  name: string;
+  /** The options, rendered once in the given order. */
+  options: RadioCardOption[];
+  /** The selected value (controlled — the component owns no state). */
+  value: string;
+  /** Called with the picked option's value: `onChange(option.value)`. */
+  onChange: (value: string) => void;
+  /** The accessible name for the radiogroup (e.g. "RSVP"). */
+  label?: string;
+}
+
+/**
+ * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).
+ *
+ * `<div role="radiogroup" aria-label={label} class="ptp-radio-cards">`
+ * → one `<label class="ptp-radio-card [--selected]">` per option — THE
+ * WRAPPER IS A SEMANTIC NECESSITY (same doctrine as `<Checkbox>`: the
+ * label element wires pointer and screen-reader clicks to the native
+ * input with zero JS) → `<input type="radio" class="ptp-radio-card__input">`
+ * (visually hidden — position absolute, opacity 0) + the body span with
+ * the label and the optional description. THE NATIVE INPUT KEEPS THE
+ * CONTRACT: arrow-key group navigation, form submission, `checked` —
+ * nothing re-implemented. The card's selected state rides BOTH a class
+ * (`--selected`, for consumers) and the attribute path
+ * (`:has(input:checked)`, the state machine — the attribute is the
+ * state). Keyboard focus lands on the hidden input and css/forms.css
+ * rings the CARD via `:has(input:focus-visible)` — the flamingo ring
+ * doctrine through one modern selector (browsers without `:has()` lose
+ * only that ring; the group stays fully operable — documented degrade).
+ *
+ * @example
+ * ```tsx
+ * const [rsvp, setRsvp] = useState("attending");
+ * <RadioCardGroup
+ *   label="RSVP"
+ *   name="rsvp"
+ *   value={rsvp}
+ *   onChange={setRsvp}
+ *   options={[
+ *     { value: "attending", label: "Attending", description: "See you there" },
+ *     { value: "maybe", label: "Maybe" },
+ *     { value: "declined", label: "Can't make it" },
+ *   ]}
+ * />
+ * ```
+ */
+export function RadioCardGroup({ name, options, value, onChange, label }: RadioCardGroupProps) {
+  return (
+    <div role="radiogroup" aria-label={label} className="ptp-radio-cards">
+      {options.map((option) => (
+        <label
+          key={option.value}
+          className={
+            value === option.value
+              ? "ptp-radio-card ptp-radio-card--selected"
+              : "ptp-radio-card"
+          }
+        >
+          <input
+            type="radio"
+            className="ptp-radio-card__input"
+            name={name}
+            value={option.value}
+            checked={value === option.value}
+            onChange={() => onChange(option.value)}
+          />
+          <span className="ptp-radio-card__body">
+            <span className="ptp-radio-card__label">{option.label}</span>
+            {option.description !== undefined && (
+              <span className="ptp-radio-card__desc">{option.description}</span>
+            )}
+          </span>
+        </label>
+      ))}
+    </div>
   );
 }
