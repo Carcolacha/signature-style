@@ -2,6 +2,12 @@
    TIMELINE — <EventTimeline> (0.6.0 "Event Timeline"). Layered into
    `cascade` by signature-style.css. Zero hex, no shadows, token-driven.
 
+   1.8.0: glass header (color-mix translucency + backdrop-filter) and
+   axis-aligned text (left/right items flow toward the center line).
+   STILL ZERO box-shadow in this file — node elevation lives in the
+   PLAYGROUND composition layer (`.bento__card .ptp-timeline__node`),
+   per the owner doctrine; gate (e1) scans css/ and must stay green.
+
    DOM SHAPE (Pruning Protocol): the component renders ONE grid container
    whose DIRECT children are date headers (h2), nodes (span) and event
    content blocks (div) — no row wrappers, no line div. The vertical line
@@ -49,21 +55,28 @@
   background: color-mix(in srgb, var(--text-muted) 40%, transparent);
 }
 
-/* Date header — sticky, opaque, hairline-divided; content scrolls beneath.
-   1.6.0 TIMELINE RESURRECTION — align-self: start. WHY (probe-proven,
-   host-independent — NOT a bento bug): the header is a SPANNING grid item
-   (inline `grid-row: "1 / 5"` style group spans from react/timeline.tsx)
-   with no explicit block size, so the default `align-self: stretch`
-   stretched its box across the ENTIRE group height (measured slabRatio
-   1.00: 553.5px header over a 553.5px group). With the opaque
-   `background: var(--bg-base)` + `z-index: var(--z-sticky, 10)` that box
-   painted a full-group cover slab — every node, title, badge and the
-   ::before line were invisible in ANY host while bounding rects stayed
-   non-zero (the "headers render, events don't" report). `align-self:
-   start` returns the box to content height (~62px) while the grid-area
-   span still provides the sticky travel room; the group-first
-   --tl-header-clearance (68px > 62px) then does its designed job of
-   keeping the stuck header off the first event. */
+/* Date header — sticky, translucent glass, hairline-divided; content
+   scrolls beneath. 1.8.0 GLASS HEADER (owner-mandated): the opaque
+   `background: var(--bg-base)` slab is replaced by an 80% surface
+   translucency + blur(8px), so scrolled content stays legible THROUGH
+   the header instead of hard-clipping under it. WHY (owner v1.8.0):
+   the 1.6.0 sticky contract is untouched and still LOAD-BEARING —
+   position: sticky, top: 0, z-index var(--z-sticky, 10), and
+   align-self: start. 1.6.0 TIMELINE RESURRECTION — align-self: start.
+   WHY (probe-proven, host-independent — NOT a bento bug): the header
+   is a SPANNING grid item (inline `grid-row: "1 / 5"` style group
+   spans from react/timeline.tsx) with no explicit block size, so the
+   default `align-self: stretch` stretched its box across the ENTIRE
+   group height (measured slabRatio 1.00: 553.5px header over a 553.5px
+   group). With the old opaque background + `z-index:
+   var(--z-sticky, 10)` that box painted a full-group cover slab —
+   every node, title, badge and the ::before line were invisible in ANY
+   host while bounding rects stayed non-zero (the "headers render,
+   events don't" report). `align-self: start` returns the box to
+   content height (~62px) while the grid-area span still provides the
+   sticky travel room; the group-first --tl-header-clearance (68px >
+   62px) then does its designed job of keeping the stuck header off the
+   first event. */
 .ptp-timeline__header {
   position: sticky;
   top: 0;
@@ -74,7 +87,14 @@
   grid-column: 1 / -1;
   margin: 0;
   padding: var(--space-standard) 0;
-  background: var(--bg-base);
+  /* 1.8.0 GLASS HEADER (owner v1.8.0) — replaces the opaque
+     `background: var(--bg-base)` slab (that single deleted line is the
+     e2-deletion ALLOWLIST; see verify-playground.mjs). Still zero
+     box-shadow in this file: node elevation lives in the composition
+     layer. */
+  background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
   color: var(--text-main);
   font-weight: 600;
@@ -89,6 +109,11 @@
   padding: var(--space-standard) 0;
 }
 
+/* 1.8.0 AXIS-ALIGNED TYPOGRAPHY (owner v1.8.0) — text flows TOWARD the
+   axis: left-side content hugs the center line right-edge-first,
+   right-side content reads left-edge-first. The 768px collapse below
+   resets BOTH to text-align: left (everything stacks on the right
+   there). */
 .ptp-timeline__item--left {
   grid-column: var(--tl-content-left-col);
   align-items: flex-end;
@@ -97,6 +122,7 @@
 
 .ptp-timeline__item--right {
   grid-column: var(--tl-content-right-col);
+  text-align: left;
 }
 
 .ptp-timeline__item--group-first {
@@ -187,6 +213,15 @@
 
   .ptp-timeline__item {
     align-items: flex-start;
+    text-align: left;
+  }
+
+  /* 1.8.0: the axis-alignment resets EXPLICITLY for both sides — with a
+     single right-hand stack there is no axis to hug, so both modifiers
+     go back to text-align: left (later in source order than the desktop
+     rules, same specificity → the reset wins). */
+  .ptp-timeline__item--left,
+  .ptp-timeline__item--right {
     text-align: left;
   }
 }

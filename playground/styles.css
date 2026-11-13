@@ -23,6 +23,16 @@
  * shadows below are rgba literals, ALLOWED HERE by the same override
  * (white 5% inset top-highlight + black 40% ambient). The package css/
  * directory remains byte-clean: zero shadows, zero hex, gates green.
+ *
+ * 1.8.0 DOCTRINE BOUNDARY — OWNER-DECIDED ("Bento Refinement & Spatial
+ * Harmony"): timeline NODE elevation is applied in THIS playground
+ * layer only, via `.bento__card .ptp-timeline__node` (box-shadow below
+ * — same override shape as the 1.6.0 card/button elevation). THE
+ * PACKAGE KEEPS ITS ZERO-BOX-SHADOW LAW: css/timeline.css gains the
+ * glass header (color-mix translucency + backdrop-filter) and
+ * axis-aligned text but ZERO box-shadow declarations, and gate (e1)'s
+ * css/ scan stays green. Gates g1-g3 (verify-playground.mjs) pin the
+ * asymmetric grid, the glass header, and the telemetry spacing.
  */
 
 /* ---- the bento grid ---------------------------------------------------- */
@@ -147,6 +157,18 @@
   margin: 0 0 var(--space-standard);
   padding-bottom: var(--space-tight);
   border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+}
+
+/* ---- timeline node elevation (1.8.0 — composition layer) -----------------
+   DOCTRINE BOUNDARY — owner v1.8.0: the timeline nodes float. The
+   shadow is applied HERE, in the PLAYGROUND layer, via the
+   .bento__card descendant (specificity 0,2,0 outranks the package
+   node rule's 0,1,0). THE PACKAGE STAYS SHADOW-FREE: css/timeline.css
+   gains only the glass header (backdrop-filter/color-mix) and declares
+   NO box-shadow — gate (e1) scans every css/ file and must stay green.
+   Same override shape as the 1.6.0 card/button elevation above. */
+.bento__card .ptp-timeline__node {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ---- metric label rows (telemetry card) -------------------------------- */
