@@ -36,12 +36,17 @@ export function TextArea({ error, ...rest }) {
     return (_jsx("textarea", { className: "ptp-textarea", ...rest, "aria-invalid": !!error || undefined }));
 }
 /**
- * `<ToggleSwitch>` — THE toggle. Exactly ONE DOM element.
+ * `<ToggleSwitch>` — THE toggle (2.4.1: visible label).
  *
- * A `<button type="button" role="switch" class="ptp-switch">` whose knob
- * is the ::before pseudo-element (css/forms.css: 20px travel on
- * aria-checked, dark knob on the Teal track — the on-cake echo). Click
- * fires `onToggle(!checked)`; state stays with you.
+ * The pill is unchanged at heart: `<button type="button" role="switch"
+ * class="ptp-switch__pill">` whose knob is the ::before pseudo-element
+ * (css/forms.css: 20px travel on aria-checked, dark knob on the Teal
+ * track — the on-cake echo). With a `label`, the pill + text compose
+ * inside `<span class="ptp-switch">` — THE JUSTIFIED WRAPPER (the
+ * pill + visible-text composition; the flex pairing of control and
+ * caption is impossible without it): `<span class="ptp-switch__text">`
+ * carries the visible label, non-interactive. Click fires
+ * `onToggle(!checked)`; state stays with you.
  *
  * @example
  * ```tsx
@@ -50,7 +55,11 @@ export function TextArea({ error, ...rest }) {
  * ```
  */
 export function ToggleSwitch({ checked, onToggle, label }) {
-    return (_jsx("button", { type: "button", role: "switch", className: "ptp-switch", "aria-checked": checked, "aria-label": label, onClick: () => onToggle?.(!checked) }));
+    const pill = (_jsx("button", { type: "button", role: "switch", className: "ptp-switch__pill", "aria-checked": checked, "aria-label": label, onClick: () => onToggle?.(!checked) }));
+    if (label === undefined) {
+        return pill;
+    }
+    return (_jsxs("span", { className: "ptp-switch", children: [pill, _jsx("span", { className: "ptp-switch__text", children: label })] }));
 }
 /**
  * `<Select>` — the native dropdown with the token chevron.

@@ -6,11 +6,14 @@
    - .ptp-input / .ptp-textarea — inset wells: the field interior is
      --bg-inset (the keeper's semantic job since 0.2.0), separated from
      the page by the border doctrine hairline, NOT a shadow.
-   - .ptp-switch — THE toggle. Peak pruning: ONE <button role="switch">
+   - .ptp-switch (→ __pill / __text, 2.4.1) — THE toggle. Peak pruning
+     at the pill: ONE <button role="switch" class="ptp-switch__pill">
      carries the whole control; the knob is the ::before pseudo-element.
-     No wrapper div, no inner span, no input/label pair — the state is
-     the attribute ([aria-checked]), exactly like the nav's
-     [aria-current="page"]: the attribute IS the state machine.
+     A present label composes the pill with a visible .ptp-switch__text
+     span inside the justified .ptp-switch wrapper (see 2.4.1 below).
+     No input/label pair — the state is the attribute ([aria-checked]),
+     exactly like the nav's [aria-current="page"]: the attribute IS the
+     state machine.
    - .ptp-select (+ .ptp-select__native / __chevron) — the native
      dropdown with the token chevron; the <span> wrapper is STRUCTURAL
      (the absolute-positioned chevron needs its positioned anchor).
@@ -133,10 +136,22 @@
     border-color: var(--party-peach);
   }
 
-  /* -- the switch: ONE button, the knob is ::before ----------------------------
+  /* -- the switch: the pill + the visible label (2.4.1) ------------------------
      999px = the pill SHAPE of the widget (see header note), not a
-     radius-token bypass. Travel math: 44 − 16 − 8 = 20px = 1.25rem. */
+     radius-token bypass. Travel math: 44 − 16 − 8 = 20px = 1.25rem.
+     SELECTOR MIGRATION (2.4.1): every pill rule moved .ptp-switch →
+     .ptp-switch__pill; .ptp-switch is now the JUSTIFIED WRAPPER around
+     pill + visible text (the pill + visible-text composition — the
+     .ptp-select sanction: a flex pairing of control and caption is
+     impossible without it). ONLY the pill is interactive; the text is
+     visual (the button keeps aria-label, so the accessible name never
+     depends on the text span). */
   .ptp-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-tight);
+  }
+  .ptp-switch__pill {
     width: 2.75rem;  /* 44px */
     height: 1.5rem;  /* 24px */
     border-radius: 999px;
@@ -146,8 +161,9 @@
     transition: var(--transition-standard);
     cursor: pointer;
     padding: 0;
+    flex: none;
   }
-  .ptp-switch::before {
+  .ptp-switch__pill::before {
     content: "";
     position: absolute;
     width: 1rem;     /* 16px knob */
@@ -159,16 +175,22 @@
     transition: transform var(--transition-standard),
       background var(--transition-standard);
   }
-  .ptp-switch[aria-checked="true"] {
+  .ptp-switch__pill[aria-checked="true"] {
     background: var(--color-cake-secondary); /* Teal — the owner-spec'd on state */
   }
-  .ptp-switch[aria-checked="true"]::before {
+  .ptp-switch__pill[aria-checked="true"]::before {
     transform: translateX(1.25rem); /* 20px travel: lands 4px from the right */
     background: var(--bg-base);     /* dark knob on Teal — on-cake echo (see header) */
   }
+  /* The visible label (2.4.1) — text-main, 0.875rem, weight 500. */
+  .ptp-switch__text {
+    color: var(--text-main);
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
 
   /* -- the doctrine ring, keyboard only ---------------------------------------- */
-  .ptp-switch:focus-visible {
+  .ptp-switch__pill:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
@@ -377,7 +399,11 @@
     border-color: var(--color-cake-primary);
     border-width: 2px;
     padding: calc(var(--space-standard) - 1px);
-    background: color-mix(in srgb, var(--color-cake-primary) 10%, var(--bg-inset));
+    /* 2.4.1 owner override: the selected card LIFTS to --bg-surface —
+       a surface read over the inset siblings (was the 2.4.0 10%
+       cake tint, which read as a highlight, not a lift). The 2px
+       Flamingo border stays the state's primary signal. */
+    background: var(--bg-surface);
   }
   /* The keyboard focus ring lands on the hidden INPUT — :has() lifts it
      onto the card (flamingo ring doctrine). Fallback: no :has(), no ring
@@ -409,8 +435,8 @@
   @media (prefers-reduced-motion: reduce) {
     .ptp-input,
     .ptp-textarea,
-    .ptp-switch,
-    .ptp-switch::before,
+    .ptp-switch__pill,
+    .ptp-switch__pill::before,
     .ptp-select__native,
     .ptp-checkbox__input,
     .ptp-checkbox__input::after,

@@ -29,11 +29,22 @@
  * with the LABEL as the card — `:has()` paints the focus ring and the
  * selected state (css/forms.css documents the no-:has degrade).
  *
- * PEAK PRUNING: `<ToggleSwitch>` renders EXACTLY ONE element — a
- * `<button role="switch">` whose knob is the CSS ::before pseudo-element
- * (css/forms.css). No wrapper div, no hidden checkbox, no inner span.
- * The visual state is the attribute: aria-checked drives both the Teal
- * track and the knob travel.
+ * PEAK PRUNING, EVOLVED (2.4.1): `<ToggleSwitch>` still renders the
+ * pill as ONE element — a `<button role="switch">` whose knob is the
+ * CSS ::before pseudo-element (css/forms.css). What changed is the
+ * label contract: `label` used to be aria-label ONLY (orphaned
+ * switches — a mute decoration floating in the card with no visible
+ * name). Now a present `label` ALSO renders as visible text: the
+ * pill (`.ptp-switch__pill`, every selector migrated off the old
+ * `.ptp-switch` name) + a `.ptp-switch__text` span inside the
+ * `.ptp-switch` wrapper. THE WRAPPER IS JUSTIFIED — it is the
+ * pill + visible-text composition (the same sanction as
+ * `.ptp-select`'s chevron anchor), NOT decoration: without it the
+ * flex pairing of control and caption is impossible. Only the pill
+ * is interactive; the text is visual (the button keeps aria-label so
+ * the accessible name survives regardless of the text span).
+ * The visual state is the attribute: aria-checked drives both the
+ * Teal track and the knob travel.
  */
 
 import type {
@@ -133,20 +144,28 @@ export interface ToggleSwitchProps {
   /** Called with the NEXT value on click: `onToggle(!checked)`. */
   onToggle?: (next: boolean) => void;
   /**
-   * The accessible name (aria-label) — the button carries no visible
-   * text. Optional in the type, but every real switch should name
-   * itself.
+   * The switch's name — rendered as VISIBLE text beside the pill
+   * (2.4.1; was aria-label only, which orphaned the control). The
+   * pill stays the ONLY interactive element and keeps its aria-label,
+   * so the accessible name never depends on the text span's DOM
+   * position. Optional in the type, but every real switch should
+   * name itself.
    */
   label?: string;
 }
 
 /**
- * `<ToggleSwitch>` — THE toggle. Exactly ONE DOM element.
+ * `<ToggleSwitch>` — THE toggle (2.4.1: visible label).
  *
- * A `<button type="button" role="switch" class="ptp-switch">` whose knob
- * is the ::before pseudo-element (css/forms.css: 20px travel on
- * aria-checked, dark knob on the Teal track — the on-cake echo). Click
- * fires `onToggle(!checked)`; state stays with you.
+ * The pill is unchanged at heart: `<button type="button" role="switch"
+ * class="ptp-switch__pill">` whose knob is the ::before pseudo-element
+ * (css/forms.css: 20px travel on aria-checked, dark knob on the Teal
+ * track — the on-cake echo). With a `label`, the pill + text compose
+ * inside `<span class="ptp-switch">` — THE JUSTIFIED WRAPPER (the
+ * pill + visible-text composition; the flex pairing of control and
+ * caption is impossible without it): `<span class="ptp-switch__text">`
+ * carries the visible label, non-interactive. Click fires
+ * `onToggle(!checked)`; state stays with you.
  *
  * @example
  * ```tsx
@@ -155,15 +174,24 @@ export interface ToggleSwitchProps {
  * ```
  */
 export function ToggleSwitch({ checked, onToggle, label }: ToggleSwitchProps) {
-  return (
+  const pill = (
     <button
       type="button"
       role="switch"
-      className="ptp-switch"
+      className="ptp-switch__pill"
       aria-checked={checked}
       aria-label={label}
       onClick={() => onToggle?.(!checked)}
     />
+  );
+  if (label === undefined) {
+    return pill;
+  }
+  return (
+    <span className="ptp-switch">
+      {pill}
+      <span className="ptp-switch__text">{label}</span>
+    </span>
   );
 }
 
