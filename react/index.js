@@ -14,3 +14,4 @@ export { ProgressBar, StatRing, } from "./viz.js";
 export { Input, TextArea, ToggleSwitch, } from "./forms.js";
 export { ToastProvider, useToast, } from "./toast.js";
 export { SurfaceCard, PageHero, } from "./surface.js";
+export { DataTable, Tabs, Callout, } from "./data.js";

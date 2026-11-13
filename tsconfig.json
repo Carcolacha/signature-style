@@ -14,5 +14,5 @@
     "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true
   },
-  "files": ["react/ThemeProvider.tsx", "react/primitives.tsx", "react/timeline.tsx", "react/modal.tsx", "react/nav.tsx", "react/viz.tsx", "react/forms.tsx", "react/toast.tsx", "react/surface.tsx", "react/index.ts"]
+  "files": ["react/ThemeProvider.tsx", "react/primitives.tsx", "react/timeline.tsx", "react/modal.tsx", "react/nav.tsx", "react/viz.tsx", "react/forms.tsx", "react/toast.tsx", "react/surface.tsx", "react/data.tsx", "react/index.ts"]
 }

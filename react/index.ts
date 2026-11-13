@@ -66,3 +66,14 @@ export {
   PageHero,
   type PageHeroProps,
 } from "./surface.js";
+export {
+  DataTable,
+  type DataTableProps,
+  type DataTableColumn,
+  Tabs,
+  type TabsProps,
+  type TabsTab,
+  Callout,
+  type CalloutProps,
+  type CalloutStatus,
+} from "./data.js";
