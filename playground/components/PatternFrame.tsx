@@ -184,7 +184,7 @@ export function PatternFrame({
   );
 }
 
-/** The set accent riding the header badge — party tokens only (RoE:
+/** The set accent riding the header badge — chromatic tokens only (RoE:
     the SigBadge runtime guard DROPS structural tokens, so every set
     wears a content color; Set 01 takes lavender, the calm structural-
     adjacent). */

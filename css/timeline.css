@@ -312,7 +312,7 @@
   border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
 }
 
-/* The settle toggle — hairline circle; aria-pressed fills party green
+/* The settle toggle — hairline circle; aria-pressed fills sig-green
    (settled is a STATE; the toggle is the only place it turns content-green). */
 .sig-tmanager__settle {
   display: grid;
@@ -378,7 +378,7 @@
   text-decoration: line-through;
 }
 
-/* The settled chip — mono party-green text (a state marker, NOT a
+/* The settled chip — mono sig-green text (a state marker, NOT a
    SigBadge: settled is not a content category). */
 .sig-tmanager__done {
   color: var(--sig-green);

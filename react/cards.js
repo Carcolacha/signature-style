@@ -27,7 +27,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *                         (clipboard + onCopied toast contract).
  *   <TierCard>          — plan name / price / Check features / CTA;
  *                         featured → floating elevation + accent border.
- *   <ProfileCard>       — avatar (party ring) + role + tabular stats +
+ *   <ProfileCard>       — avatar (chromatic ring) + role + tabular stats +
  *                         skill badges.
  *   <ChronicleTimeline> — the "Night of Versions" memorial as an
  *                         official primitive: an <ol> of tagged releases
@@ -123,7 +123,7 @@ export function AccordionCard({ title, children }) {
  * VS pill / side, each side a centered column (the 40px `<Avatar>` +
  * the name), the VS pill a mono inset capsule, and the optional
  * `__stakes` footer on `grid-column: 1 / -1` (inset well, mono muted
- * 0.75rem). The avatars carry the party rings when `ringToken` is set —
+ * 0.75rem). The avatars carry the chromatic rings when `ringToken` is set —
  * content decoration, the Rule of Engagement as typed.
  *
  * @example
@@ -248,7 +248,7 @@ export function ReferenceCard({ tag, title, code, accentToken, link, onCopied, c
  *
  * ONE `<section class="sig-tier-card [--featured]" data-elevation>`:
  * the plan name (eyebrow voice), the 2rem tabular-nums price, the
- * feature `<ul>` (each `<li>` a party-green Check bullet), and the CTA
+ * feature `<ul>` (each `<li>` a sig-green Check bullet), and the CTA
  * (the package Button — primary when featured, secondary otherwise).
  * FEATURED: `data-elevation="floating"` (the shared ladder in
  * css/surface.css paints the deep shadow — cards.css stays flat) + the
@@ -274,7 +274,7 @@ export function TierCard({ name, price, features, accentToken, featured = false,
 /**
  * `<ProfileCard>` — the person card (2.6.0).
  *
- * ONE `<section class="sig-profile-card">`: the 40px `<Avatar>` (party
+ * ONE `<section class="sig-profile-card">`: the 40px `<Avatar>` (chromatic
  * ring via `accentToken` — the Rule of Engagement as typed), the name
  * (weight 600) over the muted role, the stats row (value tabular-nums
  * weight 600 text-main, label muted 0.6875rem; min 2 / max 3 entries,
@@ -284,7 +284,7 @@ export function TierCard({ name, price, features, accentToken, featured = false,
  * ```tsx
  * <ProfileCard
  *   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
- *   stats={[{ label: "Events", value: "24" }, { label: "Guests", value: "412" }]}
+ *   stats={[{ label: "Events", value: "24" }, { label: "Members", value: "412" }]}
  *   skills={[{ colorToken: "--sig-peach", label: "Catering" }]}
  * />
  * ```

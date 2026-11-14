@@ -32,7 +32,7 @@
       __footer / __anchor) — mono tag chip, code well (mono 0.8125rem,
       overflow-x auto), ghost Copy footer.
     - .sig-tier-card (+ --featured / __name / __price / __features) —
-      plan / 2rem tabular price / Check bullets (party-green). FEATURED:
+      plan / 2rem tabular price / Check bullets (sig-green). FEATURED:
       2px accent border + data-elevation="floating" — the deep shadow
       arrives through the SHARED ladder in css/surface.css (this file
       stays ZERO box-shadow; the (cd1)/(elev) gates pin it).
@@ -604,7 +604,7 @@
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  /* The Check bullets wear the party green — content outcomes, the Rule
+  /* The Check bullets wear the sig-green ink — content outcomes, the Rule
      of Engagement (a confirmed feature is a success state). */
   .sig-tier-card__features li svg {
     color: var(--sig-green);

@@ -134,7 +134,7 @@ and dropped; unknown keys are warned and dropped.
 The major that gives the palette its full chromatic voice, makes the
 graph feel like Obsidian, and writes the data layer's contract down.
 
-- **The 16-color chromatic system** — the Party Palette grows 11 → **26
+- **The 16-color chromatic system** — the Chromatic Palette grows 11 → **26
   tokens**: `--sig-blue` **retires** (the name, not the value — the
   official Mocha Blue #89b4fa continues as `--sig-cobalt`, and the old
   name is *banned* from css/, tokens.json and the whitelist by the new
@@ -149,7 +149,7 @@ graph feel like Obsidian, and writes the data layer's contract down.
   The full 26-token WCAG table prints in `npm run verify:contrast`.
   OWNER-SANCTIONED, per the 2.9.1 precedent: the frozen `scripts/verify.mjs`
   (c)/(p) pins re-targeted — #F5C2E7 (the retired Catppuccin Pink) is
-  re-homed as `--sig-orchid`, and the party pin list grew to the 26.
+  re-homed as `--sig-orchid`, and the chromatic pin list grew to the 26.
   `react/timeline-manager.tsx` carries the one type-forced line
   (`--sig-blue` → `--sig-cobalt`).
 - **`--radius-card: 12px`** — cards earn rounder corners than the 6px
@@ -191,7 +191,7 @@ graph feel like Obsidian, and writes the data layer's contract down.
 - **StatRing zoom + detail** — the dial defaults to 120px; with
   `total` (+ `unit`) the ring zooms to scale(1.07) on hover/press and a
   click slides the detail strip open (0fr → 1fr, reduced-motion safe):
-  "85% · 170 / 200 Guests". The dash geometry is byte-identical.
+  "85% · 170 / 200 Seats". The dash geometry is byte-identical.
 - **The Obsidian graph** — generous nodes (r 34, 13px labels, 16-char
   truncation + `<title>` tooltips); **60fps drag** (pointer capture →
   rAF mutates the node transform directly, no setState per move → one
@@ -239,11 +239,11 @@ pack EXACTLY 58 with `shared/` and `docs/` excluded.
 ### 2.9.1 — Zero Contrast Debt & Live Skeleton Trigger
 
 The patch that pays the contrast bill the 2.9.0 hostile audit ran up
-(its (a4) spot-check flagged two party tokens under WCAG 3:1) and makes
+(its (a4) spot-check flagged two chromatic tokens under WCAG 3:1) and makes
 the skeletons *runnable*:
 
 - **Zero contrast debt** — two `--sig-*` values are lightened at the
-  SOURCE so **every party token now measures ≥ 3.1:1 on the Mocha
+  SOURCE so **every chromatic token now measures ≥ 3.1:1 on the Mocha
   surface** (and ≥ 3.0:1 on base), computed per WCAG 2.x relative
   luminance. Both fixes stay in-hue; theme-independence is untouched
   (the tokens stay defined once in `:root`):
@@ -253,7 +253,7 @@ the skeletons *runnable*:
   | `--sig-mauve-bright` | `#8839ef` | 2.32:1 / 3.03:1 | `#9e5ff2` | **3.22:1 / 4.20:1** | the MINIMAL lightness increase in the violet family — H266°/S85% preserved, L 58%→66%, the first rung measuring ≥ 3.1:1 |
   | `--sig-blue` | `#1e66f5` | 2.56:1 / 3.34:1 | `#89b4fa` | **5.97:1 / 7.79:1** | the official Catppuccin Mocha Blue — the exact value v3.0.0's planned `--sig-cobalt` retires it into, so the patch converges with the planned major |
 
-  The other nine party tokens already measured 3.95:1–9.89:1 on surface
+  The other nine chromatic tokens already measured 3.95:1–9.89:1 on surface
   and are untouched. Full before/after ratio table: `npm run
   verify:contrast` (new script, below).
 
@@ -261,7 +261,7 @@ the skeletons *runnable*:
   `playground/verify-contrast.mjs` wired as `npm run verify:contrast`
   and re-asserted inside `verify:playground`'s new (ct1) gate: reads the
   live `:root` block, computes WCAG 2.x relative-luminance ratios, and
-  asserts all 11 party tokens ≥ 3.0:1 against **both** `--bg-surface`
+  asserts all 11 chromatic tokens ≥ 3.0:1 against **both** `--bg-surface`
   and `--bg-base`, with the two fixed pair at ≥ 3.1:1 and their hexes
   pinned — prints the full ratio table. Negative test (falsifiability,
   restore-verified): reverting `--sig-blue` to `#1e66f5` flips the
@@ -350,7 +350,7 @@ negations (the sources never ship, their compiled pairs do).
 
 **Phase 3 — The Humanizer.** Every playground string audited against
 robotic boilerplate: `Saved`, `Panel: N.`, `modal.open(sample event)`,
-`Send test toast` are gone — replaced with domain-real copy (party
+`Send test toast` are gone — replaced with domain-real copy (workbench
 planning, catering, budgets). The 6-Set blurbs audited and two rewritten
 in the when/why voice; `npm run llms` regenerates llms-full.txt from the
 humanized sources (drift-proof by generator).
@@ -360,7 +360,7 @@ humanized sources (drift-proof by generator).
 × 5 views × 3 module tabs asserting zero horizontal overflow and live
 shell margins, exercised the palette's full keyboard contract, emulated
 `prefers-reduced-motion` (shimmer/flip/shake/meter all degrade), read
-the 11 party tokens' contrast against both grounds, and collected console
+the 11 chromatic tokens' contrast against both grounds, and collected console
 noise (zero errors, zero pageerror events). Four bugs were caught and
 fixed (tab-bar wraps, the Chronicle hero's unbreakable tracked word, a
 preview-stage bleed, the palette's typing-guard wiring) — the full log
@@ -399,7 +399,7 @@ shipped. `tokens.json` carries one authorized delta: `meta.version` →
 meta-only deep-equal check).
 
 **The 5-view nav map.** The old switcher's 2 real + 3 placeholder views
-(dashboard/index + events/guests/budget) become FIVE REAL views, keeping
+(dashboard/index + events/members/budget) become FIVE REAL views, keeping
 the HubLink/hash mechanism untouched: **Dashboard** (the live bento,
 untouched), **Pattern Studio** (the primary catalog — see below), **Index**
 (the Master Index catalog, unchanged), **Chronicle** (the Night of
@@ -441,7 +441,7 @@ dying silently. The 2.8.0 css anatomy is FLAT — the e1 treaty holds.
 
 **The AI Codex view** (`playground/components/CodexView.tsx`) — the
 honest color census: exactly **22 click-to-copy swatches** (11 core/keeper
-+ the 11-token Party Palette), each a flat card that copies the var name
++ the 11-token Chromatic Palette), each a flat card that copies the var name
 and toasts — the whitelist is 34, and the remaining 12 tokens (spatial,
 z-index, type, motion) get their own displays instead of being mislabeled
 "colors": the 8px spatial scale as visual bars (4/8/16/24/32/64px), the
@@ -525,7 +525,7 @@ with no nodes at all it becomes the root).
 **BarChart + AreaChart** (react/viz.tsx + css/viz.css GROW —
 ProgressBar/StatRing logic untouched) — pure SVG analytics over a
 320×200 viewBox. `<BarChart>`: per-datum capacity tracks (inset
-rounded rects out to `max ?? scale`), party value bars, dashed
+rounded rects out to `max ?? scale`), chromatic value bars, dashed
 `"4 4"` reference lines at 25/50/75% of the scale, mono axis labels,
 and class-driven hover readouts (bar brightens, the tabular value
 appears); `orientation` flips vertical/horizontal. `<AreaChart>`: a
@@ -542,7 +542,7 @@ composer (package Input + month/category Selects + the primary sm
 pills (All/Pending/Settled, attribute-driven `aria-pressed` answering
 with the Flamingo underline — the Tabs contract) plus the tabular
 `{settled} / {total} Settled` counter, per-item rows (the
-`aria-pressed` settle toggle filling party-green, the body button
+`aria-pressed` settle toggle filling sig-green, the body button
 firing `onInspect` — pass `modal.open` to compose the EventModal —
 and the delete button), and the EmptyState edge when the current
 filter matches nothing. LIVE-MAP PROBE: the installed lucide-react
@@ -559,16 +559,16 @@ JSON → fallback; quota/private-mode → memory keeps working) with a
 "Graphs & Planner" module tab keys BOTH stores under the versioned
 contract — `sig.v27.graph` / `sig.v27.timeline` (bump the prefix when
 a stored shape breaks; never store new shapes under an old prefix) —
-seeded with a Party Planning root graph (4 nodes) and a five-milestone
+seeded with a Core Engine root graph (4 nodes) and a five-milestone
 timeline (2 settled). The Milestone Manager card's toolbar is the
 portability hatch: **Export JSON** (a Blob → objectURL → temp-anchor
-→ immediate revoke dance downloading `signature-snapshot.json`),
+→ immediate revoke dance downloading `signature-workspace.json`),
 **Import JSON** (hidden file input → FileReader → `Array.isArray`
 shape checks on both arrays → set both + success toast, else the
 "Invalid snapshot structure" refusal), and **Reset** (danger variant
 → both keys wiped → seeds restored). THE PROOF (release blocker,
 playwright): add a "Persistence proof" node, RELOAD the page, assert
-the node is still there; Export fires the `signature-snapshot.json`
+the node is still there; Export fires the `signature-workspace.json`
 download; Reset restores the seeds.
 
 | Area | Change | Where |
@@ -595,7 +595,7 @@ EventTimeline untouched; zero token changes).
 
 Zero new files — every delta grows an existing one, so `npm pack` still
 packs EXACTLY 47 files. `tokens.json` stays 1.4.0 (whitelist 34 — no new
-tokens; the 11 party tokens already exist and are now TYPED as
+tokens; the 11 chromatic tokens already exist and are now TYPED as
 `SigColorToken`). The e1 shadow treaty is AMENDED: box-shadow is
 sanctioned in css/surface.css under `.sig-surface-card` rules, the three
 `[data-elevation="…"]` tier blocks, and the `[data-accent]` glow rules;
@@ -620,9 +620,9 @@ meta pills, accent title, package-Button footer),
 `ReferenceCard` (uppercase tag chip, inset code well, ghost Copy button
 — `navigator.clipboard.writeText` in a silent-catch try, `onCopied`
 fires after success for YOUR toast, the "Copied!" flash resets after
-2s), `TierCard` (eyebrow plan, 2rem tabular price, party-green Check
+2s), `TierCard` (eyebrow plan, 2rem tabular price, sig-green Check
 bullets; featured → floating elevation + 2px accent border, no scale),
-`ProfileCard` (party-ringed avatar, role, 2–3 tabular stats — dev-warned
+`ProfileCard` (chromatic-ringed avatar, role, 2–3 tabular stats — dev-warned
 outside the band — SigBadge skills), and `ChronicleTimeline` (the
 "Night of Versions" memorial as an official primitive: a flat `<ol>` of
 tagged releases down a 2px hairline spine, accent-ringed 12px nodes).
@@ -644,8 +644,8 @@ quiet; only non-empty invalid shakes).
 becomes THE CATALOG: a filter `<Tabs>` bar (All / App Gateways / Food &
 Carousels / Commerce & Profiles / Docs & Chronicles) driving conditional
 row rendering; Row 1 the three BALANCED chromatic gateways
-(`.hub__row--3`, equal width — Event & Party Planner in Flamingo,
-Study & Flashcard Engine in lavender, Party Game Arena in peach);
+(`.hub__row--3`, equal width — Bento Workbench in Flamingo,
+Interactive Graph & Planner in lavender, Pattern Studio in peach);
 Row 2 the commerce trio (ContentCard · ReferenceCard · TierCard
 dogfooding the suite); Row 3 the food slab (a five-item Carousel of
 mini-cards + the `.hub__row--4` profile row: ProfileCard, FlipCard,
@@ -688,32 +688,32 @@ stroke-dashoffset transition).
 | # | The defect (owner) | The fix | Where |
 |---|---|---|---|
 | 1 | Data & Tables + Form & Input Matrix tabs render edge-to-edge (0px side margins) | `.sig-shell` wraps EVERY view's content — max-width 1400px, centered, `padding-inline: clamp(20px, 4vw, 48px)`; the tab modules and their cards render inside it. GlobalNav stays outside (it is its own bar). Measured: ≥20px viewport margins on all three tabs | playground/App.tsx (Shell), playground/styles.css (.sig-shell; .hub__module de-constrained) |
-| 2 | FormField rendered format rules BELOW the input; "$" was concatenated into the label | FormField top-down anatomy: label (PROMOTED: text-main 0.875rem/500) → `description` ABOVE the control ("5 numbers only · e.g., 79901") → control → validation zone (error → `validMessage` → hint). `prefix`/`suffix` compose the `.sig-form-field__well` — mono chips flanking a BARE input, separated from the cursor by a hairline; the well owns border/focus ring/error. The `$` chip is never glued into the label again | react/forms.tsx (FormField), css/forms.css (__label/__desc/__well/__chip/__valid, `sig-shake`), playground FormsModule + check-in |
-| 3 | ToggleSwitch had no visible label text | Fixed in 2.4.1 (`.sig-switch__text`), EXERCISED here: the check-in card's "Add to game rotation" switch renders visible text beside the pill | playground/App.tsx (CheckInForm) |
+| 2 | FormField rendered format rules BELOW the input; "$" was concatenated into the label | FormField top-down anatomy: label (PROMOTED: text-main 0.875rem/500) → `description` ABOVE the control ("5 numbers only · e.g., 79901") → control → validation zone (error → `validMessage` → hint). `prefix`/`suffix` compose the `.sig-form-field__well` — mono chips flanking a BARE input, separated from the cursor by a hairline; the well owns border/focus ring/error. The `$` chip is never glued into the label again | react/forms.tsx (FormField), css/forms.css (__label/__desc/__well/__chip/__valid, `sig-shake`), playground FormsModule + allocation |
+| 3 | ToggleSwitch had no visible label text | Fixed in 2.4.1 (`.sig-switch__text`), EXERCISED here: the allocation card's "Add to game rotation" switch renders visible text beside the pill | playground/App.tsx (AllocationForm) |
 | 4 | CONTRIBUTION table header left-aligned while values right-align | Fixed in 2.4.1 (`.sig-data-table__align-right`, ancestor-scoped 0,2,0), EXERCISED here: the LIVE ledger's Contribution column carries `numeric: true, align: "right"`; the probe measures th/td right edges within ±2px | playground/App.tsx (BENTO_LEDGER_COLUMNS), react/data.tsx (unchanged) |
-| 5 | Core Dashboard = old rigid grid, no card archetypes, no button variants, no live validation | The 12-column bento (`.bento12`, explicit spans 12/4/5/4/3/5/3/7/5) with LIVE state (`SEED_GUESTS` → `useMemo` → ledger/ring/bars/KPI react to check-ins), `<Button>` (4 variants, 3 sizes, loading), the archetypes (ActionTile, FlipCard, AccordionCard, MatchupCard), PasswordInput, and per-field live validation (`/^\d+$/`, `/^\d{5}$/`) | playground/App.tsx (BentoCore, CheckInForm), react/primitives.tsx (Button), react/cards.tsx (NEW), css/primitives.css + css/cards.css (NEW), css/forms.css (PasswordInput) |
+| 5 | Core Dashboard = old rigid grid, no card archetypes, no button variants, no live validation | The 12-column bento (`.bento12`, explicit spans 12/4/5/4/3/5/3/7/5) with LIVE state (`SEED_MEMBERS` → `useMemo` → ledger/ring/bars/KPI react to allocations), `<Button>` (4 variants, 3 sizes, loading), the archetypes (ActionTile, FlipCard, AccordionCard, MatchupCard), PasswordInput, and per-field live validation (`/^\d+$/`, `/^\d{5}$/`) | playground/App.tsx (BentoCore, AllocationForm), react/primitives.tsx (Button), react/cards.tsx (NEW), css/primitives.css + css/cards.css (NEW), css/forms.css (PasswordInput) |
 
 **The live-state wiring** — one array, everything derives:
 
 ```
-SEED_GUESTS (5 typed rows)
-        │  useState<Guest[]>                      (DashboardView)
+SEED_MEMBERS (5 typed rows)
+        │  useState<Member[]>                      (DashboardView)
         ▼
-┌─ guests ────────────────────────────────────────────────┐
+┌─ members ────────────────────────────────────────────────┐
 │                                                          │
-│  checkIn() ← CheckInForm submit                          │
-│  (name, rsvp→state, numeric contribution) — appends      │
+│  checkIn() ← AllocationForm submit                          │
+│  (name, attendance→state, numeric allocation) — appends      │
 └──────────┬───────────────────────────────────────────────┘
-           ▼  useMemo(guests)
-   confirmedCount ──► Confirmed Guests StatCard (span 4)
-                  ──► Guests bar + "n / 200" caption
+           ▼  useMemo(members)
+   confirmedCount ──► Confirmed Seats StatCard (span 4)
+                  ──► Seats bar + "n / 200" caption
                   ──► ringValue = confirmed/200 %
                   ──► StatRing (span 3) — stroke-dashoffset
                         glides via playground-scoped css
            potTotal (Σ confirmed contributions)
                   ──► Budget spent bar ($sum / $2,000, peach)
                   ──► Budget remaining bar ($rest / $2,000, green)
-           ledgerRows ──► DataTable (span 7, RSVP badge cells,
+           ledgerRows ──► DataTable (span 7, attendance badge cells,
                           Contribution numeric + align right)
            toast ──► "Checked in — see you there 🎉"
 ```
@@ -748,7 +748,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 | 3 | `<RadioCardGroup>` selected = 2px Flamingo + 10% cake tint (a highlight read) | selected card **lifts** to `var(--bg-surface)` over the inset siblings — the owner override; the 2px Flamingo border stays the state signal | css/forms.css:368-379 |
 | 4 | `<ToggleSwitch>`: ONE element, `label` = aria-label ONLY — orphaned switches | `label` renders as VISIBLE text: every pill selector migrates `.sig-switch` → `.sig-switch__pill` (audited: no pill property left on the bare name, no `[aria-checked]` outside the pill, reduced-motion list follows); `.sig-switch` becomes the justified wrapper (pill + visible-text composition, the `.sig-select` sanction) around the pill + `.sig-switch__text` (text-main, 0.875rem, weight 500). ONLY the pill is interactive; the button keeps its aria-label | react/forms.tsx (ToggleSwitch), css/forms.css:136-195, 396-409 |
 | 5 | `<AnnouncementBanner status?: "info"\|"success"\|"warning">`, fixed Megaphone | API EVOLVED: `variant?: "info" \| "warning" \| "announcement"` (default `announcement` — the Flamingo banner `--color-cake-primary`; info → sky, warning → peach strips; `status`/`"success"` retired). `icon?: IconName` with probed defaults — Info / **TriangleExclamationPoint** / Megaphone (PROBED: the installed lucide-react 1.72.0 map has NO `TriangleAlert` key — the AudioLines/"Music" lesson; the (icons) gate logs the probe). `action?: { label; onClick }` — a small token-driven ghost button (Teal border hover) after the text. Still dismissible. Playground Data-view banner: `variant="announcement"` + `action={{ label: "See what shipped", onClick: toast }}`, v2.4.1 copy | react/editorial.tsx (AnnouncementBanner), css/editorial.css (__action), playground/App.tsx:684-707, react/index.ts (type re-exports) |
-| 6 | ProseBlock blockquote: 4px **Flamingo** rule; styled `p`/`blockquote`/`footer`/`cite` only | quote rule → **`var(--sig-mauve)`** (OWNER OVERRIDE: a blockquote IS editorial content, so the Rule of Engagement reads FOR the party token — Flamingo was borrowing the structural action color); `h3` ensured (0.9375rem, weight 600, text-main, margin); inline `code`/`kbd` chips added (mono stack, `--bg-inset` body, 15% muted hairline, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, `--text-bright`) | css/editorial.css:112-156 |
+| 6 | ProseBlock blockquote: 4px **Flamingo** rule; styled `p`/`blockquote`/`footer`/`cite` only | quote rule → **`var(--sig-mauve)`** (OWNER OVERRIDE: a blockquote IS editorial content, so the Rule of Engagement reads FOR the chromatic token — Flamingo was borrowing the structural action color); `h3` ensured (0.9375rem, weight 600, text-main, margin); inline `code`/`kbd` chips added (mono stack, `--bg-inset` body, 15% muted hairline, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, `--text-bright`) | css/editorial.css:112-156 |
 | 7 | `<Carousel>`: three justified elements (track + 2 buttons), no position readout | page indicator added (a FOURTH justified element — the position made legible): `onScroll` → rAF-throttled → `<span class="sig-carousel__indicator" aria-live="polite">{n} / {count}</span>` with the owner formula `Math.round(scrollLeft / itemWidth) + 1`, mono tabular-nums muted, placed between the two buttons | react/editorial.tsx (Carousel), css/editorial.css:99-111 |
 | 8 | Codex title v2.6, 21 snippets | Codex → **v2.7**: FormField/RadioCardGroup/Carousel/ProseBlock/AnnouncementBanner recipes ADDED; DataTable (align), ToggleSwitch (visible label) refreshed — every snippet factual against the new `.d.ts`; contract version string → 2.4.1 | SYSTEM_PROMPT.md |
 
@@ -867,7 +867,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 - **`<AnnouncementBanner>` — the toast strip's announcing sibling.**
   `<div class="sig-announcement" role="status">` (live region —
   unlike `<Callout>`'s static role="note", a banner announces itself)
-  with `--status` set INLINE from the SAME party map as Callout
+  with `--status` set INLINE from the SAME chromatic map as Callout
   (info → `--sig-sky`, success → `--sig-green`, warning →
   `--sig-peach`): full width, inset body, 15% hairline, 4px
   --status left rule. Megaphone icon tinted var(--status); optional
@@ -892,15 +892,15 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   rebuild is v2.5.0).** The Form & Input Matrix card wraps Name /
   $ Contribution side-by-side in `<FormField>` (hint demoed on the
   first, error-replaces-hint + aria-invalid on the second) and adds
-  the RSVP `<RadioCardGroup>` (Attending "See you there" / Maybe /
+  the attendance `<RadioCardGroup>` (Attending "See you there" / Maybe /
   Can't make it). The Data view gains the release
   `<AnnouncementBanner>` ("v2.4.0 — six new editorial & form
   primitives shipped." — dismissible), the `<StatCard>` KPI trio
-  (Total Budget $2,000 +$440 on green / Confirmed Guests 170 +12 on
+  (Total Budget $2,000 +$440 on green / Confirmed Seats 170 +12 on
   sky / Active Game Rooms 6 +2 on mauve-soft, each with its
   sparkline), and the Field Notes card — a `<ProseBlock>` (two
   paragraphs + the "Weeks of coding can save you hours of planning"
-  blockquote + a PlanThenParty citation) and a `<Carousel>` of five
+  blockquote + a Signature Style citation) and a `<Carousel>` of five
   palette clippings (real scrollable overflow, probe-scrolled).
   New testids: `kpi-trio`, `banner-release`, `carousel-clippings`.
 - **Gate evolution (verify:playground)** — (b2 AMENDMENT) files =
@@ -1008,7 +1008,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   label="Dashboard modules">` (core / data / forms, local state,
   testid `tabs-module`) over three branches: **core** (the unchanged
   4-SurfaceCard board — the tab bar lives in .hub__module ABOVE the
-  grid so the nth-child stagger is untouched), **data** (the Guest &
+  grid so the nth-child stagger is untouched), **data** (the Member &
   Budget Ledger: DataTable with the five crew rows — Ana Souza
   Confirmed $120 as the composed `<SigBadge>`, Leo Martins Pending
   $0, Priya Nair Confirmed $200, Tom Weller Declined $0, Ana + 1
@@ -1159,7 +1159,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   column, the 2.1.0 measured breathing room (unchanged, composed on
   the className modifier). The telemetry card wears its limits:
   budget-remaining "$1,440 / $2,000", spent "$1,325 / $2,000", and
-  a NEW guests row — 170 / 200 on `--sig-sky` at 85%, the RSVP
+  a NEW members row — 170 / 200 on `--sig-sky` at 85%, the Attendance
   ring's own ratio, coherent.
 - **Cortex sweep updated (tools/ is our tooling — owner-editable).**
   The MCP server's DEFAULT_SELECTORS retarget the retired
@@ -1168,7 +1168,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   to 2.2.0. Card-level data-testids retired with the `.hub__card`
   section: the cortex's stable card hook is the class selector
   itself; metric + button hooks stay (plus the new
-  `metric-guests`).
+  `metric-seats`).
 - **Gate evolution (verify:playground)** — (b2 AMENDMENT) the frozen
   files array evolves exactly one step (v1.4.0 + `!react/surface.tsx`);
   (b3) 34 → 37; (b7)/(n-hub4) safety proofs REBASED to the v2.1.0
@@ -1247,7 +1247,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   under the slab (−77px) by design: its group-first padding is empty
   space; the node is the visual invariant.
 - **The Master Index — a state-based view switcher.** `type View =
-  "dashboard" | "index" | "events" | "guests" | "budget"`, default
+  "dashboard" | "index" | "events" | "members" | "budget"`, default
   `"dashboard"` (the cortex smoke must find the timeline on load). The
   nav goes through GlobalNav's component-agnostic `as` prop — **no
   package change**, but the contract has two load-bearing details
@@ -1260,7 +1260,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   nav.css styling keeps working) and composes GlobalNav's onClick after
   its own `event.preventDefault()` (no full-reload fragment jumps; the
   switch is state-only). Nav order per owner: Dashboard, Events,
-  Guests, Budget, Index — hrefs `#/dashboard` … `#/index`, one explicit
+  Members, Budget, Index — hrefs `#/dashboard` … `#/index`, one explicit
   routing table. The hero is shared across views, its copy switches:
   THE ENGINE stays on the dashboard, THE MASTER INDEX ("three doors ·
   one engine · zero dead ends") announces the index, THE WORKSHOP the
@@ -1271,14 +1271,14 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   three doors read better narrow than stretched to 1400px): PLANNER /
   views/planner.tsx / Event Planner Bento — a REAL gateway, clicking
   returns to the dashboard; STUDY / modules/study.tsx / Study &
-  Flashcard Generator and GAMES / modules/games.tsx / Party Game
+  Flashcard Generator and GAMES / modules/games.tsx / chromatic Game
   Modules — roadmap doors. **Decision (documented):** the roadmap doors
   fire a success toast ("… is on the roadmap.") instead of routing to
   an EmptyState view, because the nav's workshop entries already
   dogfood `<EmptyState>` as placeholder views and a toast keeps the
   reader at the index. Cards are `<button>`s for free keyboard/press
   semantics; the hub hover lift carries the interaction.
-- **Placeholder doctrine — the workshop dogfood.** The Events / Guests
+- **Placeholder doctrine — the workshop dogfood.** The Events / Members
   / Budget views render the package's `<EmptyState icon="Hammer"
   title="In the workshop" message="This module ships in a future
   release." />` inside a `hub__card` with the full Shed anatomy (real
@@ -1339,7 +1339,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   | `data-testid="bento-card-*"` | `data-testid="hub-card-*"` (metric/btn hooks unchanged) | the cortex hooks |
 
   Every card: meta → ruled h2 → content. Titles: Form Controls /
-  The Chronology / Budget & RSVP / The Party Palette; labels: Forms /
+  The Chronology / Budget & Attendance / The Chromatic Palette; labels: Forms /
   Timeline / Telemetry / Palette; paths: components/forms.tsx /
   timeline.tsx / viz.tsx / primitives.tsx.
 - **The timeline span decision (owner fallback rule, probe-decided)** —
@@ -1389,7 +1389,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   6/6 `.sig-timeline__node` visible with area; all three metric rows
   no-overlap (value left ≥ label right), flush right within 1px of the
   card's content edge, and 40px/40px/32px of air below the label rows
-  (≥16px mandate — the RSVP row's nearest viz is the classless
+  (≥16px mandate — the attendance row's nearest viz is the classless
   StatRing `svg[role="progressbar"]`, swept explicitly). BEFORE/AFTER
   rect table (1280px viewport): the asymmetric stage measured
   315.4/473.1/315.4px columns at y=83 with a hole under the telemetry;
@@ -1540,7 +1540,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 - **data-testid wiring (playground layer only)** — stable hooks for the
   cortex's default `[data-testid]` sweep: `bento-card-forms`,
   `bento-card-timeline`, `bento-card-telemetry`, `bento-card-palette`,
-  `metric-budget-remaining`, `metric-budget-spent`, `metric-rsvp`,
+  `metric-budget-remaining`, `metric-budget-spent`, `metric-attendance`,
   `btn-toast`. Timeline nodes/items/headers stay covered by the class
   defaults; `App.tsx` remains a pure consumer otherwise.
 - **Release gates** — `verify:playground` now runs b1–b7, h1–h3, e1–e2
@@ -1691,10 +1691,10 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   - **Timeline** — `<EventTimeline>` with six events across two date
     buckets; clicking a node opens `<EventModal>` via `useModal` — the
     0.6.0 + 0.7.0 composition, portaled overlay and all.
-  - **Telemetry** — `<ProgressBar>` (party-green / party-peach) and
-    `<StatRing>` (party-sky) with consumer-rendered label rows — the
-    Rule of Engagement (party tokens = content only) in practice.
-  - **Party Palette** — all ten `--sig-*` tokens as `<SigBadge>`s
+  - **Telemetry** — `<ProgressBar>` (sig-green / sig-peach) and
+    `<StatRing>` (sig-sky) with consumer-rendered label rows — the
+    Rule of Engagement (chromatic tokens = content only) in practice.
+  - **Chromatic Palette** — all ten `--sig-*` tokens as `<SigBadge>`s
     ("Pink" through "Green"), wrapped at `var(--space-tight)`.
 - **The grid itself** — `.bento` (3 columns, `var(--space-section)`
   gaps, 75rem max) with placements for the tall timeline card; collapses
@@ -1738,12 +1738,12 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 
   ```tsx
   <ToastProvider>
-    <RsvpForm />
+    <AttendanceForm />
   </ToastProvider>
 
-  // inside <RsvpForm>:
+  // inside <AttendanceForm>:
   const toast = useToast(); // throws without a provider — fail loudly
-  saveRsvp().then(() => toast("success", "RSVP saved"))
+  saveAttendance().then(() => toast("success", "Attendance saved"))
             .catch(() => toast("error", "Could not save — try again"));
   ```
 
@@ -1759,7 +1759,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   - **The status strips** — `toast(status, message)` maps success →
     `var(--sig-green)`, error → `var(--sig-peach)`, set INLINE as a
     `--status` custom property that css/toast.css reads for the 4px
-    left border. Status is a content-outcome signal, so party tokens are
+    left border. Status is a content-outcome signal, so chromatic tokens are
     the sanctioned palette here.
 - **New stylesheet `css/forms.css`** — the inset wells
   (`--bg-inset` interiors, hairline borders, 14px Inter), the doctrine
@@ -1808,15 +1808,15 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 
 - **`<ProgressBar>` + `<StatRing>`** — the telemetry primitives:
   lightweight SVG/HTML charting with **zero external charting
-  dependencies**. Two shapes cover the PlanThenParty data story:
+  dependencies**. Two shapes cover the Signature Style data story:
 
   ```tsx
   import { ProgressBar, StatRing } from "@edwyn/signature-style/react";
 
-  // Budget bar — 72% remaining, on a party-green fill:
+  // Budget bar — 72% remaining, on a sig-green fill:
   <ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" />
 
-  // RSVP ring — 85% of invitees in, on a party-sky arc:
+  // Attendance ring — 85% of invitees in, on a sig-sky arc:
   <StatRing value={85} colorToken="--sig-sky" />
   ```
 
@@ -1829,7 +1829,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   - **`<StatRing value colorToken size? strokeWidth? label? />`** — ONE
     `<svg role="progressbar">` (viewBox `0 0 100 100`, default
     `size` 64 — an 8px-grid multiple) with exactly two circles
-    (r 44): a `var(--bg-surface)` track and a party-colored progress
+    (r 44): a `var(--bg-surface)` track and a chromatic-colored progress
     arc revealed by `strokeDasharray = 2π·44` /
     `strokeDashoffset = C × (1 − v/100)`, rotated −90° so 0% starts at
     12 o'clock. `strokeWidth` is a `4 | 8` union (grid-perfect) and is
@@ -1855,11 +1855,11 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   (the 8px track, the owner physics, reduced motion, the surface track
   token, zero hex, zero box-shadow), its layered import after
   `nav.css`, the umbrella re-exports of `ProgressBar` / `StatRing` +
-  prop types, and the runtime party guard in the viz source.
+  prop types, and the runtime chromatic guard in the viz source.
 
 ### 1.2.0 — GlobalNav
 
-- **`<GlobalNav>`** — routing between views in PlanThenParty: a sticky
+- **`<GlobalNav>`** — routing between views in Signature Style: a sticky
   navbar whose active state IS the `aria-current="page"` attribute (no
   `.is-active` class anywhere), plus a mobile drawer behind a hamburger
   at the strict 768px breakpoint. Two modes, one component:
@@ -2017,8 +2017,8 @@ Packaging, CI and docs only.
 
 - **`<EventTimeline>`** — the first full component built on the 0.5.0
   primitives, exercising Engine v2.5 rules end to end (Info1 + Pruning +
-  Party Palette): a chronological party-events timeline for
-  PlanThenParty.
+  Chromatic Palette): a chronological chromatic-events timeline for
+  Signature Style.
 
   ```tsx
   import { EventTimeline } from "@edwyn/signature-style/react";
@@ -2063,7 +2063,7 @@ Packaging, CI and docs only.
     the `dateKey ?? date` contract (first-occurrence order preserved).
   - **Primitives, composed** — nodes are STRUCTURE (Flamingo): `<Icon>`
     in a small circle with a 2px `--color-cake-primary` ring and
-    `--bg-surface` fill. Categories are CONTENT (party tokens):
+    `--bg-surface` fill. Categories are CONTENT (chromatic tokens):
     `<SigBadge colorToken label>`. Titles wear `--text-main` weight
     500; times wear `--text-muted` mono at 0.875rem.
   - New stylesheet **`css/timeline.css`** (`.sig-timeline*` classes,
@@ -2088,7 +2088,7 @@ Packaging, CI and docs only.
 
   ```jsx
   import { ThemeProvider, Icon, EmptyState, SigBadge } from "@edwyn/signature-style/react";
-  <Icon name="PartyPopper" />
+  <Icon name="Rocket" />
   <EmptyState icon="PackageOpen" title="Nothing here" message="Add your first event." />
   <SigBadge colorToken="--sig-peach" label="Birthday" />
   ```
@@ -2104,7 +2104,7 @@ Packaging, CI and docs only.
     (`Extract<KnownToken, \`--sig-${string}\`>`); a structural token like
     `--color-cake-primary` is a type error, and a runtime guard
     warn-and-drops anything JS slips past the types. Renders ONE `<span>`
-    with a subtle `color-mix` tint of the party token and guaranteed
+    with a subtle `color-mix` tint of the chromatic token and guaranteed
     high-contrast `--text-main` label on both themes.
 - **lucide-react is an optional peer** — declared in
   `peerDependenciesMeta` as `optional: true`. CSS-only consumers never
@@ -2115,12 +2115,12 @@ Packaging, CI and docs only.
   Tokens and token VALUES are unchanged — `TOKEN_KEYS` stays at 31; the
   structural freeze holds (`css/` is byte-identical to 0.4.0).
 
-### 0.4.0 — Party Palette
+### 0.4.0 — Chromatic Palette
 
-- **New token family: the Party Palette** — ten theme-independent,
+- **New token family: the Chromatic Palette** — ten theme-independent,
   content-reserved tokens, defined ONCE in `:root` and inherited by both
   Mocha and Latte untouched (theme-independent by design, so content wears
-  the same party colors on both sides of the toggle):
+  the same chromatic colors on both sides of the toggle):
 
   | Token | Hex | Role |
   |---|---|---|
@@ -2144,10 +2144,10 @@ Packaging, CI and docs only.
   structural-freeze gate requires `git diff v0.3.0 -- css/cascade.css
   css/overrides.css` to be empty and the structural + Flamingo/Teal values
   in `tokens.css` to be unchanged.
-- **Whitelist covers everything, party included** — `TOKEN_KEYS` grows
+- **Whitelist covers everything, chromatic included** — `TOKEN_KEYS` grows
   from 21 to 31 keys; `<ThemeProvider theme={…}>` now accepts every custom
-  property in `css/tokens.css`, the party tokens included. Guard logic is
-  unchanged. Because party tokens are whitelisted, a user can retheme
+  property in `css/tokens.css`, the chromatic tokens included. Guard logic is
+  unchanged. Because chromatic tokens are whitelisted, a user can retheme
   their event content dynamically — for example changing their event
   theme's accent:
 
@@ -2157,17 +2157,17 @@ Packaging, CI and docs only.
   </ThemeProvider>
   ```
 
-- **Engine v2.4** — `SYSTEM_PROMPT.md` gains the "Party Palette
+- **Engine v2.4** — `SYSTEM_PROMPT.md` gains the "Chromatic Palette
   (Content-Only Tokens)" section listing all ten tokens plus the Rule of
-  Engagement. The demo gains a compact "Party Palette · content only"
+  Engagement. The demo gains a compact "Chromatic Palette · content only"
   strip (all 10 swatches with muted mono names) plus three content chips:
   a `birthday` badge on `--sig-pink-bright` (text `--color-on-cake`), an
   avatar dot on `--sig-mauve-soft`, and a calendar block edged in
   `--sig-peach`.
-- **Release gates** — verify now asserts the exact ten party hexes in
+- **Release gates** — verify now asserts the exact ten chromatic hexes in
   both `tokens.css` (`:root`, theme-independent) and `tokens.json`
   (`sigPalette` entries with `"reserved": true` and the content-only
-  role), party whitelist parity, and the v0.3.0 structural freeze.
+  role), chromatic whitelist parity, and the v0.3.0 structural freeze.
 
 ### 0.3.0 — Harmonized Catppuccin
 
@@ -2289,7 +2289,7 @@ release runbook lives in [`docs/PUBLISHING.md`](./docs/PUBLISHING.md).
 npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
-npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, 3-path exports contract, provider hardening, timeline gates, modal gates, nav gates, viz gates
+npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, chromatic palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, 3-path exports contract, provider hardening, timeline gates, modal gates, nav gates, viz gates
 npm pack --dry-run # inspect the publishable tarball (expect 52 files)
 ```
 

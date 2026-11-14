@@ -14,16 +14,16 @@
  *      and hands the payload back to the same App-side download).
  *
  * The payload shape is the v2.7.0 contract, unchanged: `{ version:
- * "sig.v27", graph, timeline }` — the storage-key contract's shape
+ * "sig.workspace.v3", graph, timeline }` — the storage-key contract's shape
  * prefix and the download filename ride with it.
  */
 import type { GraphNode, TimelineItem } from "@edwyn/signature-style/react";
 
-/** The payload's shape prefix — matches the sig.v27.* storage keys. */
-export const WORKSPACE_SNAPSHOT_VERSION = "sig.v27";
+/** The payload's shape prefix — matches the sig.workspace.v3.* storage keys. */
+export const WORKSPACE_SNAPSHOT_VERSION = "sig.workspace.v3";
 
 /** The canonical download filename (the v2.7.0 contract). */
-export const WORKSPACE_SNAPSHOT_FILENAME = "signature-snapshot.json";
+export const WORKSPACE_SNAPSHOT_FILENAME = "signature-workspace.json";
 
 export interface WorkspaceSnapshot {
   version: string;
@@ -66,8 +66,8 @@ export function readStoredWorkspace(): { graph: GraphNode[]; timeline: TimelineI
     }
   };
   return {
-    graph: readArray("sig.v27.graph") as GraphNode[],
-    timeline: readArray("sig.v27.timeline") as TimelineItem[],
+    graph: readArray("sig.workspace.v3.graph") as GraphNode[],
+    timeline: readArray("sig.workspace.v3.timeline") as TimelineItem[],
   };
 }
 

@@ -18,10 +18,10 @@
  *     the stale value it just killed).
  *
  * THE STORAGE-KEY CONTRACT: every key is versioned with the release
- * that introduced its shape — `sig.v27.graph`, `sig.v27.timeline`.
- * When a stored SHAPE breaks in a future release, bump the prefix
- * (sig.v30.*) and migrate by reading the old key once; never store
- * new shapes under an old prefix.
+ * that introduced its shape — `sig.workspace.v3.graph`,
+ * `sig.workspace.v3.timeline`. When a stored SHAPE breaks in a future
+ * release, bump the prefix (sig.workspace.v4.*) and migrate by reading
+ * the old key once; never store new shapes under an old prefix.
  *
  * Safety posture (all THREE failure modes handled):
  *   - corrupt JSON   → try/catch on parse, fall back to the seed;

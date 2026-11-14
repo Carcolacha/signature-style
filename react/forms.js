@@ -244,7 +244,7 @@ export function Avatar({ name, size = 32, ringToken }) {
  *      Multi-child consumers (no single control to wire) keep the old
  *      manual contract.
  *   4. The validation zone at the bottom — ONE line, error first:
- *      `error` (role="alert", peach) → `validMessage` (party-green).
+ *      `error` (role="alert", peach) → `validMessage` (sig-green).
  *      `hint` no longer lives here — it joined the helpers slot.
  *
  * @example
@@ -309,12 +309,12 @@ function isValidSingleChild(children) {
  *
  * @example
  * ```tsx
- * const [rsvp, setRsvp] = useState("attending");
+ * const [attendance, setAttendance] = useState("attending");
  * <RadioCardGroup
- *   label="RSVP"
- *   name="rsvp"
- *   value={rsvp}
- *   onChange={setRsvp}
+ *   label="Attendance"
+ *   name="attendance"
+ *   value={attendance}
+ *   onChange={setAttendance}
  *   options={[
  *     { value: "attending", label: "Attending", description: "See you there" },
  *     { value: "maybe", label: "Maybe" },
@@ -362,7 +362,7 @@ const PASSWORD_STAGES = ["Weak", "Fair", "Good", "Strong"];
  *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
  *   5. Four `.sig-password__pill` condition spans ("8+ chars",
  *      "Uppercase", "Number", "Symbol") — `data-satisfied` flips them
- *      to the 20% party-green wash.
+ *      to the 20% sig-green wash.
  *
  * THE SCORE IS HONEST BY CONSTRUCTION: it is the count of satisfied
  * rules — nothing tuned, nothing weighted. Unlike every other control

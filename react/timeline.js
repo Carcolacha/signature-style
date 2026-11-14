@@ -1,6 +1,6 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
- * timeline — <EventTimeline>, the chronological party-events component
+ * timeline — <EventTimeline>, the chronological events component
  * (0.6.0 "Event Timeline").
  *
  * Engine v2.5 compliance: the DOM is perfectly FLAT — one grid container
@@ -8,7 +8,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * content blocks (`div`). No row wrappers, and the vertical line is a
  * `::before` pseudo-element on the container, never a div (Pruning
  * Protocol). Structure (nodes, line) stays Flamingo/Teal; content
- * categories wear Party Palette tokens via <SigBadge> (Rule of
+ * categories wear Chromatic Palette tokens via <SigBadge> (Rule of
  * Engagement).
  *
  * 0.7.0: nodes are `<button>` elements (interactive — an optional
@@ -62,7 +62,7 @@ function renderItem(event, row, index) {
     return (_jsxs("div", { className: `sig-timeline__item sig-timeline__item--${side}${groupFirst}`, style: { gridRow: row }, children: [_jsx(SigBadge, { colorToken: event.category, label: event.categoryLabel }), _jsx("h3", { className: "sig-timeline__title", children: event.title }), event.time !== undefined && (_jsx("time", { className: "sig-timeline__time", children: event.time }))] }, `event-${event.id}`));
 }
 /**
- * `<EventTimeline>` — a chronological, alternating party timeline.
+ * `<EventTimeline>` — a chronological, alternating event timeline.
  *
  * Desktop: vertical center line, events alternate left/right. Mobile
  * (max-width 768px): the line moves to the far left and all events stack

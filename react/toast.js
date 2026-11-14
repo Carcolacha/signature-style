@@ -12,7 +12,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * status to a CSS custom property set INLINE on the toast element —
  * success → var(--sig-green), error → var(--sig-peach) — which
  * css/toast.css reads as the 4px `border-left: 4px solid var(--status)`
- * strip. Status is a content-outcome signal, so party tokens are the
+ * strip. Status is a content-outcome signal, so chromatic tokens are the
  * sanctioned palette (Rule of Engagement); the component never hardcodes
  * a hex.
  *
@@ -37,7 +37,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { createPortal } from "react-dom";
 /**
  * Status → status-strip token. INLINE --status custom property, read by
- * css/toast.css. Party tokens: status is a content outcome, never
+ * css/toast.css. Chromatic tokens: status is a content outcome, never
  * structural chrome.
  */
 const STATUS_VARIABLE = {
@@ -74,12 +74,12 @@ function Toast({ toast, onExpire }) {
  * @example
  * ```tsx
  * <ToastProvider>
- *   <RsvpForm />
+ *   <AttendanceForm />
  * </ToastProvider>
  *
- * // inside <RsvpForm>:
+ * // inside <AttendanceForm>:
  * const toast = useToast();
- * toast("success", "RSVP saved");
+ * toast("success", "Attendance saved");
  * toast("error", "Could not save — try again");
  * ```
  */

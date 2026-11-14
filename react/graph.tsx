@@ -44,12 +44,12 @@
  * ```tsx
  * <KnowledgeGraph
  *   nodes={[
- *     { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "One plan, many branches." },
+ *     { id: "root", label: "Product Launch", categoryToken: "--sig-lavender", note: "One engine, many views." },
  *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
  *   ]}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
- *   label="Party planning graph"
+ *   label="Product launch graph"
  * />
  * ```
  */
@@ -272,7 +272,7 @@ export function cubicBezierEdge(
   return `M ${parent.x} ${parent.y} C ${c1x} ${c1y} ${c2x} ${c2y} ${child.x} ${child.y}`;
 }
 
-/** The node ring's stroke: its party token, or structural Flamingo fallback. */
+/** The node ring's stroke: its chromatic token, or structural Flamingo fallback. */
 function strokeFor(node: GraphNode): string {
   if (!node.categoryToken.startsWith("--sig-")) {
     return "var(--color-cake-primary)";

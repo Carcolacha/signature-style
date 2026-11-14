@@ -84,10 +84,10 @@ const MONTH_OPTIONS: readonly string[] = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-/** The composer's category options — the party tokens with human labels. */
+/** The composer's category options — the chromatic tokens with human labels. */
 const CATEGORY_OPTIONS: ReadonlyArray<{ token: SigTokenName; label: string }> = [
   { token: "--sig-pink-bright", label: "Invites" },
-  { token: "--sig-pink-soft", label: "Guests" },
+  { token: "--sig-pink-soft", label: "Members" },
   { token: "--sig-pink-alt", label: "Decor" },
   { token: "--sig-mauve-bright", label: "Venue" },
   { token: "--sig-mauve-soft", label: "Admin" },
@@ -99,7 +99,7 @@ const CATEGORY_OPTIONS: ReadonlyArray<{ token: SigTokenName; label: string }> = 
      the typecheck made the retirement unsatisfiable (the 2.9.1 verify.mjs
      precedent — the floor rebases with the release). */
   { token: "--sig-peach", label: "Catering" },
-  { token: "--sig-green", label: "RSVP" },
+  { token: "--sig-green", label: "Attendance" },
   { token: "--sig-yellow", label: "Meter" },
 ];
 

@@ -17,7 +17,7 @@ import { type ReactNode } from "react";
  * theme-independent tokens, the z-index scale (Pillar 3, including the
  * 1.2.0 navbar notch --z-nav and the 1.4.0 zenith rung --z-toast) — and
  * since 0.4.0 — the ten --sig-*
- * content tokens (Rule of Engagement: party tokens are for CONTENT only —
+ * content tokens (Rule of Engagement: chromatic tokens are for CONTENT only —
  * badges, tags, avatars, calendar, data-viz; structural UI keeps
  * Flamingo/Teal).
  */

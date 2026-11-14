@@ -154,19 +154,19 @@ function SigShellPreview() {
 function SurfaceCardPreview() {
   return (
     <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
-      <Input placeholder="Guest name" aria-label="Guest name" />
+      <Input placeholder="Member name" aria-label="Member name" />
     </SurfaceCard>
   );
 }
 
 function PageHeroPreview() {
-  return <PageHero title="THE GARDEN PARTY" subtitle="a tiny hero, live" />;
+  return <PageHero title="THE SYSTEM BENCH" subtitle="a tiny hero, live" />;
 }
 
 function IconPreview() {
   return (
     <div className="studio__inline-row">
-      <Icon name="PartyPopper" size={20} />
+      <Icon name="Rocket" size={20} />
       <Icon name="Cake" size={20} />
       <Icon name="AudioLines" size={20} />
       <span className="studio__note">lucide exclusively · stroke 2 · color inherited</span>
@@ -244,7 +244,7 @@ function ProfileCardPreview() {
       accentToken="--sig-peach"
       stats={[
         { label: "Events", value: "24" },
-        { label: "Guests", value: "412" },
+        { label: "Members", value: "412" },
         { label: "Rating", value: "4.9" },
       ]}
       skills={[
@@ -324,8 +324,8 @@ function InputPreview() {
     <Input
       value={name}
       onChange={(e) => setName(e.target.value)}
-      placeholder="Guest name"
-      aria-label="Guest name"
+      placeholder="Member name"
+      aria-label="Member name"
     />
   );
 }
@@ -360,13 +360,13 @@ function CheckboxPreview() {
 }
 
 function RadioCardGroupPreview() {
-  const [rsvp, setRsvp] = useState("attending");
+  const [attendance, setAttendance] = useState("confirmed");
   return (
     <RadioCardGroup
-      label="RSVP"
-      name="studio-rsvp"
-      value={rsvp}
-      onChange={setRsvp}
+      label="Attendance"
+      name="studio-attendance"
+      value={attendance}
+      onChange={setAttendance}
       options={[
         { value: "attending", label: "Attending", description: "See you there" },
         { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
@@ -396,7 +396,7 @@ function ButtonPreview() {
         </Button>
         <Button variant="secondary" size="md">Maybe</Button>
         <Button variant="ghost" size="md">Skip</Button>
-        <Button variant="danger" size="sm">Remove guest</Button>
+        <Button variant="danger" size="sm">Remove member</Button>
       </div>
       <span className="studio__note">press one — primary pushes a toast</span>
     </div>
@@ -428,13 +428,13 @@ function ProgressBarPreview() {
 }
 
 function StatRingPreview() {
-  return <StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />;
+  return <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />;
 }
 
 function StatCardPreview() {
   return (
     <StatCard
-      label="Confirmed Guests"
+      label="Confirmed Seats"
       value="170"
       delta="+12"
       deltaDirection="up"
@@ -475,7 +475,7 @@ function AreaChartPreview() {
       ]}
       colorToken="--sig-sky"
       height={180}
-      label="RSVP momentum"
+      label="Attendance momentum"
     />
   );
 }
@@ -483,7 +483,7 @@ function AreaChartPreview() {
 /** Click a node to focus; Add & Link parents a new node to the selection. */
 function KnowledgeGraphPreview() {
   const [nodes, setNodes] = useState<GraphNode[]>([
-    { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "Every branch is one workstream." },
+    { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", note: "Every branch is one layer." },
     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
     { id: "catering", label: "Catering", parentId: "root", categoryToken: "--sig-peach" },
   ]);
@@ -591,7 +591,7 @@ const STUDIO_EVENTS: TimelineEvent[] = [
     time: "20:00",
     title: "Fireworks",
     category: "--sig-mauve-soft",
-    categoryLabel: "Party",
+    categoryLabel: "Release",
     icon: "Sparkles",
   },
 ];
@@ -649,8 +649,8 @@ function EventModalPreview() {
 
 const STUDIO_MILESTONES: TimelineItem[] = [
   { id: "m1", date: "October 2026", time: "09:00", title: "Book the venue", category: "--sig-mauve-soft", categoryLabel: "Planning", icon: "MapPin", settled: true },
-  { id: "m2", date: "November 2026", time: "18:00", title: "Send the invites", category: "--sig-sky", categoryLabel: "Guests", icon: "Mail" },
-  { id: "m3", date: "December 2026", time: "20:00", title: "The party", category: "--sig-peach", categoryLabel: "Party", icon: "PartyPopper" },
+  { id: "m2", date: "November 2026", time: "18:00", title: "Send the changelog", category: "--sig-sky", categoryLabel: "Members", icon: "Mail" },
+  { id: "m3", date: "December 2026", time: "20:00", title: "The launch", category: "--sig-peach", categoryLabel: "Release", icon: "Rocket" },
 ];
 
 /** The full controlled manager: add, settle, delete, inspect → modal. */
@@ -704,12 +704,12 @@ function DataTablePreview() {
   return (
     <DataTable
       columns={[
-        { key: "guest", header: "Guest" },
+        { key: "member", header: "Member" },
         { key: "share", header: "Contribution", numeric: true, align: "right" },
       ]}
       rows={[
-        { guest: "Ana Souza", share: "$120" },
-        { guest: "Leo Martins", share: "$0" },
+        { member: "Ana Souza", share: "$120" },
+        { member: "Leo Martins", share: "$0" },
       ]}
       caption="Studio ledger · a tiny honest table"
     />
@@ -721,7 +721,7 @@ function CalloutPreview() {
     <div className="studio__stack">
       <Callout status="info">Doors open at 19:00 — the venue has one parking lot.</Callout>
       <Callout status="success">The caterer confirmed for October 12.</Callout>
-      <Callout status="warning">3 pending RSVPs close Friday.</Callout>
+      <Callout status="warning">3 pending reviews close Friday.</Callout>
     </div>
   );
 }
@@ -799,7 +799,7 @@ function EmptyStatePreview() {
 function ToastProviderPreview() {
   const toast = useToast();
   return (
-    <Button size="sm" variant="primary" onClick={() => toast("success", "RSVP sent — see you there 🎉")}>
+    <Button size="sm" variant="primary" onClick={() => toast("success", "Attendance saved — see you there 🎉")}>
       Push a success toast
     </Button>
   );
@@ -812,9 +812,9 @@ function UseToastPreview() {
       <Button
         size="sm"
         variant="secondary"
-        onClick={() => toast("success", "RSVP recorded — the seat is theirs.")}
+        onClick={() => toast("success", "Attendance recorded — the seat is theirs.")}
       >
-        Record an RSVP
+        Record attendance
       </Button>
       <Button
         size="sm"

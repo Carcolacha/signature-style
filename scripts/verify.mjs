@@ -22,11 +22,11 @@
  *   (d2) Z-SCALE VALUES: --z-sticky / --z-nav / --z-overlay / --z-modal /
  *       --z-toast are declared in the tokens.css `:root` block with the
  *       exact values 10 / 30 / 40 / 50 / 60 (1.4.0 adds the zenith rung);
- *   (p) PARTY PALETTE (0.4.0): all ten --sig-* content tokens exist in
+ *   (p) CHROMATIC PALETTE (0.4.0): all 26 --sig-* content tokens exist in
  *       the tokens.css `:root` block with their exact reserved hexes, and
  *       tokens.json's sigPalette section lists all ten with matching
  *       values, the content-only role and "reserved": true;
- *   (p2) PARTY WHITELIST PARITY: all ten --sig-* names are present in
+ *   (p2) CHROMATIC WHITELIST PARITY: all 26 --sig-* names are present in
  *       the ThemeProvider TOKEN_KEYS whitelist;
  *   (s) STRUCTURAL FREEZE: `git diff v0.3.0 -- css/cascade.css
  *       css/overrides.css` is EMPTY, and tokens.css still declares the
@@ -108,13 +108,13 @@
  *       (`height: 8px`), animates the fill with the owner-mandated
  *       physics (`width 0.3s ease-out`), respects prefers-reduced-motion,
  *       tracks on `var(--bg-surface)` (data-ink doctrine: track =
- *       surface, fill = party), and contains ZERO hex literals and zero
+ *       surface, fill = chromatic), and contains ZERO hex literals and zero
  *       box-shadow (the StatRing has NO css at all — pure SVG attributes);
  *   (v1b) BUNDLE MEMBERSHIP: css/signature-style.css imports
  *       ./viz.css into the `cascade` layer, AFTER ./nav.css;
  *   (v2) the umbrella re-exports ProgressBar + StatRing (+ prop types)
  *       — types in index.d.ts, the value exports also in index.js;
- *   (v3) PARTY GUARD: react/viz.tsx contains the runtime party-guard
+ *   (v3) CHROMATIC GUARD: react/viz.tsx contains the runtime chromatic-guard
  *       string (`startsWith("--sig-")`) — the Rule of Engagement is
  *       enforced in the source, not just the types.
  *   (f1) FORMS CSS (1.4.0): css/forms.css exists, builds the inset wells
@@ -310,7 +310,7 @@ if (rootDeclarations === null) {
   }
 }
 
-// ---- (p) party palette: exact tokens.css hexes + tokens.json reserved entries
+// ---- (p) chromatic palette: exact tokens.css hexes + tokens.json reserved entries
 // RULE OF ENGAGEMENT: --sig-* tokens are reserved EXCLUSIVELY for content
 // (badges, tags, avatars, event theme overrides, calendar blocks, data-viz).
 // The Engine keeps Flamingo/Teal for ALL structural UI. Never crossed.
@@ -320,7 +320,7 @@ if (rootDeclarations === null) {
 // and the family is 26. The legacy 10 + cobalt keep the content-only role;
 // the chromatic fifteen carry the DECLARED fill/series role (visibility
 // floor 2.0:1 vs surface — measured by playground/verify-contrast.mjs).
-const PARTY_TOKENS = [
+const SIG_TOKENS = [
   ["--sig-pink-bright", "#ea76cb"],
   ["--sig-pink-soft", "#f5bde6"],
   ["--sig-pink-alt", "#f4b8e4"],
@@ -375,22 +375,22 @@ const CHROMATIC_FILL_SERIES = new Set([
   "--sig-neon-green",
 ]);
 if (rootDeclarations === null) {
-  failures.push("cannot check party palette — no :root block found");
+  failures.push("cannot check the chromatic palette — no :root block found");
 } else {
-  for (const [name, hex] of PARTY_TOKENS) {
+  for (const [name, hex] of SIG_TOKENS) {
     const pattern = new RegExp(`${name}\\s*:\\s*${hex}`, "i");
     if (!pattern.test(rootDeclarations)) {
       failures.push(
-        `party token ${name} must be ${hex} in the css/tokens.css :root block — the Party Palette is exact and content-reserved (0.4.0; 3.0.0 chromatic expansion)`,
+        `chromatic token ${name} must be ${hex} in the css/tokens.css :root block — the Chromatic Palette is exact and content-reserved (0.4.0; 3.0.0 chromatic expansion)`,
       );
     }
   }
 }
 
-const partyManifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-const partyJson = partyManifest.sigPalette?.tokens ?? {};
-for (const [name, hex] of PARTY_TOKENS) {
-  const entry = partyJson[name];
+const sigManifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+const sigJson = sigManifest.sigPalette?.tokens ?? {};
+for (const [name, hex] of SIG_TOKENS) {
+  const entry = sigJson[name];
   if (entry === undefined) {
     failures.push(`tokens.json sigPalette is missing ${name}`);
     continue;
@@ -414,14 +414,14 @@ for (const [name, hex] of PARTY_TOKENS) {
   }
 }
 
-// (p2) party whitelist parity: all 26 party names in TOKEN_KEYS -----------
+// (p2) chromatic whitelist parity: all 26 chromatic names in TOKEN_KEYS ---
 if (whitelist !== null) {
-  const missingParty = PARTY_TOKENS.map(([name]) => name).filter(
+  const missingSig = SIG_TOKENS.map(([name]) => name).filter(
     (name) => !whitelist.includes(name),
   );
-  if (missingParty.length > 0) {
+  if (missingSig.length > 0) {
     failures.push(
-      `party palette tokens missing from the ThemeProvider TOKEN_KEYS whitelist: ${missingParty.join(", ")}`,
+      `chromatic palette tokens missing from the ThemeProvider TOKEN_KEYS whitelist: ${missingSig.join(", ")}`,
     );
   }
   // 3.0.0 (chrom) companion: the RETIRED name is banned from the whitelist.
@@ -441,12 +441,12 @@ if (/(^|[^-\w])--sig-blue\s*:/.test(tokensCssStripped)) {
     "--sig-blue is DECLARED in css/tokens.css — the name retired in 3.0.0 (the value lives on as --sig-cobalt)",
   );
 }
-if (Object.keys(partyManifest.sigPalette?.tokens ?? {}).includes("--sig-blue")) {
+if (Object.keys(sigManifest.sigPalette?.tokens ?? {}).includes("--sig-blue")) {
   failures.push(
     "tokens.json sigPalette still declares --sig-blue — the name retired in 3.0.0 (the value lives on as --sig-cobalt)",
   );
 }
-const radiusCardJson = partyManifest.shared?.tokens?.["--radius-card"];
+const radiusCardJson = sigManifest.shared?.tokens?.["--radius-card"];
 if (radiusCardJson === undefined || String(radiusCardJson.value) !== "12px") {
   failures.push(
     'tokens.json shared.tokens["--radius-card"] must exist with the exact value "12px" (3.0.0: cards earn rounder corners than 6px controls)',
@@ -991,7 +991,7 @@ if (!existsSync(vizCssPath)) {
     ["height: 8px", "the 8px-grid track height"],
     ["width 0.3s ease-out", "the owner-mandated fill physics"],
     ["prefers-reduced-motion", "the reduced-motion guard on the fill transition"],
-    ["var(--bg-surface)", "the surface track (data-ink doctrine: track = surface, fill = party)"],
+    ["var(--bg-surface)", "the surface track (data-ink doctrine: track = surface, fill = chromatic)"],
   ];
   for (const [needle, label] of VIZ_REQUIREMENTS) {
     if (!vizCss.includes(needle)) {
@@ -1051,19 +1051,19 @@ for (const vizValueExport of ["ProgressBar", "StatRing"]) {
   }
 }
 
-// (v3) PARTY GUARD: the runtime Rule-of-Engagement guard survives in the
+// (v3) CHROMATIC GUARD: the runtime Rule-of-Engagement guard survives in the
 // viz source — a structural token slipped past the types (JS consumers)
 // must warn and render null, never paint structural chrome as data.
 const vizSrc = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
 if (!vizSrc.includes('startsWith("--sig-")')) {
   failures.push(
-    'react/viz.tsx must contain the runtime party guard startsWith("--sig-") — the Rule of Engagement is enforced at runtime, not just in the types',
+    'react/viz.tsx must contain the runtime chromatic guard startsWith("--sig-") — the Rule of Engagement is enforced at runtime, not just in the types',
   );
 }
 
 // ---- (f) forms (1.4.0) -----------------------------------------------------------
 // (f1) FORMS CSS: exists, inset wells on the keeper token, attribute-driven
-// error state (aria-invalid → party-peach, the ONE sanctioned party use on
+// error state (aria-invalid → sig-peach, the ONE sanctioned chromatic use on
 // structural chrome), the doctrine focus outline, the switch knob travel
 // (translateX(1.25rem) on aria-checked), reduced-motion respected — and
 // ZERO hex literals, zero box-shadow.
@@ -1075,7 +1075,7 @@ if (!existsSync(formsCssPath)) {
   const FORMS_REQUIREMENTS = [
     ["var(--bg-inset)", "the inset-well field background (the keeper's semantic job)"],
     ['[aria-invalid="true"]', "the attribute-driven error state (like nav's aria-current)"],
-    ["var(--sig-peach)", "the error border token (owner spec: error = party-peach)"],
+    ["var(--sig-peach)", "the error border token (owner spec: error = sig-peach)"],
     ["outline: 2px solid var(--color-cake-primary)", "the doctrine focus ring"],
     ["translateX(1.25rem)", "the switch knob travel (44 − 16 − 8 = 20px = 1.25rem)"],
     ['[aria-checked="true"]', "the switch state machine — the attribute IS the state"],
@@ -1111,7 +1111,7 @@ if (!existsSync(formsCssPath)) {
 // ---- (fb) toasts (1.4.0) ----------------------------------------------------------
 // (fb1) TOAST CSS: exists, the region wears the zenith rung var(--z-toast, 60),
 // the toast-life keyframes exist, status strips map through var(--status) to
-// party-green / party-peach, the owner's mechanical cubic-bezier shapes the
+// sig-green / sig-peach, the owner's mechanical cubic-bezier shapes the
 // slide-hold-fade, reduced-motion respected — ZERO hex, zero box-shadow.
 const toastCssPath = resolve(root, "css/toast.css");
 if (!existsSync(toastCssPath)) {

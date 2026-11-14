@@ -56,7 +56,7 @@ export const SET_BLURBS: Record<SetId, string> = {
   "01":
     "The frame every view hangs in: one centered column, one announcing hero, one sticky nav. Reach for this set first — layout is the doctrine everything else composes into.",
   "02":
-    "The surfaces people actually read: heroes, cards, badges and the five universal archetypes. Content colors live here — party tokens paint the categories, Flamingo/Teal never do.",
+    "The surfaces people actually read: heroes, cards, badges and the five universal archetypes. Content colors live here — chromatic tokens paint the categories, Flamingo/Teal never do.",
   "03":
     "Format rules sit above the input so people read the constraint before typing — announced by screen readers in the same breath as the label. Errors are states, not popups; every control keeps its native semantics.",
   "04":
@@ -122,13 +122,13 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { SurfaceCard } from "@edwyn/signature-style/react";
 
 <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
-  <Input placeholder="Guest name" />
+  <Input placeholder="Member name" />
 </SurfaceCard>
 <SurfaceCard
-  eyebrow="Planner" meta="views/planner.tsx" title="Event & Party Planner"
+  eyebrow="Workbench" meta="views/workbench.tsx" title="Bento Workbench"
   interactive accentToken="--color-cake-primary" elevation="floating"
 >
-  <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
+  <ProgressBar value={72} colorToken="--sig-sky" label="Attendance ratio" />
 </SurfaceCard>`,
   },
   PageHero: {
@@ -143,7 +143,7 @@ const [moduleId, setModuleId] = useState("core");
     componentName: "Icon",
     jsx: `import { Icon } from "@edwyn/signature-style/react";
 
-<Icon name="PartyPopper" size={16} />`,
+<Icon name="Rocket" size={16} />`,
   },
   Avatar: {
     set: "02",
@@ -213,7 +213,7 @@ const [moduleId, setModuleId] = useState("core");
   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
   stats={[
     { label: "Events", value: "24" },
-    { label: "Guests", value: "412" },
+    { label: "Members", value: "412" },
     { label: "Rating", value: "4.9" },
   ]}
   skills={[
@@ -293,7 +293,7 @@ const [moduleId, setModuleId] = useState("core");
   error={name.length === 0 && "Name is required"}
   aria-describedby="name-error"
 />`,
-    html: `<input class="sig-input" type="text" placeholder="Guest name" />`,
+    html: `<input class="sig-input" type="text" placeholder="Member name" />`,
   },
   TextArea: {
     set: "03",
@@ -326,12 +326,12 @@ const [agreed, setAgreed] = useState(false);
     componentName: "RadioCardGroup",
     jsx: `import { RadioCardGroup } from "@edwyn/signature-style/react";
 
-const [rsvp, setRsvp] = useState("attending");
+const [attendance, setAttendance] = useState("confirmed");
 <RadioCardGroup
-  label="RSVP"
-  name="rsvp"
-  value={rsvp}
-  onChange={setRsvp}
+  label="Attendance"
+  name="attendance"
+  value={attendance}
+  onChange={setAttendance}
   options={[
     { value: "attending", label: "Attending", description: "See you there" },
     { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
@@ -362,7 +362,7 @@ const [pw, setPw] = useState("");
 <Button variant="primary" size="md" leftIcon="Check" loading={submitting} type="submit">
   Check In
 </Button>
-<Button variant="danger" size="sm" onClick={remove}>Remove guest</Button>`,
+<Button variant="danger" size="sm" onClick={remove}>Remove member</Button>`,
     html: `<button class="sig-btn sig-btn--primary" type="submit">Check In</button>
 <button class="sig-btn sig-btn--secondary" type="button">Maybe</button>
 <button class="sig-btn sig-btn--ghost sig-btn--sm" type="button">Skip</button>`,
@@ -381,7 +381,7 @@ const [pw, setPw] = useState("");
     componentName: "StatRing",
     jsx: `import { StatRing } from "@edwyn/signature-style/react";
 
-<StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />`,
+<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />`,
   },
   StatCard: {
     set: "04",
@@ -389,7 +389,7 @@ const [pw, setPw] = useState("");
     jsx: `import { StatCard } from "@edwyn/signature-style/react";
 
 <StatCard
-  label="Confirmed Guests"
+  label="Confirmed Seats"
   value="170"
   delta="+12"
   deltaDirection="up"
@@ -431,7 +431,7 @@ const [pw, setPw] = useState("");
   ]}
   colorToken="--sig-sky"
   height={200}
-  label="RSVP momentum"
+  label="Attendance momentum"
 />`,
   },
   KnowledgeGraph: {
@@ -440,7 +440,7 @@ const [pw, setPw] = useState("");
     jsx: `import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
 
 const nodes: GraphNode[] = [
-  { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "Every branch is one workstream." },
+  { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", note: "Every branch is one layer." },
   { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
 ];
 
@@ -449,7 +449,7 @@ const nodes: GraphNode[] = [
   addOn
   onAddNode={(node) => addNode(node)}
   onSelectNode={(node) => inspect(node)}
-  label="Party planning graph"
+  label="Workbench knowledge graph"
   height={320}
 />`,
   },
@@ -474,7 +474,7 @@ const d = smoothPath([
 // radius 90 + depth·110, children fanned around the parent's angle,
 // ties broken by id hash. Same nodes → same coordinates, always.
 const nodes: GraphNode[] = [
-  { id: "root", label: "Party Planning", categoryToken: "--sig-lavender" },
+  { id: "root", label: "Core Engine", categoryToken: "--sig-lavender" },
   { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
 ];
 const positions: Record<string, GraphPosition> = layoutGraph(nodes);`,
@@ -568,14 +568,14 @@ const modal = useModal<TimelineEvent>();
 
 <DataTable
   columns={[
-    { key: "guest", header: "Guest" },
+    { key: "member", header: "Member" },
     { key: "share", header: "Contribution", numeric: true, align: "right" },
   ]}
   rows={[
-    { guest: "Ana Souza", share: "$120" },
-    { guest: "Leo Martins", share: "$0" },
+    { member: "Ana Souza", share: "$120" },
+    { member: "Leo Martins", share: "$0" },
   ]}
-  caption="Shared pot ledger · updated after every RSVP"
+  caption="Allocation ledger · updated after every response"
 />`,
   },
   Callout: {
@@ -583,9 +583,9 @@ const modal = useModal<TimelineEvent>();
     componentName: "Callout",
     jsx: `import { Callout } from "@edwyn/signature-style/react";
 
-<Callout status="warning">3 pending RSVPs close Friday.</Callout>`,
+<Callout status="warning">3 pending reviews close Friday.</Callout>`,
     html: `<div class="sig-callout" role="note" style="--status: var(--sig-peach);">
-  3 pending RSVPs close Friday.
+  3 pending reviews close Friday.
 </div>`,
   },
   Carousel: {
@@ -633,7 +633,7 @@ const modal = useModal<TimelineEvent>();
   dismissible
   onDismiss={hide}
 >
-  v2.5.0 — live state mode: check in a guest and watch the ledger, ring, and toast react.
+  v2.5.0 — live state mode: allocate a seat and watch the ledger, ring, and toast react.
 </AnnouncementBanner>`,
     html: `<div class="sig-announcement" role="status" style="--status: var(--color-cake-primary);">
   <span class="sig-announcement__icon">…</span>
@@ -658,7 +658,7 @@ const modal = useModal<TimelineEvent>();
     jsx: `import { ToastProvider } from "@edwyn/signature-style/react";
 
 <ToastProvider>
-  <RsvpForm />
+  <AttendanceForm />
 </ToastProvider>`,
   },
   useToast: {
@@ -666,8 +666,8 @@ const modal = useModal<TimelineEvent>();
     componentName: "useToast()",
     jsx: `import { useToast } from "@edwyn/signature-style/react";
 
-// inside <RsvpForm>, beneath the provider:
+// inside <AttendanceForm>, beneath the provider:
 const toast = useToast();
-toast("success", "RSVP sent — see you there 🎉");`,
+toast("success", "Attendance saved — see you there 🎉");`,
   },
 };

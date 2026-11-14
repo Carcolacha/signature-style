@@ -17,7 +17,7 @@
  *        (animation none + static surface ground), the flip card swaps
  *        to the opacity path, the form-well shake never runs, the
  *        meter/pill transitions go none.
- *   (a4) CONTRAST SPOT-CHECK — the 11 party tokens' text usages read
+ *   (a4) CONTRAST SPOT-CHECK — the 11 chromatic tokens' text usages read
  *        against their effective backgrounds; ratios reported; anything
  *        under 3:1 flagged (report item — fixes need owner approval).
  *   (a5) CONSOLE AUDIT — zero console errors + zero pageerror events
@@ -282,7 +282,7 @@ for (const [width, height] of VIEWPORTS) {
   await page.close();
 }
 
-/* ---- (a4) contrast spot-check — the 11 party tokens ------------------- */
+/* ---- (a4) contrast spot-check — the 11 chromatic tokens ---------------- */
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   watch(page);
@@ -334,13 +334,13 @@ for (const [width, height] of VIEWPORTS) {
       const [hi, lo] = l1 >= l2 ? [l1, l2] : [l2, l1];
       return (hi + 0.05) / (lo + 0.05);
     }
-    // Representative text usages per party token (query → note). Most
+    // Representative text usages per chromatic token (query → note). Most
     // live inside the Pattern Studio's always-mounted frames.
     const probes = [
       [".studio__palette-note", "placeholder probe (removed)"],
-      [".sig-form-field__error", "party-peach error line (studio FormField frame)"],
-      [".sig-form-field__valid", "party-green valid line (studio FormField frame)"],
-      [".sig-tier-card__features li svg", "party-green check bullets (studio TierCard frame)"],
+      [".sig-form-field__error", "sig-peach error line (studio FormField frame)"],
+      [".sig-form-field__valid", "sig-green valid line (studio FormField frame)"],
+      [".sig-tier-card__features li svg", "sig-green check bullets (studio TierCard frame)"],
       [".sig-chronicle__tag", "chronicle tag (inline --accent, studio ChronicleTimeline frame)"],
       [".sig-graph__node text", "graph node labels (studio KnowledgeGraph frame)"],
       [".sig-command__option[aria-selected=\"true\"]", "selected command row text (Flamingo 8% wash)"],
@@ -369,7 +369,7 @@ for (const [width, height] of VIEWPORTS) {
         ratio: Math.round(ratio(fg, bg) * 100) / 100,
       });
     }
-    // The 11 raw token pairs: each party token as TEXT against --bg-base
+    // The 11 raw token pairs: each chromatic token as TEXT against --bg-base
     // and --bg-surface (the theoretical worst cases for pale tokens).
     const rootStyle = getComputedStyle(document.documentElement);
     const surfaces = {
@@ -437,7 +437,7 @@ console.log("=== CONTRAST — live text usages ===");
 for (const usage of report.contrast.usages) {
   console.log(`  ${usage.found ? `ratio ${usage.ratio}  ${usage.color} on ${usage.background}  (${usage.note})` : `NOT FOUND  (${usage.note})`}`);
 }
-console.log("=== CONTRAST — the 11 party tokens vs the two grounds ===");
+console.log("=== CONTRAST — the 11 chromatic tokens vs the two grounds ===");
 for (const raw of report.contrast.raw) {
   console.log(`  ${raw.token} ${raw.value ?? JSON.stringify(raw)} → base ${raw.ratios?.["bg-base"]} · surface ${raw.ratios?.["bg-surface"]}`);
 }

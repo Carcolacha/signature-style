@@ -33,7 +33,7 @@
    color-mix derivations of --text-muted; the Teal hovers are the
    structural accents; the banner strip reads var(--status) — content
    tokens for content outcomes (Rule of Engagement), mapped in
-   react/editorial.tsx; the blockquote rule is the ONE party token on
+   react/editorial.tsx; the blockquote rule is the ONE chromatic token on
    prose chrome, by owner override (quotes are content — see the rule
    comment).
 
@@ -210,7 +210,7 @@
   padding: var(--space-standard);
   /* OWNER OVERRIDE (2.4.1): the quote rule moves Flamingo →
      --sig-mauve. A blockquote IS editorial content, so the Rule of
-     Engagement reads FOR the party token here — v2.4.0's Flamingo rule
+     Engagement reads FOR the chromatic token here — v2.4.0's Flamingo rule
      borrowed the structural action color for a content block; the
      owner moved it to the mauve editorial voice. */
   border-left: 4px solid var(--sig-mauve);

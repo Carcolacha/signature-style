@@ -98,7 +98,7 @@ export function Sparkline({ data, colorToken = "--sig-sky", width = 120, height 
  * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
  * → optional delta span (`--up` → var(--sig-green), `--down` →
- * var(--sig-peach) — content outcomes, party tokens) → optional
+ * var(--sig-peach) — content outcomes, chromatic tokens) → optional
  * `<Sparkline>` (labeled "<label> trend"). FLAT by the e1 doctrine:
  * the card separates with the 20% hairline, NO shadow (css/viz.css).
  * The sparkline's own token guard applies — a structural token drops
@@ -140,7 +140,7 @@ function barScaleMax(data) {
     const max = Math.max(...values);
     return max > 0 ? max : 1;
 }
-/** The bar's party ink — warn-and-drop to structural Flamingo is NOT allowed
+/** The bar's chromatic ink — warn-and-drop to structural Flamingo is NOT allowed
     here (bars are content), so a structural token REFUSES the whole datum. */
 function barToken(datum) {
     const token = datum.colorToken ?? "--sig-sky";
@@ -179,9 +179,9 @@ function horizontalBar(datum, index, count, scaleMax) {
     return (_jsxs("g", { className: "sig-bars__group", children: [_jsx("rect", { className: "sig-bars__track", x: HORIZONTAL_PLOT_X, y: center - barHeight / 2, width: trackWidth, height: barHeight, rx: 3 }), _jsx("rect", { className: "sig-bars__bar", x: HORIZONTAL_PLOT_X, y: center - barHeight / 2, width: barWidth, height: barHeight, rx: 3, style: { fill: `var(${token})` } }), _jsx("text", { className: "sig-bars__value", x: HORIZONTAL_PLOT_X + barWidth + 6, y: center + 4, children: datum.value }), _jsx("text", { className: "sig-bars__label", x: HORIZONTAL_LABEL_X, y: center + 4, textAnchor: "end", children: datum.label })] }, `${datum.label}-${index}`));
 }
 /**
- * `<BarChart>` — capacity tracks + party value bars + dashed reference
+ * `<BarChart>` — capacity tracks + chromatic value bars + dashed reference
  * lines (2.7.0). Every datum renders ONE group: an inset rounded track
- * out to its capacity (`max ?? scale`), the party-colored value bar,
+ * out to its capacity (`max ?? scale`), the chromatic-colored value bar,
  * a hover-revealed tabular value readout, and a mono axis label. Three
  * `strokeDasharray "4 4"` reference lines mark 25/50/75% of the scale.
  * Hover emphasis is class-driven (css/viz.css): the bar brightens and
@@ -287,7 +287,7 @@ function areaCoords(points) {
  *     { label: "W3", value: 26 }, { label: "W4", value: 41 },
  *   ]}
  *   colorToken="--sig-sky"
- *   label="RSVP momentum"
+ *   label="Attendance momentum"
  * />
  * ```
  */

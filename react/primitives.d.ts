@@ -27,11 +27,11 @@ export type IconName = keyof typeof icons;
  *
  * @example
  * ```tsx
- * <Icon name="PartyPopper" size={16} />
+ * <Icon name="Sparkles" size={16} />
  * ```
  */
 export interface IconProps extends Omit<LucideProps, "ref"> {
-    /** The exact lucide icon name (kebab aliases resolved; e.g. "PartyPopper"). */
+    /** The exact lucide icon name (kebab aliases resolved; e.g. "Sparkles"). */
     name: IconName;
 }
 export declare function Icon({ name, strokeWidth, ...rest }: IconProps): import("react").JSX.Element;
@@ -60,7 +60,7 @@ export declare function EmptyState({ icon, title, message }: EmptyStateProps): i
 /**
  * `<SigBadge>` — the Rule of Engagement, enforced in the type system.
  *
- * A party-colored content badge: subtle tinted background + guaranteed
+ * A chromatic-colored content badge: subtle tinted background + guaranteed
  * high-contrast text on both themes. `colorToken` only accepts `--sig-*`
  * tokens (`Extract` on `KnownToken`); passing `--color-cake-primary` or any
  * structural token is a compile error. A runtime guard keeps JS consumers
@@ -94,8 +94,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
      *    playground shadows its own primary buttons there).
      *  - secondary — surface fill + hairline, text-main.
      *  - ghost — transparent; hover paints the inset well.
-     *  - danger — the party-peach attention wash (the error-border
-     *    precedent: danger is attention, party territory by owner spec).
+     *  - danger — the sig-peach attention wash (the error-border
+     *    precedent: danger is attention, chromatic territory by owner spec).
      */
     variant?: "primary" | "secondary" | "ghost" | "danger";
     /**

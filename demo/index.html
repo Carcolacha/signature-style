@@ -149,44 +149,44 @@
     .note strong {
       color: var(--text-main);
     }
-    /* -- Party Palette (0.4.0) demo — CONTENT examples. Colors arrive via
+    /* -- Chromatic Palette (0.4.0) demo — CONTENT examples. Colors arrive via
        inline var(--sig-*) references only; this block never hardcodes a
-       party hex. Layout only. */
-    .party-strip {
+       chromatic hex. Layout only. */
+    .chroma-strip {
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-tight);
     }
-    .party-swatch {
+    .chroma-swatch {
       display: flex;
       flex-direction: column;
       gap: calc(var(--space-tight) / 2);
     }
-    .party-color {
+    .chroma-color {
       display: block;
       width: 3.5rem;
       height: 2rem;
       border-radius: calc(var(--radius-ui) / 2);
       border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
     }
-    .party-swatch code,
-    .party-example code {
+    .chroma-swatch code,
+    .chroma-example code {
       color: var(--text-muted);
       font-size: 0.7rem;
     }
-    .party-examples {
+    .chroma-examples {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
       gap: var(--space-standard);
       margin-top: var(--space-standard);
     }
-    .party-example {
+    .chroma-example {
       display: flex;
       flex-direction: column;
       gap: calc(var(--space-tight) / 2);
     }
-    .party-badge {
+    .chroma-badge {
       display: inline-flex;
       align-items: center;
       align-self: flex-start;
@@ -195,7 +195,7 @@
       padding: calc(var(--space-tight) / 2) var(--space-tight);
       border-radius: calc(var(--radius-ui) / 2);
     }
-    .party-avatar {
+    .chroma-avatar {
       width: 2rem;
       height: 2rem;
       border-radius: 9999px;
@@ -205,7 +205,7 @@
       font-size: 0.75rem;
       font-weight: 600;
     }
-    .party-event {
+    .chroma-event {
       background-color: var(--bg-surface);
       border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
       border-left: 3px solid var(--text-muted); /* inline style overrides with --sig-peach */
@@ -290,60 +290,60 @@
     </section>
 
     <section>
-      <h2>Party Palette · content only</h2>
-      <div class="party-strip">
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-pink-bright)"></span>
+      <h2>Chromatic Palette · content only</h2>
+      <div class="chroma-strip">
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-pink-bright)"></span>
           <code>--sig-pink-bright</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-pink-soft)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-pink-soft)"></span>
           <code>--sig-pink-soft</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-pink-alt)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-pink-alt)"></span>
           <code>--sig-pink-alt</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-mauve-bright)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-mauve-bright)"></span>
           <code>--sig-mauve-bright</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-mauve-soft)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-mauve-soft)"></span>
           <code>--sig-mauve-soft</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-lavender)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-lavender)"></span>
           <code>--sig-lavender</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-sky)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-sky)"></span>
           <code>--sig-sky</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-blue)"></span>
-          <code>--sig-blue</code>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-cobalt)"></span>
+          <code>--sig-cobalt</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-peach)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-peach)"></span>
           <code>--sig-peach</code>
         </div>
-        <div class="party-swatch">
-          <span class="party-color" style="background-color: var(--sig-green)"></span>
+        <div class="chroma-swatch">
+          <span class="chroma-color" style="background-color: var(--sig-green)"></span>
           <code>--sig-green</code>
         </div>
       </div>
-      <div class="party-examples">
-        <div class="party-example">
-          <span class="party-badge" style="background-color: var(--sig-pink-bright); color: var(--color-on-cake);">birthday</span>
+      <div class="chroma-examples">
+        <div class="chroma-example">
+          <span class="chroma-badge" style="background-color: var(--sig-pink-bright); color: var(--color-on-cake);">launch</span>
           <code>--sig-pink-bright</code>
         </div>
-        <div class="party-example">
-          <span class="party-avatar" style="background-color: var(--sig-mauve-soft); color: var(--color-on-cake);">e</span>
+        <div class="chroma-example">
+          <span class="chroma-avatar" style="background-color: var(--sig-mauve-soft); color: var(--color-on-cake);">e</span>
           <code>--sig-mauve-soft</code>
         </div>
-        <div class="party-example">
-          <div class="party-event" style="border-left-color: var(--sig-peach);">Design review · 14:00–15:00</div>
+        <div class="chroma-example">
+          <div class="chroma-event" style="border-left-color: var(--sig-peach);">Design review · 14:00–15:00</div>
           <code>--sig-peach</code>
         </div>
       </div>

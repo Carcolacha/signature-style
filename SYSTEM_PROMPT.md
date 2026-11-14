@@ -37,8 +37,8 @@ Shared, theme-independent tokens:
 - --transition-transform: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)
 - --space-tight: 0.5rem / --space-standard: 1rem / --space-section: 1.5rem (the 8px grid)
 
-## The Party Palette (Content-Only Tokens):
-Eleven theme-independent CONTENT colors (v2.4; 2.5.0 adds --sig-yellow, the strength meter's Fair stage), defined ONCE in `:root` and inherited by both Mocha and Latte untouched — a badge wears the same party color on both sides of the toggle:
+## The Chromatic Palette (Content-Only Tokens):
+Eleven theme-independent CONTENT colors (v2.4; 2.5.0 adds --sig-yellow, the strength meter's Fair stage), defined ONCE in `:root` and inherited by both Mocha and Latte untouched — a badge wears the same chromatic color on both sides of the toggle:
 - --sig-pink-bright: #ea76cb (badges, tag fills, event highlights)
 - --sig-pink-soft: #f5bde6 (tag surfaces, avatar rings, soft calendar fills)
 - --sig-pink-alt: #f4b8e4 (alternate pink for content categories)
@@ -134,13 +134,13 @@ The official surface: teal all-caps eyebrow + muted mono path share one meta row
 
 ```tsx
 <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
-  <Input placeholder="Guest name" />
+  <Input placeholder="Member name" />
 </SurfaceCard>
 <SurfaceCard
-  eyebrow="Planner" meta="views/planner.tsx" title="Event & Party Planner"
+  eyebrow="Workbench" meta="views/workbench.tsx" title="Bento Workbench"
   interactive accentToken="--color-cake-primary" elevation="floating"
 >
-  <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
+  <ProgressBar value={72} colorToken="--sig-sky" label="Attendance ratio" />
 </SurfaceCard>
 ```
 
@@ -199,7 +199,7 @@ const modal = useModal<TimelineEvent>();
 
 ### <ProgressBar>
 
-Party-colored budget bar with the limit caption; `colorToken` accepts `--sig-*` tokens only — anything else is refused at runtime:
+Chromatic-colored budget bar with the limit caption; `colorToken` accepts `--sig-*` tokens only — anything else is refused at runtime:
 
 ```tsx
 <ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" limitText="$720 / $1,000" />
@@ -207,11 +207,11 @@ Party-colored budget bar with the limit caption; `colorToken` accepts `--sig-*` 
 
 ### <StatRing>
 
-The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only. 3.0.0 ZOOM + DETAIL: the dial defaults to 120px; pass `total` (+ optional `unit`) and the ring becomes zoomable — hover/press scale(1.07), a click toggles the detail strip ("85% · 170 / 200 Guests", tabular-nums, the 0fr→1fr slide, reduced-motion safe):
+The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only. 3.0.0 ZOOM + DETAIL: the dial defaults to 120px; pass `total` (+ optional `unit`) and the ring becomes zoomable — hover/press scale(1.07), a click toggles the detail strip ("85% · 170 / 200 Seats", tabular-nums, the 0fr→1fr slide, reduced-motion safe):
 
 ```tsx
-<StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />
-<StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" total={200} unit="Guests" />
+<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />
+<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" total={200} unit="Seats" />
 ```
 
 ### <DataTable>
@@ -221,14 +221,14 @@ The ledger table inside a scroll-containment wrapper; `numeric: true` pins tabul
 ```tsx
 <DataTable
   columns={[
-    { key: "guest", header: "Guest" },
+    { key: "member", header: "Member" },
     { key: "share", header: "Contribution", numeric: true, align: "right" },
   ]}
   rows={[
-    { guest: "Ana Souza", share: "$120" },
-    { guest: "Leo Martins", share: "$0" },
+    { member: "Ana Souza", share: "$120" },
+    { member: "Leo Martins", share: "$0" },
   ]}
-  caption="Shared pot ledger · updated after every RSVP"
+  caption="Allocation ledger · updated after every response"
 />
 ```
 
@@ -237,7 +237,7 @@ The ledger table inside a scroll-containment wrapper; `numeric: true` pins tabul
 The persistent note — Toast's never-dismissing sibling; the 4px strip maps info → `--sig-sky`, success → `--sig-green`, warning → `--sig-peach`:
 
 ```tsx
-<Callout status="warning">3 pending RSVPs close Friday.</Callout>
+<Callout status="warning">3 pending reviews close Friday.</Callout>
 ```
 
 ### <Avatar>
@@ -251,7 +251,7 @@ Initials disc — word-initials, max two, uppercased, derived from `name`; ring 
 
 ### <FormField>
 
-The accessible around-the-control scaffold — YOU wire id/htmlFor (the package renders no ids it cannot verify). THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of 2.5.0): the label row is a fixed 20px rail (side-by-side fields align on the same baseline) carrying the promoted label + the optional `infoTooltip` ⓘ (pure-CSS bubble above, shown on hover AND focus-visible; title/aria-label carry the text) → control (or the `prefix`/`suffix` `.sig-form-field__well`: mono chips flanking a BARE input — the well owns the border, focus ring and the `[data-invalid]` shake) → THE HELPERS SLOT BELOW the well (`.sig-form-field__helpers`, 20px rail, flex wrap): `description` (format examples — "120", "5 numbers only · e.g., 79901") + `hint` → ONE validation line, `error` first (role="alert", peach), then `validMessage` (party-green). THE A11Y PRESERVATION: the description renders with a generated id wired onto the control via aria-describedby — screen readers STILL announce the format rule below the input (the GOV.UK concern survives the visual move). `required` paints a visual peach asterisk only — pass `aria-required`/`required` to the CONTROL yourself:
+The accessible around-the-control scaffold — YOU wire id/htmlFor (the package renders no ids it cannot verify). THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of 2.5.0): the label row is a fixed 20px rail (side-by-side fields align on the same baseline) carrying the promoted label + the optional `infoTooltip` ⓘ (pure-CSS bubble above, shown on hover AND focus-visible; title/aria-label carry the text) → control (or the `prefix`/`suffix` `.sig-form-field__well`: mono chips flanking a BARE input — the well owns the border, focus ring and the `[data-invalid]` shake) → THE HELPERS SLOT BELOW the well (`.sig-form-field__helpers`, 20px rail, flex wrap): `description` (format examples — "120", "5 numbers only · e.g., 79901") + `hint` → ONE validation line, `error` first (role="alert", peach), then `validMessage` (sig-green). THE A11Y PRESERVATION: the description renders with a generated id wired onto the control via aria-describedby — screen readers STILL announce the format rule below the input (the GOV.UK concern survives the visual move). `required` paints a visual peach asterisk only — pass `aria-required`/`required` to the CONTROL yourself:
 
 ```tsx
 <FormField
@@ -325,12 +325,12 @@ const [on, setOn] = useState(false);
 The card-metaphor radio — native inputs (keyboard + forms for free) under the label-as-card; the selected card lifts to `--bg-surface` (2.4.1) behind the 2px Flamingo border; `value` is controlled. 2.5.0: DESCRIPTIONS ENFORCED — every option carries its second line (the type is optional, but a description-less card renders as a stub and the package warns at dev time):
 
 ```tsx
-const [rsvp, setRsvp] = useState("attending");
+const [attendance, setAttendance] = useState("confirmed");
 <RadioCardGroup
-  label="RSVP"
-  name="rsvp"
-  value={rsvp}
-  onChange={setRsvp}
+  label="Attendance"
+  name="attendance"
+  value={attendance}
+  onChange={setAttendance}
   options={[
     { value: "attending", label: "Attending", description: "See you there" },
     { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
@@ -340,7 +340,7 @@ const [rsvp, setRsvp] = useState("attending");
 
 ### <PasswordInput>
 
-The password well with the live strength read-out (2.5.0) — controlled `value`; the eye toggle flips type password↔text (aria-pressed, Eye/EyeOff); the 4-segment meter fills its prefix peach → `--sig-yellow` (Fair) → sky → green as `data-score` 1..4; the stage label (Weak/Fair/Good/Strong) and the four condition pills ("8+ chars", "Uppercase", "Number", "Symbol" — data-satisfied → the 20% party-green wash) follow. Score = satisfied rules, nothing weighted:
+The password well with the live strength read-out (2.5.0) — controlled `value`; the eye toggle flips type password↔text (aria-pressed, Eye/EyeOff); the 4-segment meter fills its prefix peach → `--sig-yellow` (Fair) → sky → green as `data-score` 1..4; the stage label (Weak/Fair/Good/Strong) and the four condition pills ("8+ chars", "Uppercase", "Number", "Symbol" — data-satisfied → the 20% sig-green wash) follow. Score = satisfied rules, nothing weighted:
 
 ```tsx
 const [pw, setPw] = useState("");
@@ -349,13 +349,13 @@ const [pw, setPw] = useState("");
 
 ### <Button>
 
-The ONE button (2.5.0) — variants `primary` (Flamingo fill, on-cake ink, weight 600, FLAT: package css carries zero shadows), `secondary` (surface + hairline), `ghost` (transparent, inset hover), `danger` (the party-peach attention wash); sizes `sm`/`md`/`lg`; `leftIcon`/`rightIcon` are strict lucide keys; `loading` replaces the icons with the css spinner, sets aria-busy and disables the button. Press is `:active scale(0.97)`; focus is the Flamingo ring:
+The ONE button (2.5.0) — variants `primary` (Flamingo fill, on-cake ink, weight 600, FLAT: package css carries zero shadows), `secondary` (surface + hairline), `ghost` (transparent, inset hover), `danger` (the sig-peach attention wash); sizes `sm`/`md`/`lg`; `leftIcon`/`rightIcon` are strict lucide keys; `loading` replaces the icons with the css spinner, sets aria-busy and disables the button. Press is `:active scale(0.97)`; focus is the Flamingo ring:
 
 ```tsx
 <Button variant="primary" size="md" leftIcon="Check" loading={submitting} type="submit">
   Check In
 </Button>
-<Button variant="danger" size="sm" onClick={remove}>Remove guest</Button>
+<Button variant="danger" size="sm" onClick={remove}>Remove member</Button>
 ```
 
 ### <ToastProvider> + useToast()
@@ -364,17 +364,17 @@ Wrap once; push outcomes — status is `"success" | "error"`, mapped to `--sig-g
 
 ```tsx
 <ToastProvider>
-  <RsvpForm />
+  <AttendanceForm />
 </ToastProvider>
 
-// inside <RsvpForm>:
+// inside <AttendanceForm>:
 const toast = useToast();
-toast("success", "RSVP sent — see you there 🎉");
+toast("success", "Attendance saved — see you there 🎉");
 ```
 
 ### <SigBadge>
 
-Party-colored content badge — `colorToken` accepts ONLY `--sig-*` tokens (compile error otherwise; runtime guard drops structural tokens):
+Chromatic-colored content badge — `colorToken` accepts ONLY `--sig-*` tokens (compile error otherwise; runtime guard drops structural tokens):
 
 ```tsx
 <SigBadge colorToken="--sig-peach" label="Birthday" />
@@ -385,7 +385,7 @@ Party-colored content badge — `colorToken` accepts ONLY `--sig-*` tokens (comp
 Lucide exclusively — `name` must be a real lucide icon key (a typo is a compile error, not a blank square); stroke locked to 2:
 
 ```tsx
-<Icon name="PartyPopper" size={16} />
+<Icon name="Rocket" size={16} />
 ```
 
 ### <EmptyState>
@@ -435,17 +435,17 @@ The full-width strip with role="status". `variant` is `"info" | "warning" | "ann
   dismissible
   onDismiss={hide}
 >
-  v2.5.0 — live state mode: check in a guest and watch the ledger, ring, and toast react.
+  v2.5.0 — live state mode: allocate a seat and watch the ledger, ring, and toast react.
 </AnnouncementBanner>
 ```
 
 ### <StatCard> + <Sparkline>
 
-The flat KPI card (surface + 20% hairline, ZERO shadow) — tabular-nums value, uppercase tracked label, optional delta (up → party-green, down → party-peach) and an inline trend; `<Sparkline>` alone takes numeric points + a `--sig-*` token (guarded at runtime):
+The flat KPI card (surface + 20% hairline, ZERO shadow) — tabular-nums value, uppercase tracked label, optional delta (up → sig-green, down → sig-peach) and an inline trend; `<Sparkline>` alone takes numeric points + a `--sig-*` token (guarded at runtime):
 
 ```tsx
 <StatCard
-  label="Confirmed Guests"
+  label="Confirmed Seats"
   value="170"
   delta="+12"
   deltaDirection="up"
@@ -489,7 +489,7 @@ The ZERO-JavaScript disclosure (2.5.0) — `<details>`/`<summary>` with the toke
 
 ### <MatchupCard>
 
-The 1v1 grid (2.5.0) — `1fr auto 1fr`: two centered sides over 40px avatars (party rings typed `--sig-*`), the mono VS pill between, the optional stakes footer spanning the grid:
+The 1v1 grid (2.5.0) — `1fr auto 1fr`: two centered sides over 40px avatars (chromatic rings typed `--sig-*`), the mono VS pill between, the optional stakes footer spanning the grid:
 
 ```tsx
 <MatchupCard
@@ -529,7 +529,7 @@ The copy-to-clipboard reference card (2.6.0) — mono uppercase tag chip, accent
 
 ### <TierCard>
 
-The pricing tier (2.6.0) — eyebrow plan name, 2rem tabular-nums price, the feature list as party-green Check bullets, the CTA (primary when `featured`, secondary otherwise). `featured` is the whole hierarchy: `data-elevation="floating"` (the shared ladder paints the deep shadow) + the 2px accent border — never a scale transform:
+The pricing tier (2.6.0) — eyebrow plan name, 2rem tabular-nums price, the feature list as sig-green Check bullets, the CTA (primary when `featured`, secondary otherwise). `featured` is the whole hierarchy: `data-elevation="floating"` (the shared ladder paints the deep shadow) + the 2px accent border — never a scale transform:
 
 ```tsx
 <TierCard
@@ -541,14 +541,14 @@ The pricing tier (2.6.0) — eyebrow plan name, 2rem tabular-nums price, the fea
 
 ### <ProfileCard>
 
-The person card (2.6.0) — the 40px Avatar (party ring via `accentToken`, typed `SigColorToken`), the name over the muted role, the stats row (2–3 entries: tabular-nums weight-600 values, muted 0.6875rem labels), and the skills row (SigBadges):
+The person card (2.6.0) — the 40px Avatar (chromatic ring via `accentToken`, typed `SigColorToken`), the name over the muted role, the stats row (2–3 entries: tabular-nums weight-600 values, muted 0.6875rem labels), and the skills row (SigBadges):
 
 ```tsx
 <ProfileCard
   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
   stats={[
     { label: "Events", value: "24" },
-    { label: "Guests", value: "412" },
+    { label: "Members", value: "412" },
     { label: "Rating", value: "4.9" },
   ]}
   skills={[
@@ -580,7 +580,7 @@ The interactive node-link graph (2.7.0) — ONE pure-SVG `<svg role="application
 import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
 
 const nodes: GraphNode[] = [
-  { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "Every branch is one workstream." },
+  { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", note: "Every branch is one layer." },
   { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
 ];
 
@@ -594,7 +594,7 @@ const nodes: GraphNode[] = [
   onMoveNode={(id, position) => persistMove(id, position)}   /* drag commit, once per drag */
   onLinkNodes={(fromId, toId) => tether(fromId, toId)}       /* right-click tether commit */
   onSelectNode={(node) => inspect(node)}
-  label="Party planning graph"
+  label="Workbench knowledge graph"
   height={320}
 />
 ```
@@ -603,7 +603,7 @@ THE 3.0.0 OBSIDIAN INTERACTIONS: generous nodes (r 34, 13px labels, 16-char trun
 
 ### <BarChart>
 
-The capacity bar chart (2.7.0) — pure SVG, one group per datum: an inset rounded track out to the datum's `max` (default: the chart scale), the party value bar, a hover-revealed tabular readout, the mono axis label, and dashed `strokeDasharray "4 4"` reference lines at 25/50/75% of the scale. `orientation` flips the bars (`"vertical"` default | `"horizontal"`):
+The capacity bar chart (2.7.0) — pure SVG, one group per datum: an inset rounded track out to the datum's `max` (default: the chart scale), the chromatic value bar, a hover-revealed tabular readout, the mono axis label, and dashed `strokeDasharray "4 4"` reference lines at 25/50/75% of the scale. `orientation` flips the bars (`"vertical"` default | `"horizontal"`):
 
 ```tsx
 <BarChart
@@ -632,13 +632,13 @@ The gradient area (2.7.0) — pure SVG: a `useId`-keyed linearGradient (30% toke
   ]}
   colorToken="--sig-sky"
   height={200}
-  label="RSVP momentum"
+  label="Attendance momentum"
 />
 ```
 
 ### <TimelineManager>
 
-The CONTROLLED milestone manager (2.7.0) — `TimelineItem extends TimelineEvent { settled?: boolean }`; the component owns NO items. Composer (package Input + month Select + category Select + the primary sm "Settle Item" Button; empty titles warn and are ignored), filter pills (All/Pending/Settled, attribute-driven `aria-pressed`, the Flamingo active underline) + the tabular `{settled} / {total} Settled` counter, per-item rows (settle toggle with `aria-pressed` → party-green Check · body button → `onInspect` (pass `modal.open` to compose `<EventModal>`) · delete button → `onDelete`), and the EmptyState edge when the CURRENT filter matches nothing. Icon note (live-map-probed): lucide 1.72.0 has NO "Trash2"/"Filter" keys — the manager renders "Trash"/"Funnel" (the AudioLines/Music precedent):
+The CONTROLLED milestone manager (2.7.0) — `TimelineItem extends TimelineEvent { settled?: boolean }`; the component owns NO items. Composer (package Input + month Select + category Select + the primary sm "Settle Item" Button; empty titles warn and are ignored), filter pills (All/Pending/Settled, attribute-driven `aria-pressed`, the Flamingo active underline) + the tabular `{settled} / {total} Settled` counter, per-item rows (settle toggle with `aria-pressed` → sig-green Check · body button → `onInspect` (pass `modal.open` to compose `<EventModal>`) · delete button → `onDelete`), and the EmptyState edge when the CURRENT filter matches nothing. Icon note (live-map-probed): lucide 1.72.0 has NO "Trash2"/"Filter" keys — the manager renders "Trash"/"Funnel" (the AudioLines precedent):
 
 ```tsx
 import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react";
@@ -754,19 +754,19 @@ The Excalidraw/tldraw pattern: user state mirrors into localStorage so a reload 
 ```ts
 import { usePersistentState } from "./persistence";
 
-const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>("sig.v27.graph", SEED_GRAPH);
-const [timeline, setTimeline, resetTimeline] = usePersistentState<TimelineItem[]>("sig.v27.timeline", SEED_TIMELINE);
+const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>("sig.workspace.v3.graph", SEED_GRAPH);
+const [timeline, setTimeline, resetTimeline] = usePersistentState<TimelineItem[]>("sig.workspace.v3.timeline", SEED_TIMELINE);
 ```
 
-THE STORAGE-KEY CONTRACT: keys are versioned with the release that introduced the shape — `sig.v27.*`. When a stored SHAPE breaks, bump the prefix (`sig.v28.*`) and migrate by reading the old key once; never store new shapes under an old prefix. The portability hatch — export the whole workspace as one pretty JSON blob, import it back behind shape checks:
+THE STORAGE-KEY CONTRACT: keys are versioned with the release that introduced the shape — `sig.workspace.v3.*`. When a stored SHAPE breaks, bump the prefix (`sig.workspace.v4.*`) and migrate by reading the old key once; never store new shapes under an old prefix. The portability hatch — export the whole workspace as one pretty JSON blob, import it back behind shape checks:
 
 ```ts
 function exportSnapshot(graph: GraphNode[], timeline: TimelineItem[]): void {
-  const payload = { version: "sig.v27", graph, timeline, links }; /* 3.0.0: the tether links ride along */
+  const payload = { version: "sig.workspace.v3", graph, timeline, links }; /* 3.0.0: the tether links ride along */
   const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "signature-snapshot.json";
+  anchor.download = "signature-workspace.json";
   anchor.click();
   URL.revokeObjectURL(url);
 }
@@ -787,8 +787,8 @@ The three doctrines, one line each: **Token Cascade** — every state derives fr
 
 The normalized data layer ships in TWO mirrors — change one, change both:
 
-- `shared/schema.ts` — zero-dependency TypeScript DTOs + runtime guards (`isGuest`, `isEvent`, `isLedgerEntry`, `isMilestone`, `isGraphNodeRecord`, `isFlashcardDeck`, `isFlashcard`, `isGameMatchup`, `isApiError`, `isPaginated`). Nine interfaces: `User`, `Event`, `Guest` (`eventId` FK, `rsvp` enum `confirmed|pending|declined`, `contributionCents`), `LedgerEntry`, `Milestone`, `GraphNodeRecord` (workspace-scoped, `parentId` self-FK), `FlashcardDeck` + `Flashcard` (`deckId`, `front`, `back`), `GameMatchup` (`playerA/playerB` refs, `stakes`, `mode: "1v1" | "2v2"`), plus the API envelope `ApiError` / `Paginated<T>`. It is NOT in the npm pack (`shared/` is the future backend's half of the contract).
-- `docs/SCHEMA_V3.md` — the normalized ERD (mermaid + ASCII), the SQLite + PostgreSQL DDL (FKs, indexes on `eventId`, CHECK constraints on the `rsvp` enum + the `mode` shapes), the FastAPI Pydantic v2 models mirroring `shared/schema.ts` 1:1, and the REST contract table (GET/POST `/events`, `/events/{id}/guests`, `/guests/{id}/ledger-entries`, `/milestones`, `/decks`, `/matchups`, `/graph` — methods, DTOs, status codes).
+- `shared/schema.ts` — zero-dependency TypeScript DTOs + runtime guards (`isAttendee`, `isEvent`, `isLedgerEntry`, `isMilestone`, `isGraphNodeRecord`, `isFlashcardDeck`, `isFlashcard`, `isGameMatchup`, `isApiError`, `isPaginated`). Nine interfaces: `User`, `Event`, `Attendee` (`eventId` FK, `attendance` enum `confirmed|pending|declined`, `allocationCents`), `LedgerEntry`, `Milestone`, `GraphNodeRecord` (workspace-scoped, `parentId` self-FK), `FlashcardDeck` + `Flashcard` (`deckId`, `front`, `back`), `GameMatchup` (`playerA/playerB` refs, `stakes`, `mode: "1v1" | "2v2"`), plus the API envelope `ApiError` / `Paginated<T>`. It is NOT in the npm pack (`shared/` is the future backend's half of the contract).
+- `docs/SCHEMA_V3.md` — the normalized ERD (mermaid + ASCII), the SQLite + PostgreSQL DDL (FKs, indexes on `eventId`, CHECK constraints on the `attendance` enum + the `mode` shapes), the FastAPI Pydantic v2 models mirroring `shared/schema.ts` 1:1, and the REST contract table (GET/POST `/events`, `/events/{id}/attendees`, `/attendees/{id}/ledger-entries`, `/milestones`, `/decks`, `/matchups`, `/graph` — methods, DTOs, status codes).
 
 THE MONEY-IN-CENTS RULE (non-negotiable): every monetary amount is an INTEGER number of cents (`contributionCents: 12000` = $120.00). Floats drift — `0.1 + 0.2 !== 0.3` — and a shared-pot ledger that sums float dollars will eventually disagree with its own rows by a cent. Integers are exact in JS, SQLite (`INTEGER`) and PostgreSQL (`BIGINT`); the "$" formatting happens ONCE at the display boundary. The frontend demo keeps whole-dollar ergonomics in memory; the wire and the DB are cents.
 

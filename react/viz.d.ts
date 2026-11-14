@@ -9,7 +9,7 @@
  * (`var(--bg-inset)` since 2.2.0 — owner-authorized retarget: the old
  * `var(--bg-surface)` track was invisible on var(--bg-surface) cards);
  * data fills are STRICTLY `--sig-*` content tokens (Rule of
- * Engagement: party colors are the content/data colors). The ring
+ * Engagement: chromatic colors are the content/data colors). The ring
  * needs no CSS at all — pure SVG attributes; the bar's and the stat
  * card's classes live in css/viz.css. `<Sparkline>` is likewise pure
  * SVG — EXACTLY two elements (area polygon + line polyline) over a
@@ -31,7 +31,7 @@
  * are untouched.
  *
  * 2.7.0 ANALYTICAL CHARTS — the module GROWS (ProgressBar/StatRing
- * logic untouched above): <BarChart> (capacity tracks + party value
+ * logic untouched above): <BarChart> (capacity tracks + chromatic value
  * bars + dashed 25/50/75% reference lines + hover readouts, vertical
  * or horizontal) and <AreaChart> (a useId-gradient area under a
  * Catmull-Rom-smoothed line + hoverable point readouts). Both stay
@@ -50,7 +50,7 @@
  */
 import type { SigTokenName } from "./primitives.js";
 /**
- * `<ProgressBar>` — the party-colored budget bar.
+ * `<ProgressBar>` — the chromatic-colored budget bar.
  *
  * ONE `div.sig-progress` (role="progressbar", full aria value
  * contract) containing ONE `div.sig-progress__fill` whose width is
@@ -69,8 +69,8 @@ import type { SigTokenName } from "./primitives.js";
  * case: "$1,325 / $2,000" under the spent bar, digits pinned to the
  * same grid by font-variant-numeric.
  *
- * The PlanThenParty use case: budget remaining (72 of 100 on
- * `--sig-green`), savings progress, RSVP counts — any single
+ * The The flagship use case: budget remaining (72 of 100 on
+ * `--sig-green`), savings progress, attendance counts — any single
  * scalar that reads as a filled portion of a whole.
  *
  * @example
@@ -90,7 +90,7 @@ export interface ProgressBarProps {
 }
 export declare function ProgressBar({ value, colorToken, label, limitText }: ProgressBarProps): import("react").JSX.Element | null;
 /**
- * `<StatRing>` — the party-colored RSVP ratio ring.
+ * `<StatRing>` — the chromatic-colored Attendance ratio ring.
  *
  * ONE `<svg role="progressbar">` (viewBox 0 0 100 100, square at
  * `size`) with EXACTLY three circles: the track in `var(--bg-inset)`
@@ -120,13 +120,13 @@ export declare function ProgressBar({ value, colorToken, label, limitText }: Pro
  * the text, the geometry and `aria-valuenow` can never disagree.
  * Pass `showValue={false}` to restore the bare 2.1.0 dial.
  *
- * The PlanThenParty use case: the RSVP ratio (85% of invitees in on
+ * The The flagship use case: the Attendance ratio (85% of invitees in on
  * `--sig-sky`), attendance, completion — any single ratio that
  * reads as a dial.
  *
  * @example
  * ```tsx
- * <StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />
+ * <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />
  * ```
  */
 export interface StatRingProps {
@@ -140,18 +140,18 @@ export interface StatRingProps {
     strokeWidth?: 4 | 8;
     /** 2.2.0: centered ring readout inside the SVG. Default true. */
     showValue?: boolean;
-    /** The accessible name for the progressbar (e.g. "RSVP ratio"). */
+    /** The accessible name for the progressbar (e.g. "Attendance ratio"). */
     label?: string;
     /**
      * 3.0.0 — the denominator for the expandable detail strip (e.g. 200).
      * When present, the ring renders zoomable: hover/press scale(1.07),
      * and a click toggles the `.sig-ring__detail` strip below the ring —
      * "{value}% · {numerator}/{denominator} {unit}" with the numerator
-     * derived from the value (85% of 200 → "170 / 200 Guests"). The core
+     * derived from the value (85% of 200 → "170 / 200 Seats"). The core
      * dash geometry + the ARIA contract are untouched.
      */
     total?: number;
-    /** 3.0.0 — the detail strip's unit label ("Guests"). Requires `total`. */
+    /** 3.0.0 — the detail strip's unit label ("Seats"). Requires `total`. */
     unit?: string;
 }
 export declare function StatRing({ value, colorToken, size, strokeWidth, showValue, label, total, unit, }: StatRingProps): import("react").JSX.Element | null;
@@ -207,7 +207,7 @@ export interface StatCardProps {
  * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
  * → optional delta span (`--up` → var(--sig-green), `--down` →
- * var(--sig-peach) — content outcomes, party tokens) → optional
+ * var(--sig-peach) — content outcomes, chromatic tokens) → optional
  * `<Sparkline>` (labeled "<label> trend"). FLAT by the e1 doctrine:
  * the card separates with the 20% hairline, NO shadow (css/viz.css).
  * The sparkline's own token guard applies — a structural token drops
@@ -246,9 +246,9 @@ export interface BarChartProps {
     label?: string;
 }
 /**
- * `<BarChart>` — capacity tracks + party value bars + dashed reference
+ * `<BarChart>` — capacity tracks + chromatic value bars + dashed reference
  * lines (2.7.0). Every datum renders ONE group: an inset rounded track
- * out to its capacity (`max ?? scale`), the party-colored value bar,
+ * out to its capacity (`max ?? scale`), the chromatic-colored value bar,
  * a hover-revealed tabular value readout, and a mono axis label. Three
  * `strokeDasharray "4 4"` reference lines mark 25/50/75% of the scale.
  * Hover emphasis is class-driven (css/viz.css): the bar brightens and
@@ -309,7 +309,7 @@ export declare function smoothPath(coords: ReadonlyArray<{
  *     { label: "W3", value: 26 }, { label: "W4", value: 41 },
  *   ]}
  *   colorToken="--sig-sky"
- *   label="RSVP momentum"
+ *   label="Attendance momentum"
  * />
  * ```
  */

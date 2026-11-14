@@ -51,7 +51,7 @@ const tokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
 const mocha = Object.values(tokens.themes.mocha.tokens);
 const latte = Object.values(tokens.themes.latte.tokens);
 const shared = Object.values(tokens.shared.tokens);
-const party = Object.values(tokens.sigPalette.tokens);
+const chromatic = Object.values(tokens.sigPalette.tokens);
 const whitelist = new Set([
   ...Object.keys(tokens.themes.mocha.tokens),
   ...Object.keys(tokens.shared.tokens),
@@ -115,7 +115,7 @@ const lines = [];
 lines.push("# @edwyn/signature-style — The Signature Style (full)");
 lines.push("");
 lines.push(
-  "> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Party Palette content colors, mechanical physics.",
+  "> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.",
 );
 lines.push("");
 lines.push(`Version: ${tokens.meta.version} · Edition: ${tokens.meta.edition}`);
@@ -145,9 +145,9 @@ for (const t of shared) {
   lines.push(`- \`${t.name}\` \`${t.value}\` — ${t.description}`);
 }
 lines.push("");
-lines.push("### The Party Palette (content-ONLY — the Rule of Engagement)");
+lines.push("### The Chromatic Palette (content-ONLY — the Rule of Engagement)");
 lines.push("");
-for (const t of party) {
+for (const t of chromatic) {
   lines.push(`- \`${t.name}\` \`${t.value}\` — ${t.description}`);
 }
 lines.push("");
@@ -216,13 +216,13 @@ const setIndex = SET_ORDER.map((setId) => {
 
 const llms = `# @edwyn/signature-style — The Signature Style
 
-> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Party Palette content colors, mechanical physics.
+> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.
 
 The official machine-readable index for AI agents. Full self-contained version: [llms-full.txt](llms-full.txt) — every token, every rule, every copy-paste snippet + prop tables. Package source: [npm:@edwyn/signature-style](https://www.npmjs.com/package/@edwyn/signature-style).
 
 ## Tokens
 
-- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 50-token whitelist, Mocha + Latte themes, shared tokens, the Party Palette, the doctrine objects
+- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 50-token whitelist, Mocha + Latte themes, shared tokens, the Chromatic Palette, the doctrine objects
 - [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json
 - [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
 

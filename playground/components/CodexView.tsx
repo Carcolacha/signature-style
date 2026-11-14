@@ -6,7 +6,7 @@
  *   1. THE COLOR SWATCHES — every COLOR token as a click-to-copy card
  *      (click → clipboard the var name → toast). THE HONEST COUNT: the
  *      whitelist is 50 tokens, of which exactly 37 are colors (11
- *      core/keeper + the 26-token Party Palette); the remaining 13 are
+ *      core/keeper + the 26-token Chromatic Palette); the remaining 13 are
  *      spatial, z-index, type and motion tokens — they get their own
  *      displays below instead of being mislabeled "colors". The 3.0.0
  *      chromatic sixteen wear the "new 3.0" chip and their fill/series
@@ -22,10 +22,10 @@ import type { ReactNode } from "react";
 import { SurfaceCard, DataTable, ProseBlock, useToast } from "@edwyn/signature-style/react";
 import type { DataTableColumn } from "@edwyn/signature-style/react";
 
-/** Every COLOR token (37): the 11 core/keeper + the 26 party tokens.
+/** Every COLOR token (37): the 11 core/keeper + the 26 chromatic tokens.
     Values are the Mocha defaults (the dark default theme); Latte swaps
-    the theme tokens by attribute — the party palette never moves. */
-const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core" | "party"; isNew?: boolean }> = [
+    the theme tokens by attribute — the chromatic palette never moves. */
+const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core" | "chromatic"; isNew?: boolean }> = [
   { token: "--bg-base", label: "Base", family: "core" },
   { token: "--bg-surface", label: "Surface", family: "core" },
   { token: "--bg-inset", label: "Inset", family: "core" },
@@ -37,32 +37,32 @@ const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core"
   { token: "--text-bright", label: "Bright text", family: "core" },
   { token: "--text-muted", label: "Muted text", family: "core" },
   { token: "--text-muted-soft", label: "Soft muted", family: "core" },
-  { token: "--sig-pink-bright", label: "Pink bright", family: "party" },
-  { token: "--sig-pink-soft", label: "Pink soft", family: "party" },
-  { token: "--sig-pink-alt", label: "Pink alt", family: "party" },
-  { token: "--sig-mauve-bright", label: "Mauve bright", family: "party" },
-  { token: "--sig-mauve-soft", label: "Mauve soft", family: "party" },
-  { token: "--sig-lavender", label: "Lavender", family: "party" },
-  { token: "--sig-sky", label: "Sky", family: "party" },
-  { token: "--sig-cobalt", label: "Cobalt", family: "party", isNew: true },
-  { token: "--sig-peach", label: "Peach", family: "party" },
-  { token: "--sig-green", label: "Green", family: "party" },
-  { token: "--sig-yellow", label: "Yellow", family: "party" },
-  { token: "--sig-orchid", label: "Orchid", family: "party", isNew: true },
-  { token: "--sig-cyan", label: "Cyan", family: "party", isNew: true },
-  { token: "--sig-magenta", label: "Magenta", family: "party", isNew: true },
-  { token: "--sig-mint", label: "Mint", family: "party", isNew: true },
-  { token: "--sig-spring", label: "Spring", family: "party", isNew: true },
-  { token: "--sig-citron", label: "Citron", family: "party", isNew: true },
-  { token: "--sig-violet-glow", label: "Violet glow", family: "party", isNew: true },
-  { token: "--sig-pink-glow", label: "Pink glow", family: "party", isNew: true },
-  { token: "--sig-rose-glow", label: "Rose glow", family: "party", isNew: true },
-  { token: "--sig-lime-glow", label: "Lime glow", family: "party", isNew: true },
-  { token: "--sig-mint-glow", label: "Mint glow", family: "party", isNew: true },
-  { token: "--sig-crimson", label: "Crimson", family: "party", isNew: true },
-  { token: "--sig-azure", label: "Azure", family: "party", isNew: true },
-  { token: "--sig-tangerine", label: "Tangerine", family: "party", isNew: true },
-  { token: "--sig-neon-green", label: "Neon green", family: "party", isNew: true },
+  { token: "--sig-pink-bright", label: "Pink bright", family: "chromatic" },
+  { token: "--sig-pink-soft", label: "Pink soft", family: "chromatic" },
+  { token: "--sig-pink-alt", label: "Pink alt", family: "chromatic" },
+  { token: "--sig-mauve-bright", label: "Mauve bright", family: "chromatic" },
+  { token: "--sig-mauve-soft", label: "Mauve soft", family: "chromatic" },
+  { token: "--sig-lavender", label: "Lavender", family: "chromatic" },
+  { token: "--sig-sky", label: "Sky", family: "chromatic" },
+  { token: "--sig-cobalt", label: "Cobalt", family: "chromatic", isNew: true },
+  { token: "--sig-peach", label: "Peach", family: "chromatic" },
+  { token: "--sig-green", label: "Green", family: "chromatic" },
+  { token: "--sig-yellow", label: "Yellow", family: "chromatic" },
+  { token: "--sig-orchid", label: "Orchid", family: "chromatic", isNew: true },
+  { token: "--sig-cyan", label: "Cyan", family: "chromatic", isNew: true },
+  { token: "--sig-magenta", label: "Magenta", family: "chromatic", isNew: true },
+  { token: "--sig-mint", label: "Mint", family: "chromatic", isNew: true },
+  { token: "--sig-spring", label: "Spring", family: "chromatic", isNew: true },
+  { token: "--sig-citron", label: "Citron", family: "chromatic", isNew: true },
+  { token: "--sig-violet-glow", label: "Violet glow", family: "chromatic", isNew: true },
+  { token: "--sig-pink-glow", label: "Pink glow", family: "chromatic", isNew: true },
+  { token: "--sig-rose-glow", label: "Rose glow", family: "chromatic", isNew: true },
+  { token: "--sig-lime-glow", label: "Lime glow", family: "chromatic", isNew: true },
+  { token: "--sig-mint-glow", label: "Mint glow", family: "chromatic", isNew: true },
+  { token: "--sig-crimson", label: "Crimson", family: "chromatic", isNew: true },
+  { token: "--sig-azure", label: "Azure", family: "chromatic", isNew: true },
+  { token: "--sig-tangerine", label: "Tangerine", family: "chromatic", isNew: true },
+  { token: "--sig-neon-green", label: "Neon green", family: "chromatic", isNew: true },
 ];
 
 /** The visual 8px scale — 4/8/16/24/32/64, the white-space vocabulary. */
@@ -100,7 +100,7 @@ function Swatch({
 }: {
   token: string;
   label: string;
-  family: "core" | "party";
+  family: "core" | "chromatic";
   isNew?: boolean;
 }) {
   const toast = useToast();

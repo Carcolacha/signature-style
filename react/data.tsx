@@ -104,15 +104,15 @@ export interface DataTableProps {
  * ```tsx
  * <DataTable
  *   columns={[
- *     { key: "guest", header: "Guest" },
+ *     { key: "member", header: "Member" },
  *     { key: "status", header: "Status" },
  *     { key: "share", header: "Contribution", numeric: true, align: "right" },
  *   ]}
  *   rows={[
- *     { guest: "Ana Souza", status: "Confirmed", share: "$120" },
- *     { guest: "Leo Martins", status: "Pending", share: "$0" },
+ *     { member: "Ana Souza", status: "Confirmed", share: "$120" },
+ *     { member: "Leo Martins", status: "Pending", share: "$0" },
  *   ]}
- *   caption="Shared pot ledger · updated after every RSVP"
+ *   caption="Shared pot ledger · updated after every response"
  * />
  * ```
  */
@@ -243,7 +243,7 @@ const CALLOUT_VARIABLE: Record<CalloutStatus, string> = {
  *
  * @example
  * ```tsx
- * <Callout status="warning">3 pending RSVPs close Friday.</Callout>
+ * <Callout status="warning">3 pending responses close Friday.</Callout>
  * ```
  */
 export function Callout({ status, children }: CalloutProps) {

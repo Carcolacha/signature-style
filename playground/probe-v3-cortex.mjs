@@ -11,10 +11,10 @@
  *   slides wearing the repeat(3, 1fr) grid (measured: 3 columns, one
  *   slide per 3 items, the indicator reading pages).
  *
- *   RING — the live RSVP ring renders the 120px square dial; clicking
+ *   RING — the live attendance ring renders the 120px square dial; clicking
  *   it toggles data-expanded (scale(1.07) computed transform) and the
  *   detail strip slides open with the tabular readout
- *   ("<v>% · <n> / 200 Guests").
+ *   ("<v>% · <n> / 200 Seats").
  *
  *   PARITY — the three hand-rolled archetypes measure as the
  *   self-contained surfaces: background rgb surface, border-radius 12px
@@ -61,23 +61,23 @@ if (bentoChildren !== 11) failures.push(`(spans) the bento must keep its 11-cell
 /* ---------------- RING: zoom + detail ---------------- */
 await page.click('[data-testid="tabs-module"] button:has-text("Core Dashboard")');
 await page.waitForTimeout(300);
-const ringWrap = page.locator('[data-testid="ring-rsvp"] .sig-ring');
+const ringWrap = page.locator('[data-testid="ring-attendance"] .sig-ring');
 const ringCount = await ringWrap.count();
 if (ringCount !== 1) {
   failures.push(`(ring) the live ring must render the .sig-ring wrapper, found ${ringCount}`);
 } else {
-  const dialBox = await page.locator('[data-testid="ring-rsvp"] .sig-ring__dial').boundingBox();
+  const dialBox = await page.locator('[data-testid="ring-attendance"] .sig-ring__dial').boundingBox();
   console.log(`[ring] dial box: ${dialBox.width.toFixed(0)}×${dialBox.height.toFixed(0)}px`);
   if (Math.abs(dialBox.width - 120) > 2 || Math.abs(dialBox.height - 120) > 2) {
     failures.push(`(ring) the dial must be the 120px square, found ${dialBox.width.toFixed(0)}×${dialBox.height.toFixed(0)}`);
   }
-  const detailBefore = await page.locator('[data-testid="ring-rsvp"] .sig-ring__detail').getAttribute("data-open");
-  await page.locator('[data-testid="ring-rsvp"] .sig-ring__dial').click();
+  const detailBefore = await page.locator('[data-testid="ring-attendance"] .sig-ring__detail').getAttribute("data-open");
+  await page.locator('[data-testid="ring-attendance"] .sig-ring__dial').click();
   await page.waitForTimeout(450); // the 0fr → 1fr slide
   const expanded = await ringWrap.getAttribute("data-expanded");
-  const detailText = (await page.locator('[data-testid="ring-rsvp"] .sig-ring__detail-inner').textContent())?.trim() ?? "";
+  const detailText = (await page.locator('[data-testid="ring-attendance"] .sig-ring__detail-inner').textContent())?.trim() ?? "";
   const detailRows = await page.evaluate(() => {
-    const el = document.querySelector('[data-testid="ring-rsvp"] .sig-ring__detail');
+    const el = document.querySelector('[data-testid="ring-attendance"] .sig-ring__detail');
     return el ? getComputedStyle(el).gridTemplateRows : "none";
   });
   console.log(`[ring] data-expanded: ${expanded} · detail rows: ${detailRows} · text: "${detailText}"`);
@@ -88,10 +88,10 @@ if (ringCount !== 1) {
   } else if (detailRows === "0fr" || detailRows === "none") {
     failures.push("(ring) the detail strip must slide open (grid-template-rows 1fr)");
   }
-  if (!/\d+% · \d+ \/ 200 Guests/.test(detailText)) {
-    failures.push(`(ring) the detail strip must read "<v>% · <n> / 200 Guests", found "${detailText}"`);
+  if (!/\d+% · \d+ \/ 200 Seats/.test(detailText)) {
+    failures.push(`(ring) the detail strip must read "<v>% · <n> / 200 Seats", found "${detailText}"`);
   }
-  await page.locator('[data-testid="ring-rsvp"] .sig-ring__dial').click();
+  await page.locator('[data-testid="ring-attendance"] .sig-ring__dial').click();
 }
 
 /* ---------------- PARITY: the archetypes ---------------- */

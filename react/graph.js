@@ -45,12 +45,12 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * ```tsx
  * <KnowledgeGraph
  *   nodes={[
- *     { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "One plan, many branches." },
+ *     { id: "root", label: "Product Launch", categoryToken: "--sig-lavender", note: "One engine, many views." },
  *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
  *   ]}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
- *   label="Party planning graph"
+ *   label="Product launch graph"
  * />
  * ```
  */
@@ -192,7 +192,7 @@ export function cubicBezierEdge(parent, child) {
     const c2y = child.y - dy * 0.6;
     return `M ${parent.x} ${parent.y} C ${c1x} ${c1y} ${c2x} ${c2y} ${child.x} ${child.y}`;
 }
-/** The node ring's stroke: its party token, or structural Flamingo fallback. */
+/** The node ring's stroke: its chromatic token, or structural Flamingo fallback. */
 function strokeFor(node) {
     if (!node.categoryToken.startsWith("--sig-")) {
         return "var(--color-cake-primary)";

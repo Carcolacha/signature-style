@@ -26,7 +26,7 @@
  *                         (clipboard + onCopied toast contract).
  *   <TierCard>          — plan name / price / Check features / CTA;
  *                         featured → floating elevation + accent border.
- *   <ProfileCard>       — avatar (party ring) + role + tabular stats +
+ *   <ProfileCard>       — avatar (chromatic ring) + role + tabular stats +
  *                         skill badges.
  *   <ChronicleTimeline> — the "Night of Versions" memorial as an
  *                         official primitive: an <ol> of tagged releases
@@ -146,7 +146,7 @@ export interface AccordionCardProps {
  * ```
  */
 export declare function AccordionCard({ title, children }: AccordionCardProps): import("react").JSX.Element;
-/** One side of a `<MatchupCard>`: the competitor's name + optional party ring. */
+/** One side of a `<MatchupCard>`: the competitor's name + optional chromatic ring. */
 export interface MatchupSide {
     /** The competitor's name — also the Avatar's accessible name. */
     name: string;
@@ -174,7 +174,7 @@ export interface MatchupCardProps {
  * VS pill / side, each side a centered column (the 40px `<Avatar>` +
  * the name), the VS pill a mono inset capsule, and the optional
  * `__stakes` footer on `grid-column: 1 / -1` (inset well, mono muted
- * 0.75rem). The avatars carry the party rings when `ringToken` is set —
+ * 0.75rem). The avatars carry the chromatic rings when `ringToken` is set —
  * content decoration, the Rule of Engagement as typed.
  *
  * @example
@@ -301,7 +301,7 @@ export interface TierCardProps {
     name: string;
     /** The price line (e.g. "$49") — 2rem tabular-nums weight 600. */
     price: string;
-    /** The feature list — each a Check bullet (party-green). */
+    /** The feature list — each a Check bullet (sig-green). */
     features: string[];
     /** The chromatic accent: featured border + eyebrow ink. */
     accentToken?: AccentToken;
@@ -319,7 +319,7 @@ export interface TierCardProps {
  *
  * ONE `<section class="sig-tier-card [--featured]" data-elevation>`:
  * the plan name (eyebrow voice), the 2rem tabular-nums price, the
- * feature `<ul>` (each `<li>` a party-green Check bullet), and the CTA
+ * feature `<ul>` (each `<li>` a sig-green Check bullet), and the CTA
  * (the package Button — primary when featured, secondary otherwise).
  * FEATURED: `data-elevation="floating"` (the shared ladder in
  * css/surface.css paints the deep shadow — cards.css stays flat) + the
@@ -373,7 +373,7 @@ export interface ProfileCardProps {
 /**
  * `<ProfileCard>` — the person card (2.6.0).
  *
- * ONE `<section class="sig-profile-card">`: the 40px `<Avatar>` (party
+ * ONE `<section class="sig-profile-card">`: the 40px `<Avatar>` (chromatic
  * ring via `accentToken` — the Rule of Engagement as typed), the name
  * (weight 600) over the muted role, the stats row (value tabular-nums
  * weight 600 text-main, label muted 0.6875rem; min 2 / max 3 entries,
@@ -383,7 +383,7 @@ export interface ProfileCardProps {
  * ```tsx
  * <ProfileCard
  *   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
- *   stats={[{ label: "Events", value: "24" }, { label: "Guests", value: "412" }]}
+ *   stats={[{ label: "Events", value: "24" }, { label: "Members", value: "412" }]}
  *   skills={[{ colorToken: "--sig-peach", label: "Catering" }]}
  * />
  * ```

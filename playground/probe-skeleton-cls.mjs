@@ -84,7 +84,7 @@ const during = await page.evaluate(COLLECT);
 const cardSkeletons = await page.locator(".bento12 .sig-skeleton-card").count();
 const rowSkeletons = await page.locator(".bento12 .sig-skeleton-tr").count();
 if (cardSkeletons !== 6) failures.push(`expected 6 live .sig-skeleton-card in the bento mid-window, found ${cardSkeletons}`);
-if (rowSkeletons !== 5) failures.push(`expected 5 live .sig-skeleton-tr ledger rows (the SEED_GUESTS count), found ${rowSkeletons}`);
+if (rowSkeletons !== 5) failures.push(`expected 5 live .sig-skeleton-tr ledger rows (the SEED_MEMBERS count), found ${rowSkeletons}`);
 
 // AFTER — the window closes and the real content returns.
 await page.waitForFunction(() => document.querySelectorAll(".bento12 .sig-skeleton, .bento12 .sig-skeleton-tr").length === 0, { timeout: 3000 });

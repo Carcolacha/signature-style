@@ -20,12 +20,12 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * left strip).
  *
  * RULE OF ENGAGEMENT: the banner's strip is a CONTENT outcome
- * (info/warning → party tokens; announcement → the Flamingo banner —
+ * (info/warning → chromatic tokens; announcement → the Flamingo banner —
  * a release note is the house voice, so it wears the structural
  * signature). Everything else in this file is structural chrome:
  * hairline borders, inset wells, Flamingo/Teal only. EXCEPTION (owner
  * override, 2.4.1): the ProseBlock quote rule wears `--sig-mauve` —
- * a blockquote IS editorial content, so a party token on it is the
+ * a blockquote IS editorial content, so a chromatic token on it is the
  * Rule of Engagement read correctly (v2.4.0's Flamingo rule borrowed
  * the structural accent for content; the owner moved it).
  *
@@ -214,7 +214,7 @@ export function ProseBlock({ className, children }) {
 /**
  * Variant → strip token, INLINE as `--status` for css/editorial.css's
  * `border-left: 4px solid var(--status)` — the css/toast.css +
- * css/data.css mechanism. info/warning keep the party content map
+ * css/data.css mechanism. info/warning keep the chromatic content map
  * (sky/peach); announcement lifts to the structural Flamingo — the
  * release note speaks in the house voice (owner spec, 2.4.1).
  */

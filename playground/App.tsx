@@ -4,7 +4,7 @@
  *
  * 2.9.1 — ZERO CONTRAST DEBT & THE LIVE SKELETON TRIGGER. Two moves:
  *
- *   1. (css/tokens.css — not here) the two sub-3.0 party tokens are
+ *   1. (css/tokens.css — not here) the two sub-3.0 chromatic tokens are
  *      lightened at the source; this file's BENTO still reads them
  *      through var(--sig-*) and inherits the fix.
  *
@@ -17,7 +17,7 @@
  *      manual toggle sits one module-tab away; the palette command covers
  *      cross-view runs by navigating home + deferring one frame).
  *      DashboardView owns `simLoading` + the measured height locks ABOVE
- *      the module switch (the guests pattern — tab flips survive);
+ *      the module switch (the members pattern — tab flips survive);
  *      BentoCore's SimSlot measures each card body's exact footprint
  *      BEFORE the swap and renders the skeleton inside an explicit
  *      height during the 800ms window — the card containers' bounding
@@ -28,7 +28,7 @@
  * 2.8.0 — THE SIGNATURE PATTERN WEBSITE. The playground stops being a
  * dashboard-with-catalog and becomes the public-ready Pattern Studio:
  * the nav map grows from 2 real + 3 placeholder views (dashboard/index +
- * events/guests/budget) to FIVE REAL views — Dashboard (the live bento,
+ * events/members/budget) to FIVE REAL views — Dashboard (the live bento,
  * untouched), Pattern Studio (THE primary catalog: the 6-Set Taxonomy
  * rendered as <PatternFrame> cards with live previews, Preview ↔ JSX ↔
  * HTML toggles and one-click Copy Card — components/PatternStudio.tsx),
@@ -48,7 +48,7 @@
  * module — the b5 audit slice stays 7 cards). Four cards: The Knowledge
  * Graph (<KnowledgeGraph addOn> — deterministic radial SVG, focus
  * dimming, Add & Link), Spending by Category (<BarChart>, four bars
- * with per-bar capacity maxes), RSVP Momentum (<AreaChart>, 8 weekly
+ * with per-bar capacity maxes), Attendance Momentum (<AreaChart>, 8 weekly
  * points, sky), and the Milestone Manager (<TimelineManager> fully
  * wired — composer, filter pills, settle toggles, deletes, inspect →
  * EventModal). THE PERSISTENCE STORY (the Excalidraw/tldraw pattern):
@@ -56,7 +56,7 @@
  * usePersistentState (playground/persistence.ts, versioned keys
  * sig.v27.graph / sig.v27.timeline), so a reload restores your work;
  * the Milestone Manager card's toolbar exports/imports both arrays as
- * signature-snapshot.json and the danger Reset button wipes the keys
+ * signature-workspace.json and the danger Reset button wipes the keys
  * back to the seeds. THE PROOF (release blocker): playwright adds a
  * "Persistence proof" node, RELOADS the page, and asserts the node is
  * still there; Export fires a download; Reset restores the seeds.
@@ -78,9 +78,9 @@
  * dashboard view (BentoCore) is UNTOUCHED — the 12-column board stays.
  *
  * 2.5.0 — LIVE STATE MODE + THE 12-COLUMN BENTO. The core dashboard
- * stops being a static board: `SEED_GUESTS` seeds a `Guest[]` state,
+ * stops being a static board: `SEED_MEMBERS` seeds a `Member[]` state,
  * every check-in appends a row, and the bento REACTS — the ledger
- * table, the Confirmed Guests StatCard, the RSVP StatRing (its
+ * table, the Confirmed Seats StatCard, the Attendance StatRing (its
  * stroke-dashoffset glides through a playground-scoped css rule,
  * viz.tsx byte-frozen), the budget bars and their limit captions are
  * all `useMemo` derivatives of the one array. The five owner defects
@@ -96,14 +96,14 @@
  *                                    live Contribution column;
  *   5. the rigid dashboard        → the 12-column bento: Button
  *                                    variants, card archetypes, live
- *                                    validation (guest-form).
+ *                                    validation (member-form).
  *
  * 2.3.0 — THE DASHBOARD GROWS MODULE TABS. The dashboard view gains the
  * package's <Tabs> (attribute-driven: aria-selected, ZERO .is-active
  * classes — the nav contract) switching three modules: "core" (the
- * live bento), "data" (the Guest & Budget Ledger —
+ * live bento), "data" (the Member & Budget Ledger —
  * <DataTable> with a composed <SigBadge> status cell, the three
- * persistent <Callout> moods, five <Avatar> discs, two wearing party
+ * persistent <Callout> moods, five <Avatar> discs, two wearing chromatic
  * rings), and "forms" (the Input Matrix — Input/TextArea/Select/
  * Checkbox/ToggleSwitch stacked in the v2.1.0 spacing pattern). The
  * tab bar lives in .hub__module ABOVE the .hub grid so the four core
@@ -120,8 +120,8 @@
  * package owns it; the composition layer keeps only what is genuinely
  * playground-local (the grid container, metric rows, buttons, stagger,
  * node elevation, the gateway <button>s). Telemetry wears its limits:
- * every ProgressBar carries a limitText caption, and the new guests row
- * (170 / 200 on --sig-sky, 85% — the RSVP ring's own ratio, coherent)
+ * every ProgressBar carries a limitText caption, and the new members row
+ * (170 / 200 on --sig-sky, 85% — the attendance ring's own ratio, coherent)
  * is the limit caption's third live use. The ring shows its value now
  * (showValue default true).
  *
@@ -153,7 +153,7 @@
  *          fragment jumps/full reloads; the SPA switch is state-only.
  *
  *      Views: "dashboard", "index" (THE MASTER INDEX — three gateway
- *      cards), and "events"/"guests"/"budget" placeholder modules that
+ *      cards), and "events"/"members"/"budget" placeholder modules that
  *      dogfood the package's <EmptyState> primitive inside a
  *      <SurfaceCard>. Default view stays "dashboard" so the cortex
  *      smoke finds the timeline on load.
@@ -244,7 +244,7 @@ import { CodexView } from "./components/CodexView.js";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract).
  *  2.8.0 — THE 5-VIEW NAV MAP: the 2 real + 3 placeholder views
- *  (dashboard/index + events/guests/budget) become FIVE REAL views.
+ *  (dashboard/index + events/members/budget) become FIVE REAL views.
  *  Dashboard (the live bento) and Master Index (the catalog) stay;
  *  Pattern Studio (the primary catalog — the 6-Set Taxonomy), Chronicle
  *  (the Night of Versions, full-width) and AI Codex (tokens/rules/
@@ -486,17 +486,17 @@ export const mockEvents: MockEvent[] = [
   {
     id: "evt-001",
     month: "December 2026",
-    title: "Venue walkthrough",
+    title: "Design walkthrough",
     time: "18:00",
     colorToken: "--sig-mauve-bright",
     iconName: "MapPin",
     description:
-      "Walk the floor plan with the coordinator: staging, catering lane, and the photo corner. Bring the seating sketch.",
+      "Walk the component gallery with the team: the stage, the build lane, and the demo corner. Bring the layout sketch.",
   },
   {
     id: "evt-002",
     month: "December 2026",
-    title: "Band sound check",
+    title: "CI dry run",
     time: "19:30",
     colorToken: "--sig-sky",
     // NOT "Music" — that key does not exist in the installed lucide-react
@@ -507,27 +507,27 @@ export const mockEvents: MockEvent[] = [
   {
     id: "evt-003",
     month: "December 2026",
-    title: "Catering tasting",
+    title: "Design review",
     time: "13:00",
     colorToken: "--sig-peach",
     iconName: "Utensils",
     description:
-      "Three menu candidates. Confirm the vegan plate travels well and lock the dessert choice.",
+      "Three theme candidates. Confirm the dark palette travels well and lock the accent choice.",
   },
   {
     id: "evt-004",
     month: "January 2027",
-    title: "Send invitations",
+    title: "Beta announcements",
     time: "09:00",
     colorToken: "--sig-pink-bright",
     iconName: "MailOpen",
     description:
-      "Paper invites for family, digital for everyone else. RSVP window closes January 24.",
+      "Paper docs for the archive, digital for everyone else. Feedback window closes January 24.",
   },
   {
     id: "evt-005",
     month: "January 2027",
-    title: "Final headcount",
+    title: "Final QA pass",
     time: "17:00",
     colorToken: "--sig-green",
     iconName: "ClipboardCheck",
@@ -535,12 +535,12 @@ export const mockEvents: MockEvent[] = [
   {
     id: "evt-006",
     month: "February 2027",
-    title: "The wedding day",
+    title: "Public Release v3.1",
     time: "16:00",
     colorToken: "--sig-lavender",
-    iconName: "PartyPopper",
+    iconName: "Rocket",
     description:
-      "Ceremony at four, dinner at six. The timeline ends where the party begins.",
+      "Code freeze at four, deploy at six. The timeline ends where the launch begins.",
   },
 ];
 
@@ -549,16 +549,16 @@ export const mockEvents: MockEvent[] = [
  * colorToken so his records stay untouched by presentation concerns.
  */
 const CATEGORY_LABELS: Record<TimelineEvent["category"], string> = {
-  "--sig-pink-bright": "Invites",
-  "--sig-pink-soft": "Guests",
-  "--sig-pink-alt": "Decor",
-  "--sig-mauve-bright": "Venue",
+  "--sig-pink-bright": "Docs",
+  "--sig-pink-soft": "Members",
+  "--sig-pink-alt": "Theme",
+  "--sig-mauve-bright": "Infra",
   "--sig-mauve-soft": "Admin",
-  "--sig-lavender": "Ceremony",
-  "--sig-sky": "Music",
-  "--sig-cobalt": "Logistics", /* 3.0.0: blue retired — cobalt carries the value */
-  "--sig-peach": "Catering",
-  "--sig-green": "RSVP",
+  "--sig-lavender": "Release",
+  "--sig-sky": "Telemetry",
+  "--sig-cobalt": "Tooling", /* 3.0.0: blue retired — cobalt carries the value */
+  "--sig-peach": "Reviews",
+  "--sig-green": "Attendance",
   "--sig-yellow": "Meter",
 };
 
@@ -582,9 +582,9 @@ export const events: TimelineEvent[] = mockEvents.map((e) => ({
 
 /* ==========================================================================
    LIVE STATE (2.5.0) — the one array the bento reacts to.
-   SEED_GUESTS is the ledger's opening state; every check-in APPENDS to
-   it, and every live read (ledger rows, Confirmed Guests StatCard, the
-   RSVP ring, the budget bars) is a useMemo derivative. STATE → DERIVED
+   SEED_MEMBERS is the ledger's opening state; every allocation APPENDS to
+   it, and every live read (ledger rows, Confirmed Seats StatCard, the
+   attendance ring, the budget bars) is a useMemo derivative. STATE → DERIVED
    → WIRING lives in DashboardView → BentoCore below.
 
    2.7.0 PERSISTENCE SEEDS — the Graphs & Planner module's two
@@ -593,26 +593,26 @@ export const events: TimelineEvent[] = mockEvents.map((e) => ({
    Reset removes the keys and the seeds return).
    ========================================================================== */
 
-/** One guest in the live ledger. RSVP is the three-word contract. */
-interface Guest {
+/** One member in the live ledger. Attendance is the three-word contract. */
+interface Member {
   id: string;
   name: string;
-  rsvp: "confirmed" | "pending" | "declined";
-  contribution: number;
+  attendance: "confirmed" | "pending" | "declined";
+  allocation: number;
 }
 
 /** The ledger's opening five — the v2.3.0 crew, now typed and live. */
-const SEED_GUESTS: Guest[] = [
-  { id: "g-001", name: "Ana Souza", rsvp: "confirmed", contribution: 120 },
-  { id: "g-002", name: "Leo Martins", rsvp: "pending", contribution: 0 },
-  { id: "g-003", name: "Priya Nair", rsvp: "confirmed", contribution: 200 },
-  { id: "g-004", name: "Tom Weller", rsvp: "declined", contribution: 0 },
-  { id: "g-005", name: "Ana + 1", rsvp: "pending", contribution: 120 },
+const SEED_MEMBERS: Member[] = [
+  { id: "g-001", name: "Ana Souza", attendance: "confirmed", allocation: 120 },
+  { id: "g-002", name: "Leo Martins", attendance: "pending", allocation: 0 },
+  { id: "g-003", name: "Priya Nair", attendance: "confirmed", allocation: 200 },
+  { id: "g-004", name: "Tom Weller", attendance: "declined", allocation: 0 },
+  { id: "g-005", name: "Nina Almeida", attendance: "pending", allocation: 120 },
 ];
 
-/** The party's two fixed denominators (the metrics' limit captions). */
+/** The workbench's two fixed denominators (the metrics' limit captions). */
 const TOTAL_BUDGET = 2000;
-const GUEST_CAPACITY = 200;
+const SEAT_CAPACITY = 200;
 
 /**
  * SEED_GRAPH (2.7.0; 3.0.0 chromatic categories) — the knowledge
@@ -624,30 +624,30 @@ const GUEST_CAPACITY = 200;
 const SEED_GRAPH: GraphNode[] = [
   {
     id: "kg-root",
-    label: "Party Planning",
+    label: "Core Engine",
     categoryToken: "--sig-lavender",
-    note: "The root of the plan — every branch is one workstream.",
+    note: "The engine root — every branch is one layer.",
   },
   {
-    id: "kg-venue",
-    label: "Venue",
+    id: "kg-tokens",
+    label: "Token Layer",
     parentId: "kg-root",
     categoryToken: "--sig-azure",
-    note: "Shortlist three venues; the walkthrough is on the timeline.",
+    note: "Every color maps to the official palette — nothing invented.",
   },
   {
-    id: "kg-catering",
-    label: "Catering",
+    id: "kg-layout",
+    label: "Layout Grid",
     parentId: "kg-root",
     categoryToken: "--sig-tangerine",
-    note: "Tasting scheduled — the vegan plate must travel well.",
+    note: "The 12-column bento and the 8px rhythm hold every view.",
   },
   {
-    id: "kg-invites",
-    label: "Invites & RSVP tracking",
+    id: "kg-state",
+    label: "State Persistence",
     parentId: "kg-root",
     categoryToken: "--sig-pink-bright",
-    note: "Paper for family, digital for everyone else.",
+    note: "Reload survives, Reset restores — the workspace contract.",
   },
 ];
 
@@ -659,53 +659,53 @@ const SEED_TIMELINE: TimelineItem[] = [
   {
     id: "tm-001",
     date: "November 2026",
-    title: "Book the venue",
+    title: "Architecture Freeze",
     category: "--sig-mauve-bright",
-    categoryLabel: "Venue",
+    categoryLabel: "Infra",
     settled: true,
   },
   {
     id: "tm-002",
     date: "November 2026",
-    title: "Lock the catering menu",
+    title: "Accessibility Audit",
     category: "--sig-peach",
-    categoryLabel: "Catering",
+    categoryLabel: "Reviews",
     settled: true,
   },
   {
     id: "tm-003",
     date: "December 2026",
-    title: "Send invitations",
+    title: "Security Review",
     category: "--sig-pink-bright",
-    categoryLabel: "Invites",
+    categoryLabel: "Docs",
   },
   {
     id: "tm-004",
     date: "December 2026",
-    title: "Order the cake",
+    title: "Public Release v3.1",
     category: "--sig-lavender",
-    categoryLabel: "Ceremony",
+    categoryLabel: "Release",
   },
   {
     id: "tm-005",
     date: "January 2027",
-    title: "Final headcount",
+    title: "Token Sweep",
     category: "--sig-green",
-    categoryLabel: "RSVP",
+    categoryLabel: "Attendance",
   },
 ];
 
-/** The Spending by Category bars — four bars, four DIFFERENT chromatic
+/** The Spending by Department bars — four bars, four DIFFERENT chromatic
  *  tokens (3.0.0: cobalt/cyan/mint/tangerine — the multi-token series). */
 const SPENDING_BARS = [
-  { label: "Venue", value: 800, max: 1000, colorToken: "--sig-cobalt" },
-  { label: "Catering", value: 620, max: 900, colorToken: "--sig-tangerine" },
-  { label: "Invites", value: 240, max: 400, colorToken: "--sig-cyan" },
-  { label: "Music", value: 450, max: 600, colorToken: "--sig-mint" },
+  { label: "Engineering", value: 800, max: 1000, colorToken: "--sig-cobalt" },
+  { label: "Infrastructure", value: 620, max: 900, colorToken: "--sig-tangerine" },
+  { label: "Design", value: 240, max: 400, colorToken: "--sig-cyan" },
+  { label: "Tooling", value: 450, max: 600, colorToken: "--sig-mint" },
 ] as const;
 
-/** The RSVP Momentum series — eight weekly samples, sky. */
-const RSVP_MOMENTUM = [
+/** The Attendance Momentum series — eight weekly samples, sky. */
+const ATTENDANCE_MOMENTUM = [
   { label: "W1", value: 12 },
   { label: "W2", value: 18 },
   { label: "W3", value: 26 },
@@ -716,14 +716,14 @@ const RSVP_MOMENTUM = [
   { label: "W8", value: 128 },
 ] as const;
 
-/** RSVP value → ledger word (the RadioCardGroup submits the left key). */
-const RSVP_TO_STATE: Record<string, Guest["rsvp"]> = {
-  attending: "confirmed",
-  maybe: "pending",
+/** Radio choice → ledger word (the RadioCardGroup submits the left key). */
+const ATTENDANCE_TO_STATE: Record<string, Member["attendance"]> = {
+  confirmed: "confirmed",
+  pending: "pending",
   declined: "declined",
 };
 
-const RSVP_LABELS: Record<Guest["rsvp"], string> = {
+const ATTENDANCE_LABELS: Record<Member["attendance"], string> = {
   confirmed: "Confirmed",
   pending: "Pending",
   declined: "Declined",
@@ -731,9 +731,9 @@ const RSVP_LABELS: Record<Guest["rsvp"], string> = {
 
 /** The live ledger's columns — Contribution numeric + align right. */
 const BENTO_LEDGER_COLUMNS: DataTableColumn[] = [
-  { key: "guest", header: "Guest" },
-  { key: "rsvp", header: "RSVP" },
-  { key: "share", header: "Contribution", numeric: true, align: "right" },
+  { key: "member", header: "Member" },
+  { key: "attendance", header: "Attendance" },
+  { key: "share", header: "Allocation", numeric: true, align: "right" },
 ];
 
 /** The async-load simulation window (2.9.1) — 800ms of skeleton, then restore. */
@@ -775,7 +775,7 @@ function SimSlot({
 }
 
 /**
- * THE FULL PARTY PALETTE (3.0.0) — all 26 tokens with their human
+ * THE FULL CHROMATIC PALETTE (3.0.0) — all 26 tokens with their human
  * names and the ink/fill ROLE tags (the contrast contract: ink-floor
  * tokens are cleared for high-emphasis content; the chromatic sixteen
  * are DECLARED fill/series accents — bars, rings, borders, tinted
@@ -934,8 +934,8 @@ function Shell() {
       keywords: "snapshot download save backup budget workspace json export",
       icon: "Download",
       run: () => {
-        downloadJson(buildStoredWorkspaceSnapshot(), "signature-snapshot.json");
-        toast("success", "Workspace snapshot exported — signature-snapshot.json.");
+        downloadJson(buildStoredWorkspaceSnapshot(), "signature-workspace.json");
+        toast("success", "Workspace snapshot exported — signature-workspace.json.");
       },
     },
     {
@@ -1025,7 +1025,7 @@ function Shell() {
             right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
           />
           <StatCard
-            label="Confirmed Guests"
+            label="Confirmed Seats"
             value="170"
             sparklineData={[118, 126, 132, 141, 158, 170]}
             colorToken="--sig-sky"
@@ -1055,7 +1055,7 @@ function Shell() {
             right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
           />
           <StatCard
-            label="Confirmed Guests"
+            label="Confirmed Seats"
             value="170"
             sparklineData={[118, 126, 132, 141, 158, 170]}
             colorToken="--sig-sky"
@@ -1076,7 +1076,7 @@ function Shell() {
 }
 
 /**
- * The dashboard — view state + THE LIVE LEDGER (2.5.0). The guests
+ * The dashboard — view state + THE LIVE LEDGER (2.5.0). The members
  * array lives HERE (above the module switch) so checking in survives
  * tab flips; the core module renders <BentoCore>, the data/forms
  * showcases render below it — ALL inside the shell (styles.css).
@@ -1090,16 +1090,16 @@ function DashboardView({
 }) {
   const [moduleId, setModuleId] = useState<ModuleId>("core");
   // THE LIVE STATE — one array, every metric derives from it.
-  const [guests, setGuests] = useState<Guest[]>(SEED_GUESTS);
-  const checkIn = useCallback(
-    (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => {
-      setGuests((current) => [
+  const [members, setMembers] = useState<Member[]>(SEED_MEMBERS);
+  const allocate = useCallback(
+    (member: { name: string; attendance: Member["attendance"]; allocation: number }) => {
+      setMembers((current) => [
         ...current,
         {
           id: `g-${String(current.length + 1).padStart(3, "0")}`,
-          name: guest.name,
-          rsvp: guest.rsvp,
-          contribution: guest.contribution,
+          name: member.name,
+          attendance: member.attendance,
+          allocation: member.allocation,
         },
       ]);
     },
@@ -1107,7 +1107,7 @@ function DashboardView({
   );
 
   // 2.9.1 THE ASYNC-LOAD SIMULATION — state lives HERE, above the module
-  // switch (the guests pattern): a trigger fired from the Input Matrix
+  // switch (the members pattern): a trigger fired from the Input Matrix
   // card survives the flip back to core. BentoCore measures its slot
   // footprints and hands the table up through onSimStart; the 800ms
   // window and its timer live here so they survive tab flips too.
@@ -1158,8 +1158,8 @@ function DashboardView({
       ) : (
         <div className="hub__tabs-content">
           <BentoCore
-            guests={guests}
-            onCheckIn={checkIn}
+            members={members}
+            onAllocate={allocate}
             simLoading={simLoading}
             simLocked={simLocked}
             onSimStart={onSimStart}
@@ -1176,31 +1176,31 @@ function DashboardView({
  * explicit spans (grid-column: span N):
  *
  *   span 12  the v2.5.0 announcement banner
- *   span 4   StatCard ×3 — Total Budget / Confirmed Guests (LIVE) /
+ *   span 4   StatCard ×3 — Total Budget / Confirmed Seats (LIVE) /
  *            Active Game Rooms
- *   span 5   Quick Guest Check-In (the live-validation form)
+ *   span 5   Workspace Member & Resource Allocation (the live-validation form)
  *   span 4   The Chronology, ROW-SPAN 2 (timeline + modal, unchanged)
- *   span 3   Budget & RSVP Telemetry (ring + bars, LIVE)
+ *   span 3   Budget & Attendance Telemetry (ring + bars, LIVE)
  *   span 5   Interactive Deck & Rules (FlipCard / AccordionCard /
  *            ActionTile row)
- *   span 3   The Party Palette (unchanged badges)
- *   span 7   Guest & Budget Ledger (DataTable, LIVE from state)
+ *   span 3   The Chromatic Palette (unchanged badges)
+ *   span 7   Member & Budget Ledger (DataTable, LIVE from state)
  *   span 5   1v1 Game Matchup & Editorial (MatchupCard + ProseBlock)
  *
- * DERIVED (useMemo over guests): confirmedCount, potTotal (sum of
+ * DERIVED (useMemo over members): confirmedCount, potTotal (sum of
  * CONFIRMED contributions), ringValue = confirmed/200 %, spentPct =
  * potTotal/2000 %, ledgerRows (formatted for DataTable).
  */
 function BentoCore({
-  guests,
-  onCheckIn,
+  members,
+  onAllocate,
   simLoading,
   simLocked,
   onSimStart,
   registerSimRunner,
 }: {
-  guests: Guest[];
-  onCheckIn: (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => void;
+  members: Member[];
+  onAllocate: (member: { name: string; attendance: Member["attendance"]; allocation: number }) => void;
   simLoading: boolean;
   simLocked: Record<string, number>;
   onSimStart: (measured: Record<string, number>) => void;
@@ -1211,25 +1211,25 @@ function BentoCore({
   const [bannerVisible, setBannerVisible] = useState(true);
 
   // DERIVED — the single useMemo every live read consumes. Causal by
-  // construction: it reads only the current guests array.
+  // construction: it reads only the current members array.
   const derived = useMemo(() => {
-    const confirmed = guests.filter((guest) => guest.rsvp === "confirmed");
+    const confirmed = members.filter((member) => member.attendance === "confirmed");
     const confirmedCount = confirmed.length;
-    const potTotal = confirmed.reduce((sum, guest) => sum + guest.contribution, 0);
-    const ringValue = Math.min(100, Math.round((confirmedCount / GUEST_CAPACITY) * 100));
+    const potTotal = confirmed.reduce((sum, member) => sum + member.allocation, 0);
+    const ringValue = Math.min(100, Math.round((confirmedCount / SEAT_CAPACITY) * 100));
     const spentPct = Math.min(100, Math.round((potTotal / TOTAL_BUDGET) * 100));
-    const ledgerRows = guests.map((guest) => ({
-      guest: guest.name,
-      rsvp:
-        guest.rsvp === "confirmed" ? (
+    const ledgerRows = members.map((member) => ({
+      member: member.name,
+      attendance:
+        member.attendance === "confirmed" ? (
           <SigBadge colorToken="--sig-green" label="Confirmed" />
         ) : (
-          RSVP_LABELS[guest.rsvp]
+          ATTENDANCE_LABELS[member.attendance]
         ),
-      share: `$${guest.contribution.toLocaleString("en-US")}`,
+      share: `$${member.allocation.toLocaleString("en-US")}`,
     }));
     return { confirmedCount, potTotal, ringValue, spentPct, ledgerRows };
-  }, [guests]);
+  }, [members]);
 
   // 2.9.1 — the sim slot registry + the MEASURING runner. startAsyncSim
   // reads every SimSlot's CURRENT footprint (the real content is still
@@ -1268,7 +1268,7 @@ function BentoCore({
             onDismiss={() => setBannerVisible(false)}
           >
             <span data-testid="banner-release">
-              v2.7.0 — live state mode: check in a guest and watch the
+              v2.7.0 — live state mode: allocate a seat and watch the
               ledger, ring, and toast react.
             </span>
           </AnnouncementBanner>
@@ -1291,7 +1291,7 @@ function BentoCore({
       </div>
       <div className="sig-span-4 sig-cell" data-testid="kpi-trio">
         <StatCard
-          label="Confirmed Guests"
+          label="Confirmed Seats"
           value={String(derived.confirmedCount)}
           delta="live"
           sparklineData={[2, 3, 3, 4, 4, derived.confirmedCount]}
@@ -1309,16 +1309,16 @@ function BentoCore({
         />
       </div>
 
-      {/* span 5 — Quick Guest Check-In (live validation + Button) */}
+      {/* span 5 — Workspace Member & Resource Allocation (live validation + Button) */}
       <SurfaceCard
         eyebrow="Forms"
         meta="components/forms.tsx"
-        title="Quick Guest Check-In"
+        title="Workspace Member & Resource Allocation"
         interactive
         className="sig-span-5 sig-cell"
       >
         <SimSlot id="checkin" loading={simLoading} height={simLocked.checkin} bindRef={bindSlotRef}>
-          {simLoading ? <SkeletonCard /> : <CheckInForm onCheckIn={onCheckIn} />}
+          {simLoading ? <SkeletonCard /> : <AllocationForm onAllocate={onAllocate} />}
         </SimSlot>
       </SurfaceCard>
 
@@ -1348,11 +1348,11 @@ function BentoCore({
         </SimSlot>
       </SurfaceCard>
 
-      {/* span 3 — Budget & RSVP Telemetry (LIVE) */}
+      {/* span 3 — Budget & Attendance Telemetry (LIVE) */}
       <SurfaceCard
         eyebrow="Telemetry"
         meta="components/viz.tsx"
-        title="Budget & RSVP Telemetry"
+        title="Budget & Attendance Telemetry"
         interactive
         className="sig-span-3 sig-cell"
       >
@@ -1361,33 +1361,33 @@ function BentoCore({
             <SkeletonCard />
           ) : (
             <>
-          <div className="hub__metric" data-testid="metric-guests">
-          <span className="hub__metric-label">Guests confirmed</span>
+          <div className="hub__metric" data-testid="metric-seats">
+          <span className="hub__metric-label">Seats confirmed</span>
           <span className="hub__metric-value">
-            {derived.confirmedCount} / {GUEST_CAPACITY}
+            {derived.confirmedCount} / {SEAT_CAPACITY}
           </span>
         </div>
         <ProgressBar
           value={derived.ringValue}
           colorToken="--sig-sky"
-          label="Guests confirmed"
-          limitText={`${derived.confirmedCount} / ${GUEST_CAPACITY} Guests`}
+          label="Seats confirmed"
+          limitText={`${derived.confirmedCount} / ${SEAT_CAPACITY} Seats`}
         />
-        <div className="hub__metric" data-testid="metric-rsvp">
-          <span className="hub__metric-label">RSVP ratio</span>
+        <div className="hub__metric" data-testid="metric-attendance">
+          <span className="hub__metric-label">Attendance ratio</span>
           <span className="hub__metric-value">{derived.ringValue}%</span>
         </div>
         {/* LIVE RING — the stroke-dashoffset glides via the
             playground-scoped rule (styles.css); 3.0.0: the ring is
             zoomable (total + unit → the expandable detail strip:
-            "85% · 170 / 200 Guests" on click). */}
-        <div data-testid="ring-rsvp">
+            "85% · 170 / 200 Seats" on click). */}
+        <div data-testid="ring-attendance">
           <StatRing
             value={derived.ringValue}
             colorToken="--sig-sky"
-            label="RSVP ratio"
-            total={GUEST_CAPACITY}
-            unit="Guests"
+            label="Attendance ratio"
+            total={SEAT_CAPACITY}
+            unit="Seats"
           />
         </div>
         <div className="hub__metric" data-testid="metric-budget-spent">
@@ -1458,20 +1458,20 @@ function BentoCore({
           variant="secondary"
           size="sm"
           data-testid="btn-toast"
-          onClick={() => toast("success", "RSVP sent — see you there 🎉")}
+          onClick={() => toast("success", "Attendance saved — see you there 🎉")}
         >
-          Preview the RSVP toast
+          Preview the attendance toast
         </Button>
             </>
           )}
         </SimSlot>
       </SurfaceCard>
 
-      {/* span 3 — The Party Palette (ALL 26 — click-to-copy swatches) */}
+      {/* span 3 — The Chromatic Palette (ALL 26 — click-to-copy swatches) */}
       <SurfaceCard
         eyebrow="Palette"
         meta="components/primitives.tsx"
-        title="The Party Palette"
+        title="The Chromatic Palette"
         interactive
         className="sig-span-3 sig-cell"
       >
@@ -1512,11 +1512,11 @@ function BentoCore({
         </SimSlot>
       </SurfaceCard>
 
-      {/* span 7 — Guest & Budget Ledger (LIVE) */}
+      {/* span 7 — Member & Budget Ledger (LIVE) */}
       <SurfaceCard
         eyebrow="Data"
         meta="components/data.tsx"
-        title="Guest & Budget Ledger"
+        title="Member & Budget Ledger"
         interactive
         className="sig-span-7 sig-cell"
       >
@@ -1528,8 +1528,8 @@ function BentoCore({
             {simLoading ? (
               <table className="sig-data-table" aria-hidden="true">
                 <tbody>
-                  {guests.map((guest) => (
-                    <SkeletonTableRow key={guest.id} columns={3} />
+                  {members.map((member) => (
+                    <SkeletonTableRow key={member.id} columns={3} />
                   ))}
                 </tbody>
               </table>
@@ -1561,22 +1561,22 @@ function BentoCore({
           ) : (
             <>
         <MatchupCard
-          left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
-          right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
-          stakes="Winner picks the next venue — loser brings the ice."
+          left={{ name: "Architecture A", ringToken: "--sig-mauve-soft" }}
+          right={{ name: "Architecture B", ringToken: "--sig-sky" }}
+          stakes="Benchmark: A vs B — the latency comparison decides the default stack."
         />
         <ProseBlock>
           <p>
-            The bracket is a promise: two names, one round, a verdict
-            everyone accepts. The ledger above feeds it — confirmed
-            guests seed the pairs, and every forfeit re-shuffles the
-            deck.
+            The benchmark is a promise: two builds, one workload, a
+            verdict everyone accepts. The ledger above feeds it — real
+            traces seed the pairs, and every regression re-runs the
+            suite.
           </p>
           <blockquote>
-            <p>“A party without a bracket is just a crowd with snacks.”</p>
-            <footer>— the tournament ledger, page one</footer>
+            <p>“A benchmark without a baseline is just a leaderboard with opinions.”</p>
+            <footer>— the benchmark ledger, page one</footer>
           </blockquote>
-          <cite>PlanThenParty Field Notes, vol. 3 — the matchup chapters</cite>
+          <cite>Signature Style Field Notes, vol. 3 — the benchmark chapters</cite>
         </ProseBlock>
             </>
           )}
@@ -1587,29 +1587,30 @@ function BentoCore({
 }
 
 /**
- * CHECKINFORM — the Quick Guest Check-In surface (2.5.0). Local field
- * state + LIVE validation:
+ * ALLOCATIONFORM — the Workspace Member & Resource Allocation surface
+ * (2.5.0; 3.1.0 the standalone rename). Local field state + LIVE
+ * validation:
  *
- *   Contribution — /^\d+$/ → validMessage; non-empty and failing →
- *                  error (the well shakes; the border goes peach).
- *   Postal Code  — /^\d{5}$/ → "Valid ZIP" / error otherwise.
- *   Name         — required (submit-level: the toast refuses).
+ *   Budget Allocation — /^\d+$/ → validMessage; non-empty and failing →
+ *                       error (the well shakes; the border goes peach).
+ *   Region Code       — /^\d{5}$/ → "Valid region code" / error else.
+ *   Member Name       — required (submit-level: the toast refuses).
  *
  * SUBMIT (form onSubmit, preventDefault): invalid → an error toast;
- * valid → a short loading state on the <Button>, then the guest rides
- * up to DashboardView's state, the success toast fires ("Checked in —
- * see you there 🎉"), and the fields reset.
+ * valid → a short loading state on the <Button>, then the member rides
+ * up to DashboardView's state, the success toast fires ("Allocated —
+ * welcome aboard 🎉"), and the fields reset.
  */
-function CheckInForm({
-  onCheckIn,
+function AllocationForm({
+  onAllocate,
 }: {
-  onCheckIn: (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => void;
+  onAllocate: (member: { name: string; attendance: Member["attendance"]; allocation: number }) => void;
 }) {
   const toast = useToast();
   const [name, setName] = useState("");
-  const [contribution, setContribution] = useState("");
+  const [allocation, setAllocation] = useState("");
   const [postal, setPostal] = useState("");
-  const [rsvp, setRsvp] = useState("attending");
+  const [attendance, setAttendance] = useState("confirmed");
   const [rotation, setRotation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const submitTimer = useRef<number | null>(null);
@@ -1623,30 +1624,30 @@ function CheckInForm({
 
   // LIVE RULES — value passes → validMessage; non-empty and failing →
   // error. Empty stays quiet (an empty field is not yet wrong).
-  const trimmedContribution = contribution.trim();
-  const contributionValid = /^\d+$/.test(trimmedContribution);
-  const contributionError =
-    trimmedContribution !== "" && !contributionValid
-      ? "The contribution must be a number"
+  const trimmedAllocation = allocation.trim();
+  const allocationValid = /^\d+$/.test(trimmedAllocation);
+  const allocationError =
+    trimmedAllocation !== "" && !allocationValid
+      ? "The allocation must be a number"
       : undefined;
   const postalValid = /^\d{5}$/.test(postal);
   const postalError =
-    postal !== "" && !postalValid ? "Postal codes are 5 digits" : undefined;
+    postal !== "" && !postalValid ? "Region codes are 5 digits" : undefined;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (name.trim() === "" || !contributionValid) {
-      toast("error", "A name and a numeric contribution are required to check in.");
+    if (name.trim() === "" || !allocationValid) {
+      toast("error", "A name and a numeric allocation are required to allocate.");
       return;
     }
     setSubmitting(true);
     submitTimer.current = window.setTimeout(() => {
-      onCheckIn({
+      onAllocate({
         name: name.trim(),
-        rsvp: RSVP_TO_STATE[rsvp] ?? "pending",
-        contribution: Number(trimmedContribution),
+        attendance: ATTENDANCE_TO_STATE[attendance] ?? "pending",
+        allocation: Number(trimmedAllocation),
       });
-      toast("success", "Checked in — see you there 🎉");
+      toast("success", "Allocated — welcome aboard 🎉");
       setName("");
       setContribution("");
       setPostal("");
@@ -1657,21 +1658,21 @@ function CheckInForm({
   };
 
   return (
-    <form className="hub__checkin" data-testid="guest-form" onSubmit={handleSubmit}>
+    <form className="hub__checkin" data-testid="member-form" onSubmit={handleSubmit}>
       {/* 2.6.0 form audit: the Name field carries its format rule as a
           description — rendered ABOVE the input (the defect-#2 anatomy;
           every FormField description in this playground greps desc-
           before-well). */}
       <FormField
-        label="Name"
+        label="Member Name"
         htmlFor="checkin-name"
         required
-        description="The guest's full name — as it reads on the invite"
+        description="The member's full name — as it reads on the roster"
       >
         <Input
           id="checkin-name"
           required
-          placeholder="Guest name"
+          placeholder="Member name"
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
@@ -1680,28 +1681,28 @@ function CheckInForm({
           rule rides the description ABOVE the input, and the value is
           live-validated. */}
       <FormField
-        label="Contribution"
+        label="Budget Allocation"
         htmlFor="checkin-share"
         prefix="$"
         description="Numbers only · e.g., 120"
-        validMessage={contributionValid ? "Valid amount" : undefined}
-        error={contributionError}
+        validMessage={allocationValid ? "Valid amount" : undefined}
+        error={allocationError}
       >
         <Input
           id="checkin-share"
           placeholder="120"
           inputMode="numeric"
           aria-invalid={!!contributionError || undefined}
-          value={contribution}
-          onChange={(event) => setContribution(event.target.value)}
+          value={allocation}
+          onChange={(event) => setAllocation(event.target.value)}
         />
       </FormField>
       <FormField
-        label="Postal Code"
+        label="Region Code"
         htmlFor="checkin-postal"
-        infoTooltip="The ZIP drives the catering headcount — we route by food zone."
+        infoTooltip="The region code drives capacity planning — we route by availability zone."
         description="5 numbers only · e.g., 79901"
-        validMessage={postalValid ? "Valid ZIP" : undefined}
+        validMessage={postalValid ? "Valid region code" : undefined}
         error={postalError}
       >
         <Input
@@ -1714,14 +1715,14 @@ function CheckInForm({
         />
       </FormField>
       <RadioCardGroup
-        label="RSVP"
-        name="checkin-rsvp"
-        value={rsvp}
-        onChange={setRsvp}
+        label="Access Level"
+        name="checkin-attendance"
+        value={attendance}
+        onChange={setAttendance}
         options={[
-          { value: "attending", label: "Attending", description: "See you there" },
-          { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
-          { value: "declined", label: "Can't make it", description: "Sorry — next time" },
+          { value: "confirmed", label: "Confirmed", description: "Seat allocated this sprint" },
+          { value: "pending", label: "Pending", description: "Awaiting capacity review" },
+          { value: "declined", label: "Declined", description: "No seat this cycle" },
         ]}
       />
       {/* 2.4.1's visible switch label, exercised: "Add to game
@@ -1729,10 +1730,10 @@ function CheckInForm({
       <ToggleSwitch
         checked={rotation}
         onToggle={setRotation}
-        label="Add to game rotation"
+        label="Add to build rotation"
       />
       <Button variant="primary" size="md" type="submit" loading={submitting}>
-        Check In
+        Allocate Seat
       </Button>
     </form>
   );
@@ -1740,8 +1741,8 @@ function CheckInForm({
 
 /**
  * One gateway card in THE MASTER INDEX — a door to a module. 2.6.0: the
- * door gains its chromatic accent (Flamingo for the structural planner
- * door, party tokens for the content doors).
+ * door gains its chromatic accent (Flamingo for the structural workbench
+ * door, chromatic tokens for the content doors).
  */
 interface Gateway {
   label: string;
@@ -1773,7 +1774,7 @@ const CATALOG_TABS: Array<{ id: CatalogCategory; label: string }> = [
  * All 23 releases of the engine's life, oldest first; the patch
  * releases (v0.2.1, v1.5.1, v2.4.1) fold into their minors. Tags +
  * names from the README changelog; one story line and one stat each;
- * the milestone accents cycle the party palette.
+ * the milestone accents cycle the chromatic palette.
  */
 const RELEASE_HISTORY: ChronicleRelease[] = [
   {
@@ -1799,7 +1800,7 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
   },
   {
     tag: "v0.4.0",
-    title: "Party Palette",
+    title: "Chromatic Palette",
     story: "Ten content-only tokens — the Rule of Engagement draws the chrome/content line.",
     stat: "10 tokens reserved",
     accentToken: "--sig-pink-bright",
@@ -1976,30 +1977,29 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
   const [carouselMode, setCarouselMode] = useState<"paged-3" | "free-scroll">("free-scroll");
   const gateways: Gateway[] = [
     {
-      label: "PLANNER",
-      path: "views/planner.tsx",
-      title: "Event & Party Planner",
+      label: "WORKBENCH",
+      path: "views/workbench.tsx",
+      title: "Bento Workbench",
       description:
-        "The live dashboard — timeline, telemetry, forms, palette. Click to return.",
+        "The live dashboard — telemetry, allocation, palette. Click to return.",
       accent: "--color-cake-primary",
       action: () => onNavigate(VIEW_HREFS.dashboard),
     },
     {
-      label: "STUDY",
-      path: "modules/study.tsx",
-      title: "Study & Flashcard Engine",
-      description: "Deck generation and spaced-repetition flashcards for study groups.",
+      label: "PLANNER",
+      path: "views/planner.tsx",
+      title: "Interactive Graph & Planner",
+      description: "The persistence module — graph, charts, milestones.",
       accent: "--sig-lavender",
-      action: () => toast("success", "The study module is on the roadmap."),
+      action: () => toast("success", "The planner module is on the roadmap."),
     },
     {
-      label: "ARENA",
-      path: "modules/games.tsx",
-      title: "Party Game Arena",
-      description:
-        "40 curated party & shot games with 1v1 / 2v2 spectator betting frameworks.",
+      label: "STUDIO",
+      path: "views/studio.tsx",
+      title: "Pattern Studio",
+      description: "Every archetype on one stage — compose before you commit.",
       accent: "--sig-peach",
-      action: () => toast("success", "The party games module is on the roadmap."),
+      action: () => toast("success", "The studio module is on the roadmap."),
     },
   ];
 
@@ -2055,13 +2055,13 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
         <div className="hub__row--3" data-testid="index-catalog">
           <div className="sig-cell">
             <ContentCard
-              category="Catering"
+              category="Platform"
               categoryToken="--sig-peach"
-              meta={["25 MIN", "SPICY", "$14"]}
+              meta={["25 MIN", "CANARY", "$14"]}
               accentToken="--sig-yellow"
-              title="Birria & Street Taco Catering"
-              description="Slow-braised birria, consomé on the side, the salsa roja that silences the table. The taco cart parks at your gate and feeds the line until the last guest waves the white flag."
-              action={{ label: "Book the taco cart" }}
+              title="Managed Deploy Pipeline"
+              description="Green builds, canary rolls on the side, the rollback button that silences the incident. The runner parks on your branch and feeds the pipeline until the last check signs off."
+              action={{ label: "Book the pipeline" }}
             />
           </div>
           <div className="sig-cell">
@@ -2076,18 +2076,18 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
           </div>
           <div className="sig-cell">
             <TierCard
-              name="Arena Pass"
+              name="Pro License"
               price="$49"
               featured
               accentToken="--sig-mauve-soft"
               features={[
-                "All 40 game modules",
-                "1v1 & 2v2 brackets",
-                "Spectator betting pot",
-                "Priority seating",
+                "All 26 chromatic tokens",
+                "Container queries & a11y",
+                "Zero-dependency core",
+                "Priority support",
               ]}
-              cta="Claim the pass"
-              onCta={() => toast("success", "The Arena Pass is on the roadmap.")}
+              cta="Claim the license"
+              onCta={() => toast("success", "The Pro License is on the roadmap.")}
             />
           </div>
         </div>
@@ -2131,32 +2131,32 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
             <Carousel label="Developer & lifestyle cards" mode={carouselMode}>
               <CarouselItem className="hub__clipping">
                 <div className="hub__mini-card">
-                  <strong>Books</strong>
-                  <span>The Design of Everyday Things — affordances are promises.</span>
+                  <strong>Typography</strong>
+                  <span>Inter var — the optical grid is a promise.</span>
                 </div>
               </CarouselItem>
               <CarouselItem className="hub__clipping">
                 <div className="hub__mini-card">
-                  <strong>Cocktails</strong>
-                  <span>Smoked Old Fashioned — the cherry is not optional.</span>
+                  <strong>Telemetry</strong>
+                  <span>Sparklines first — the trend is the headline.</span>
                 </div>
               </CarouselItem>
               <CarouselItem className="hub__clipping">
                 <div className="hub__mini-card">
-                  <strong>UI Patterns</strong>
-                  <span>Empty States That Sell — a blank card is a sales pitch.</span>
+                  <strong>Forms</strong>
+                  <span>Validation that teaches — an error is copy.</span>
                 </div>
               </CarouselItem>
               <CarouselItem className="hub__clipping">
                 <div className="hub__mini-card">
-                  <strong>Hardware</strong>
-                  <span>Keychron Q1 HE — the hall-effect keyboard of the shed.</span>
+                  <strong>Graphs</strong>
+                  <span>Force-directed, drag-weighted — nodes are data.</span>
                 </div>
               </CarouselItem>
               <CarouselItem className="hub__clipping">
                 <div className="hub__mini-card">
-                  <strong>Party Games</strong>
-                  <span>Ribbon of Shame — the loser wears it until the next round.</span>
+                  <strong>Chronology</strong>
+                  <span>Timelines that breathe — the past is a lane.</span>
                 </div>
               </CarouselItem>
             </Carousel>
@@ -2171,39 +2171,39 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
           <div className="sig-cell">
             <ProfileCard
               name="Ana Souza"
-              role="Head of Catering"
+              role="Head of Platform"
               accentToken="--sig-peach"
               stats={[
                 { label: "Events", value: "24" },
-                { label: "Guests", value: "412" },
+                { label: "Members", value: "412" },
                 { label: "Rating", value: "4.9" },
               ]}
               skills={[
-                { colorToken: "--sig-peach", label: "Catering" },
-                { colorToken: "--sig-green", label: "Logistics" },
+                { colorToken: "--sig-peach", label: "Platform" },
+                { colorToken: "--sig-green", label: "Infra" },
               ]}
             />
           </div>
           <div className="sig-cell">
-            <FlipCard front="Dare: karaoke the chorus" back="…or forfeit 10 points" />
+            <FlipCard front="Dare: ship it on Friday" back="…or write the postmortem" />
           </div>
           <div className="sig-cell">
-            <AccordionCard title="House Rules">
+            <AccordionCard title="Bench Rules">
               <p>
-                Best of one decides every matchup; ties resolve to
-                rock-paper-scissors and the loser of THAT brings ice.
+                Best of one decides every benchmark; ties resolve to a
+                tie-break suite and the loser of THAT writes the ADR.
               </p>
               <p>
-                No take-backs after the ring sounds — the bracket is a
+                No take-backs after the merge — the baseline is a
                 promise everyone accepts.
               </p>
             </AccordionCard>
           </div>
           <div className="sig-cell">
             <MatchupCard
-              left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
-              right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
-              stakes="Winner picks the venue — loser brings ice."
+              left={{ name: "SSR", ringToken: "--sig-mauve-soft" }}
+              right={{ name: "ISR", ringToken: "--sig-sky" }}
+              stakes="Winner picks the rendering default — loser writes the ADR."
             />
           </div>
         </div>
@@ -2231,12 +2231,12 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
  * text inside the code well and copied verbatim by the Copy button.
  */
 const SURFACE_SNIPPET = `<SurfaceCard
-  eyebrow="Planner"
-  meta="views/planner.tsx"
-  title="Event & Party Planner"
+  eyebrow="Workbench"
+  meta="views/workbench.tsx"
+  title="Bento Workbench"
   interactive accentToken="--sig-lavender"
 >
-  <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
+  <ProgressBar value={72} colorToken="--sig-sky" label="Attendance ratio" />
 </SurfaceCard>`;
 
 /**
@@ -2246,7 +2246,7 @@ const SURFACE_SNIPPET = `<SurfaceCard
  * composition is demonstrated once, not everywhere).
  */
 const LEDGER_COLUMNS: DataTableColumn[] = [
-  { key: "guest", header: "Guest" },
+  { key: "member", header: "Member" },
   { key: "status", header: "Status" },
   // 2.4.1: align flows to BOTH th and td — the CONTRIBUTION header sits
   // flush over the $120 values (numeric alone left the header behind).
@@ -2255,17 +2255,17 @@ const LEDGER_COLUMNS: DataTableColumn[] = [
 
 const LEDGER_ROWS: Array<Record<string, ReactNode>> = [
   {
-    guest: "Ana Souza",
+    member: "Ana Souza",
     status: <SigBadge colorToken="--sig-green" label="Confirmed" />,
     share: "$120",
   },
-  { guest: "Leo Martins", status: "Pending", share: "$0" },
-  { guest: "Priya Nair", status: "Confirmed", share: "$200" },
-  { guest: "Tom Weller", status: "Declined", share: "$0" },
-  { guest: "Ana + 1", status: "Pending", share: "$120" },
+  { member: "Leo Martins", status: "Pending", share: "$0" },
+  { member: "Priya Nair", status: "Confirmed", share: "$200" },
+  { member: "Tom Weller", status: "Declined", share: "$0" },
+  { member: "Nina Almeida", status: "Pending", share: "$120" },
 ];
 
-/** The data module's five crew discs — 32px ×3, 40px ×2, two party rings. */
+/** The data module's five crew discs — 32px ×3, 40px ×2, two chromatic rings. */
 const AVATAR_CREW: Array<{
   name: string;
   size?: 32 | 40;
@@ -2275,7 +2275,7 @@ const AVATAR_CREW: Array<{
   { name: "Leo Martins" },
   { name: "Priya Nair" },
   { name: "Tom Weller", size: 40, ringToken: "--sig-sky" },
-  { name: "Ana + 1", size: 40 },
+  { name: "Nina Almeida", size: 40 },
 ];
 
 /**
@@ -2327,7 +2327,7 @@ function DataModule() {
         </div>
         <div className="sig-cell">
           <StatCard
-            label="Confirmed Guests"
+            label="Confirmed Seats"
             value="170"
             delta="+12"
             deltaDirection="up"
@@ -2337,7 +2337,7 @@ function DataModule() {
         </div>
         <div className="sig-cell">
           <StatCard
-            label="Active Game Rooms"
+            label="Active Workspaces"
             value="6"
             delta="+2"
             deltaDirection="up"
@@ -2349,21 +2349,21 @@ function DataModule() {
       <SurfaceCard
         eyebrow="Data"
         meta="components/data.tsx"
-        title="Guest & Budget Ledger"
+        title="Member & Budget Ledger"
         interactive
       >
         <div data-testid="data-table-ledger">
           <DataTable
             columns={LEDGER_COLUMNS}
             rows={LEDGER_ROWS}
-            caption="Shared pot ledger · updated after every RSVP"
+            caption="Allocation ledger · updated after every response"
           />
         </div>
         <Callout status="info">
-          Payments settle via the shared pot — no cash at the door.
+          Budgets settle via the shared pool — no shadow spend.
         </Callout>
-        <Callout status="success">Final headcount locked for catering.</Callout>
-        <Callout status="warning">3 pending RSVPs close Friday.</Callout>
+        <Callout status="success">Final headcount locked for the launch.</Callout>
+        <Callout status="warning">3 pending reviews close Friday.</Callout>
         <div className="hub__avatars">
           {AVATAR_CREW.map((person) => (
             <div key={person.name} className="hub__avatar-row">
@@ -2382,23 +2382,23 @@ function DataModule() {
         <div data-testid="prose-notes">
           <ProseBlock>
             <p>
-              Every invitation in this planner starts as a row in the shared pot
-              ledger and ends as a night nobody has to Venmo-chase. The numbers
-              stay boring on purpose — boring numbers are the ones that survive
-              contact with a real guest list.
+              Every allocation in this workbench starts as a row in the budget
+              ledger and ends as a sprint nobody has to chase. The numbers stay
+              boring on purpose — boring numbers are the ones that survive
+              contact with a real org chart.
             </p>
             <p>
               When a figure changes, it changes here first: the budget card, the
               ring, the sparkline — and the story above stays honest. Design the
-              ledger well and the party practically plans itself.
+              ledger well and the sprint practically plans itself.
             </p>
             <blockquote>
               <p>
                 “Weeks of coding can save you hours of planning.”
               </p>
-              <footer>— every developer who ever planned a wedding, probably</footer>
+              <footer>— every engineer who ever ran a launch, probably</footer>
             </blockquote>
-            <cite>PlanThenParty Field Notes, vol. 2 — the ledger chapters</cite>
+            <cite>Signature Style Field Notes, vol. 2 — the ledger chapters</cite>
           </ProseBlock>
         </div>
         <div data-testid="carousel-clippings">
@@ -2419,35 +2419,35 @@ function DataModule() {
  * THE FORM & INPUT MATRIX MODULE (2.3.0, grown 2.4.0) — every input
  * control on ONE card, stacked in the v2.1.0 spacing pattern (the
  * SurfaceCard's own --space-standard flex gap IS the rhythm; no extra
- * wrappers). 2.4.0: Name / $ Contribution preview the <FormField>
+ * wrappers). 2.4.0: Name / $ Allocation preview the <FormField>
  * wrapper side-by-side (hint on the first, error-replaces-hint on the
- * second), and the RSVP sample is a <RadioCardGroup>.
+ * second), and the attendance sample is a <RadioCardGroup>.
  */
 function FormsModule({ onSimulate }: { onSimulate: () => void }) {
   const [diet, setDiet] = useState("none");
   const [invited, setInvited] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
-  const [guestName, setGuestName] = useState("");
+  const [memberName, setMemberName] = useState("");
   const [contribution, setContribution] = useState("");
   const [postal, setPostal] = useState("");
   const [password, setPassword] = useState("");
-  const [rsvp, setRsvp] = useState("attending");
+  const [attendance, setAttendance] = useState("confirmed");
 
   // Live validation rules (2.5.0, audited 2.6.0): the value passes →
   // validMessage; the value is non-empty and fails → error. Empty (or
   // a pristine pre-filled value like the placeholder's example "120")
   // stays quiet — a field the visitor never touched is not yet wrong.
-  // THE 2.6.0 AUDIT: the matrix Contribution field used to boot in the
+  // THE 2.6.0 AUDIT: the matrix Allocation field used to boot in the
   // ERROR state (empty → "enter an amount" on first paint); it now
-  // skips pristine exactly like the Postal field and the check-in form.
-  const contributionTrimmed = contribution.trim();
-  const contributionValid = /^\d+$/.test(contributionTrimmed);
-  const contributionError =
-    contributionTrimmed !== "" && !contributionValid
-      ? "Contributions are numbers only"
+  // skips pristine exactly like the Region Code field and the allocation form.
+  const allocationTrimmed = allocation.trim();
+  const allocationValid = /^\d+$/.test(allocationTrimmed);
+  const allocationError =
+    allocationTrimmed !== "" && !allocationValid
+      ? "Allocations are numbers only"
       : undefined;
   const postalValid = /^\d{5}$/.test(postal);
-  const postalError = postal !== "" && !postalValid ? "Postal codes are 5 digits" : undefined;
+  const postalError = postal !== "" && !postalValid ? "Region codes are 5 digits" : undefined;
 
   return (
     <SurfaceCard
@@ -2482,18 +2482,18 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
       <div className="sig-cell">
         <div className="hub__form-grid">
           <FormField
-            label="Name"
+            label="Member Name"
             htmlFor="matrix-name"
-            hint="As it appears on the invite"
+            hint="As it appears on the roster"
           >
             <Input
               id="matrix-name"
-              placeholder="Guest name"
-              value={guestName}
-              onChange={(event) => setGuestName(event.target.value)}
+              placeholder="Member name"
+              value={memberName}
+              onChange={(event) => setMemberName(event.target.value)}
             />
           </FormField>
-          {/* 2.4.1: label="Contribution" + prefix="$" — the adornment
+          {/* 2.4.1: label="Allocation" + prefix="$" — the adornment
               composition demo (the dollar sign moved OUT of the label and
               INTO the mono chip, flush with the cursor in the well).
               2.5.0: the field rides the well — the Input is bare, the
@@ -2501,27 +2501,27 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
               in the error state — empty stays pristine-quiet, valid values
               earn the validMessage, only non-empty invalid input shakes. */}
           <FormField
-            label="Contribution"
+            label="Allocation"
             htmlFor="matrix-share"
             prefix="$"
             description="Numbers only · e.g., 120"
-            validMessage={contributionValid ? "Valid amount" : undefined}
-            error={contributionError}
+            validMessage={allocationValid ? "Valid amount" : undefined}
+            error={allocationError}
           >
             <Input
               id="matrix-share"
               placeholder="120"
               inputMode="numeric"
               aria-invalid={!!contributionError || undefined}
-              value={contribution}
-              onChange={(event) => setContribution(event.target.value)}
+              value={allocation}
+              onChange={(event) => setAllocation(event.target.value)}
             />
           </FormField>
-          {/* 2.5.0: the Postal Code demo — description ABOVE the input
+          {/* 2.5.0: the Region Code demo — description ABOVE the input
               (format rules live with the title), live validation with the
               validMessage/error priority in the bottom slot. */}
           <FormField
-            label="Postal Code"
+            label="Region Code"
             htmlFor="matrix-postal"
             description="5 numbers only · e.g., 79901"
             validMessage={postalValid ? "Valid ZIP" : undefined}
@@ -2538,20 +2538,20 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
           </FormField>
         </div>
       </div>
-      <TextArea placeholder="Notes for the host…" rows={3} aria-label="Notes" />
+      <TextArea placeholder="Notes for the team…" rows={3} aria-label="Notes" />
       <Select
-        label="Dietary preference"
+        label="Rollout preference"
         value={diet}
         onChange={(event) => setDiet(event.target.value)}
       >
         <option value="none">No preference</option>
-        <option value="vegetarian">Vegetarian</option>
-        <option value="vegan">Vegan</option>
+        <option value="vegetarian">Canary</option>
+        <option value="vegan">Blue-green</option>
       </Select>
-      <Checkbox checked={invited} onToggle={setInvited} label="Send me the invite" />
-      <ToggleSwitch checked={isPublic} onToggle={setIsPublic} label="Make event public" />
+      <Checkbox checked={invited} onToggle={setInvited} label="Send me the changelog" />
+      <ToggleSwitch checked={isPublic} onToggle={setIsPublic} label="Make workspace public" />
       {/* 2.5.0: the new PasswordInput (eye toggle + 4-stage meter +
-          condition pills), and the RSVP cards ALL carry descriptions —
+          condition pills), and the attendance cards ALL carry descriptions —
           the balanced grid contract, enforced in the package. */}
       <PasswordInput
         label="Password"
@@ -2559,14 +2559,14 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
         onChange={setPassword}
       />
       <RadioCardGroup
-        label="RSVP"
-        name="rsvp"
-        value={rsvp}
-        onChange={setRsvp}
+        label="Attendance"
+        name="attendance"
+        value={attendance}
+        onChange={setAttendance}
         options={[
-          { value: "attending", label: "Attending", description: "See you there" },
-          { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
-          { value: "declined", label: "Can't make it", description: "Sorry — next time" },
+          { value: "confirmed", label: "Confirmed", description: "Seat allocated this sprint" },
+          { value: "pending", label: "Pending", description: "Awaiting capacity review" },
+          { value: "declined", label: "Declined", description: "No seat this cycle" },
         ]}
       />
     </SurfaceCard>
@@ -2574,12 +2574,13 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
 }
 
 /* ==========================================================================
-   THE GRAPHS & PLANNER MODULE (2.7.0) — the persistence addendum's home.
-   Two usePersistentState arrays (sig.v27.graph / sig.v27.timeline —
+   THE GRAPHS & PLANNER MODULE (2.7.0; 3.1.0 keys) — the persistence
+   addendum's home. Two usePersistentState arrays (sig.workspace.v3.graph /
+   sig.workspace.v3.timeline —
    reload survives, Reset restores the seeds), the snapshot toolbar
    (Export JSON / Import JSON / Reset), and four cards: The Knowledge
    Graph (addOn), Spending by Category (BarChart, per-bar maxes),
-   RSVP Momentum (AreaChart, 8 points, sky), and the Milestone Manager
+   Attendance Momentum (AreaChart, 8 points, sky), and the Milestone Manager
    (TimelineManager fully wired; inspect composes the EventModal).
    ========================================================================== */
 
@@ -2607,22 +2608,22 @@ function GraphPlannerModule() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   // THE PERSISTENCE CONTRACT — versioned keys, seeds as fallbacks.
   const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>(
-    "sig.v27.graph",
+    "sig.workspace.v3.graph",
     SEED_GRAPH,
   );
   const [timeline, setTimeline, resetTimeline] = usePersistentState<TimelineItem[]>(
-    "sig.v27.timeline",
+    "sig.workspace.v3.timeline",
     SEED_TIMELINE,
   );
   /* 3.0.0 OBSIDIAN MODEL EXTENSIONS — the dragged positions and the
      tether links are their own persisted arrays (the graph NODES stay
-     the 2.7.0 shape; positions/links are separate keys, so a 2.7.0
+     the 2.7.0 shape; positions/links are separate keys, so an older
      snapshot still imports cleanly). */
   const [positions, setPositions, resetPositions] = usePersistentState<
     Record<string, { x: number; y: number }>
-  >("sig.v27.graph-positions", {});
+  >("sig.workspace.v3.graph-positions", {});
   const [links, setLinks, resetLinks] = usePersistentState<GraphLink[]>(
-    "sig.v27.links",
+    "sig.workspace.v3.links",
     [],
   );
 
@@ -2714,9 +2715,9 @@ function GraphPlannerModule() {
     // the composition layer); the Blob → anchor dance moved into the
     // shared downloadJson helper (the command palette lands on it too).
     // 3.0.0: the links model joins the payload (the ob1 extension).
-    const payload = { version: "sig.v27", graph, timeline, links };
-    downloadJson(JSON.stringify(payload, null, 2), "signature-snapshot.json");
-    toast("success", "Snapshot exported — signature-snapshot.json.");
+    const payload = { version: "sig.workspace.v3", graph, timeline, links };
+    downloadJson(JSON.stringify(payload, null, 2), "signature-workspace.json");
+    toast("success", "Snapshot exported — signature-workspace.json.");
   }, [graph, timeline, links, toast]);
 
   const importSnapshot = useCallback(
@@ -2775,7 +2776,7 @@ function GraphPlannerModule() {
             onMoveNode={moveNode}
             onLinkNodes={linkNodes}
             addOn
-            label="Party planning knowledge graph"
+            label="Workbench knowledge graph"
           />
         </div>
       </SurfaceCard>
@@ -2783,24 +2784,24 @@ function GraphPlannerModule() {
         <SurfaceCard
           eyebrow="Charts"
           meta="components/viz.tsx"
-          title="Spending by Category"
+          title="Spending by Department"
           interactive
         >
           <div data-testid="spending-bars">
-            <BarChart data={[...SPENDING_BARS]} label="Spending by category" />
+            <BarChart data={[...SPENDING_BARS]} label="Spending by department" />
           </div>
         </SurfaceCard>
         <SurfaceCard
           eyebrow="Charts"
           meta="components/viz.tsx"
-          title="RSVP Momentum"
+          title="Attendance Momentum"
           interactive
         >
-          <div data-testid="rsvp-area">
+          <div data-testid="attendance-area">
             <AreaChart
-              points={[...RSVP_MOMENTUM]}
+              points={[...ATTENDANCE_MOMENTUM]}
               colorToken="--sig-sky"
-              label="RSVP momentum"
+              label="Attendance momentum"
             />
           </div>
         </SurfaceCard>

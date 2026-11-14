@@ -8,17 +8,17 @@
 
 ## Why this schema exists
 
-The playground is an honest fake: `SEED_GUESTS` drives the live bento,
-`usePersistentState("sig.v27.graph"/"sig.v27.timeline")` persists the
-workspace, and the snapshot export/import moves `{ version: "sig.v27",
-graph, timeline }` through `signature-snapshot.json`. v3.0.0 writes the
+The playground is an honest fake: `SEED_MEMBERS` drives the live bento,
+`usePersistentState("sig.workspace.v3.graph"/"sig.workspace.v3.timeline")` persists the
+workspace, and the snapshot export/import moves `{ version: "sig.workspace.v3",
+graph, timeline }` through `signature-workspace.json`. v3.0.0 writes the
 **normalized** layer a real backend (FastAPI + SQLite/PostgreSQL) will
 serve, with every field traced to the frontend usage it earns. Nothing
 speculative ships: if a field has no caller, it has no column.
 
 ## The Money-in-Cents rule (non-negotiable)
 
-All money is **integer cents** (`contributionCents: 12000` = $120.00).
+All money is **integer cents** (`allocationCents: 12000` = $120.00).
 
 - **Floats drift.** `0.1 + 0.2 !== 0.3`; a shared-pot ledger that sums
   float dollars will eventually disagree with its own rows by a cent —
@@ -29,7 +29,7 @@ All money is **integer cents** (`contributionCents: 12000` = $120.00).
 - **Formatting happens once** at the display boundary
   (`amountCents / 100` → `Intl.NumberFormat`). The wire, the DB, and
   the math never see a decimal point.
-- The demo's in-memory `Guest.contribution` (whole dollars,
+- The demo's in-memory `Member.allocation` (whole dollars,
   `playground/App.tsx`) stays for ergonomics; the **persisted/wire**
   format is cents.
 
@@ -38,13 +38,13 @@ All money is **integer cents** (`contributionCents: 12000` = $120.00).
 ```mermaid
 erDiagram
     USER ||--o{ EVENT : owns
-    EVENT ||--o{ GUEST : invites
+    EVENT ||--o{ ATTENDEE : enrolls
     EVENT ||--o{ LEDGER_ENTRY : moves
     EVENT ||--o{ MILESTONE : plans
     EVENT ||--o{ GAME_MATCHUP : hosts
     EVENT ||--o{ FLASHCARD_DECK : themes
-    GUEST ||--o{ LEDGER_ENTRY : pays
-    GUEST ||--o{ GAME_MATCHUP : "plays (A/B/partners)"
+    ATTENDEE ||--o{ LEDGER_ENTRY : allocates
+    ATTENDEE ||--o{ GAME_MATCHUP : "competes (A/B/partners)"
     FLASHCARD_DECK ||--o{ FLASHCARD : contains
     WORKSPACE ||--o{ GRAPH_NODE : "scopes (workspaceId = User.id)"
 
@@ -60,14 +60,14 @@ erDiagram
                       string colorToken
                       string iconName
                       string description }
-    GUEST           { string id PK
+    ATTENDEE        { string id PK
                       string eventId FK
                       string name
-                      string rsvp "confirmed|pending|declined"
-                      integer contributionCents }
+                      string attendance "confirmed|pending|declined"
+                      integer allocationCents }
     LEDGER_ENTRY    { string id PK
                       string eventId FK
-                      string guestId FK
+                      string attendeeId FK
                       integer amountCents
                       string memo }
     MILESTONE       { string id PK
@@ -106,9 +106,9 @@ erDiagram
 ASCII form (the same graph):
 
 ```
-User 1──*Event 1──*Guest 1──*LedgerEntry
+User 1──*Event 1──*Attendee 1──*LedgerEntry
               ││││
-              │││└──*GameMatchup   (playerAId/playerBId/partnerAId/partnerBId → Guest)
+              │││└──*GameMatchup   (playerAId/playerBId/partnerAId/partnerBId → Attendee)
               ││└──*Milestone
               │└──*FlashcardDeck 1──*Flashcard
               └──*GraphNode (workspaceId → User, eventId nullable, parentId → self)
@@ -146,26 +146,26 @@ CREATE TABLE events (
 CREATE INDEX idx_events_owner  ON events(owner_id);
 CREATE INDEX idx_events_date   ON events(date);
 
-CREATE TABLE guests (
+CREATE TABLE attendees (
   id                 TEXT PRIMARY KEY,
   event_id           TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
   name               TEXT NOT NULL,
-  rsvp               TEXT NOT NULL CHECK (rsvp IN ('confirmed','pending','declined')),
-  contribution_cents INTEGER NOT NULL DEFAULT 0 CHECK (contribution_cents >= 0),
+  attendance         TEXT NOT NULL CHECK (attendance IN ('confirmed','pending','declined')),
+  allocation_cents INTEGER NOT NULL DEFAULT 0 CHECK (allocation_cents >= 0),
   created_at         TEXT NOT NULL
 );
-CREATE INDEX idx_guests_event ON guests(event_id);
+CREATE INDEX idx_attendees_event ON attendees(event_id);
 
 CREATE TABLE ledger_entries (
   id            TEXT PRIMARY KEY,
   event_id      TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  guest_id      TEXT NOT NULL REFERENCES guests(id) ON DELETE CASCADE,
+  attendee_id   TEXT NOT NULL REFERENCES attendees(id) ON DELETE CASCADE,
   amount_cents  INTEGER NOT NULL CHECK (amount_cents != 0),
   memo          TEXT,
   created_at    TEXT NOT NULL
 );
 CREATE INDEX idx_ledger_event ON ledger_entries(event_id);
-CREATE INDEX idx_ledger_guest ON ledger_entries(guest_id);
+CREATE INDEX idx_ledger_attendee ON ledger_entries(attendee_id);
 
 CREATE TABLE milestones (
   id             TEXT PRIMARY KEY,
@@ -213,10 +213,10 @@ CREATE INDEX idx_flashcards_deck ON flashcards(deck_id);
 CREATE TABLE game_matchups (
   id           TEXT PRIMARY KEY,
   event_id     TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  player_a_id  TEXT NOT NULL REFERENCES guests(id),
-  player_b_id  TEXT REFERENCES guests(id),
-  partner_a_id TEXT REFERENCES guests(id),
-  partner_b_id TEXT REFERENCES guests(id),
+  player_a_id  TEXT NOT NULL REFERENCES attendees(id),
+  player_b_id  TEXT REFERENCES attendees(id),
+  partner_a_id TEXT REFERENCES attendees(id),
+  partner_b_id TEXT REFERENCES attendees(id),
   stakes       TEXT,                          -- the mono footer line
   mode         TEXT NOT NULL CHECK (mode IN ('1v1','2v2')),
   created_at   TEXT NOT NULL,
@@ -253,26 +253,26 @@ CREATE TABLE events (
 CREATE INDEX idx_events_owner ON events(owner_id);
 CREATE INDEX idx_events_date  ON events(date);
 
-CREATE TABLE guests (
+CREATE TABLE attendees (
   id                 UUID PRIMARY KEY,
   event_id           UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
   name               TEXT NOT NULL,
-  rsvp               TEXT NOT NULL CHECK (rsvp IN ('confirmed','pending','declined')),
-  contribution_cents BIGINT NOT NULL DEFAULT 0 CHECK (contribution_cents >= 0),
+  attendance         TEXT NOT NULL CHECK (attendance IN ('confirmed','pending','declined')),
+  allocation_cents BIGINT NOT NULL DEFAULT 0 CHECK (allocation_cents >= 0),
   created_at         TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX idx_guests_event ON guests(event_id);
+CREATE INDEX idx_attendees_event ON attendees(event_id);
 
 CREATE TABLE ledger_entries (
   id           UUID PRIMARY KEY,
   event_id     UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  guest_id     UUID NOT NULL REFERENCES guests(id) ON DELETE CASCADE,
+  attendee_id  UUID NOT NULL REFERENCES attendees(id) ON DELETE CASCADE,
   amount_cents BIGINT NOT NULL CHECK (amount_cents != 0),
   memo         TEXT,
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX idx_ledger_event ON ledger_entries(event_id);
-CREATE INDEX idx_ledger_guest ON ledger_entries(guest_id);
+CREATE INDEX idx_ledger_attendee ON ledger_entries(attendee_id);
 
 CREATE TABLE milestones (
   id             UUID PRIMARY KEY,
@@ -320,10 +320,10 @@ CREATE INDEX idx_flashcards_deck ON flashcards(deck_id);
 CREATE TABLE game_matchups (
   id           UUID PRIMARY KEY,
   event_id     UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-  player_a_id  UUID NOT NULL REFERENCES guests(id),
-  player_b_id  UUID REFERENCES guests(id),
-  partner_a_id UUID REFERENCES guests(id),
-  partner_b_id UUID REFERENCES guests(id),
+  player_a_id  UUID NOT NULL REFERENCES attendees(id),
+  player_b_id  UUID REFERENCES attendees(id),
+  partner_a_id UUID REFERENCES attendees(id),
+  partner_b_id UUID REFERENCES attendees(id),
   stakes       TEXT,
   mode         TEXT NOT NULL CHECK (mode IN ('1v1','2v2')),
   created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -368,22 +368,22 @@ class Event(BaseModel):
     description: str | None = None
     created_at: datetime
 
-RsvpStatus = Literal["confirmed", "pending", "declined"]
+AttendanceStatus = Literal["confirmed", "pending", "declined"]
 
-class Guest(BaseModel):
+class Attendee(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str
     event_id: str
     name: str
-    rsvp: RsvpStatus
-    contribution_cents: Cents
+    attendance: AttendanceStatus
+    allocation_cents: Cents
     created_at: datetime
 
 class LedgerEntry(BaseModel):
     model_config = ConfigDict(extra="forbid")
     id: str
     event_id: str
-    guest_id: str
+    attendee_id: str
     amount_cents: LedgerCents       # integer cents; != 0
     memo: str | None = None
     created_at: datetime
@@ -461,12 +461,12 @@ always integer cents. Pagination is `?limit=&offset=` (limit ≤ 100).
 | GET | `/events` | — | `Paginated[Event]` | `ApiError` | `?limit/offset`, `?owner_id` |
 | POST | `/events` | `Event` (minus id/createdAt) | `Event` | `201` / `422 ApiError` | validates `color_token` is a `--sig-*` name |
 | GET | `/events/{id}` | — | `Event` | `200` / `404 ApiError` | |
-| DELETE | `/events/{id}` | — | `204` | `404 ApiError` | cascades guests/ledger/milestones/matchups |
-| GET | `/events/{id}/guests` | — | `Paginated[Guest]` | `404 ApiError` | the live ledger's source |
-| POST | `/events/{id}/guests` | `Guest` (minus id/createdAt) | `Guest` | `201` / `422 ApiError` | `rsvp` enum enforced by CHECK + Literal |
-| PATCH | `/guests/{id}` | `{ rsvp?, contribution_cents? }` | `Guest` | `200` / `404 ApiError` | the RSVP radio card submit |
-| GET | `/guests/{id}/ledger-entries` | — | `Paginated[LedgerEntry]` | `404 ApiError` | |
-| POST | `/guests/{id}/ledger-entries` | `LedgerEntry` (minus id/createdAt) | `LedgerEntry` | `201` / `422 ApiError` | `amount_cents != 0` |
+| DELETE | `/events/{id}` | — | `204` | `404 ApiError` | cascades attendees/ledger/milestones/matchups |
+| GET | `/events/{id}/attendees` | — | `Paginated[Attendee]` | `404 ApiError` | the live ledger's source |
+| POST | `/events/{id}/attendees` | `Attendee` (minus id/createdAt) | `Attendee` | `201` / `422 ApiError` | `attendance` enum enforced by CHECK + Literal |
+| PATCH | `/attendees/{id}` | `{ attendance?, allocation_cents? }` | `Attendee` | `200` / `404 ApiError` | the attendance radio card submit |
+| GET | `/attendees/{id}/ledger-entries` | — | `Paginated[LedgerEntry]` | `404 ApiError` | |
+| POST | `/attendees/{id}/ledger-entries` | `LedgerEntry` (minus id/createdAt) | `LedgerEntry` | `201` / `422 ApiError` | `amount_cents != 0` |
 | GET | `/events/{id}/milestones` | — | `Paginated[Milestone]` | `404 ApiError` | grouped by `month` client-side |
 | POST | `/events/{id}/milestones` | `Milestone` (minus id/createdAt) | `Milestone` | `201` / `422 ApiError` | the TimelineManager composer |
 | PATCH | `/milestones/{id}` | `{ settled?, title?, category_token? }` | `Milestone` | `200` / `404 ApiError` | the aria-pressed settle toggle |
@@ -477,7 +477,7 @@ always integer cents. Pagination is `?limit=&offset=` (limit ≤ 100).
 | POST | `/decks/{id}/flashcards` | `Flashcard` (minus id/createdAt) | `Flashcard` | `201` / `422 ApiError` | the FlipCard pair |
 | GET | `/events/{id}/matchups` | — | `Paginated[GameMatchup]` | `404 ApiError` | |
 | POST | `/events/{id}/matchups` | `GameMatchup` (minus id/createdAt) | `GameMatchup` | `201` / `422 ApiError` | mode CHECK: 2v2 ⇒ partners present |
-| GET | `/graph?workspace_id=` | — | `Paginated[GraphNodeRecord]` | `ApiError` | the sig.v27.graph normalization |
+| GET | `/graph?workspace_id=` | — | `Paginated[GraphNodeRecord]` | `ApiError` | the sig.workspace.v3.graph normalization |
 | POST | `/graph` | `GraphNodeRecord` (minus id/createdAt) | `GraphNodeRecord` | `201` / `422 ApiError` | `parent_id: null` = root |
 
 Error status codes: `404 not_found` (missing row), `422
@@ -491,17 +491,17 @@ position collision), everything else falls through the generic
 |-------|-----------------|
 | `Event.month` / `Event.time` / `Event.title` / `Event.description` | `MockEvent` fields → `TimelineEvent` (`playground/App.tsx` mockEvents, mapped at the ONE mapping layer; rendered by `react/timeline.tsx` + the EventModal About row) |
 | `Event.colorToken` / `Event.iconName` | `MockEvent.colorToken` → `TimelineEvent.category` (SigBadge chip), `MockEvent.iconName` → `TimelineEvent.icon` (lucide key, gate-probed) |
-| `Guest.name` / `Guest.rsvp` / `Guest.contribution` | `playground/App.tsx` `Guest` + `SEED_GUESTS` + `derived.ledgerRows` (the live bento's one reactive array) |
-| `LedgerEntry.amountCents` | the ledger's `Contribution` column (`numeric: true, align: "right"`, `playground/App.tsx` BENTO_LEDGER_COLUMNS) — persisted in cents per the Money-in-Cents rule |
-| `Milestone.title/month/categoryToken/categoryLabel/settled` | `TimelineItem extends TimelineEvent` (`react/timeline-manager.d.ts`) + `SEED_TIMELINE` (`playground/App.tsx`, persisted as `sig.v27.timeline`) |
-| `GraphNodeRecord.label/categoryToken/note/parentId` | `GraphNode` (`react/graph.d.ts`), persisted as `sig.v27.graph` (`playground/App.tsx` `usePersistentState`) — `parentId: undefined` renders a root |
-| `Flashcard.front/back` | `FlipCardProps.front/back` (`react/cards.d.ts`) — `playground/App.tsx` renders `<FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />` |
-| `GameMatchup.playerAId/playerBId/stakes/mode` | `MatchupCardProps` (`react/cards.d.ts`: `left`/`right` names, `stakes` mono footer) — the bento's 1v1 card; `mode` extends it to the Arena's 2v2 |
+| `Attendee.name` / `Attendee.attendance` / `Attendee.allocation` | `playground/App.tsx` `Member` + `SEED_MEMBERS` + `derived.ledgerRows` (the live bento's one reactive array) |
+| `LedgerEntry.amountCents` | the ledger's `Allocation` column (`numeric: true, align: "right"`, `playground/App.tsx` BENTO_LEDGER_COLUMNS) — persisted in cents per the Money-in-Cents rule |
+| `Milestone.title/month/categoryToken/categoryLabel/settled` | `TimelineItem extends TimelineEvent` (`react/timeline-manager.d.ts`) + `SEED_TIMELINE` (`playground/App.tsx`, persisted as `sig.workspace.v3.timeline`) |
+| `GraphNodeRecord.label/categoryToken/note/parentId` | `GraphNode` (`react/graph.d.ts`), persisted as `sig.workspace.v3.graph` (`playground/App.tsx` `usePersistentState`) — `parentId: undefined` renders a root |
+| `Flashcard.front/back` | `FlipCardProps.front/back` (`react/cards.d.ts`) — `playground/App.tsx` renders `<FlipCard front="Dare: ship it on Friday" back="…or write the postmortem" />` |
+| `GameMatchup.playerAId/playerBId/stakes/mode` | `MatchupCardProps` (`react/cards.d.ts`: `left`/`right` names, `stakes` mono footer) — the bento's A-vs-B card; `mode` extends it to the 2-vs-2 case |
 | `ApiError` / `Paginated<T>` | the snapshot import shape gate (`playground/App.tsx` `isGraphNodeish`/`isTimelineItemish`) graduates into `shared/schema.ts`'s guards |
 
 ## Relationship to the v2.7.0 storage keys
 
-`sig.v27.graph` / `sig.v27.timeline` keep working unchanged (the
+`sig.workspace.v3.graph` / `sig.workspace.v3.timeline` keep working unchanged (the
 localStorage mirror). When the backend lands, the shapes graduate
 1:1: `GraphNode` → `GraphNodeRecord`, `TimelineItem` → `Milestone`
 with the key bump `sig.v30.*` per the storage-key contract documented

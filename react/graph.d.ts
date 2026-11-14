@@ -44,12 +44,12 @@
  * ```tsx
  * <KnowledgeGraph
  *   nodes={[
- *     { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "One plan, many branches." },
+ *     { id: "root", label: "Product Launch", categoryToken: "--sig-lavender", note: "One engine, many views." },
  *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
  *   ]}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
- *   label="Party planning graph"
+ *   label="Product launch graph"
  * />
  * ```
  */

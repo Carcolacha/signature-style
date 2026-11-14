@@ -146,8 +146,8 @@
  *         the dashboard, THE MASTER INDEX announces the index.
  *   (ix2) THE THREE GATEWAYS — exact Shed anatomy strings: PLANNER /
  *         views/planner.tsx / Event Planner Bento (the real gateway),
- *         STUDY / modules/study.tsx / Study & Flashcard Generator,
- *         GAMES / modules/games.tsx / Party Game Modules; the index
+ *         STUDIO / views/studio.tsx / Pattern Studio,
+ *         STUDIO / views/studio.tsx / the Pattern Studio; the index
  *         column is the constrained .hub--index (900px — three doors
  *         read better narrow, owner call, documented).
  *
@@ -253,7 +253,7 @@
  *         (label "Dashboard modules", the three module ids), the Data
  *         branch (DataTable ledger with the five crew rows + the
  *         composed SigBadge, the three Callout moods, five Avatars,
- *         two party rings), the Forms branch (Select with three
+ *         two chromatic rings), the Forms branch (Select with three
  *         options, Checkbox, the v2.1.0 matrix).
  *   (dd6) CORTEX SWEEP — tools/mcp-viz/server.ts DEFAULT_SELECTORS
  *         carries .sig-data-table / .sig-tabs__tab / .sig-callout
@@ -311,13 +311,13 @@
  *         guard and the ≥2-point guard; css/viz.css: .sig-stat-card is
  *         FLAT (surface background + 20% hairline, zero shadow —
  *         e1-scanned) with tabular-nums value + uppercase label +
- *         up/down party delta colors.
+ *         up/down chromatic delta colors.
  *   (icons) SDK-LUCIDE PROBE — Megaphone, ChevronLeft, ChevronRight
  *         exist in the installed lucide-react icons map (the "Music"
  *         lesson: editorial.tsx renders three new icon names).
  *   (showcase) THE EDITORIAL SHOWCASE — App.tsx: the FormField
  *         side-by-side (Name + $ Contribution), the RadioCardGroup
- *         RSVP sample (Attending/Maybe/Can't make it), the Data view
+ *         attendance sample (Confirmed/Pending/Declined), the Data view
  *         banner + KPI trio + ProseBlock Field Notes + palette
  *         clippings Carousel.
  *
@@ -405,8 +405,8 @@
  *         ONLY tools/ delta authorized is tools/mcp-viz/server.ts
  *         (owner-editable: DEFAULT_SELECTORS += .sig-btn,
  *         .sig-stat-card, .sig-shell; version 2.5.0).
- *   (m3)  the 2.5.0 hooks join: data-testid="guest-form",
- *         "ledger-table", "ring-rsvp" (the live-state probes); the
+ *   (m3)  the 2.5.0 hooks join: data-testid="member-form",
+ *         "ledger-table", "ring-attendance" (the live-state probes); the
  *         metric/button/tab/banner/carousel/kpi hooks stay.
  *   (b12) THE 12-COLUMN BENTO — styles.css declares .bento12
  *         (repeat(12, 1fr), section gap) + the span utilities
@@ -452,9 +452,9 @@
  *   (dd4 AMENDMENT)  the codex title needle moves to v2.8.
  *   (dd6 AMENDMENT)  the cortex sweep grows .sig-btn / .sig-stat-card
  *         / .sig-shell; the server version moves to 2.5.0.
- *   (showcase AMENDMENT)  the bento needles: Postal Code +
+ *   (showcase AMENDMENT)  the bento needles: Region Code +
  *         descriptions + validMessage + PasswordInput + the archetypes
- *         + the v2.5.0 banner copy; RSVP options ALL carry
+ *         + the v2.5.0 banner copy; attendance options ALL carry
  *         descriptions.
  *   (h1 AMENDMENT)  the stagger retargets to the bento cells
  *         (.bento12 > *), 11 cells at 50ms steps, the MANDATORY
@@ -484,7 +484,7 @@
  *         [data-accent] + --sig-accent rules (eyebrow color, 2px
  *         title underline, chromatic glow), react/surface.tsx exports
  *         the SigColorToken alias (the 11 --sig-* tokens) and the
- *         AccentToken union (party + the two structural signatures);
+ *         AccentToken union (chromatic + the two structural signatures);
  *         <SurfaceCard> renders data-accent/data-elevation + the
  *         inline --sig-accent variable.
  *   (elev) THE ELEVATION LADDER — css/surface.css declares the three
@@ -512,7 +512,7 @@
  *         css/cards.css: the uppercase tag chip + the code well.
  *   (cc3)  TIERCARD — react/cards.tsx: featured → data-elevation
  *         "floating" + the Check bullets; css/cards.css: the 2px
- *         accent border on --featured, the party-green Check ink, the
+ *         accent border on --featured, the sig-green Check ink, the
  *         2rem tabular price.
  *   (cc4)  PROFILECARD — react/cards.tsx: the Avatar with
  *         size={avatarSize} + ringToken, the 2–3 stats dev-warn;
@@ -602,7 +602,7 @@
  *   (nav5)  THE FIVE REAL VIEWS — Dashboard / Pattern Studio / Index /
  *         Chronicle / AI Codex in NAV_ITEMS + the routing table + the
  *         render branches; negative needles: PlaceholderView,
- *         WorkshopView, PLACEHOLDERS, "#/events"/"#/guests"/"#/budget"
+ *         WorkshopView, PLACEHOLDERS, "#/events"/"#/members"/"#/budget"
  *         must NOT exist.
  *   (ps-studio)  THE PATTERN STUDIO — PatternFrame's
  *         data-sig-set/data-sig-component article, the aria-pressed
@@ -649,7 +649,7 @@
  *         --sig-blue #89b4fa — official Catppuccin Mocha Blue, the
  *         v3.0.0 --sig-cobalt convergence, 5.97:1 / 7.79:1, was
  *         #1e66f5 @ 2.56:1); and the gate itself RUNS green (all 11
- *         party tokens ≥3.0:1 vs surface AND base, the fixed pair
+ *         chromatic tokens ≥3.0:1 vs surface AND base, the fixed pair
  *         ≥3.1:1). Negative test (falsifiability, restore-verified):
  *         reverting --sig-blue to #1e66f5 flips verify:contrast to
  *         FAIL with the measured 2.559:1 ratio + the (ct3) pin refusal;
@@ -664,7 +664,7 @@
  *         blocker, run against the dev server) — every .bento12 child's
  *         rect identical ±1px BEFORE/DURING/AFTER.
  *   (b7)/(n-hub4)  REBASED to the v2.9.0 baseline. The owner-authorized
- *         2.9.1 deltas, and NOTHING else: css/tokens.css (the two party
+ *         2.9.1 deltas, and NOTHING else: css/tokens.css (the two chromatic
  *         values + their fix comments), tokens.json (the two values +
  *         descriptions + meta.version), scripts/verify.mjs (the two (p)
  *         pin re-targets — OWNER-SANCTIONED: the frozen gate pinned the
@@ -708,7 +708,7 @@
  *   (b7)/(n-hub4) REBASED to v2.9.1 with the enumerated 3.0.0
  *            authorized set; the tokens.json guard asserts themes +
  *            doctrine byte-equal, shared gaining EXACTLY --radius-card,
- *            the party family losing EXACTLY --sig-blue, cobalt
+ *            the chromatic family losing EXACTLY --sig-blue, cobalt
  *            carrying blue's exact value.
  *   Negative tests (restore-verified): (ct4) a sub-2.0 chromatic value
  *            flips verify:contrast FAIL; re-declaring --sig-blue
@@ -871,19 +871,19 @@ const APP_REQUIREMENTS = [
   ['meta="components/viz.tsx"', "the telemetry card declares its source path"],
   ['meta="components/primitives.tsx"', "the palette card declares its source path"],
   ['meta="components/cards.tsx"', "the cards declare their source path (2.5.0)"],
-  ['title="Quick Guest Check-In"', "the live-validation form card (2.5.0 defect #5)"],
+  ['title="Workspace Member & Resource Allocation"', "the live-validation form card (2.5.0 defect #5; 3.1.0 the standalone rename)"],
   ['title="The Chronology"', "the chronology card's ruled title"],
   ['className="sig-span-4 sig-row-2 hub__card--timeline"', "the chronology: span 4 + ROW-SPAN 2 + the timeline modifier (sp1 overrides ride it)"],
-  ['title="Budget & RSVP Telemetry"', "the telemetry card's ruled title"],
+  ['title="Budget & Attendance Telemetry"', "the telemetry card's ruled title"],
   ['title="Interactive Deck & Rules"', "the archetypes card's ruled title (2.5.0)"],
   ['title="1v1 Game Matchup & Editorial"', "the matchup card's ruled title (2.5.0)"],
-  ['title="The Party Palette"', "the palette card's ruled title"],
+  ['title="The Chromatic Palette"', "the palette card's ruled title"],
   ['title="The Input Matrix"', "the forms-module matrix card's ruled title"],
-  ["SigBadge", "the palette + ledger render party badges"],
+  ["SigBadge", "the palette + ledger render the chromatic badges"],
   ["StatRing", "the telemetry card renders the live ring"],
   ["onEventSelect={modal.open}", "timeline nodes open the modal"],
-  ["SEED_GUESTS", "the live ledger's typed seed (2.5.0 live state)"],
-  ["const derived = useMemo(", "the DERIVED layer — every live read is a useMemo of guests"],
+  ["SEED_MEMBERS", "the live ledger's typed seed (2.5.0 live state)"],
+  ["const derived = useMemo(", "the DERIVED layer — every live read is a useMemo of members"],
 ];
 for (const [needle, label] of APP_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
@@ -908,12 +908,12 @@ if (dashStart === -1 || dashEnd === -1 || dashEnd < dashStart) {
     failures.push(`(b5) all seven bento cards must be interactive hover modules, found interactive on ${interactiveCount}`);
   }
   const liveNeedles = [
-    ["useState<Guest[]>(SEED_GUESTS)", "the guests state seeds from SEED_GUESTS"],
-    ["const checkIn = useCallback(", "the append handler flows to the form"],
+    ["useState<Member[]>(SEED_MEMBERS)", "the members state seeds from SEED_MEMBERS"],
+    ["const allocate = useCallback(", "the append handler flows to the allocation form"],
     ["derived.ledgerRows", "the ledger rows derive from state"],
     ["derived.ringValue", "the ring value derives from state"],
     ["derived.spentPct", "the budget bars derive from state"],
-    ["RSVP_TO_STATE", "the radio value maps to the ledger RSVP"],
+    ["ATTENDANCE_TO_STATE", "the radio value maps to the ledger attendance"],
   ];
   for (const [needle, label] of liveNeedles) {
     if (!dashSlice.includes(needle)) {
@@ -1246,7 +1246,7 @@ if (oldTimeline !== null) {
 //                              (roles document the fill/series contract),
 //                              shared + --radius-card (guarded below)
 //   scripts/verify.mjs       — OWNER-SANCTIONED (the 2.9.1 precedent):
-//                              the (p) party pins grew to the 26-token
+//                              the (p) chromatic pins grew to the 26-token
 //                              family, the (c) #F5C2E7 ban lifted (the
 //                              official Mocha Pink re-homed as
 //                              --sig-orchid), the (p3) retirement ban
@@ -1400,7 +1400,7 @@ try {
   // source never carries a literal purged token name (the purity gate).
   const OLD_PREFIX = "--par" + "ty-";
   const OLD_KEY = "par" + "tyPalette";
-  const v300Party = Object.keys(v300tokens[OLD_KEY]?.tokens ?? {});
+  const v300Sig = Object.keys(v300tokens[OLD_KEY]?.tokens ?? {});
   const curSig = Object.keys(currentTokens.sigPalette?.tokens ?? {});
   if (currentTokens[OLD_KEY] !== undefined) {
     failures.push("(b7) SAFETY: tokens.json still carries the old palette key — 3.1.0 renames it to sigPalette");
@@ -1409,12 +1409,12 @@ try {
     failures.push(`(b7) SAFETY: sigPalette must keep the 26-token family, found ${curSig.length}`);
   }
   // Name mapping: OLD --X → --sig-X must be TOTAL and lossless.
-  const expected = v300Party.map((k) => k.replace(OLD_PREFIX, "--sig-")).sort().join(",");
+  const expected = v300Sig.map((k) => k.replace(OLD_PREFIX, "--sig-")).sort().join(",");
   if (curSig.slice().sort().join(",") !== expected) {
     failures.push(`(b7) SAFETY: sigPalette token names must be exactly the renamed 26 (--sig-X), found ${curSig.slice().sort().join(",")}`);
   }
   // Value identity: every renamed token carries the EXACT v3.0.0 value.
-  for (const oldName of v300Party) {
+  for (const oldName of v300Sig) {
     const newName = oldName.replace(OLD_PREFIX, "--sig-");
     if (currentTokens.sigPalette.tokens[newName]?.value !== v300tokens[OLD_KEY].tokens[oldName]?.value) {
       failures.push(`(b7) SAFETY: ${newName} must carry its exact v3.0.0 value (the purge renames, never re-tunes)`);
@@ -1489,21 +1489,21 @@ if (typeof pkg.scripts?.["verify:mcp"] !== "string") {
 // cortex's stable card hook is the CLASS selector itself (the default sweep
 // carries ".sig-surface-card"; pinned by the server.ts needles in (s2)'s
 // compiled-dist check and the verify:mcp smoke's surface hits). What stays:
-// the metric hooks (plus the 2.2.0 guests row) and the primary toast button.
+// the metric hooks (plus the 2.2.0 members row) and the primary toast button.
 const TESTID_NEEDLES = [
   ['data-testid="metric-budget-remaining"', "the budget-remaining metric hook"],
   ['data-testid="metric-budget-spent"', "the budget-spent metric hook"],
-  ['data-testid="metric-guests"', "the guests-confirmed metric hook (2.2.0)"],
-  ['data-testid="metric-rsvp"', "the rsvp metric hook"],
+  ['data-testid="metric-seats"', "the seats-confirmed metric hook (2.2.0)"],
+  ['data-testid="metric-attendance"', "the attendance metric hook"],
   ['data-testid="btn-toast"', "the primary toast button hook"],
   ['data-testid="tabs-module"', "the 2.3.0 module-switcher hook"],
   ['data-testid="data-table-ledger"', "the 2.3.0 data-module ledger hook"],
   ['data-testid="kpi-trio"', "the 2.4.0 StatCard KPI trio hook"],
   ['data-testid="banner-release"', "the 2.4.0 announcement banner hook"],
   ['data-testid="carousel-clippings"', "the 2.4.0 palette clippings carousel hook"],
-  ['data-testid="guest-form"', "the 2.5.0 live check-in form hook (defect #5)"],
+  ['data-testid="member-form"', "the 2.5.0 live allocation form hook (defect #5)"],
   ['data-testid="ledger-table"', "the 2.5.0 LIVE ledger hook (the bento's span-7 card)"],
-  ['data-testid="ring-rsvp"', "the 2.5.0 live RSVP ring hook"],
+  ['data-testid="ring-attendance"', "the 2.5.0 live attendance ring hook"],
 ];
 for (const [needle, label] of TESTID_NEEDLES) {
   if (!appSrc.includes(needle)) {
@@ -1743,7 +1743,7 @@ if (!nodeClearance.test(stylesCss)) {
 }
 
 // ---- (ix1) THE VIEW SWITCHER — View type, HubLink, the 5-view nav map ----
-// 2.8.0 AMENDMENT: the workshop placeholders (events/guests/budget) died —
+// 2.8.0 AMENDMENT: the workshop placeholders (events/members/budget) died —
 // the nav map is FIVE REAL views (dashboard/studio/index/chronicle/codex).
 // The EmptyState dogfood needles retired with PlaceholderView (EmptyState
 // still lives: the package TimelineManager edge + the Set 06 studio frame).
@@ -1772,13 +1772,13 @@ for (const [needle, label] of INDEX_REQUIREMENTS) {
 }
 
 // ---- (ix2) THE THREE GATEWAYS — 2.6.0: chromatic doors in the balanced row ----
-// Titles renamed per the 2.6.0 spec (Event & Party Planner / Study &
-// Flashcard Engine / Party Game Arena); eyebrows PLANNER/STUDY/ARENA;
+// Titles renamed per the 3.1.0 spec (Bento Workbench / Interactive
+// Graph & Planner / Pattern Studio); eyebrows WORKBENCH/PLANNER/STUDIO;
 // accents flamingo/lavender/peach through data-accent + --sig-accent.
 const GATEWAYS = [
-  ["PLANNER", "views/planner.tsx", "Event & Party Planner", "--color-cake-primary"],
-  ["STUDY", "modules/study.tsx", "Study & Flashcard Engine", "--sig-lavender"],
-  ["ARENA", "modules/games.tsx", "Party Game Arena", "--sig-peach"],
+  ["WORKBENCH", "views/workbench.tsx", "Bento Workbench", "--color-cake-primary"],
+  ["PLANNER", "views/planner.tsx", "Interactive Graph & Planner", "--sig-lavender"],
+  ["STUDIO", "views/studio.tsx", "Pattern Studio", "--sig-peach"],
 ];
 for (const [label, path, title, accent] of GATEWAYS) {
   for (const [needle, what] of [
@@ -2036,10 +2036,10 @@ const SM3_REQUIREMENTS = [
   ["Funnel", "the codex names the live-map-valid filter icon"],
   ["### The Local Persistence & JSON Snapshot Pattern (2.7.0)", "the persistence subsection exists"],
   ["usePersistentState", "the codex shows the persistence hook"],
-  ["sig.v27.graph", "the codex pins the graph storage key"],
-  ["sig.v27.timeline", "the codex pins the timeline storage key"],
-  ["sig.v28.*", "the codex documents the key-bump migration contract"],
-  ["signature-snapshot.json", "the codex shows the snapshot filename"],
+  ["sig.workspace.v3.graph", "the codex pins the graph storage key"],
+  ["sig.workspace.v3.timeline", "the codex pins the timeline storage key"],
+  ["sig.workspace.v4.*", "the codex documents the key-bump migration contract"],
+  ["signature-workspace.json", "the codex shows the snapshot filename"],
   ["URL.createObjectURL", "the codex shows the export dance"],
   ["URL.revokeObjectURL", "the codex shows the revoke"],
   ["Array.isArray(data.graph)", "the codex shows the import shape gate"],
@@ -2115,20 +2115,20 @@ const TABS_REQUIREMENTS = [
   ["function DataModule", "the data branch component"],
   ["function FormsModule", "the forms branch component"],
   ["<DataTable", "the ledger table"],
-  ['title="Guest & Budget Ledger"', "the ledger card title"],
+  ['title="Member & Budget Ledger"', "the ledger card title"],
   ['title="The Input Matrix"', "the matrix card title"],
-  ['guest: "Ana Souza"', "ledger row 1"],
-  ['guest: "Leo Martins"', "ledger row 2"],
-  ['guest: "Priya Nair"', "ledger row 3"],
-  ['guest: "Tom Weller"', "ledger row 4"],
-  ['guest: "Ana + 1"', "ledger row 5"],
+  ['member: "Ana Souza"', "ledger row 1"],
+  ['member: "Leo Martins"', "ledger row 2"],
+  ['member: "Priya Nair"', "ledger row 3"],
+  ['member: "Tom Weller"', "ledger row 4"],
+  ['member: "Nina Almeida"', "ledger row 5"],
   ['colorToken="--sig-green" label="Confirmed"', "the composed SigBadge status cell"],
   ['<Callout status="info">', "the info callout"],
   ['<Callout status="success">', "the success callout"],
   ['<Callout status="warning">', "the warning callout"],
   ["<Avatar name={person.name}", "the avatar crew (rendered from AVATAR_CREW)"],
-  ['ringToken: "--sig-mauve-soft"', "crew ring 1 (party token)"],
-  ['ringToken: "--sig-sky"', "crew ring 2 (party token)"],
+  ['ringToken: "--sig-mauve-soft"', "crew ring 1 (chromatic token)"],
+  ['ringToken: "--sig-sky"', "crew ring 2 (chromatic token)"],
   ["<Select", "the native dropdown in the matrix"],
   ['value="none"', "select option 1"],
   ['value="vegetarian"', "select option 2"],
@@ -2369,8 +2369,8 @@ const VIZ_CSS_24_REQUIREMENTS = [
   ["text-transform: uppercase", "the label's uppercase caption"],
   ["letter-spacing: 0.1em", "the label's tracking"],
   ["font-size: 1.5rem", "the value's headline size"],
-  [".sig-stat-card__delta--up", "the up delta (party-green via the modifier)"],
-  [".sig-stat-card__delta--down", "the down delta (party-peach via the modifier)"],
+  [".sig-stat-card__delta--up", "the up delta (sig-green via the modifier)"],
+  [".sig-stat-card__delta--down", "the down delta (sig-peach via the modifier)"],
 ];
 for (const [needle, label] of VIZ_CSS_24_REQUIREMENTS) {
   if (!vizCss24.includes(needle)) {
@@ -2439,34 +2439,34 @@ try {
 }
 
 // ---- (showcase) THE EDITORIAL SHOWCASE — the playground wiring (2.4.0) ------------
-// 2.5.0 AMENDMENT: the needles re-aim at the bento — Postal Code +
+// 2.5.0 AMENDMENT: the needles re-aim at the bento — Region Code +
 // descriptions-above + validMessage + PasswordInput + the archetypes +
-// the v2.5.0 banner copy; every RSVP card carries a description.
+// the v2.5.0 banner copy; every attendance card carries a description.
 const SHOWCASE_REQUIREMENTS = [
   ["<FormField", "the accessible wrapper in the matrix"],
-  ['label="Name"', "the Name field"],
-  ['label="Contribution"', "the Contribution field (2.4.1 — the dollar sign moved OUT of the label)"],
+  ['label="Member Name"', "the Member Name field"],
+  ['label="Allocation"', "the Allocation field (2.4.1 — the dollar sign moved OUT of the label)"],
   ['prefix="$"', "the 2.4.1 prefix adornment on the money field"],
-  ['label="Postal Code"', "the 2.5.0 Postal Code field (both modules)"],
+  ['label="Region Code"', "the 2.5.0 Region Code field (both modules)"],
   ['description="5 numbers only · e.g., 79901"', "the format rule ABOVE the input (defect #2)"],
   ['description="Numbers only · e.g., 120"', "the money field's format rule"],
   ["validMessage={postalValid", "the live-validation success slot"],
   ['htmlFor="matrix-name"', "the consumer-wired label association (field 1)"],
   ['htmlFor="matrix-share"', "the consumer-wired label association (field 2)"],
-  ["hint=\"As it appears on the invite\"", "the hint slot demoed"],
+  ["hint=\"As it appears on the roster\"", "the hint slot demoed"],
   ["<PasswordInput", "the 2.5.0 password well (meter + pills)"],
   ["<RadioCardGroup", "the card radios in the matrix"],
-  ['name="rsvp"', "the radio group name"],
-  ['{ value: "attending", label: "Attending", description: "See you there" }', "RSVP option 1 (with description)"],
-  ['{ value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" }', "RSVP option 2 — descriptions ENFORCED (2.5.0)"],
-  ['{ value: "declined", label: "Can\'t make it", description: "Sorry — next time" }', "RSVP option 3 — descriptions ENFORCED (2.5.0)"],
+  ['name="attendance"', "the radio group name"],
+  ['{ value: "confirmed", label: "Confirmed", description: "Seat allocated this sprint" }', "attendance option 1 (with description)"],
+  ['{ value: "pending", label: "Pending", description: "Awaiting capacity review" }', "attendance option 2 — descriptions ENFORCED (2.5.0)"],
+  ['{ value: "declined", label: "Declined", description: "No seat this cycle" }', "attendance option 3 — descriptions ENFORCED (2.5.0)"],
   ["<AnnouncementBanner", "the banner at the top of the bento"],
   ['variant="announcement"', "the 2.4.1 variant API (Flamingo banner default)"],
   ['label: "See what shipped"', "the 2.4.1 action slot demoed"],
-  ["live state mode: check in a guest and watch", "the v2.5.0 banner copy"],
+  ["live state mode: allocate a seat and watch", "the v2.5.0 banner copy"],
   ["<StatCard", "the KPI trio"],
   ['label="Total Budget"', "KPI 1"],
-  ['label="Confirmed Guests"', "KPI 2"],
+  ['label="Confirmed Seats"', "KPI 2"],
   ['label="Active Game Rooms"', "KPI 3"],
   ['colorToken="--sig-green"', "KPI 1 sparkline token"],
   ["<ProseBlock", "the Field Notes prose container"],
@@ -2481,7 +2481,7 @@ const SHOWCASE_REQUIREMENTS = [
   ["<MatchupCard", "the matchup archetype"],
   ["<ActionTile", "the action-tile archetype"],
   ['kbdShortcut="D"', "the shortcut chip demoed"],
-  ['label="Add to game rotation"', "the visible switch label exercised (defect #3)"],
+  ['label="Add to build rotation"', "the visible switch label exercised (defect #3)"],
   ["ToggleSwitch", "the switch renders in the matrix + the check-in"],
 ];
 for (const [needle, label] of SHOWCASE_REQUIREMENTS) {
@@ -2886,7 +2886,7 @@ for (const [needle, label] of [
 }
 for (const [needle, label] of [
   [".sig-form-field__desc", "the format-line slot (muted 0.75rem, ABOVE the control)"],
-  [".sig-form-field__valid", "the success line slot (party-green)"],
+  [".sig-form-field__valid", "the success line slot (sig-green)"],
   [".sig-form-field__well:focus-within", "the well OWNS the focus treatment"],
   [".sig-form-field__well > .sig-input,\n  .sig-form-field__well > input", "the scoped kill — prefix/suffix children must be BARE inputs"],
   [".sig-form-field__chip:first-child", "the LEFT chip's cursor-side hairline (border-right)"],
@@ -3256,9 +3256,9 @@ if (bentoLedgerCols === -1) {
   failures.push("(al1) App.tsx must declare BENTO_LEDGER_COLUMNS — the live ledger's contract");
 } else {
   const colSlice = appSrc.slice(bentoLedgerCols, bentoLedgerCols + 400);
-  if (!colSlice.includes('{ key: "share", header: "Contribution", numeric: true, align: "right" }')) {
+  if (!colSlice.includes('{ key: "share", header: "Allocation", numeric: true, align: "right" }')) {
     failures.push(
-      '(al1) BENTO_LEDGER_COLUMNS must set { key: "share", header: "Contribution", numeric: true, align: "right" } — the header flushes over the live $ values',
+      '(al1) BENTO_LEDGER_COLUMNS must set { key: "share", header: "Allocation", numeric: true, align: "right" } — the header flushes over the live $ values',
     );
   }
 }
@@ -3272,7 +3272,7 @@ if (!appSrc.includes("rows={derived.ledgerRows}")) {
 // ---- (acc1) THE ACCENT CONTRACT (2.6.0) --------------------------------------------
 // The chromatic mechanism: [data-accent] + the inline --sig-accent variable,
 // painted entirely in css (eyebrow color, 2px title underline, glow). The
-// types: SigColorToken (the 11 --sig-* tokens) + AccentToken (party +
+// types: SigColorToken (the 26 --sig-* tokens) + AccentToken (chromatic +
 // the two structural signatures) exported from the surface module; the
 // compiled .d.ts is the consumer-facing contract.
 const surfaceSrc26 = readFileSync(resolve(root, "react/surface.tsx"), "utf8");
@@ -3366,7 +3366,7 @@ if (cardsShadows26 !== null) {
 // (the 10 legacy + cobalt [blue retired, value carried] + the 15
 // chromatic fills) and checks the alias exists in the compiled
 // surface.d.ts.
-const EXPECTED_PARTY_26 = [
+const EXPECTED_SIG_26 = [
   "--sig-pink-bright",
   "--sig-pink-soft",
   "--sig-pink-alt",
@@ -3400,14 +3400,14 @@ if (tokenKeysMatch26 === null) {
   failures.push("(pt11) cannot sweep — react/ThemeProvider.tsx has no parseable TOKEN_KEYS array");
 } else {
   const whitelist26 = [...tokenKeysMatch26[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
-  const partyNames = whitelist26.filter((name) => name.startsWith("--sig-"));
-  if (partyNames.length !== 26) {
+  const sigNames = whitelist26.filter((name) => name.startsWith("--sig-"));
+  if (sigNames.length !== 26) {
     failures.push(
-      `(pt11) the whitelist carries ${partyNames.length} --sig-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the SigColorToken union is the whitelist`,
+      `(pt11) the whitelist carries ${sigNames.length} --sig-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the SigColorToken union is the whitelist`,
     );
   }
-  for (const name of EXPECTED_PARTY_26) {
-    if (!partyNames.includes(name)) {
+  for (const name of EXPECTED_SIG_26) {
+    if (!sigNames.includes(name)) {
       failures.push(`(pt11) the 26-token sweep is missing ${name}`);
     }
   }
@@ -3447,7 +3447,7 @@ if (!contentFooterRule.test(cardsCss26)) {
 for (const [needle, label] of [
   ["export interface ContentCardProps", "the props contract"],
   ["image?: string", "the optional cover image URL"],
-  ["categoryToken?: SigColorToken", "the party-typed category badge"],
+  ["categoryToken?: SigColorToken", "the chromatic-typed category badge"],
   ["meta?: string[]", "the mono meta pills"],
   ['className="sig-content-card__visual"', "the 16/9 visual element"],
   ['className="sig-content-card__pill"', "the meta pill render"],
@@ -3515,7 +3515,7 @@ if (!tierFeaturedRule.test(cardsCss26)) {
 const tierCheckRule = /\.sig-tier-card__features li svg\s*\{[^}]*color: var\(--sig-green\);/s;
 if (!tierCheckRule.test(cardsCss26)) {
   failures.push(
-    "(cc3) the TierCard Check bullets must wear party green — .sig-tier-card__features li svg { color: var(--sig-green); }",
+    "(cc3) the TierCard Check bullets must wear sig-green — .sig-tier-card__features li svg { color: var(--sig-green); }",
   );
 }
 const tierPriceRule = /\.sig-tier-card__price\s*\{[^}]*font-size: 2rem;[^}]*font-weight: 600;[^}]*font-variant-numeric: tabular-nums;/s;
@@ -3527,8 +3527,8 @@ if (!tierPriceRule.test(cardsCss26)) {
 
 // ---- (cc4) PROFILECARD (2.6.0) -------------------------------------------------------------
 for (const [needle, label] of [
-  ["<Avatar name={name} size={avatarSize} ringToken={accentToken} />", "the avatar wears the party ring (typed SigColorToken)"],
-  ["accentToken?: SigColorToken", "the profile accent is party-only (the avatar-ring rule)"],
+  ["<Avatar name={name} size={avatarSize} ringToken={accentToken} />", "the avatar wears the chromatic ring (typed SigColorToken)"],
+  ["accentToken?: SigColorToken", "the profile accent is chromatic-only (the avatar-ring rule)"],
   ["avatarSize?: 32 | 40", "the grid-perfect diameters"],
   ["stats.length < 2 || stats.length > 3", "the 2–3 stats band (dev-warned outside)"],
   ["font-variant-numeric: tabular-nums", "css-side: the stat digits"],
@@ -3624,11 +3624,11 @@ if (!chronicleNode.test(cardsCss26)) {
       failures.push(`(ring2) react/viz.tsx must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  if (!appSrc.includes('total={GUEST_CAPACITY}')) {
-    failures.push("(ring2) App.tsx must wire the live ring's total (the RSVP denominator)");
+  if (!appSrc.includes('total={SEAT_CAPACITY}')) {
+    failures.push("(ring2) App.tsx must wire the live ring's total (the attendance denominator)");
   }
-  if (!appSrc.includes('unit="Guests"')) {
-    failures.push('(ring2) App.tsx must wire the live ring\'s unit="Guests"');
+  if (!appSrc.includes('unit="Seats"')) {
+    failures.push('(ring2) App.tsx must wire the live ring\'s unit="Seats"');
   }
 }
 
@@ -3645,25 +3645,25 @@ for (const [needle, label] of [
   ['data-testid="index-catalog"', "the commerce row hook"],
   ['data-testid="index-food"', "the food slab hook"],
   ['data-testid="index-chronicle"', "the chronicle slab hook"],
-  ['title: "Event & Party Planner"', "gateway door 1"],
-  ['title: "Study & Flashcard Engine"', "gateway door 2"],
-  ['title: "Party Game Arena"', "gateway door 3"],
+  ['title: "Bento Workbench"', "gateway door 1"],
+  ['title: "Interactive Graph & Planner"', "gateway door 2"],
+  ['title: "Pattern Studio"', "gateway door 3"],
   ['accent: "--color-cake-primary"', "STRUCTURAL accent decision: the planner door wears Flamingo (the AccentToken union)"],
   ['title="Birria & Street Taco Catering"', "the commerce ContentCard"],
   ['meta={["25 MIN", "SPICY", "$14"]}', "the mono meta pills"],
   ['tag="JSX"', "the ReferenceCard chip"],
   ['title="The Signature Surface"', "the ReferenceCard title"],
-  ['name="Arena Pass"', "the featured TierCard"],
-  ['cta="Claim the pass"', "the TierCard CTA"],
+  ['name="Pro License"', "the featured TierCard"],
+  ['cta="Claim the license"', "the TierCard CTA"],
   ['title="Field Notes & Carousel"', "the food slab"],
   ['label="Developer & lifestyle cards"', "the lifestyle carousel"],
-  ["The Design of Everyday Things", "carousel mini-card 1 (Books)"],
-  ["Smoked Old Fashioned", "carousel mini-card 2 (Cocktails)"],
-  ["Empty States That Sell", "carousel mini-card 3 (UI Patterns)"],
-  ["Keychron Q1 HE", "carousel mini-card 4 (Hardware)"],
-  ["Ribbon of Shame", "carousel mini-card 5 (Party Games)"],
+  ["Inter var — the optical grid is a promise", "carousel mini-card 1 (Typography)"],
+  ["Sparklines first — the trend is the headline", "carousel mini-card 2 (Telemetry)"],
+  ["Validation that teaches — an error is copy", "carousel mini-card 3 (Forms)"],
+  ["Force-directed, drag-weighted — nodes are data", "carousel mini-card 4 (Graphs)"],
+  ["Timelines that breathe", "carousel mini-card 5 (Chronology)"],
   ['data-testid="index-profiles"', "the 4-up profile row hook"],
-  ['name="Ana Souza"\n              role="Head of Catering"', "the ProfileCard person (2.9.0: rides a .sig-cell container)"],
+  ['name="Ana Souza"\n              role="Head of Platform"', "the ProfileCard person (2.9.0: rides a .sig-cell container)"],
   ['{ label: "Rating", value: "4.9" }', "the third stat"],
   ['data-testid="index-chronicle"', "the chronicle slab hook (wrapper div — the SurfaceCard slot stays flat-DOM)"],
   ['title="The Chronicle"', "the chronicle slab"],
@@ -3787,7 +3787,7 @@ if (!existsSync(graphSrcPath)) {
     ["export function layoutGraph(", "the exported PURE layout helper (gate-testable determinism)"],
     ["export function cubicBezierEdge(", "the exported PURE edge helper (control points 60% along the radial)"],
     ["export interface GraphNode", "the node contract"],
-    ["categoryToken: SigColorToken", "party-typed node category (Rule of Engagement)"],
+    ["categoryToken: SigColorToken", "chromatic-typed node category (Rule of Engagement)"],
     ["parentId?: string", "parentId undefined = root"],
     ['role="application"', "the svg's application role"],
     ["sig-graph sig-graph--focused", "the focused class driven by selection state"],
@@ -3890,8 +3890,8 @@ if (!existsSync(graphDtsPath)) {
     );
   }
   for (const [needle, label] of [
-    ['"sig.v27.graph-positions"', "the persisted dragged positions key"],
-    ['"sig.v27.links"', "the persisted extra links key"],
+    ['"sig.workspace.v3.graph-positions"', "the persisted dragged positions key"],
+    ['"sig.workspace.v3.links"', "the persisted extra links key"],
     ["onMoveNode={moveNode}", "the drag wiring"],
     ["onLinkNodes={linkNodes}", "the tether wiring"],
     ["onAddNodeAt={addNodeAt}", "the spawn wiring"],
@@ -3921,7 +3921,7 @@ const VIZ_TSX_27_REQUIREMENTS = [
   ["export function smoothPath(", "the exported PURE Catmull-Rom helper (gate-testable)"],
   ['strokeDasharray="4 4"', "the dashed reference lines"],
   ['className="sig-bars__track"', "the inset capacity track element"],
-  ['className="sig-bars__bar"', "the party value bar element"],
+  ['className="sig-bars__bar"', "the chromatic value bar element"],
   ['className="sig-bars__value"', "the hover value readout element"],
   ['className="sig-bars__refline"', "the 25/50/75% reference line element"],
   ['className="sig-bars__label"', "the mono axis label element"],
@@ -3988,7 +3988,7 @@ for (const name of ["BarChart", "AreaChart", "smoothPath"]) {
 // Funnel EmptyState edge, the Trash delete buttons. css/timeline.css: the
 // APPEND-only .sig-tmanager block (EventTimeline rules untouched — the
 // e2 deletion guard proves it) with the tabular counter, the Flamingo
-// pill underline, the party-green settle fill, reduced-motion.
+// pill underline, the sig-green settle fill, reduced-motion.
 // LIVE-MAP PROBE NOTE (the "Music" lesson): the owner-spec'd "Trash2" and
 // "Filter" are NOT keys of the installed lucide-react 1.72.0 icons map —
 // the live-map-valid equivalents "Trash" and "Funnel" render instead.
@@ -4056,7 +4056,7 @@ const TM_CSS_REQUIREMENTS = [
   [".sig-tmanager__count", "the live counter rule"],
   ["font-variant-numeric: tabular-nums", "the counter's tabular digits"],
   [".sig-tmanager__settle[aria-pressed=\"true\"]", "the settled toggle selector"],
-  ["color: var(--sig-green)", "the settled toggle's party-green fill"],
+  ["color: var(--sig-green)", "the settled toggle's sig-green fill"],
   [".sig-tmanager__row--settled .sig-tmanager__body", "the settled body"],
   ["opacity: 0.6", "the settled fade"],
   ["text-decoration: line-through", "the settled strike-through"],
@@ -4095,7 +4095,7 @@ if (!existsSync(tmDtsPath)) {
 // the try/catch localStorage posture + reset. App.tsx: the versioned keys, the
 // two seeded arrays, the snapshot toolbar (Export/Import/Reset) with the
 // Blob → objectURL → revoke dance, the FileReader validation, and the
-// signature-snapshot.json filename.
+// signature-workspace.json filename.
 const persistencePath = resolve(root, "playground", "persistence.ts");
 if (!existsSync(persistencePath)) {
   failures.push("(ps1) playground/persistence.ts is missing — the persistence hook");
@@ -4120,12 +4120,12 @@ if (!existsSync(persistencePath)) {
   }
 }
 const PS_APP_REQUIREMENTS = [
-  ['usePersistentState<GraphNode[]>(\n    "sig.v27.graph",', "the graph array under its versioned key"],
-  ['usePersistentState<TimelineItem[]>(\n    "sig.v27.timeline",', "the timeline array under its versioned key"],
+  ['usePersistentState<GraphNode[]>(\n    "sig.workspace.v3.graph",', "the graph array under its versioned key"],
+  ['usePersistentState<TimelineItem[]>(\n    "sig.workspace.v3.timeline",', "the timeline array under its versioned key"],
   ["SEED_GRAPH", "the graph's seed fallback"],
   ["SEED_TIMELINE", "the timeline's seed fallback"],
-  ['{ version: "sig.v27", graph, timeline, links }', "the snapshot payload (3.0.0: the links model joins)"],
-  ["signature-snapshot.json", "the download filename"],
+  ['{ version: "sig.workspace.v3", graph, timeline, links }', "the snapshot payload (3.0.0: the links model joins)"],
+  ["signature-workspace.json", "the download filename"],
   ["URL.createObjectURL", "the download dance, step 1"],
   ["URL.revokeObjectURL", "the download dance, step 3 — revoke immediately"],
   ["FileReader", "the import's reader"],
@@ -4160,10 +4160,10 @@ const GP_REQUIREMENTS = [
   ['title="The Knowledge Graph"', "card 1"],
   ["<KnowledgeGraph", "the graph primitive"],
   ["addOn", "the graph's Add & Link toolbar"],
-  ['title="Spending by Category"', "card 2"],
+  ['title="Spending by Department"', "card 2"],
   ["<BarChart", "the bar chart primitive"],
-  ['{ label: "Venue", value: 800, max: 1000, colorToken: "--sig-cobalt" }', "a per-bar capacity max (3.0.0: the chromatic series)"],
-  ['title="RSVP Momentum"', "card 3"],
+  ['{ label: "Engineering", value: 800, max: 1000, colorToken: "--sig-cobalt" }', "a per-bar capacity max (3.0.0: the chromatic series)"],
+  ['title="Attendance Momentum"', "card 3"],
   ["<AreaChart", "the area chart primitive"],
   ['colorToken="--sig-sky"', "the sky series token"],
   ['title="Milestone Manager"', "card 4"],
@@ -4173,7 +4173,7 @@ const GP_REQUIREMENTS = [
   ['data-testid="module-graph"', "the module probe hook"],
   ['data-testid="knowledge-graph"', "the graph probe hook"],
   ['data-testid="spending-bars"', "the bars probe hook"],
-  ['data-testid="rsvp-area"', "the area probe hook"],
+  ['data-testid="attendance-area"', "the area probe hook"],
   ['data-testid="milestone-manager"', "the manager probe hook"],
   ['data-testid="snapshot-export"', "the export probe hook"],
   ['data-testid="snapshot-import"', "the import probe hook"],
@@ -4221,7 +4221,7 @@ for (const [needle, label] of NAV5_REQUIREMENTS) {
     failures.push(`(nav5) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
   }
 }
-for (const dead of ["function PlaceholderView", "type WorkshopView", "const PLACEHOLDERS", '"#/events"', '"#/guests"', '"#/budget"']) {
+for (const dead of ["function PlaceholderView", "type WorkshopView", "const PLACEHOLDERS", '"#/events"', '"#/members"', '"#/budget"']) {
   if (appSrc.includes(dead)) {
     failures.push(`(nav5) App.tsx must NOT contain ${JSON.stringify(dead)} — the placeholder trio died in 2.8.0`);
   }
@@ -4326,12 +4326,12 @@ if (existsSync(codexPath)) {
   }
   // The honest census: exactly 37 color tokens declared INSIDE the
   // COLOR_TOKENS array (the z-ladder's --z-* entries don't count).
-  // 3.0.0: 11 core/keeper + the 26-token Party Palette.
+  // 3.0.0: 11 core/keeper + the 26-token Chromatic Palette.
   const censusSlice = codexSrc.slice(codexSrc.indexOf("const COLOR_TOKENS"), codexSrc.indexOf("];"));
   const declaredSwatches = censusSlice.match(/token: "--/g);
   if (declaredSwatches === null || declaredSwatches.length !== 37) {
     failures.push(
-      `(ps-studio) CodexView COLOR_TOKENS must declare exactly 37 color tokens (11 core/keeper + 26 party — the honest count out of whitelist 50), found ${String(declaredSwatches?.length ?? 0)}`,
+      `(ps-studio) CodexView COLOR_TOKENS must declare exactly 37 color tokens (11 core/keeper + 26 chromatic — the honest count out of whitelist 50), found ${String(declaredSwatches?.length ?? 0)}`,
     );
   }
   if (!codexSrc.includes("the whitelist is 50")) {
@@ -4414,7 +4414,7 @@ if (!existsSync(llmsPath)) {
   if (!llmsTxt.startsWith("# @edwyn/signature-style — The Signature Style")) {
     failures.push("(ps-llms) llms.txt must open with the H1");
   }
-  if (!llmsTxt.includes("> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Party Palette content colors, mechanical physics.")) {
+  if (!llmsTxt.includes("> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.")) {
     failures.push("(ps-llms) llms.txt must carry the blockquote tagline");
   }
   for (const section of ["## Tokens", "## Rules", "## Component Sets", "## Recipes"]) {
@@ -4718,7 +4718,7 @@ if (!existsSync(llmsFullPath)) {
     ["startAsyncSim", "the measuring runner"],
     ["registerSimRunner", "the Shell-side registry wiring"],
     ["getBoundingClientRect().height", "the BEFORE-swap footprint measurement"],
-    ["<SkeletonTableRow key={guest.id} columns={3} />", "the ledger swap — skeleton rows × current-rows"],
+    ["<SkeletonTableRow key={member.id} columns={3} />", "the ledger swap — skeleton rows × current-rows"],
     ["{simLoading ? (\n            <SkeletonCard />\n          ) : (", "the card-body swap ternary"],
   ];
   for (const [needle, label] of SK_APP_291) {
@@ -4742,7 +4742,7 @@ if (!existsSync(llmsFullPath)) {
 // ---- (ct1) THE CONTRAST GATE (2.9.1) ------------------------------------------
 // Zero contrast debt, enforced: the gate script must exist, be wired, the
 // two fixed hexes must sit in css/tokens.css, and the gate itself must run
-// green (all 11 party tokens ≥3.0:1 on surface AND base; the fixed pair
+// green (all chromatic tokens ≥3.0:1 on surface AND base; the fixed pair
 // ≥3.1:1). Negative test documented in the header: revert the blue hex →
 // FAIL with the measured ratio → restore → PASS.
 {
@@ -4946,4 +4946,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (2.9.1 adds zero shipped files — playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons probe, v2.9.0-baseline safety diff (b7/n-hub4: css/tokens.css two party values + tokens.json values/descriptions/meta + the owner-sanctioned verify.mjs (p) pin re-targets ONLY; react/ demo/ SYSTEM_PROMPT.md tools/ byte-identical) with the tokens.json 2.9.1 guard (deep-equal after neutralizing meta.version + the two authorized party deltas), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the surface.css sanction, timeline resurrection needles, cortex dist + smoke wiring + live-state hooks, shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.5.0 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0 gates intact (accent contract, elevation ladder, 11-token sweep, five archetypes, master index); 2.8.0 five REAL views + studio/copy/llms gates; 2.9.0 container queries + CommandPalette + skeletons + Breadcrumbs; 2.9.1 (ct1)/(sk1) intact; 3.0.0: (chrom) the 26-token family (blue retired — the name BANNED from css/json/whitelist; cobalt carries #89b4fa; 15 chromatic fills; --radius-card 12px; whitelist 50; the p3 retirement bans + the p2 complement), verify:contrast green at the 26-token table (ink ≥3.0 surface+base, the 2.9.1 fix ≥3.1, chromatic fills ≥2.0 vs surface — crimson the floor leader at 3.01:1, zero adjustments needed), (sch) shared/schema.ts (9 interfaces + guards, NOT packed) + docs/SCHEMA_V3.md (SQLite+Postgres+Pydantic+the REST table), (par) card parity (bg-surface + glass hairline + radius-card + 220px floor on the three archetypes + the 12% wells + the 45% top accent, cards.css still ZERO shadow), (car3) carousel modes (paged-3 grid + IO free-scroll + the docked control bar + the live toggle pill), (ff2) symmetrical fields (label rail 20px + helpers-below + the pure-CSS info tooltip + the aria-describedby preservation), (ring2) ring zoom (aspect-ratio square + scale(1.07) + the 0fr→1fr detail strip), (ob1) obsidian graph (setPointerCapture/rAF direct-transform/contextmenu azure tether/dblclick spawn/wheel zoom/Escape/8px nudge + the persisted positions+links model), (pf1) memo x5 + 300ms debounced persistence + contain + (bd1) the backdrop audit (command.css z-50 + timeline.css glass stay; modal scrim stays blur-free; nav blur-free); safety diff rebased to v2.9.1 with the enumerated 3.0.0 authorized set (b7/n-hub4), tokens.json guard: themes+doctrine byte-equal, shared gains EXACTLY radius-card, party loses EXACTLY blue, cobalt carries blue's exact value");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions");

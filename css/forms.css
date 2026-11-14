@@ -40,7 +40,7 @@
       arrow-key radios). Accepted, documented degrade. Selected state:
       border goes 2px Flamingo with padding compensated by -1px so the
       card never shifts (border-box keeps the outer box fixed).
-   - .sig-avatar — the initials disc; the party ring arrives INLINE as
+   - .sig-avatar — the initials disc; the chromatic ring arrives INLINE as
      border (never box-shadow).
 
    2.4.1 ADDITIONS (Intuitive Form Anatomy & Alignment Fix):
@@ -85,13 +85,13 @@
       PasswordInput: bare input + eye toggle in a well, the 4-segment
       strength meter (data-score paints the filled prefix peach →
       yellow → sky → green), and the condition pills (data-satisfied →
-      the 20% party-green wash).
+      the 20% sig-green wash).
 
    ERROR DOCTRINE: invalid fields wear [aria-invalid="true"] — attribute-
    driven, so the state survives any DOM shape. The error border is
-   --sig-peach, the ONE sanctioned use of a party token on structural
+   --sig-peach, the ONE sanctioned use of a chromatic token on structural
    chrome (owner spec: error border = --sig-peach; errors are attention,
-   which is party territory, not Flamingo/Teal action territory).
+   which is chromatic territory, not Flamingo/Teal action territory).
 
    KNOB-COLOR DECISION (documented per release notes): the knob rests as
    --text-muted on --bg-surface (off) and flips to --bg-base when the

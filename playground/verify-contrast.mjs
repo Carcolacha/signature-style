@@ -2,7 +2,7 @@
 /**
  * verify-contrast.mjs — THE ZERO CONTRAST DEBT GATE (2.9.1; grown 3.0.0).
  *
- * The 2.9.0 hostile audit's (a4) contrast spot-check flagged two party
+ * The 2.9.0 hostile audit's (a4) contrast spot-check flagged two chromatic
  * tokens under WCAG 3:1 (the "graphical objects / large text" floor) on
  * the Mocha surface. 2.9.1 fixed them at the SOURCE (css/tokens.css +
  * tokens.json); THIS gate makes the debt forever impossible to re-borrow.
@@ -108,17 +108,17 @@ const CHROMATIC_FILLS = [
   ["--sig-tangerine", "#F25622"],
   ["--sig-neon-green", "#56F222"],
 ];
-const PARTY = [...INK_FLOOR, ...CHROMATIC_FILLS];
+const SIG_TOKENS = [...INK_FLOOR, ...CHROMATIC_FILLS];
 
 // ---- (ct3)/(ct4) the pinned hexes are exactly the release's values ----------
-for (const [name, pinned] of PARTY) {
+for (const [name, pinned] of SIG_TOKENS) {
   if (pinned !== null && tokens[name] !== pinned.toLowerCase()) {
     failures.push(`(ct3) ${name} must be ${pinned} in css/tokens.css — the pinned value, found ${tokens[name] ?? "MISSING"}`);
   }
 }
-if (!PARTY.every(([name]) => tokens[name] !== undefined)) {
-  const missing = PARTY.map(([name]) => name).filter((name) => tokens[name] === undefined);
-  failures.push(`(ct1) the :root block is missing party token(s): ${missing.join(", ")}`);
+if (!SIG_TOKENS.every(([name]) => tokens[name] !== undefined)) {
+  const missing = SIG_TOKENS.map(([name]) => name).filter((name) => tokens[name] === undefined);
+  failures.push(`(ct1) the :root block is missing chromatic token(s): ${missing.join(", ")}`);
 }
 // (chrom companion) the RETIRED name must be gone from the :root block.
 if (tokens["--sig-blue"] !== undefined) {
@@ -128,12 +128,12 @@ if (tokens["--sig-blue"] !== undefined) {
 // ---- the 26-token ratio table -------------------------------------------------
 const pad = (text, width) => (text.length >= width ? text : text + " ".repeat(width - text.length));
 console.log("");
-console.log("PARTY PALETTE CONTRAST TABLE — WCAG 2.x relative luminance (3.0.0: 26 tokens)");
+console.log("CHROMATIC PALETTE CONTRAST TABLE — WCAG 2.x relative luminance (3.0.0: 26 tokens)");
 console.log(`  surface ${SURFACE} · base ${BASE} · ink floor 3.0:1 · 2.9.1 fix 3.1:1 · chromatic fills 2.0:1 (surface)`);
 console.log("");
 console.log(`  ${pad("token", 24)} ${pad("hex", 9)} ${pad("vs surface", 12)} ${pad("vs base", 9)} floor  verdict`);
 console.log(`  ${"-".repeat(70)}`);
-for (const [name, pinned] of PARTY) {
+for (const [name, pinned] of SIG_TOKENS) {
   const hex = tokens[name];
   if (hex === undefined) continue;
   const vsSurface = contrast(hex, SURFACE);
@@ -170,4 +170,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log("");
-console.log("PASS — all 26 party tokens clear their floors (ink ≥3.0 on surface AND base; chromatic fills ≥2.0 on surface — zero contrast debt)");
+console.log("PASS — all 26 chromatic tokens clear their floors (ink ≥3.0 on surface AND base; chromatic fills ≥2.0 on surface — zero contrast debt)");

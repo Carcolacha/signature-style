@@ -22,7 +22,7 @@
  *
  * 2.6.0 CHROMATIC ELEVATION — two additive props on <SurfaceCard>:
  *
- *   - `accentToken` — a party (or structural) accent rendered through
+ *   - `accentToken` — a chromatic (or structural) accent rendered through
  *     the `data-accent` attribute + the inline `--sig-accent` variable:
  *     the eyebrow and the ruled title underline take the accent, and the
  *     interactive hover gains a chromatic glow (css/surface.css). The
@@ -64,9 +64,9 @@ export type StructuralAccentToken = "--color-cake-primary" | "--color-cake-secon
 
 /**
  * The full accent union accepted by chromatic props (`accentToken` on
- * <SurfaceCard> and the 2.6.0 card archetypes): the eleven party content
+ * <SurfaceCard> and the 2.6.0 card archetypes): the eleven chromatic content
  * tokens PLUS the two structural signatures — gateways like the Event
- * Planner door wear Flamingo, content cards wear the party palette.
+ * Planner door wear Flamingo, content cards wear the chromatic palette.
  */
 export type AccentToken = SigColorToken | StructuralAccentToken;
 
@@ -98,13 +98,13 @@ export type SurfaceElevation = "flat" | "raised" | "floating";
  * @example
  * ```tsx
  * <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
- *   <Input placeholder="Guest name" />
+ *   <Input placeholder="Member name" />
  * </SurfaceCard>
  * <SurfaceCard
  *   eyebrow="Planner" meta="views/planner.tsx" title="Event Planner Bento"
  *   interactive accentToken="--color-cake-primary" elevation="floating"
  * >
- *   <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
+ *   <ProgressBar value={72} colorToken="--sig-sky" label="Attendance ratio" />
  * </SurfaceCard>
  * ```
  */

@@ -15,7 +15,7 @@
  * mechanism — no display:none ghost grid). Zero hex holds.
  *
  * 2.5.0 — THE SHELL + THE 12-COLUMN BENTO. The .sig-shell wraps EVERY
- * view's content (dashboard, index, events, guests, budget, ALL tab
+ * view's content (dashboard, index, events, members, budget, ALL tab
  * modules): centered with side padding — the owner's defect #1 (the
  * Data & Tables and Form & Input Matrix tab modules rendered
  * edge-to-edge) dies here. The core dashboard is the 12-column bento
@@ -138,7 +138,7 @@
 }
 
 /* ---- LIVE RING (2.5.0) ------------------------------------------------------
-   The RSVP ring reacts to check-ins: the stroke-dashoffset transition
+   The attendance ring reacts to allocations: the stroke-dashoffset transition
    lives HERE, scoped to the composition (react/viz.tsx is byte-frozen
    and the StatRing ships no css — it is pure SVG attributes; the
    selector targets the ring's role="progressbar" svg inside the card).
@@ -336,7 +336,7 @@
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
 }
 
-/* ---- party palette cluster --------------------------------------------- */
+/* ---- chromatic palette cluster ------------------------------------------ */
 .hub__palette {
   display: flex;
   flex-wrap: wrap;
@@ -1212,7 +1212,7 @@
   outline-offset: 1px;
 }
 
-/* ---- 3.0.0 THE PALETTE SWATCH GRID (the bento Party Palette card) ---------
+/* ---- 3.0.0 THE PALETTE SWATCH GRID (the bento Chromatic Palette card) ---------
    The 26-token family as a compact grid: each swatch is the SigBadge
    plus its ink/fill role tag; the chromatic sixteen wear the "new" badge. */
 .hub__palette-grid {

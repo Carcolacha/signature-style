@@ -63,9 +63,9 @@ The cake accents. These own **all structural UI**: buttons, inputs, focus rings,
 
 > ★ Keeper token — see the note above Table 1.
 
-### Table 3 — The Party Palette (content-only, all ten)
+### Table 3 — The Chromatic Palette (content-only, all ten)
 
-Ten theme-independent colors reserved **exclusively for content** — badges, tags, avatars, event theme overrides, calendar blocks, data-viz. They are defined once in `:root` and inherited by both themes untouched, so a badge wears the same party color on both sides of the toggle. *Never* use them for structural chrome (see §4).
+Ten theme-independent colors reserved **exclusively for content** — badges, tags, avatars, event theme overrides, calendar blocks, data-viz. They are defined once in `:root` and inherited by both themes untouched, so a badge wears the same chromatic color on both sides of the toggle. *Never* use them for structural chrome (see §4).
 
 | Swatch | Token | Hex | Reserved usage |
 |---|---|---|---|
@@ -90,7 +90,7 @@ Opt in with `<html data-theme="latte">`. The light theme is 100% official Catppu
 |---|---|---|
 | Signature accents | Flamingo `#F2CDCD` · Teal `#94E2D5` | Flamingo `#DD7878` · Teal `#179299` |
 | Structure | base `#1E1E2E` · surface `#313244` | base `#EFF1F5` · surface `#CCD0DA` |
-| Party tokens | ten `--sig-*` values | *unchanged* — content keeps the same colors |
+| Chromatic tokens | ten `--sig-*` values | *unchanged* — content keeps the same colors |
 
 ---
 
@@ -109,7 +109,7 @@ interface IconProps extends Omit<LucideProps, "ref"> {
 ```
 
 ```tsx
-<Icon name="PartyPopper" size={16} />
+<Icon name="Rocket" size={16} />
 ```
 
 **Renders:** a bare `<svg>` — no wrapper element.
@@ -134,11 +134,11 @@ interface EmptyStateProps {
 
 ### `<SigBadge>` — the Rule of Engagement, enforced by the compiler
 
-A party-colored content badge: a subtle tinted background of the chosen `--sig-*` token with a guaranteed high-contrast label on both themes. `colorToken` **only** accepts `--sig-*` tokens — handing it a structural token like `--color-cake-primary` fails at compile time, and a runtime guard warn-and-drops anything plain JavaScript slips past the types (rendering `null`).
+A chromatic-colored content badge: a subtle tinted background of the chosen `--sig-*` token with a guaranteed high-contrast label on both themes. `colorToken` **only** accepts `--sig-*` tokens — handing it a structural token like `--color-cake-primary` fails at compile time, and a runtime guard warn-and-drops anything plain JavaScript slips past the types (rendering `null`).
 
 ```ts
 interface SigBadgeProps {
-  colorToken: SigTokenName; // Extract<KnownToken, `--sig-${string}`> — party tokens ONLY
+  colorToken: SigTokenName; // Extract<KnownToken, `--sig-${string}`> — chromatic tokens ONLY
   label: string;
 }
 ```
@@ -153,7 +153,7 @@ interface SigBadgeProps {
 
 Two bigger pieces build on the primitives — they are components, not primitives, and they never receive new CSS files without their own layer in the bundle.
 
-#### `<EventTimeline>` — the chronological party timeline
+#### `<EventTimeline>` — the chronological event timeline
 
 A flat CSS Grid: one container (`.sig-timeline`) whose **direct children** are date headers (`h2`), node circles, and event content blocks — no row wrappers, and the vertical line is the container's `::before` pseudo-element, never a div. Desktop events alternate left/right around a center line; at **max-width 768px** the line moves to the far left and everything stacks right (pure CSS, no JS breakpoint). Sticky date headers pin at `z-index: var(--z-sticky)` (10) with opaque backgrounds, and content scrolls beneath them. An empty `events` array renders `<EmptyState icon="CalendarX">` immediately — no line, no chrome.
 
@@ -214,7 +214,7 @@ const modal = useModal<TimelineEvent>();
 
 #### `<ThemeProvider>` — the runtime half
 
-Renders children and injects your token overrides into `@layer tokens`. Its whitelist covers all **31** custom properties in `css/tokens.css` (the core 6, the keepers, the shared tokens, the z-scale, and the ten party tokens). Unknown keys are warned and dropped; values containing `{`, `}`, `;` or `\` are rejected — CSS injection has no seat at this table. It also claims the canonical `@layer` order as the first style tag in `<head>`, so host CSS can never win a layer-order race.
+Renders children and injects your token overrides into `@layer tokens`. Its whitelist covers all **31** custom properties in `css/tokens.css` (the core 6, the keepers, the shared tokens, the z-scale, and the ten chromatic tokens). Unknown keys are warned and dropped; values containing `{`, `}`, `;` or `\` are rejected — CSS injection has no seat at this table. It also claims the canonical `@layer` order as the first style tag in `<head>`, so host CSS can never win a layer-order race.
 
 ```ts
 interface ThemeProviderProps {
@@ -248,7 +248,7 @@ This is why `<EmptyState>` is one div, `<SigBadge>` is one span, and the timelin
 Two color families, two jobs, one iron rule:
 
 - **Flamingo & Teal** (`--color-cake-primary`, `--color-cake-secondary`) own **structure**: buttons, inputs, focus rings, node rings, close-button hover — all interactive chrome.
-- **Party tokens** (`--sig-*`) own **content categories**: badges, tags, avatars, calendar blocks, data-viz.
+- **chromatic tokens** (`--sig-*`) own **content categories**: badges, tags, avatars, calendar blocks, data-viz.
 
 The families never cross — and `<SigBadge>` enforces this **at compile time**. Pass it `--color-cake-primary` and TypeScript answers with `TS2322: … not assignable to type 'SigTokenName'` before your code ever runs; the runtime guard catches whatever JS sneaks past.
 

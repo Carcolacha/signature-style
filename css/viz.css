@@ -5,7 +5,7 @@
    DATA-INK DOCTRINE: high data-to-ink ratio, zero charting decoration.
    No grid lines, no drop shadows, no 3D. The track is structural chrome;
    the data fill is ALWAYS a --sig-* content token (Rule of
-   Engagement: party colors are the content/data colors).
+   Engagement: chromatic colors are the content/data colors).
 
    2.2.0 TELEMETRY LIMITS — the track token retarget, owner-authorized:
    the track wore var(--bg-surface), which made it INVISIBLE on
@@ -17,7 +17,7 @@
    THREE RULES:
    - `.sig-progress` — the track (inset chrome + hairline boundary,
      clipped fill).
-   - `.sig-progress__fill` — the party-colored data ink.
+   - `.sig-progress__fill` — the chromatic-colored data ink.
    - `.sig-progress__caption` — the 2.2.0 limit caption (mono,
      tabular-nums so digits don't jitter as values tick).
 
@@ -96,7 +96,7 @@
    NO shadow — separation is drawn with borders, never shadows. The
    label is the muted uppercase caption; the value is the 1.5rem
    tabular-nums headline; the delta colors are content outcomes (up →
-   party-green, down → party-peach — Rule of Engagement). The sparkline
+   sig-green, down → sig-peach — Rule of Engagement). The sparkline
    it may contain needs no css (pure SVG, like the ring). */
 .sig-stat-card {
   display: flex;
@@ -172,7 +172,7 @@
    strip (.sig-ring__detail) rides the 0fr → 1fr grid-rows trick
    (animatable height without a magic max-height), reading tabular-nums
    "{value}% · {numerator} / {denominator} {unit}" — e.g. "85% · 170 /
-   200 Guests". Reduced motion kills both transitions outright.
+   200 Seats". Reduced motion kills both transitions outright.
    ========================================================================== */
 
 .sig-ring {
@@ -251,7 +251,7 @@
   stroke-width: 1;
 }
 
-/* The value bar — party ink (inline fill), one opacity step of emphasis. */
+/* The value bar — chromatic ink (inline fill), one opacity step of emphasis. */
 .sig-bars__bar {
   opacity: 0.85;
   transition: var(--transition-standard);
