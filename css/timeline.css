@@ -329,9 +329,9 @@
   transition: var(--transition-standard);
 }
 .sig-tmanager__settle[aria-pressed="true"] {
-  border-color: var(--party-green);
-  background: color-mix(in srgb, var(--party-green) 20%, transparent);
-  color: var(--party-green);
+  border-color: var(--sig-green);
+  background: color-mix(in srgb, var(--sig-green) 20%, transparent);
+  color: var(--sig-green);
 }
 .sig-tmanager__settle:focus-visible {
   outline: 2px solid var(--color-cake-primary);
@@ -381,7 +381,7 @@
 /* The settled chip — mono party-green text (a state marker, NOT a
    PartyBadge: settled is not a content category). */
 .sig-tmanager__done {
-  color: var(--party-green);
+  color: var(--sig-green);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -403,7 +403,7 @@
   transition: var(--transition-standard);
 }
 .sig-tmanager__delete:hover {
-  color: var(--party-peach);
+  color: var(--sig-peach);
 }
 .sig-tmanager__delete:focus-visible {
   outline: 2px solid var(--color-cake-primary);

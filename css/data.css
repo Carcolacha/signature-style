@@ -32,7 +32,7 @@
    hairline are color-mix() derivations of core tokens; the tab underline
    and the callout status strip carry the ONLY accents (Flamingo for the
    selected tab — structural; --status for callouts — content, mapped in
-   react to --party-* tokens exactly like the toast strips).
+   react to --sig-* tokens exactly like the toast strips).
 
    MOTION: transitions ride the package tokens; reduced-motion users get
    transitions: none.

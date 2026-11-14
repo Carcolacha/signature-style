@@ -22,7 +22,7 @@
  *
  *   GRAPH — the obsidian interactions: nodes carry r 34 (viewBox
  *   units), labels 13px; right-clicking a node draws the live
- *   .sig-graph__tether (stroke rgb(34,138,242) = --party-azure,
+ *   .sig-graph__tether (stroke rgb(34,138,242) = --sig-azure,
  *   dasharray 6 4); double-click spawns a node; the wheel zooms the
  *   viewBox (0.5–2.5 clamp).
  *
@@ -162,7 +162,7 @@ console.log(`[graph] tether: d=${tether?.d !== "" && tether?.d !== null ? "drawn
 if (tether === null || tether.d === "") {
   failures.push("(graph) the right-click tether must draw the live path");
 } else {
-  if (!tether.stroke.includes("34, 138, 242")) failures.push(`(graph) the tether must wear --party-azure (rgb(34, 138, 242)), found ${tether.stroke}`);
+  if (!tether.stroke.includes("34, 138, 242")) failures.push(`(graph) the tether must wear --sig-azure (rgb(34, 138, 242)), found ${tether.stroke}`);
   const dashDigits = tether.dasharray.replace(/[px\s]/g, "").replace(/^6,4$/, "64");
   if (!/^64$/.test(dashDigits)) {
     failures.push(`(graph) the tether dash must be 6 4, found ${tether.dasharray}`);

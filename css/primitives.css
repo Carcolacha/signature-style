@@ -85,9 +85,9 @@
     background: var(--bg-inset);
   }
   .sig-btn--danger {
-    background: color-mix(in srgb, var(--party-peach) 18%, transparent);
-    border-color: color-mix(in srgb, var(--party-peach) 45%, transparent);
-    color: var(--party-peach);
+    background: color-mix(in srgb, var(--sig-peach) 18%, transparent);
+    border-color: color-mix(in srgb, var(--sig-peach) 45%, transparent);
+    color: var(--sig-peach);
     font-weight: 600;
   }
 

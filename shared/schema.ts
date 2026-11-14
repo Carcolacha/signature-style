@@ -64,7 +64,7 @@ export interface Event {
   /** "18:00" — the EventModal About row (react/timeline.tsx renders it). */
   time?: string;
   /**
-   * The event's theme token — a `--party-*` content token (Rule of
+   * The event's theme token — a `--sig-*` content token (Rule of
    * Engagement). Traces to `MockEvent.colorToken` → `PtpEvent.category`
    * (playground/App.tsx CATEGORY_LABELS).
    */
@@ -129,7 +129,7 @@ export interface Milestone {
   title: string;
   /** The group bucket month ("November 2026"). */
   month: string;
-  /** A `--party-*` token — the PartyBadge chip color. Traces to `category`. */
+  /** A `--sig-*` token — the PartyBadge chip color. Traces to `category`. */
   categoryToken: string;
   /** The badge's short word ("Venue", "Catering"). Traces to `categoryLabel`. */
   categoryLabel?: string;
@@ -156,7 +156,7 @@ export interface GraphNodeRecord {
   /** FK → Event.id, nullable — a node MAY tag an event. */
   eventId?: string;
   label: string;
-  /** A `--party-*` content token — the node ring (Rule of Engagement). */
+  /** A `--sig-*` content token — the node ring (Rule of Engagement). */
   categoryToken: string;
   /** The footer inspect strip copy. Traces to `note?`. */
   note?: string;

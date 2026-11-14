@@ -128,7 +128,7 @@ const [moduleId, setModuleId] = useState("core");
   eyebrow="Planner" meta="views/planner.tsx" title="Event & Party Planner"
   interactive accentToken="--color-cake-primary" elevation="floating"
 >
-  <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
+  <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
 </SurfaceCard>`,
   },
   PageHero: {
@@ -151,17 +151,17 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { Avatar } from "@edwyn/signature-style/react";
 
 <Avatar name="Ana Souza" />
-<Avatar name="Priya Nair" size={40} ringToken="--party-mauve-soft" />`,
+<Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />`,
   },
   PartyBadge: {
     set: "02",
     componentName: "PartyBadge",
     jsx: `import { PartyBadge } from "@edwyn/signature-style/react";
 
-<PartyBadge colorToken="--party-peach" label="Birthday" />`,
+<PartyBadge colorToken="--sig-peach" label="Birthday" />`,
     html: `<span
-  style="background: color-mix(in srgb, var(--party-peach) 18%, transparent);
-         border: 1px solid color-mix(in srgb, var(--party-peach) 45%, transparent);
+  style="background: color-mix(in srgb, var(--sig-peach) 18%, transparent);
+         border: 1px solid color-mix(in srgb, var(--sig-peach) 45%, transparent);
          color: var(--text-main); font-weight: 500;
          padding: var(--space-tight) var(--space-standard);
          border-radius: var(--radius-ui);"
@@ -173,9 +173,9 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { ContentCard } from "@edwyn/signature-style/react";
 
 <ContentCard
-  category="Catering" categoryToken="--party-peach"
+  category="Catering" categoryToken="--sig-peach"
   meta={["25 MIN", "SPICY", "$14"]}
-  accentToken="--party-yellow"
+  accentToken="--sig-yellow"
   title="Birria & Street Taco Catering"
   description="Slow-braised birria, consomé on the side."
   action={{ label: "Book the taco cart", onClick: book }}
@@ -187,7 +187,7 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { ReferenceCard } from "@edwyn/signature-style/react";
 
 <ReferenceCard
-  tag="JSX" title="The Signature Surface" accentToken="--party-sky"
+  tag="JSX" title="The Signature Surface" accentToken="--sig-sky"
   code={'<SurfaceCard eyebrow="Hi" title="Hello" interactive />'}
   link="https://example.com/docs"
   onCopied={() => toast("success", "Snippet copied")}
@@ -199,7 +199,7 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { TierCard } from "@edwyn/signature-style/react";
 
 <TierCard
-  name="Arena Pass" price="$49" featured accentToken="--party-mauve-soft"
+  name="Arena Pass" price="$49" featured accentToken="--sig-mauve-soft"
   features={["All 40 game modules", "1v1 & 2v2 brackets", "Spectator betting pot", "Priority seating"]}
   cta="Claim the pass" onCta={claim}
 />`,
@@ -210,15 +210,15 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { ProfileCard } from "@edwyn/signature-style/react";
 
 <ProfileCard
-  name="Ana Souza" role="Head of Catering" accentToken="--party-peach"
+  name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
   stats={[
     { label: "Events", value: "24" },
     { label: "Guests", value: "412" },
     { label: "Rating", value: "4.9" },
   ]}
   skills={[
-    { colorToken: "--party-peach", label: "Catering" },
-    { colorToken: "--party-green", label: "Logistics" },
+    { colorToken: "--sig-peach", label: "Catering" },
+    { colorToken: "--sig-green", label: "Logistics" },
   ]}
 />`,
   },
@@ -257,8 +257,8 @@ const [moduleId, setModuleId] = useState("core");
     jsx: `import { MatchupCard } from "@edwyn/signature-style/react";
 
 <MatchupCard
-  left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-  right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+  left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+  right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
   stakes="Winner picks the next venue — loser brings the ice."
 />`,
   },
@@ -374,14 +374,14 @@ const [pw, setPw] = useState("");
     componentName: "ProgressBar",
     jsx: `import { ProgressBar } from "@edwyn/signature-style/react";
 
-<ProgressBar value={72} colorToken="--party-green" label="Budget remaining" limitText="$720 / $1,000" />`,
+<ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" limitText="$720 / $1,000" />`,
   },
   StatRing: {
     set: "04",
     componentName: "StatRing",
     jsx: `import { StatRing } from "@edwyn/signature-style/react";
 
-<StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />`,
+<StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />`,
   },
   StatCard: {
     set: "04",
@@ -394,7 +394,7 @@ const [pw, setPw] = useState("");
   delta="+12"
   deltaDirection="up"
   sparklineData={[118, 126, 132, 141, 158, 170]}
-  colorToken="--party-sky"
+  colorToken="--sig-sky"
 />`,
   },
   Sparkline: {
@@ -402,7 +402,7 @@ const [pw, setPw] = useState("");
     componentName: "Sparkline",
     jsx: `import { Sparkline } from "@edwyn/signature-style/react";
 
-<Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--party-mauve-soft" label="Rooms trend" />`,
+<Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--sig-mauve-soft" label="Rooms trend" />`,
   },
   BarChart: {
     set: "04",
@@ -411,9 +411,9 @@ const [pw, setPw] = useState("");
 
 <BarChart
   data={[
-    { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
-    { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
-    { label: "Invites", value: 240, max: 400, colorToken: "--party-pink-bright" },
+    { label: "Venue", value: 800, max: 1000, colorToken: "--sig-mauve-soft" },
+    { label: "Catering", value: 620, max: 900, colorToken: "--sig-peach" },
+    { label: "Invites", value: 240, max: 400, colorToken: "--sig-pink-bright" },
   ]}
   orientation="vertical"
   label="Spending by category"
@@ -429,7 +429,7 @@ const [pw, setPw] = useState("");
     { label: "W1", value: 12 }, { label: "W2", value: 18 },
     { label: "W3", value: 26 }, { label: "W4", value: 41 },
   ]}
-  colorToken="--party-sky"
+  colorToken="--sig-sky"
   height={200}
   label="RSVP momentum"
 />`,
@@ -440,8 +440,8 @@ const [pw, setPw] = useState("");
     jsx: `import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
 
 const nodes: GraphNode[] = [
-  { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "Every branch is one workstream." },
-  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+  { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "Every branch is one workstream." },
+  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
 ];
 
 <KnowledgeGraph
@@ -474,8 +474,8 @@ const d = smoothPath([
 // radius 90 + depth·110, children fanned around the parent's angle,
 // ties broken by id hash. Same nodes → same coordinates, always.
 const nodes: GraphNode[] = [
-  { id: "root", label: "Party Planning", categoryToken: "--party-lavender" },
-  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+  { id: "root", label: "Party Planning", categoryToken: "--sig-lavender" },
+  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
 ];
 const positions: Record<string, GraphPosition> = layoutGraph(nodes);`,
   },
@@ -505,7 +505,7 @@ const d = cubicBezierEdge(
     date: "October 2026",
     time: "15:00",
     title: "Cake cutting",
-    category: "--party-peach",
+    category: "--sig-peach",
     categoryLabel: "Birthday",
     icon: "Cake",
   }]}
@@ -554,8 +554,8 @@ const modal = useModal<PtpEvent>();
 <ChronicleTimeline
   label="Version chronicle"
   releases={[
-    { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34", accentToken: "--party-pink-bright" },
-    { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 3 tiers · 11 accents", accentToken: "--party-yellow" },
+    { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34", accentToken: "--sig-pink-bright" },
+    { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 3 tiers · 11 accents", accentToken: "--sig-yellow" },
   ]}
 />`,
   },
@@ -584,7 +584,7 @@ const modal = useModal<PtpEvent>();
     jsx: `import { Callout } from "@edwyn/signature-style/react";
 
 <Callout status="warning">3 pending RSVPs close Friday.</Callout>`,
-    html: `<div class="sig-callout" role="note" style="--status: var(--party-peach);">
+    html: `<div class="sig-callout" role="note" style="--status: var(--sig-peach);">
   3 pending RSVPs close Friday.
 </div>`,
   },
@@ -594,8 +594,8 @@ const modal = useModal<PtpEvent>();
     jsx: `import { Carousel } from "@edwyn/signature-style/react";
 
 <Carousel label="Palette clippings">
-  <CarouselItem><PartyBadge colorToken="--party-sky" label="Sky" /></CarouselItem>
-  <CarouselItem><PartyBadge colorToken="--party-peach" label="Peach" /></CarouselItem>
+  <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+  <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
 </Carousel>`,
   },
   CarouselItem: {

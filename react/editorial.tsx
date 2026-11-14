@@ -23,7 +23,7 @@
  * a release note is the house voice, so it wears the structural
  * signature). Everything else in this file is structural chrome:
  * hairline borders, inset wells, Flamingo/Teal only. EXCEPTION (owner
- * override, 2.4.1): the ProseBlock quote rule wears `--party-mauve` —
+ * override, 2.4.1): the ProseBlock quote rule wears `--sig-mauve` —
  * a blockquote IS editorial content, so a party token on it is the
  * Rule of Engagement read correctly (v2.4.0's Flamingo rule borrowed
  * the structural accent for content; the owner moved it).
@@ -63,8 +63,8 @@ export interface CarouselItemProps {
  * @example
  * ```tsx
  * <Carousel label="Clippings">
- *   <CarouselItem><PartyBadge colorToken="--party-sky" label="Sky" /></CarouselItem>
- *   <CarouselItem><PartyBadge colorToken="--party-peach" label="Peach" /></CarouselItem>
+ *   <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+ *   <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
  * </Carousel>
  * ```
  */
@@ -344,7 +344,7 @@ export interface AnnouncementBannerAction {
 
 export interface AnnouncementBannerProps {
   /**
-   * The mood — info → `--party-sky`, warning → `--party-peach`,
+   * The mood — info → `--sig-sky`, warning → `--sig-peach`,
    * announcement (default) → `--color-cake-primary` (the Flamingo
    * banner: a release note is the house voice). Rendered INLINE as
    * `--status`; css/editorial.css paints the 4px left rule from it.
@@ -381,8 +381,8 @@ export interface AnnouncementBannerProps {
  * release note speaks in the house voice (owner spec, 2.4.1).
  */
 const ANNOUNCEMENT_VARIABLE: Record<AnnouncementVariant, string> = {
-  info: "var(--party-sky)",
-  warning: "var(--party-peach)",
+  info: "var(--sig-sky)",
+  warning: "var(--sig-peach)",
   announcement: "var(--color-cake-primary)",
 };
 

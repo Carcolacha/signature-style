@@ -22,11 +22,11 @@
  *   (d2) Z-SCALE VALUES: --z-sticky / --z-nav / --z-overlay / --z-modal /
  *       --z-toast are declared in the tokens.css `:root` block with the
  *       exact values 10 / 30 / 40 / 50 / 60 (1.4.0 adds the zenith rung);
- *   (p) PARTY PALETTE (0.4.0): all ten --party-* content tokens exist in
+ *   (p) PARTY PALETTE (0.4.0): all ten --sig-* content tokens exist in
  *       the tokens.css `:root` block with their exact reserved hexes, and
- *       tokens.json's partyPalette section lists all ten with matching
+ *       tokens.json's sigPalette section lists all ten with matching
  *       values, the content-only role and "reserved": true;
- *   (p2) PARTY WHITELIST PARITY: all ten --party-* names are present in
+ *   (p2) PARTY WHITELIST PARITY: all ten --sig-* names are present in
  *       the ThemeProvider TOKEN_KEYS whitelist;
  *   (s) STRUCTURAL FREEZE: `git diff v0.3.0 -- css/cascade.css
  *       css/overrides.css` is EMPTY, and tokens.css still declares the
@@ -115,11 +115,11 @@
  *   (v2) the umbrella re-exports ProgressBar + StatRing (+ prop types)
  *       — types in index.d.ts, the value exports also in index.js;
  *   (v3) PARTY GUARD: react/viz.tsx contains the runtime party-guard
- *       string (`startsWith("--party-")`) — the Rule of Engagement is
+ *       string (`startsWith("--sig-")`) — the Rule of Engagement is
  *       enforced in the source, not just the types.
  *   (f1) FORMS CSS (1.4.0): css/forms.css exists, builds the inset wells
  *       on var(--bg-inset), drives the error state via the
- *       `[aria-invalid="true"]` selector answered by var(--party-peach),
+ *       `[aria-invalid="true"]` selector answered by var(--sig-peach),
  *       rings focus with the doctrine outline (2px var(--color-cake-primary)),
  *       travels the switch knob translateX(1.25rem) on
  *       [aria-checked="true"], respects prefers-reduced-motion, and
@@ -127,8 +127,8 @@
  *   (fb1) TOAST CSS (1.4.0; the t1 label was taken by the timeline):
  *       css/toast.css exists, pins the region at the zenith rung
  *       var(--z-toast, 60), declares the toast-life keyframes, maps the
- *       status strips through var(--status) to var(--party-green) /
- *       var(--party-peach), rides the owner's mechanical cubic-bezier,
+ *       status strips through var(--status) to var(--sig-green) /
+ *       var(--sig-peach), rides the owner's mechanical cubic-bezier,
  *       respects prefers-reduced-motion, and contains ZERO hex literals
  *       and zero box-shadow;
  *   (fb2) BUNDLE MEMBERSHIP (1.4.0): css/signature-style.css imports
@@ -240,7 +240,7 @@ for (const [blockName, declarations] of [
 // custom cake hexes (banned since 0.3.0) — even in comments, nowhere in css/
 // or tokens.json.
 // 3.0.0 OWNER-SANCTIONED AMENDMENT: #F5C2E7 LEAVES this list — the official
-// Catppuccin Mocha Pink is re-homed as --party-orchid (Task 1 of the 16-color
+// Catppuccin Mocha Pink is re-homed as --sig-orchid (Task 1 of the 16-color
 // chromatic expansion; the same convergence move 2.9.1 made for the blue).
 // The ban list below is the owner's frozen floor; each release that
 // legitimately re-homes a value re-pins the floor (the (b7) discipline).
@@ -311,68 +311,68 @@ if (rootDeclarations === null) {
 }
 
 // ---- (p) party palette: exact tokens.css hexes + tokens.json reserved entries
-// RULE OF ENGAGEMENT: --party-* tokens are reserved EXCLUSIVELY for content
+// RULE OF ENGAGEMENT: --sig-* tokens are reserved EXCLUSIVELY for content
 // (badges, tags, avatars, event theme overrides, calendar blocks, data-viz).
 // The Engine keeps Flamingo/Teal for ALL structural UI. Never crossed.
 // 3.0.0 OWNER-SANCTIONED AMENDMENT (the 16-color chromatic expansion, the
-// 2.9.1 re-pin precedent): --party-blue RETIRES (the name — its value lives
-// on as --party-cobalt, same hex), 15 chromatic FILL/SERIES accents join,
+// 2.9.1 re-pin precedent): --sig-blue RETIRES (the name — its value lives
+// on as --sig-cobalt, same hex), 15 chromatic FILL/SERIES accents join,
 // and the family is 26. The legacy 10 + cobalt keep the content-only role;
 // the chromatic fifteen carry the DECLARED fill/series role (visibility
 // floor 2.0:1 vs surface — measured by playground/verify-contrast.mjs).
 const PARTY_TOKENS = [
-  ["--party-pink-bright", "#ea76cb"],
-  ["--party-pink-soft", "#f5bde6"],
-  ["--party-pink-alt", "#f4b8e4"],
-  ["--party-mauve-bright", "#9e5ff2"], /* 2.9.1 ZERO CONTRAST DEBT — re-pinned from
+  ["--sig-pink-bright", "#ea76cb"],
+  ["--sig-pink-soft", "#f5bde6"],
+  ["--sig-pink-alt", "#f4b8e4"],
+  ["--sig-mauve-bright", "#9e5ff2"], /* 2.9.1 ZERO CONTRAST DEBT — re-pinned from
      #8839ef: the contrast mandate lightened the token in-family to 3.22:1 on
      surface (owner-sanctioned amendment of the frozen (p) pins — the manifest
      must carry the real value). Measured by playground/verify-contrast.mjs. */
-  ["--party-mauve-soft", "#cba6f7"],
-  ["--party-lavender", "#7287fd"],
-  ["--party-sky", "#04a5e5"],
-  ["--party-cobalt", "#89b4fa"], /* 3.0.0: --party-blue RETIRED — the name,
+  ["--sig-mauve-soft", "#cba6f7"],
+  ["--sig-lavender", "#7287fd"],
+  ["--sig-sky", "#04a5e5"],
+  ["--sig-cobalt", "#89b4fa"], /* 3.0.0: --sig-blue RETIRED — the name,
      not the value: the official Catppuccin Mocha Blue (5.97:1 on surface)
-     continues under --party-cobalt. The old name is banned. */
-  ["--party-peach", "#fe640b"],
-  ["--party-green", "#a6d189"],
+     continues under --sig-cobalt. The old name is banned. */
+  ["--sig-peach", "#fe640b"],
+  ["--sig-green", "#a6d189"],
   /* 3.0.0 CHROMATIC SIXTEEN (cobalt above + these 15) — DECLARED FILL/SERIES
      accents: bars, node rings, borders, tinted wells — never body-text ink. */
-  ["--party-orchid", "#F5C2E7"],
-  ["--party-cyan", "#64DFDF"],
-  ["--party-magenta", "#CF64DF"],
-  ["--party-mint", "#64DF99"],
-  ["--party-spring", "#6EDF64"],
-  ["--party-citron", "#DBDF64"],
-  ["--party-violet-glow", "#C29EFF"],
-  ["--party-pink-glow", "#F29EFF"],
-  ["--party-rose-glow", "#FF9EDB"],
-  ["--party-lime-glow", "#DBFF9E"],
-  ["--party-mint-glow", "#9EFFC2"],
-  ["--party-crimson", "#F22222"],
-  ["--party-azure", "#228AF2"],
-  ["--party-tangerine", "#F25622"],
-  ["--party-neon-green", "#56F222"],
+  ["--sig-orchid", "#F5C2E7"],
+  ["--sig-cyan", "#64DFDF"],
+  ["--sig-magenta", "#CF64DF"],
+  ["--sig-mint", "#64DF99"],
+  ["--sig-spring", "#6EDF64"],
+  ["--sig-citron", "#DBDF64"],
+  ["--sig-violet-glow", "#C29EFF"],
+  ["--sig-pink-glow", "#F29EFF"],
+  ["--sig-rose-glow", "#FF9EDB"],
+  ["--sig-lime-glow", "#DBFF9E"],
+  ["--sig-mint-glow", "#9EFFC2"],
+  ["--sig-crimson", "#F22222"],
+  ["--sig-azure", "#228AF2"],
+  ["--sig-tangerine", "#F25622"],
+  ["--sig-neon-green", "#56F222"],
 ];
 const CONTENT_ONLY_ROLE = "content only: tags/avatars/calendar/data-viz";
 const FILL_SERIES_ROLE =
   "fill/series accent: bars, node rings, borders, tinted wells — never body-text ink";
 const CHROMATIC_FILL_SERIES = new Set([
-  "--party-orchid",
-  "--party-cyan",
-  "--party-magenta",
-  "--party-mint",
-  "--party-spring",
-  "--party-citron",
-  "--party-violet-glow",
-  "--party-pink-glow",
-  "--party-rose-glow",
-  "--party-lime-glow",
-  "--party-mint-glow",
-  "--party-crimson",
-  "--party-azure",
-  "--party-tangerine",
-  "--party-neon-green",
+  "--sig-orchid",
+  "--sig-cyan",
+  "--sig-magenta",
+  "--sig-mint",
+  "--sig-spring",
+  "--sig-citron",
+  "--sig-violet-glow",
+  "--sig-pink-glow",
+  "--sig-rose-glow",
+  "--sig-lime-glow",
+  "--sig-mint-glow",
+  "--sig-crimson",
+  "--sig-azure",
+  "--sig-tangerine",
+  "--sig-neon-green",
 ]);
 if (rootDeclarations === null) {
   failures.push("cannot check party palette — no :root block found");
@@ -388,17 +388,17 @@ if (rootDeclarations === null) {
 }
 
 const partyManifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-const partyJson = partyManifest.partyPalette?.tokens ?? {};
+const partyJson = partyManifest.sigPalette?.tokens ?? {};
 for (const [name, hex] of PARTY_TOKENS) {
   const entry = partyJson[name];
   if (entry === undefined) {
-    failures.push(`tokens.json partyPalette is missing ${name}`);
+    failures.push(`tokens.json sigPalette is missing ${name}`);
     continue;
   }
   const value = String(entry.value ?? "").toLowerCase();
   if (value !== hex.toLowerCase()) {
     failures.push(
-      `tokens.json partyPalette.${name} must be ${hex}, found ${entry.value}`,
+      `tokens.json sigPalette.${name} must be ${hex}, found ${entry.value}`,
     );
   }
   const expectedRole = CHROMATIC_FILL_SERIES.has(name)
@@ -406,11 +406,11 @@ for (const [name, hex] of PARTY_TOKENS) {
     : CONTENT_ONLY_ROLE;
   if (entry.role !== expectedRole) {
     failures.push(
-      `tokens.json partyPalette.${name} role must be "${expectedRole}", found ${JSON.stringify(entry.role)}`,
+      `tokens.json sigPalette.${name} role must be "${expectedRole}", found ${JSON.stringify(entry.role)}`,
     );
   }
   if (entry.reserved !== true) {
-    failures.push(`tokens.json partyPalette.${name} must carry "reserved": true`);
+    failures.push(`tokens.json sigPalette.${name} must carry "reserved": true`);
   }
 }
 
@@ -425,9 +425,9 @@ if (whitelist !== null) {
     );
   }
   // 3.0.0 (chrom) companion: the RETIRED name is banned from the whitelist.
-  if (whitelist.includes("--party-blue")) {
+  if (whitelist.includes("--sig-blue")) {
     failures.push(
-      "--party-blue must NOT be in the TOKEN_KEYS whitelist — the name retired in 3.0.0 (the value lives on as --party-cobalt)",
+      "--sig-blue must NOT be in the TOKEN_KEYS whitelist — the name retired in 3.0.0 (the value lives on as --sig-cobalt)",
     );
   }
 }
@@ -436,14 +436,14 @@ if (whitelist !== null) {
 // (DECLARED names only — retirement prose in comments is legitimate), and
 // the new --radius-card token exists with its exact value.
 const tokensCssStripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
-if (/(^|[^-\w])--party-blue\s*:/.test(tokensCssStripped)) {
+if (/(^|[^-\w])--sig-blue\s*:/.test(tokensCssStripped)) {
   failures.push(
-    "--party-blue is DECLARED in css/tokens.css — the name retired in 3.0.0 (the value lives on as --party-cobalt)",
+    "--sig-blue is DECLARED in css/tokens.css — the name retired in 3.0.0 (the value lives on as --sig-cobalt)",
   );
 }
-if (Object.keys(partyManifest.partyPalette?.tokens ?? {}).includes("--party-blue")) {
+if (Object.keys(partyManifest.sigPalette?.tokens ?? {}).includes("--sig-blue")) {
   failures.push(
-    "tokens.json partyPalette still declares --party-blue — the name retired in 3.0.0 (the value lives on as --party-cobalt)",
+    "tokens.json sigPalette still declares --sig-blue — the name retired in 3.0.0 (the value lives on as --sig-cobalt)",
   );
 }
 const radiusCardJson = partyManifest.shared?.tokens?.["--radius-card"];
@@ -1055,9 +1055,9 @@ for (const vizValueExport of ["ProgressBar", "StatRing"]) {
 // viz source — a structural token slipped past the types (JS consumers)
 // must warn and render null, never paint structural chrome as data.
 const vizSrc = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
-if (!vizSrc.includes('startsWith("--party-")')) {
+if (!vizSrc.includes('startsWith("--sig-")')) {
   failures.push(
-    'react/viz.tsx must contain the runtime party guard startsWith("--party-") — the Rule of Engagement is enforced at runtime, not just in the types',
+    'react/viz.tsx must contain the runtime party guard startsWith("--sig-") — the Rule of Engagement is enforced at runtime, not just in the types',
   );
 }
 
@@ -1075,7 +1075,7 @@ if (!existsSync(formsCssPath)) {
   const FORMS_REQUIREMENTS = [
     ["var(--bg-inset)", "the inset-well field background (the keeper's semantic job)"],
     ['[aria-invalid="true"]', "the attribute-driven error state (like nav's aria-current)"],
-    ["var(--party-peach)", "the error border token (owner spec: error = party-peach)"],
+    ["var(--sig-peach)", "the error border token (owner spec: error = party-peach)"],
     ["outline: 2px solid var(--color-cake-primary)", "the doctrine focus ring"],
     ["translateX(1.25rem)", "the switch knob travel (44 − 16 − 8 = 20px = 1.25rem)"],
     ['[aria-checked="true"]', "the switch state machine — the attribute IS the state"],
@@ -1123,8 +1123,8 @@ if (!existsSync(toastCssPath)) {
     ["@keyframes toast-life", "the slide-in / hold / slide-out animation"],
     ["translateX(100%)", "the off-canvas right rest position"],
     ["var(--status)", "the inline status custom property on the status strip"],
-    ["var(--party-green)", "the success strip token"],
-    ["var(--party-peach)", "the error strip token"],
+    ["var(--sig-green)", "the success strip token"],
+    ["var(--sig-peach)", "the error strip token"],
     ["cubic-bezier(0.2, 0.8, 0.2, 1)", "the owner's mechanical physics on the slide"],
     ["prefers-reduced-motion", "the reduced-motion guard (animation: none, opacity 1)"],
   ];

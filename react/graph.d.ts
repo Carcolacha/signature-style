@@ -44,8 +44,8 @@
  * ```tsx
  * <KnowledgeGraph
  *   nodes={[
- *     { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "One plan, many branches." },
- *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+ *     { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "One plan, many branches." },
+ *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
  *   ]}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
@@ -60,7 +60,7 @@ export interface GraphNode {
     id: string;
     /** The node's display label — truncated to 12 characters on the canvas. */
     label: string;
-    /** A `--party-*` content token — the node's ring color (Rule of Engagement). */
+    /** A `--sig-*` content token — the node's ring color (Rule of Engagement). */
     categoryToken: PartyColorToken;
     /** Optional longer copy shown in the footer strip when selected. */
     note?: string;

@@ -76,7 +76,7 @@
       hugging the border (outline is not a shadow — the same halo read,
       zero shadow declarations).
     - .sig-form-field__valid — the live-validation success line in
-      var(--party-green); the validation zone priority is error →
+      var(--sig-green); the validation zone priority is error →
       validMessage → hint (react renders exactly one).
     - @keyframes sig-shake + the [data-invalid] well — the error state
       physically shakes the well (0.3s, translateX ±4px); killed under
@@ -89,8 +89,8 @@
 
    ERROR DOCTRINE: invalid fields wear [aria-invalid="true"] — attribute-
    driven, so the state survives any DOM shape. The error border is
-   --party-peach, the ONE sanctioned use of a party token on structural
-   chrome (owner spec: error border = --party-peach; errors are attention,
+   --sig-peach, the ONE sanctioned use of a party token on structural
+   chrome (owner spec: error border = --sig-peach; errors are attention,
    which is party territory, not Flamingo/Teal action territory).
 
    KNOB-COLOR DECISION (documented per release notes): the knob rests as
@@ -171,7 +171,7 @@
     color: var(--text-muted);
   }
   .sig-input[aria-invalid="true"] {
-    border-color: var(--party-peach);
+    border-color: var(--sig-peach);
   }
 
   /* -- textarea: the same well, multi-line ------------------------------------ */
@@ -198,7 +198,7 @@
     color: var(--text-muted);
   }
   .sig-textarea[aria-invalid="true"] {
-    border-color: var(--party-peach);
+    border-color: var(--sig-peach);
   }
 
   /* -- the switch: the pill + the visible label (2.4.1) ------------------------
@@ -292,7 +292,7 @@
     outline-offset: 2px;
   }
   .sig-select__native[aria-invalid="true"] {
-    border-color: var(--party-peach); /* the v1.4.0 error doctrine */
+    border-color: var(--sig-peach); /* the v1.4.0 error doctrine */
   }
   .sig-select__chevron {
     position: absolute;
@@ -365,7 +365,7 @@
 
   /* -- the avatar: the initials disc (2.3.0) -----------------------------------
      The ring arrives INLINE from react/forms.tsx as border: 2px solid
-     var(--party-token) — border, NEVER box-shadow (the e1 doctrine:
+     var(--sig-token) — border, NEVER box-shadow (the e1 doctrine:
      separation is drawn with borders; this file stays shadow-free and
      the scan below would fail it otherwise). */
   .sig-avatar {
@@ -494,13 +494,13 @@
     font-size: 0.75rem;
   }
   .sig-form-field__error {
-    color: var(--party-peach); /* the v1.4.0 error doctrine, message slot */
+    color: var(--sig-peach); /* the v1.4.0 error doctrine, message slot */
     font-size: 0.75rem;
   }
   /* 2.5.0 — the live-validation success line. Third in the validation
      zone priority (error → validMessage → hint; react renders ONE). */
   .sig-form-field__valid {
-    color: var(--party-green);
+    color: var(--sig-green);
     font-size: 0.75rem;
   }
   /* 2.4.1 — required marker: the peach asterisk AFTER the label text.
@@ -509,7 +509,7 @@
      lead is glyph geometry (the checkbox-mark precedent), not layout
      spacing — the 8px-grid tokens stay reserved for layout. */
   .sig-form-field__required {
-    color: var(--party-peach);
+    color: var(--sig-peach);
     margin-left: 0.25rem;
   }
   /* 2.5.0 — THE ADORNMENT WELL: prefix/suffix present → the bare
@@ -534,7 +534,7 @@
     outline-offset: 0;
   }
   .sig-form-field__well[data-invalid] {
-    border-color: var(--party-peach);
+    border-color: var(--sig-peach);
     animation: sig-shake 0.3s ease-out;
   }
   /* The scoped kill — the contract made css: bare inputs only. */
@@ -666,7 +666,7 @@
      background/border/outline); this class only sets its geometry. The
      eye toggle flips type password↔text (aria-pressed is the state); the
      meter paints its filled PREFIX with the stage color — 1 peach,
-     2 yellow (--party-yellow, this release's token), 3 sky, 4 green —
+     2 yellow (--sig-yellow, this release's token), 3 sky, 4 green —
      and the stage label follows. Score = satisfied-rules count. */
   .sig-password__native {
     flex: 1;
@@ -715,16 +715,16 @@
     transition: background var(--transition-standard);
   }
   .sig-password__meter[data-score="1"] span:nth-child(1) {
-    background: var(--party-peach);
+    background: var(--sig-peach);
   }
   .sig-password__meter[data-score="2"] span:nth-child(-n + 2) {
-    background: var(--party-yellow);
+    background: var(--sig-yellow);
   }
   .sig-password__meter[data-score="3"] span:nth-child(-n + 3) {
-    background: var(--party-sky);
+    background: var(--sig-sky);
   }
   .sig-password__meter[data-score="4"] span:nth-child(-n + 4) {
-    background: var(--party-green);
+    background: var(--sig-green);
   }
   .sig-password__stage {
     font-size: 0.75rem;
@@ -733,16 +733,16 @@
     min-width: 3.5rem; /* the row never reflows when the word changes */
   }
   .sig-password__stage[data-score="1"] {
-    color: var(--party-peach);
+    color: var(--sig-peach);
   }
   .sig-password__stage[data-score="2"] {
-    color: var(--party-yellow);
+    color: var(--sig-yellow);
   }
   .sig-password__stage[data-score="3"] {
-    color: var(--party-sky);
+    color: var(--sig-sky);
   }
   .sig-password__stage[data-score="4"] {
-    color: var(--party-green);
+    color: var(--sig-green);
   }
   .sig-password__pills {
     display: flex;
@@ -758,9 +758,9 @@
     transition: var(--transition-standard);
   }
   .sig-password__pill[data-satisfied] {
-    background: color-mix(in srgb, var(--party-green) 20%, transparent);
-    border-color: color-mix(in srgb, var(--party-green) 45%, transparent);
-    color: var(--party-green);
+    background: color-mix(in srgb, var(--sig-green) 20%, transparent);
+    border-color: color-mix(in srgb, var(--sig-green) 45%, transparent);
+    color: var(--sig-green);
   }
 
   /* Motion is a gift, not a requirement. */

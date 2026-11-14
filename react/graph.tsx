@@ -44,8 +44,8 @@
  * ```tsx
  * <KnowledgeGraph
  *   nodes={[
- *     { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "One plan, many branches." },
- *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+ *     { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "One plan, many branches." },
+ *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
  *   ]}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
@@ -76,7 +76,7 @@ export interface GraphNode {
   id: string;
   /** The node's display label — truncated to 12 characters on the canvas. */
   label: string;
-  /** A `--party-*` content token — the node's ring color (Rule of Engagement). */
+  /** A `--sig-*` content token — the node's ring color (Rule of Engagement). */
   categoryToken: PartyColorToken;
   /** Optional longer copy shown in the footer strip when selected. */
   note?: string;
@@ -274,7 +274,7 @@ export function cubicBezierEdge(
 
 /** The node ring's stroke: its party token, or structural Flamingo fallback. */
 function strokeFor(node: GraphNode): string {
-  if (!node.categoryToken.startsWith("--party-")) {
+  if (!node.categoryToken.startsWith("--sig-")) {
     return "var(--color-cake-primary)";
   }
   return `var(${node.categoryToken})`;
@@ -486,7 +486,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
     // parentId stays undefined and the newcomer BECOMES the root.
     onAddNode({
       label: trimmed,
-      categoryToken: "--party-lavender",
+      categoryToken: "--sig-lavender",
       parentId: selectedId ?? rootId,
     });
     setDraftLabel("");

@@ -23,7 +23,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * here is peak-pruning flat.
  *
  * CALLOUTS ARE TOASTS' PERSISTENT SIBLING: `<Callout>` maps status → a
- * `--party-*` token set INLINE as `--status` (css/data.css reads it for
+ * `--sig-*` token set INLINE as `--status` (css/data.css reads it for
  * the 4px left strip) — the exact mechanism of css/toast.css — but a
  * callout never auto-dismisses. Toasts report an outcome and leave;
  * callouts hold context on the page.
@@ -111,16 +111,16 @@ export function Tabs({ tabs, activeId, onChange, label }) {
  * content tokens for content outcomes (Rule of Engagement).
  */
 const CALLOUT_VARIABLE = {
-    info: "var(--party-sky)",
-    success: "var(--party-green)",
-    warning: "var(--party-peach)",
+    info: "var(--sig-sky)",
+    success: "var(--sig-green)",
+    warning: "var(--sig-peach)",
 };
 /**
  * `<Callout>` — the persistent note (Toast's sibling, never dismissing).
  *
  * ONE `<div class="sig-callout" role="note">` with `--status` set INLINE
- * from the status → token map (info → --party-sky, success →
- * --party-green, warning → --party-peach); css/data.css paints the 4px
+ * from the status → token map (info → --sig-sky, success →
+ * --sig-green, warning → --sig-peach); css/data.css paints the 4px
  * left strip from it. PERSISTENT by contract: no auto-dismiss, no timer,
  * no close button — a callout is page context, not an event feed. When
  * you need the transient version, that is `<ToastProvider>` + useToast().

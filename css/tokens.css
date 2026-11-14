@@ -39,11 +39,11 @@
    exactly one rung above sticky chrome, one below the overlay scrim.
    --z-toast (1.4.0) is the zenith: toasts float above modals.
 
-   PARTY PALETTE (0.4.0) — RULE OF ENGAGEMENT: the --party-* tokens are
+   CHROMATIC PALETTE (0.4.0; 3.1.0 THE STANDALONE RENAME) — RULE OF ENGAGEMENT: the --sig-* tokens are
    reserved EXCLUSIVELY for CONTENT (badges, tags, avatars, event theme
    overrides, calendar blocks, data-viz) — plus, since 2.5.0, FEEDBACK
    METER STAGES (the strength meter reads as content decoration, the
-   --party-peach error-border precedent). Structural UI — buttons, inputs,
+   --sig-peach error-border precedent). Structural UI — buttons, inputs,
    focus rings — keeps Flamingo/Teal, always. Never crossed.
 
    The ONLY `:root` rule in the package lives inside this `@layer tokens`
@@ -87,13 +87,13 @@
     --z-modal: 50;
     --z-toast: 60;   /* toasts — the zenith: above modals */
 
-    /* -- PARTY PALETTE (0.4.0; 3.0.0 THE 16-COLOR CHROMATIC EXPANSION) --------
+    /* -- CHROMATIC PALETTE (0.4.0; 3.0.0 THE 16-COLOR EXPANSION; 3.1.0 THE STANDALONE RENAME) --------
         Theme-independent BY DESIGN: defined ONCE here in :root and inherited
-        by [data-theme="latte"] untouched, so content wears the same party
+        by [data-theme="latte"] untouched, so content wears the same chromatic
         colors on both sides of the toggle.
 
-        3.0.0 — the family grows 11 → 26: --party-blue RETIRES (its name,
-        not its value — the official Mocha Blue survives as --party-cobalt,
+        3.0.0 — the family grows 11 → 26: --sig-blue RETIRES (its name,
+        not its value — the official Mocha Blue survives as --sig-cobalt,
         the same #89b4fa under its own name), and 15 CHROMATIC tokens join.
         The chromatic set is DECLARED FILL/SERIES accents: bars, node rings,
         borders, tinted wells — never body-text ink (contrast documented in
@@ -101,30 +101,30 @@
         floor vs surface; every value clears it, the lowest is crimson at
         3.01:1).
 
-        RULE OF ENGAGEMENT — --party-* tokens are reserved EXCLUSIVELY for
+        RULE OF ENGAGEMENT — --sig-* tokens are reserved EXCLUSIVELY for
         CONTENT: badges, tags, avatars, event theme overrides, calendar
         blocks, data visualization. The Engine continues using Flamingo/Teal
         for ALL structural UI actions (buttons, inputs, focus rings).
-        Never use --party-* for structural chrome; never use Flamingo/Teal
+        Never use --sig-* for structural chrome; never use Flamingo/Teal
         for content categories. ------------------------------------------------- */
-    --party-pink-bright: #ea76cb;
-    --party-pink-soft: #f5bde6;
-    --party-pink-alt: #f4b8e4;
-    --party-mauve-bright: #9e5ff2; /* 2.9.1 ZERO CONTRAST DEBT — was #8839ef
+    --sig-pink-bright: #ea76cb;
+    --sig-pink-soft: #f5bde6;
+    --sig-pink-alt: #f4b8e4;
+    --sig-mauve-bright: #9e5ff2; /* 2.9.1 ZERO CONTRAST DEBT — was #8839ef
        (2.32:1 on --bg-surface, sub-3.0 FAIL). Same violet family kept:
        H266°/S85% preserved, lightness 58%→66% (the minimal step measuring
        ≥3.1) — now 3.22:1 on surface / 4.20:1 on base. Gate: verify:contrast. */
-    --party-mauve-soft: #cba6f7;
-    --party-lavender: #7287fd;
-    --party-sky: #04a5e5;
-    --party-cobalt: #89b4fa; /* 3.0.0 — --party-blue RETIRED, value carried:
+    --sig-mauve-soft: #cba6f7;
+    --sig-lavender: #7287fd;
+    --sig-sky: #04a5e5;
+    --sig-cobalt: #89b4fa; /* 3.0.0 — --sig-blue RETIRED, value carried:
        the official Catppuccin Mocha Blue under its own name (the same hex
        2.9.1 shipped as the blue fix — 5.97:1 on surface / 7.79:1 on base).
        The old name is BANNED from css/, tokens.json and the TOKEN_KEYS
        whitelist (gate: (chrom) + (ct1)). */
-    --party-peach: #fe640b;
-    --party-green: #a6d189;
-    --party-yellow: #F9E2AF; /* strength-meter Fair stage, owner v2.5.0 */
+    --sig-peach: #fe640b;
+    --sig-green: #a6d189;
+    --sig-yellow: #F9E2AF; /* strength-meter Fair stage, owner v2.5.0 */
 
     /* -- 3.0.0 CHROMATIC SIXTEEN (15 new + cobalt above) — FILL/SERIES accents
         Bars, graph node rings, borders, tinted wells. NOT body-text ink.
@@ -133,21 +133,21 @@
         mint 7.52 · spring 7.43 · citron 8.83 · violet-glow 5.76 ·
         pink-glow 6.65 · rose-glow 6.68 · lime-glow 11.26 · mint-glow 10.50 ·
         crimson 3.01 · azure 3.58 · tangerine 3.67 · neon-green 8.45. */
-    --party-orchid: #F5C2E7;
-    --party-cyan: #64DFDF;
-    --party-magenta: #CF64DF;
-    --party-mint: #64DF99;
-    --party-spring: #6EDF64;
-    --party-citron: #DBDF64;
-    --party-violet-glow: #C29EFF;
-    --party-pink-glow: #F29EFF;
-    --party-rose-glow: #FF9EDB;
-    --party-lime-glow: #DBFF9E;
-    --party-mint-glow: #9EFFC2;
-    --party-crimson: #F22222;
-    --party-azure: #228AF2;
-    --party-tangerine: #F25622;
-    --party-neon-green: #56F222;
+    --sig-orchid: #F5C2E7;
+    --sig-cyan: #64DFDF;
+    --sig-magenta: #CF64DF;
+    --sig-mint: #64DF99;
+    --sig-spring: #6EDF64;
+    --sig-citron: #DBDF64;
+    --sig-violet-glow: #C29EFF;
+    --sig-pink-glow: #F29EFF;
+    --sig-rose-glow: #FF9EDB;
+    --sig-lime-glow: #DBFF9E;
+    --sig-mint-glow: #9EFFC2;
+    --sig-crimson: #F22222;
+    --sig-azure: #228AF2;
+    --sig-tangerine: #F25622;
+    --sig-neon-green: #56F222;
   }
 
   /* -- the white version: 100% official Catppuccin Latte --------------------- */

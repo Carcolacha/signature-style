@@ -37,7 +37,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * (css/cards.css is shadow-free and hex-free; the e1 scope holds — the
  * featured TierCard's floating shadow arrives through the SHARED
  * [data-elevation] ladder in css/surface.css, not from this file);
- * Flamingo/Teal stays structural (hover borders, focus rings); --party-*
+ * Flamingo/Teal stays structural (hover borders, focus rings); --sig-*
  * rides where the Rule of Engagement admits it (avatar rings, Check
  * bullets, badges, chronicle accents). Zero decorative wrappers: every
  * element carries content or a justified composition job.
@@ -129,8 +129,8 @@ export function AccordionCard({ title, children }) {
  * @example
  * ```tsx
  * <MatchupCard
- *   left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
- *   right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+ *   left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+ *   right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
  *   stakes="Winner picks the next venue — loser brings the ice."
  * />
  * ```
@@ -172,8 +172,8 @@ function accentProps(accentToken) {
  * @example
  * ```tsx
  * <ContentCard
- *   category="Catering" categoryToken="--party-peach"
- *   meta={["25 MIN", "SPICY", "$14"]} accentToken="--party-yellow"
+ *   category="Catering" categoryToken="--sig-peach"
+ *   meta={["25 MIN", "SPICY", "$14"]} accentToken="--sig-yellow"
  *   title="Birria & Street Taco Catering"
  *   description="Slow-braised birria, consomé on the side."
  *   action={{ label: "Book the taco cart" }}
@@ -206,7 +206,7 @@ export function ContentCard({ title, description, image, category, categoryToken
  * ```tsx
  * const toast = useToast();
  * <ReferenceCard
- *   tag="JSX" title="The Signature Surface" accentToken="--party-sky"
+ *   tag="JSX" title="The Signature Surface" accentToken="--sig-sky"
  *   code="<SurfaceCard eyebrow=\"Hi\" title=\"Hello\" />"
  *   onCopied={() => toast("success", "Snippet copied")}
  * />
@@ -257,7 +257,7 @@ export function ReferenceCard({ tag, title, code, accentToken, link, onCopied, c
  * @example
  * ```tsx
  * <TierCard
- *   name="Arena Pass" price="$49" featured accentToken="--party-mauve-soft"
+ *   name="Arena Pass" price="$49" featured accentToken="--sig-mauve-soft"
  *   features={["All 40 game modules", "1v1 & 2v2 brackets"]}
  *   cta="Claim the pass"
  * />
@@ -283,9 +283,9 @@ export function TierCard({ name, price, features, accentToken, featured = false,
  * @example
  * ```tsx
  * <ProfileCard
- *   name="Ana Souza" role="Head of Catering" accentToken="--party-peach"
+ *   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
  *   stats={[{ label: "Events", value: "24" }, { label: "Guests", value: "412" }]}
- *   skills={[{ colorToken: "--party-peach", label: "Catering" }]}
+ *   skills={[{ colorToken: "--sig-peach", label: "Catering" }]}
  * />
  * ```
  */
@@ -316,7 +316,7 @@ export function ProfileCard({ name, role, stats, skills, accentToken, avatarSize
  * <ChronicleTimeline
  *   releases={[
  *     { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34" },
- *     { tag: "v2.6.0", title: "Universal Developer Card Suite", accentToken: "--party-peach" },
+ *     { tag: "v2.6.0", title: "Universal Developer Card Suite", accentToken: "--sig-peach" },
  *   ]}
  * />
  * ```
@@ -324,6 +324,6 @@ export function ProfileCard({ name, role, stats, skills, accentToken, avatarSize
 export function ChronicleTimeline({ releases, label, className, }) {
     const classes = className !== undefined ? `sig-chronicle ${className}` : "sig-chronicle";
     return (_jsx("ol", { className: classes, "aria-label": label ?? "Version chronicle", children: releases.map((release) => (_jsxs("li", { className: "sig-chronicle__item", style: {
-                "--accent": `var(${release.accentToken ?? "--party-lavender"})`,
+                "--accent": `var(${release.accentToken ?? "--sig-lavender"})`,
             }, children: [_jsx("span", { className: "sig-chronicle__node" }), _jsx("span", { className: "sig-chronicle__tag", children: release.tag }), _jsxs("div", { className: "sig-chronicle__body", children: [_jsx("strong", { children: release.title }), release.story !== undefined && (_jsx("span", { className: "sig-chronicle__story", children: release.story })), release.stat !== undefined && (_jsx("span", { className: "sig-chronicle__stat", children: release.stat }))] })] }, release.tag))) }));
 }

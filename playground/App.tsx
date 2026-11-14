@@ -6,7 +6,7 @@
  *
  *   1. (css/tokens.css — not here) the two sub-3.0 party tokens are
  *      lightened at the source; this file's BENTO still reads them
- *      through var(--party-*) and inherits the fix.
+ *      through var(--sig-*) and inherits the fix.
  *
  *   2. THE ASYNC-LOAD SIMULATION — the skeletons (2.9.0's SkeletonCard /
  *      SkeletonTableRow) get a LIVE trigger: the command-palette entry
@@ -121,7 +121,7 @@
  * playground-local (the grid container, metric rows, buttons, stagger,
  * node elevation, the gateway <button>s). Telemetry wears its limits:
  * every ProgressBar carries a limitText caption, and the new guests row
- * (170 / 200 on --party-sky, 85% — the RSVP ring's own ratio, coherent)
+ * (170 / 200 on --sig-sky, 85% — the RSVP ring's own ratio, coherent)
  * is the limit caption's third live use. The ring shows its value now
  * (showValue default true).
  *
@@ -488,7 +488,7 @@ export const mockEvents: MockEvent[] = [
     month: "December 2026",
     title: "Venue walkthrough",
     time: "18:00",
-    colorToken: "--party-mauve-bright",
+    colorToken: "--sig-mauve-bright",
     iconName: "MapPin",
     description:
       "Walk the floor plan with the coordinator: staging, catering lane, and the photo corner. Bring the seating sketch.",
@@ -498,7 +498,7 @@ export const mockEvents: MockEvent[] = [
     month: "December 2026",
     title: "Band sound check",
     time: "19:30",
-    colorToken: "--party-sky",
+    colorToken: "--sig-sky",
     // NOT "Music" — that key does not exist in the installed lucide-react
     // 1.72.0 icons map (gate-probed); "AudioLines" is the live-map-valid
     // equivalent, verified by the (h3) icon gate.
@@ -509,7 +509,7 @@ export const mockEvents: MockEvent[] = [
     month: "December 2026",
     title: "Catering tasting",
     time: "13:00",
-    colorToken: "--party-peach",
+    colorToken: "--sig-peach",
     iconName: "Utensils",
     description:
       "Three menu candidates. Confirm the vegan plate travels well and lock the dessert choice.",
@@ -519,7 +519,7 @@ export const mockEvents: MockEvent[] = [
     month: "January 2027",
     title: "Send invitations",
     time: "09:00",
-    colorToken: "--party-pink-bright",
+    colorToken: "--sig-pink-bright",
     iconName: "MailOpen",
     description:
       "Paper invites for family, digital for everyone else. RSVP window closes January 24.",
@@ -529,7 +529,7 @@ export const mockEvents: MockEvent[] = [
     month: "January 2027",
     title: "Final headcount",
     time: "17:00",
-    colorToken: "--party-green",
+    colorToken: "--sig-green",
     iconName: "ClipboardCheck",
   },
   {
@@ -537,7 +537,7 @@ export const mockEvents: MockEvent[] = [
     month: "February 2027",
     title: "The wedding day",
     time: "16:00",
-    colorToken: "--party-lavender",
+    colorToken: "--sig-lavender",
     iconName: "PartyPopper",
     description:
       "Ceremony at four, dinner at six. The timeline ends where the party begins.",
@@ -549,17 +549,17 @@ export const mockEvents: MockEvent[] = [
  * colorToken so his records stay untouched by presentation concerns.
  */
 const CATEGORY_LABELS: Record<PtpEvent["category"], string> = {
-  "--party-pink-bright": "Invites",
-  "--party-pink-soft": "Guests",
-  "--party-pink-alt": "Decor",
-  "--party-mauve-bright": "Venue",
-  "--party-mauve-soft": "Admin",
-  "--party-lavender": "Ceremony",
-  "--party-sky": "Music",
-  "--party-cobalt": "Logistics", /* 3.0.0: blue retired — cobalt carries the value */
-  "--party-peach": "Catering",
-  "--party-green": "RSVP",
-  "--party-yellow": "Meter",
+  "--sig-pink-bright": "Invites",
+  "--sig-pink-soft": "Guests",
+  "--sig-pink-alt": "Decor",
+  "--sig-mauve-bright": "Venue",
+  "--sig-mauve-soft": "Admin",
+  "--sig-lavender": "Ceremony",
+  "--sig-sky": "Music",
+  "--sig-cobalt": "Logistics", /* 3.0.0: blue retired — cobalt carries the value */
+  "--sig-peach": "Catering",
+  "--sig-green": "RSVP",
+  "--sig-yellow": "Meter",
 };
 
 /**
@@ -625,28 +625,28 @@ const SEED_GRAPH: GraphNode[] = [
   {
     id: "kg-root",
     label: "Party Planning",
-    categoryToken: "--party-lavender",
+    categoryToken: "--sig-lavender",
     note: "The root of the plan — every branch is one workstream.",
   },
   {
     id: "kg-venue",
     label: "Venue",
     parentId: "kg-root",
-    categoryToken: "--party-azure",
+    categoryToken: "--sig-azure",
     note: "Shortlist three venues; the walkthrough is on the timeline.",
   },
   {
     id: "kg-catering",
     label: "Catering",
     parentId: "kg-root",
-    categoryToken: "--party-tangerine",
+    categoryToken: "--sig-tangerine",
     note: "Tasting scheduled — the vegan plate must travel well.",
   },
   {
     id: "kg-invites",
     label: "Invites & RSVP tracking",
     parentId: "kg-root",
-    categoryToken: "--party-pink-bright",
+    categoryToken: "--sig-pink-bright",
     note: "Paper for family, digital for everyone else.",
   },
 ];
@@ -660,7 +660,7 @@ const SEED_TIMELINE: TimelineItem[] = [
     id: "tm-001",
     date: "November 2026",
     title: "Book the venue",
-    category: "--party-mauve-bright",
+    category: "--sig-mauve-bright",
     categoryLabel: "Venue",
     settled: true,
   },
@@ -668,7 +668,7 @@ const SEED_TIMELINE: TimelineItem[] = [
     id: "tm-002",
     date: "November 2026",
     title: "Lock the catering menu",
-    category: "--party-peach",
+    category: "--sig-peach",
     categoryLabel: "Catering",
     settled: true,
   },
@@ -676,21 +676,21 @@ const SEED_TIMELINE: TimelineItem[] = [
     id: "tm-003",
     date: "December 2026",
     title: "Send invitations",
-    category: "--party-pink-bright",
+    category: "--sig-pink-bright",
     categoryLabel: "Invites",
   },
   {
     id: "tm-004",
     date: "December 2026",
     title: "Order the cake",
-    category: "--party-lavender",
+    category: "--sig-lavender",
     categoryLabel: "Ceremony",
   },
   {
     id: "tm-005",
     date: "January 2027",
     title: "Final headcount",
-    category: "--party-green",
+    category: "--sig-green",
     categoryLabel: "RSVP",
   },
 ];
@@ -698,10 +698,10 @@ const SEED_TIMELINE: TimelineItem[] = [
 /** The Spending by Category bars — four bars, four DIFFERENT chromatic
  *  tokens (3.0.0: cobalt/cyan/mint/tangerine — the multi-token series). */
 const SPENDING_BARS = [
-  { label: "Venue", value: 800, max: 1000, colorToken: "--party-cobalt" },
-  { label: "Catering", value: 620, max: 900, colorToken: "--party-tangerine" },
-  { label: "Invites", value: 240, max: 400, colorToken: "--party-cyan" },
-  { label: "Music", value: 450, max: 600, colorToken: "--party-mint" },
+  { label: "Venue", value: 800, max: 1000, colorToken: "--sig-cobalt" },
+  { label: "Catering", value: 620, max: 900, colorToken: "--sig-tangerine" },
+  { label: "Invites", value: 240, max: 400, colorToken: "--sig-cyan" },
+  { label: "Music", value: 450, max: 600, colorToken: "--sig-mint" },
 ] as const;
 
 /** The RSVP Momentum series — eight weekly samples, sky. */
@@ -787,32 +787,32 @@ const PALETTE: ReadonlyArray<{
   role: "ink" | "fill";
   isNew?: boolean;
 }> = [
-  { token: "--party-pink-bright", label: "Pink", role: "ink" },
-  { token: "--party-pink-soft", label: "Soft pink", role: "ink" },
-  { token: "--party-pink-alt", label: "Alt pink", role: "ink" },
-  { token: "--party-mauve-bright", label: "Mauve", role: "ink" },
-  { token: "--party-mauve-soft", label: "Soft mauve", role: "ink" },
-  { token: "--party-lavender", label: "Lavender", role: "ink" },
-  { token: "--party-sky", label: "Sky", role: "ink" },
-  { token: "--party-cobalt", label: "Cobalt", role: "ink", isNew: true },
-  { token: "--party-peach", label: "Peach", role: "ink" },
-  { token: "--party-green", label: "Green", role: "ink" },
-  { token: "--party-yellow", label: "Yellow", role: "ink" },
-  { token: "--party-orchid", label: "Orchid", role: "fill", isNew: true },
-  { token: "--party-cyan", label: "Cyan", role: "fill", isNew: true },
-  { token: "--party-magenta", label: "Magenta", role: "fill", isNew: true },
-  { token: "--party-mint", label: "Mint", role: "fill", isNew: true },
-  { token: "--party-spring", label: "Spring", role: "fill", isNew: true },
-  { token: "--party-citron", label: "Citron", role: "fill", isNew: true },
-  { token: "--party-violet-glow", label: "Violet glow", role: "fill", isNew: true },
-  { token: "--party-pink-glow", label: "Pink glow", role: "fill", isNew: true },
-  { token: "--party-rose-glow", label: "Rose glow", role: "fill", isNew: true },
-  { token: "--party-lime-glow", label: "Lime glow", role: "fill", isNew: true },
-  { token: "--party-mint-glow", label: "Mint glow", role: "fill", isNew: true },
-  { token: "--party-crimson", label: "Crimson", role: "fill", isNew: true },
-  { token: "--party-azure", label: "Azure", role: "fill", isNew: true },
-  { token: "--party-tangerine", label: "Tangerine", role: "fill", isNew: true },
-  { token: "--party-neon-green", label: "Neon green", role: "fill", isNew: true },
+  { token: "--sig-pink-bright", label: "Pink", role: "ink" },
+  { token: "--sig-pink-soft", label: "Soft pink", role: "ink" },
+  { token: "--sig-pink-alt", label: "Alt pink", role: "ink" },
+  { token: "--sig-mauve-bright", label: "Mauve", role: "ink" },
+  { token: "--sig-mauve-soft", label: "Soft mauve", role: "ink" },
+  { token: "--sig-lavender", label: "Lavender", role: "ink" },
+  { token: "--sig-sky", label: "Sky", role: "ink" },
+  { token: "--sig-cobalt", label: "Cobalt", role: "ink", isNew: true },
+  { token: "--sig-peach", label: "Peach", role: "ink" },
+  { token: "--sig-green", label: "Green", role: "ink" },
+  { token: "--sig-yellow", label: "Yellow", role: "ink" },
+  { token: "--sig-orchid", label: "Orchid", role: "fill", isNew: true },
+  { token: "--sig-cyan", label: "Cyan", role: "fill", isNew: true },
+  { token: "--sig-magenta", label: "Magenta", role: "fill", isNew: true },
+  { token: "--sig-mint", label: "Mint", role: "fill", isNew: true },
+  { token: "--sig-spring", label: "Spring", role: "fill", isNew: true },
+  { token: "--sig-citron", label: "Citron", role: "fill", isNew: true },
+  { token: "--sig-violet-glow", label: "Violet glow", role: "fill", isNew: true },
+  { token: "--sig-pink-glow", label: "Pink glow", role: "fill", isNew: true },
+  { token: "--sig-rose-glow", label: "Rose glow", role: "fill", isNew: true },
+  { token: "--sig-lime-glow", label: "Lime glow", role: "fill", isNew: true },
+  { token: "--sig-mint-glow", label: "Mint glow", role: "fill", isNew: true },
+  { token: "--sig-crimson", label: "Crimson", role: "fill", isNew: true },
+  { token: "--sig-azure", label: "Azure", role: "fill", isNew: true },
+  { token: "--sig-tangerine", label: "Tangerine", role: "fill", isNew: true },
+  { token: "--sig-neon-green", label: "Neon green", role: "fill", isNew: true },
 ];
 
 export default function App() {
@@ -1021,20 +1021,20 @@ function Shell() {
       <div className="hub__cq-probe" aria-hidden="true" data-testid="cq-probe">
         <div className="hub__cq-narrow sig-cell">
           <MatchupCard
-            left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-            right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+            left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+            right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
           />
           <StatCard
             label="Confirmed Guests"
             value="170"
             sparklineData={[118, 126, 132, 141, 158, 170]}
-            colorToken="--party-sky"
+            colorToken="--sig-sky"
           />
           <ContentCard
             category="Catering"
-            categoryToken="--party-peach"
+            categoryToken="--sig-peach"
             meta={["25 MIN", "SPICY", "$14"]}
-            accentToken="--party-yellow"
+            accentToken="--sig-yellow"
             title="Birria & Street Taco Catering"
             description="Slow-braised birria, consomé on the side."
             action={{ label: "Book the taco cart" }}
@@ -1051,20 +1051,20 @@ function Shell() {
         </div>
         <div className="hub__cq-wide sig-cell">
           <MatchupCard
-            left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-            right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+            left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+            right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
           />
           <StatCard
             label="Confirmed Guests"
             value="170"
             sparklineData={[118, 126, 132, 141, 158, 170]}
-            colorToken="--party-sky"
+            colorToken="--sig-sky"
           />
           <ContentCard
             category="Catering"
-            categoryToken="--party-peach"
+            categoryToken="--sig-peach"
             meta={["25 MIN", "SPICY", "$14"]}
-            accentToken="--party-yellow"
+            accentToken="--sig-yellow"
             title="Birria & Street Taco Catering"
             description="Slow-braised birria, consomé on the side."
             action={{ label: "Book the taco cart" }}
@@ -1222,7 +1222,7 @@ function BentoCore({
       guest: guest.name,
       rsvp:
         guest.rsvp === "confirmed" ? (
-          <PartyBadge colorToken="--party-green" label="Confirmed" />
+          <PartyBadge colorToken="--sig-green" label="Confirmed" />
         ) : (
           RSVP_LABELS[guest.rsvp]
         ),
@@ -1286,7 +1286,7 @@ function BentoCore({
           delta="+$440"
           deltaDirection="up"
           sparklineData={[1200, 1450, 1380, 1600, 1780, TOTAL_BUDGET]}
-          colorToken="--party-green"
+          colorToken="--sig-green"
         />
       </div>
       <div className="sig-span-4 sig-cell" data-testid="kpi-trio">
@@ -1295,7 +1295,7 @@ function BentoCore({
           value={String(derived.confirmedCount)}
           delta="live"
           sparklineData={[2, 3, 3, 4, 4, derived.confirmedCount]}
-          colorToken="--party-sky"
+          colorToken="--sig-sky"
         />
       </div>
       <div className="sig-span-4 sig-cell">
@@ -1305,7 +1305,7 @@ function BentoCore({
           delta="+2"
           deltaDirection="up"
           sparklineData={[2, 3, 3, 4, 4, 6]}
-          colorToken="--party-mauve-soft"
+          colorToken="--sig-mauve-soft"
         />
       </div>
 
@@ -1369,7 +1369,7 @@ function BentoCore({
         </div>
         <ProgressBar
           value={derived.ringValue}
-          colorToken="--party-sky"
+          colorToken="--sig-sky"
           label="Guests confirmed"
           limitText={`${derived.confirmedCount} / ${GUEST_CAPACITY} Guests`}
         />
@@ -1384,7 +1384,7 @@ function BentoCore({
         <div data-testid="ring-rsvp">
           <StatRing
             value={derived.ringValue}
-            colorToken="--party-sky"
+            colorToken="--sig-sky"
             label="RSVP ratio"
             total={GUEST_CAPACITY}
             unit="Guests"
@@ -1396,7 +1396,7 @@ function BentoCore({
         </div>
         <ProgressBar
           value={derived.spentPct}
-          colorToken="--party-peach"
+          colorToken="--sig-peach"
           label="Budget spent"
           limitText={`$${derived.potTotal.toLocaleString("en-US")} / $${TOTAL_BUDGET.toLocaleString("en-US")}`}
         />
@@ -1406,7 +1406,7 @@ function BentoCore({
         </div>
         <ProgressBar
           value={100 - derived.spentPct}
-          colorToken="--party-green"
+          colorToken="--sig-green"
           label="Budget remaining"
           limitText={`$${(TOTAL_BUDGET - derived.potTotal).toLocaleString("en-US")} / $${TOTAL_BUDGET.toLocaleString("en-US")}`}
         />
@@ -1561,8 +1561,8 @@ function BentoCore({
           ) : (
             <>
         <MatchupCard
-          left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-          right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+          left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+          right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
           stakes="Winner picks the next venue — loser brings the ice."
         />
         <ProseBlock>
@@ -1781,161 +1781,161 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
     title: "The Token Foundation",
     story: "Linux-terminal palette, Token Cascade, Override Protocol, hardened ThemeProvider.",
     stat: "34 tokens · 1 demo",
-    accentToken: "--party-lavender",
+    accentToken: "--sig-lavender",
   },
   {
     tag: "v0.2.0",
     title: "Catppuccin Edition",
     story: "The palette went 100% official Catppuccin — every color mapped, nothing invented.",
     stat: "mocha + latte",
-    accentToken: "--party-cobalt",
+    accentToken: "--sig-cobalt",
   },
   {
     tag: "v0.3.0",
     title: "Harmonized Catppuccin",
     story: "Per-theme Flamingo/Teal signatures; the retired accents banned everywhere.",
     stat: "structural UI locked",
-    accentToken: "--party-sky",
+    accentToken: "--sig-sky",
   },
   {
     tag: "v0.4.0",
     title: "Party Palette",
     story: "Ten content-only tokens — the Rule of Engagement draws the chrome/content line.",
     stat: "10 tokens reserved",
-    accentToken: "--party-pink-bright",
+    accentToken: "--sig-pink-bright",
   },
   {
     tag: "v0.5.0",
     title: "Pruning Protocol + React Primitives",
     story: "Icon, EmptyState, PartyBadge — flat DOM, typed tokens, zero wrappers.",
     stat: "3 primitives",
-    accentToken: "--party-green",
+    accentToken: "--sig-green",
   },
   {
     tag: "v0.6.0",
     title: "Event Timeline",
     story: "The chronology: grouped months, sticky glass headers, one line of nodes.",
     stat: "sticky headers",
-    accentToken: "--party-mauve-soft",
+    accentToken: "--sig-mauve-soft",
   },
   {
     tag: "v0.7.0",
     title: "Event Modal",
     story: "Portalled dialog, neutral scrim, Escape — the z-pillars earn their rungs.",
     stat: "z 40 / 50",
-    accentToken: "--party-peach",
+    accentToken: "--sig-peach",
   },
   {
     tag: "v1.0.0",
     title: "Publish Flow & Distribution",
     story: "npm-ready: exports map, tag-driven publish, tokens.json as the AI core.",
     stat: "3 export paths",
-    accentToken: "--party-yellow",
+    accentToken: "--sig-yellow",
   },
   {
     tag: "v1.1.0",
     title: "Storybook — The Human Interface",
     story: "The philosophy, every token, every component — readable like a book.",
     stat: "docs only",
-    accentToken: "--party-pink-soft",
+    accentToken: "--sig-pink-soft",
   },
   {
     tag: "v1.2.0",
     title: "GlobalNav",
     story: "Sticky navbar, drawer, aria-current — the attribute IS the state.",
     stat: "--z-nav 30",
-    accentToken: "--party-lavender",
+    accentToken: "--sig-lavender",
   },
   {
     tag: "v1.3.0",
     title: "Telemetry Module",
     story: "ProgressBar + StatRing — data-ink doctrine, 8px tracks, surface fills.",
     stat: "8px grid",
-    accentToken: "--party-sky",
+    accentToken: "--sig-sky",
   },
   {
     tag: "v1.4.0",
     title: "Input & Feedback Layer",
     story: "Inputs, switches, selects, toasts at the zenith rung — the whitelist completes.",
     stat: "whitelist 33",
-    accentToken: "--party-green",
+    accentToken: "--sig-green",
   },
   {
     tag: "v1.5.0",
     title: "Bento Box Showcase",
     story: "The playground dashboard: every primitive, one bento.",
     stat: "playground born",
-    accentToken: "--party-peach",
+    accentToken: "--sig-peach",
   },
   {
     tag: "v1.6.0",
     title: "Ambient Elevation & Timeline Resurrection",
     story: "The inset-highlight + ambient treaty; the sticky-header bug found, fixed.",
     stat: "(e1) born",
-    accentToken: "--party-mauve-bright",
+    accentToken: "--sig-mauve-bright",
   },
   {
     tag: "v1.7.0",
     title: "The Visual Cortex",
     story: "The MCP server: layout sweeps + screenshots as release-blocker proof.",
     stat: "2 tools",
-    accentToken: "--party-cobalt",
+    accentToken: "--sig-cobalt",
   },
   {
     tag: "v1.8.0",
     title: "Bento Refinement & Spatial Harmony",
     story: "Glass headers, metric air, breathing bars — the 8px grid everywhere.",
     stat: "spatial pass",
-    accentToken: "--party-pink-bright",
+    accentToken: "--sig-pink-bright",
   },
   {
     tag: "v2.0.0",
     title: "The Hub Migration",
     story: "The Shed aesthetic: meta row → ruled title → content; gateway doors.",
     stat: "sig-* born",
-    accentToken: "--party-lavender",
+    accentToken: "--sig-lavender",
   },
   {
     tag: "v2.1.0",
     title: "Timeline Breathing Room & The Master Index",
     story: "The −1px overlap measured and fixed; the index gets its three doors.",
     stat: "measured",
-    accentToken: "--party-sky",
+    accentToken: "--sig-sky",
   },
   {
     tag: "v2.2.0",
     title: "Telemetry Limits & Official Surface Primitives",
     story: "Limit captions on every bar; the Shed anatomy promoted into the package.",
     stat: "pack 37",
-    accentToken: "--party-peach",
+    accentToken: "--sig-peach",
   },
   {
     tag: "v2.3.0",
     title: "Universal Web Components & AI Signature Codex",
     story: "DataTable, Tabs, Callouts, Avatars — the codex ships with the package.",
     stat: "pack 40",
-    accentToken: "--party-green",
+    accentToken: "--sig-green",
   },
   {
     tag: "v2.4.0",
     title: "Form Wrappers & Editorial Primitives",
     story: "FormFields, RadioCards, Carousel, Prose, Banners, StatCards, Sparklines.",
     stat: "pack 43",
-    accentToken: "--party-mauve-soft",
+    accentToken: "--sig-mauve-soft",
   },
   {
     tag: "v2.5.0",
     title: "Ergonomic Form Rules, Button & Card Archetypes, and the 12-Column Bento",
     story: "Five owner defects buried: shell, desc-above forms, labels, align, live bento.",
     stat: "whitelist 34",
-    accentToken: "--party-pink-bright",
+    accentToken: "--sig-pink-bright",
   },
   {
     tag: "v2.6.0",
     title: "Universal Developer Card Suite",
     story: "The catalog became the product: chromatic elevation, the master index overhaul.",
     stat: "5 archetypes · 3 tiers · 11 accents",
-    accentToken: "--party-yellow",
+    accentToken: "--sig-yellow",
   },
 ];
 
@@ -1989,7 +1989,7 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
       path: "modules/study.tsx",
       title: "Study & Flashcard Engine",
       description: "Deck generation and spaced-repetition flashcards for study groups.",
-      accent: "--party-lavender",
+      accent: "--sig-lavender",
       action: () => toast("success", "The study module is on the roadmap."),
     },
     {
@@ -1998,7 +1998,7 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
       title: "Party Game Arena",
       description:
         "40 curated party & shot games with 1v1 / 2v2 spectator betting frameworks.",
-      accent: "--party-peach",
+      accent: "--sig-peach",
       action: () => toast("success", "The party games module is on the roadmap."),
     },
   ];
@@ -2056,9 +2056,9 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
           <div className="sig-cell">
             <ContentCard
               category="Catering"
-              categoryToken="--party-peach"
+              categoryToken="--sig-peach"
               meta={["25 MIN", "SPICY", "$14"]}
-              accentToken="--party-yellow"
+              accentToken="--sig-yellow"
               title="Birria & Street Taco Catering"
               description="Slow-braised birria, consomé on the side, the salsa roja that silences the table. The taco cart parks at your gate and feeds the line until the last guest waves the white flag."
               action={{ label: "Book the taco cart" }}
@@ -2068,7 +2068,7 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
             <ReferenceCard
               tag="JSX"
               title="The Signature Surface"
-              accentToken="--party-sky"
+              accentToken="--sig-sky"
               code={SURFACE_SNIPPET}
               link="#/index"
               onCopied={() => toast("success", "Snippet copied — paste it anywhere.")}
@@ -2079,7 +2079,7 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
               name="Arena Pass"
               price="$49"
               featured
-              accentToken="--party-mauve-soft"
+              accentToken="--sig-mauve-soft"
               features={[
                 "All 40 game modules",
                 "1v1 & 2v2 brackets",
@@ -2172,15 +2172,15 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
             <ProfileCard
               name="Ana Souza"
               role="Head of Catering"
-              accentToken="--party-peach"
+              accentToken="--sig-peach"
               stats={[
                 { label: "Events", value: "24" },
                 { label: "Guests", value: "412" },
                 { label: "Rating", value: "4.9" },
               ]}
               skills={[
-                { colorToken: "--party-peach", label: "Catering" },
-                { colorToken: "--party-green", label: "Logistics" },
+                { colorToken: "--sig-peach", label: "Catering" },
+                { colorToken: "--sig-green", label: "Logistics" },
               ]}
             />
           </div>
@@ -2201,8 +2201,8 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
           </div>
           <div className="sig-cell">
             <MatchupCard
-              left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-              right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+              left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+              right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
               stakes="Winner picks the venue — loser brings ice."
             />
           </div>
@@ -2234,9 +2234,9 @@ const SURFACE_SNIPPET = `<SurfaceCard
   eyebrow="Planner"
   meta="views/planner.tsx"
   title="Event & Party Planner"
-  interactive accentToken="--party-lavender"
+  interactive accentToken="--sig-lavender"
 >
-  <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
+  <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
 </SurfaceCard>`;
 
 /**
@@ -2256,7 +2256,7 @@ const LEDGER_COLUMNS: DataTableColumn[] = [
 const LEDGER_ROWS: Array<Record<string, ReactNode>> = [
   {
     guest: "Ana Souza",
-    status: <PartyBadge colorToken="--party-green" label="Confirmed" />,
+    status: <PartyBadge colorToken="--sig-green" label="Confirmed" />,
     share: "$120",
   },
   { guest: "Leo Martins", status: "Pending", share: "$0" },
@@ -2271,10 +2271,10 @@ const AVATAR_CREW: Array<{
   size?: 32 | 40;
   ringToken?: PartyTokenName;
 }> = [
-  { name: "Ana Souza", ringToken: "--party-mauve-soft" },
+  { name: "Ana Souza", ringToken: "--sig-mauve-soft" },
   { name: "Leo Martins" },
   { name: "Priya Nair" },
-  { name: "Tom Weller", size: 40, ringToken: "--party-sky" },
+  { name: "Tom Weller", size: 40, ringToken: "--sig-sky" },
   { name: "Ana + 1", size: 40 },
 ];
 
@@ -2322,7 +2322,7 @@ function DataModule() {
             delta="+$440"
             deltaDirection="up"
             sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
-            colorToken="--party-green"
+            colorToken="--sig-green"
           />
         </div>
         <div className="sig-cell">
@@ -2332,7 +2332,7 @@ function DataModule() {
             delta="+12"
             deltaDirection="up"
             sparklineData={[118, 126, 132, 141, 158, 170]}
-            colorToken="--party-sky"
+            colorToken="--sig-sky"
           />
         </div>
         <div className="sig-cell">
@@ -2342,7 +2342,7 @@ function DataModule() {
             delta="+2"
             deltaDirection="up"
             sparklineData={[2, 3, 3, 4, 4, 6]}
-            colorToken="--party-mauve-soft"
+            colorToken="--sig-mauve-soft"
           />
         </div>
       </div>
@@ -2659,7 +2659,7 @@ function GraphPlannerModule() {
       const id = `kg-${Date.now().toString(36)}`;
       setGraph((current) => [
         ...current,
-        { id, label: "New note", categoryToken: "--party-lavender", parentId },
+        { id, label: "New note", categoryToken: "--sig-lavender", parentId },
       ]);
       setPositions((current) => ({ ...current, [id]: point }));
       toast("success", "Node spawned — drag it, or tether it with a right-click.");
@@ -2799,7 +2799,7 @@ function GraphPlannerModule() {
           <div data-testid="rsvp-area">
             <AreaChart
               points={[...RSVP_MOMENTUM]}
-              colorToken="--party-sky"
+              colorToken="--sig-sky"
               label="RSVP momentum"
             />
           </div>

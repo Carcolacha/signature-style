@@ -9,7 +9,7 @@
  *
  * THE STATUS CONTRACT: `toast("success" | "error", message)` maps the
  * status to a CSS custom property set INLINE on the toast element —
- * success → var(--party-green), error → var(--party-peach) — which
+ * success → var(--sig-green), error → var(--sig-peach) — which
  * css/toast.css reads as the 4px `border-left: 4px solid var(--status)`
  * strip. Status is a content-outcome signal, so party tokens are the
  * sanctioned palette (Rule of Engagement); the component never hardcodes

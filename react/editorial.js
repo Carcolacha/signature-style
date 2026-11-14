@@ -24,7 +24,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * a release note is the house voice, so it wears the structural
  * signature). Everything else in this file is structural chrome:
  * hairline borders, inset wells, Flamingo/Teal only. EXCEPTION (owner
- * override, 2.4.1): the ProseBlock quote rule wears `--party-mauve` —
+ * override, 2.4.1): the ProseBlock quote rule wears `--sig-mauve` —
  * a blockquote IS editorial content, so a party token on it is the
  * Rule of Engagement read correctly (v2.4.0's Flamingo rule borrowed
  * the structural accent for content; the owner moved it).
@@ -48,8 +48,8 @@ import { Icon } from "./primitives.js";
  * @example
  * ```tsx
  * <Carousel label="Clippings">
- *   <CarouselItem><PartyBadge colorToken="--party-sky" label="Sky" /></CarouselItem>
- *   <CarouselItem><PartyBadge colorToken="--party-peach" label="Peach" /></CarouselItem>
+ *   <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+ *   <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
  * </Carousel>
  * ```
  */
@@ -219,8 +219,8 @@ export function ProseBlock({ className, children }) {
  * release note speaks in the house voice (owner spec, 2.4.1).
  */
 const ANNOUNCEMENT_VARIABLE = {
-    info: "var(--party-sky)",
-    warning: "var(--party-peach)",
+    info: "var(--sig-sky)",
+    warning: "var(--sig-peach)",
     announcement: "var(--color-cake-primary)",
 };
 /**

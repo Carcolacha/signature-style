@@ -61,7 +61,7 @@ export interface PtpEvent {
   time?: string;
   /** Event title. */
   title: string;
-  /** Content category — a `--party-*` token (Rule of Engagement). */
+  /** Content category — a `--sig-*` token (Rule of Engagement). */
   category: PartyTokenName;
   /** Human label shown on the category badge. */
   categoryLabel: string;
@@ -179,7 +179,7 @@ function renderItem(event: PtpEvent, row: number, index: number): ReactNode {
  *       date: "October 2026",
  *       time: "15:00",
  *       title: "Cake cutting",
- *       category: "--party-peach",
+ *       category: "--sig-peach",
  *       categoryLabel: "Birthday",
  *       icon: "Cake",
  *     },

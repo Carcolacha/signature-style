@@ -9,7 +9,7 @@
 
    STATUS STRIPS: the left border is 4px solid var(--status) — a custom
    property the component sets INLINE per toast (react/toast.tsx):
-   success → var(--party-green), error → var(--party-peach). Status is
+   success → var(--sig-green), error → var(--sig-peach). Status is
    feedback about CONTENT outcomes, so party tokens are the correct
    palette here (Rule of Engagement: status = content signal, not
    structural chrome). The CSS never hardcodes which; it reads --status.

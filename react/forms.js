@@ -23,7 +23,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *
  * THE ERROR FLAG: `error` is a STATE FLAG, never rendered as text.
  * `<Input error>` / `<TextArea error>` only flip the DOM attribute
- * `aria-invalid="true"` (css/forms.css paints the --party-peach border —
+ * `aria-invalid="true"` (css/forms.css paints the --sig-peach border —
  * the owner-spec'd error state, attribute-driven like the nav's
  * aria-current). Consumers render their own error message next to the
  * field, where they control its id/aria-describedby wiring. This keeps
@@ -189,7 +189,7 @@ export function Checkbox({ checked, onToggle, label }) {
  * @example
  * ```tsx
  * <Avatar name="Ana Souza" />
- * <Avatar name="Priya Nair" size={40} ringToken="--party-mauve-soft" />
+ * <Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />
  * ```
  */
 export function Avatar({ name, size = 32, ringToken }) {
@@ -202,8 +202,8 @@ export function Avatar({ name, size = 32, ringToken }) {
         .join("");
     const ringStyle = {};
     if (ringToken !== undefined) {
-        if (!ringToken.startsWith("--party-")) {
-            console.warn(`[signature-style] dropped ring "${ringToken}" — Avatar rings accept --party-* tokens only (Rule of Engagement); rendering without the ring.`);
+        if (!ringToken.startsWith("--sig-")) {
+            console.warn(`[signature-style] dropped ring "${ringToken}" — Avatar rings accept --sig-* tokens only (Rule of Engagement); rendering without the ring.`);
         }
         else {
             ringStyle.border = `2px solid var(${ringToken})`;
@@ -357,7 +357,7 @@ const PASSWORD_STAGES = ["Weak", "Fair", "Good", "Strong"];
  *   3. The `.sig-password__meter` — ONE `<div role="progressbar">`
  *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
  *      segments and the `data-score` attribute. The css paints the
- *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
+ *      filled prefix: 1 → peach, 2 → yellow (--sig-yellow, the
  *      token this release exists for), 3 → sky, 4 → green.
  *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
  *   5. Four `.sig-password__pill` condition spans ("8+ chars",

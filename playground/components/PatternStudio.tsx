@@ -178,8 +178,8 @@ function AvatarPreview() {
   return (
     <div className="studio__inline-row">
       <Avatar name="Ana Souza" />
-      <Avatar name="Priya Nair" size={40} ringToken="--party-mauve-soft" />
-      <Avatar name="Leo Martins" size={40} ringToken="--party-sky" />
+      <Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />
+      <Avatar name="Leo Martins" size={40} ringToken="--sig-sky" />
     </div>
   );
 }
@@ -187,9 +187,9 @@ function AvatarPreview() {
 function PartyBadgePreview() {
   return (
     <div className="studio__inline-row">
-      <PartyBadge colorToken="--party-peach" label="Birthday" />
-      <PartyBadge colorToken="--party-sky" label="Info" />
-      <PartyBadge colorToken="--party-green" label="Confirmed" />
+      <PartyBadge colorToken="--sig-peach" label="Birthday" />
+      <PartyBadge colorToken="--sig-sky" label="Info" />
+      <PartyBadge colorToken="--sig-green" label="Confirmed" />
     </div>
   );
 }
@@ -199,9 +199,9 @@ function ContentCardPreview() {
   return (
     <ContentCard
       category="Catering"
-      categoryToken="--party-peach"
+      categoryToken="--sig-peach"
       meta={["25 MIN", "SPICY", "$14"]}
-      accentToken="--party-yellow"
+      accentToken="--sig-yellow"
       title="Birria & Street Taco Catering"
       description="Slow-braised birria, consomé on the side."
       action={{ label: "Book the taco cart", onClick: () => toast("success", "Taco cart booked") }}
@@ -215,7 +215,7 @@ function ReferenceCardPreview() {
     <ReferenceCard
       tag="JSX"
       title="The Signature Surface"
-      accentToken="--party-sky"
+      accentToken="--sig-sky"
       code={'<SurfaceCard eyebrow="Hi" title="Hello" interactive />'}
       onCopied={() => toast("success", "Snippet copied")}
     />
@@ -228,7 +228,7 @@ function TierCardPreview() {
     <TierCard
       name="Arena Pass"
       price="$49"
-      accentToken="--party-mauve-soft"
+      accentToken="--sig-mauve-soft"
       features={["All 40 game modules", "1v1 & 2v2 brackets"]}
       cta="Claim the pass"
       onCta={() => toast("success", "Pass claimed")}
@@ -241,15 +241,15 @@ function ProfileCardPreview() {
     <ProfileCard
       name="Ana Souza"
       role="Head of Catering"
-      accentToken="--party-peach"
+      accentToken="--sig-peach"
       stats={[
         { label: "Events", value: "24" },
         { label: "Guests", value: "412" },
         { label: "Rating", value: "4.9" },
       ]}
       skills={[
-        { colorToken: "--party-peach", label: "Catering" },
-        { colorToken: "--party-green", label: "Logistics" },
+        { colorToken: "--sig-peach", label: "Catering" },
+        { colorToken: "--sig-green", label: "Logistics" },
       ]}
     />
   );
@@ -285,8 +285,8 @@ function AccordionCardPreview() {
 function MatchupCardPreview() {
   return (
     <MatchupCard
-      left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-      right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+      left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+      right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
       stakes="Winner picks the next venue — loser brings the ice."
     />
   );
@@ -414,7 +414,7 @@ function ProgressBarPreview() {
     <div className="studio__stack">
       <ProgressBar
         value={value}
-        colorToken="--party-green"
+        colorToken="--sig-green"
         label="Budget remaining"
         limitText={`${value} / 100`}
       />
@@ -428,7 +428,7 @@ function ProgressBarPreview() {
 }
 
 function StatRingPreview() {
-  return <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />;
+  return <StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />;
 }
 
 function StatCardPreview() {
@@ -439,13 +439,13 @@ function StatCardPreview() {
       delta="+12"
       deltaDirection="up"
       sparklineData={[118, 126, 132, 141, 158, 170]}
-      colorToken="--party-sky"
+      colorToken="--sig-sky"
     />
   );
 }
 
 function SparklinePreview() {
-  return <Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--party-mauve-soft" label="Rooms trend" />;
+  return <Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--sig-mauve-soft" label="Rooms trend" />;
 }
 
 /** Hover a bar — the tabular readout appears (css-driven). */
@@ -453,9 +453,9 @@ function BarChartPreview() {
   return (
     <BarChart
       data={[
-        { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
-        { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
-        { label: "Invites", value: 240, max: 400, colorToken: "--party-pink-bright" },
+        { label: "Venue", value: 800, max: 1000, colorToken: "--sig-mauve-soft" },
+        { label: "Catering", value: 620, max: 900, colorToken: "--sig-peach" },
+        { label: "Invites", value: 240, max: 400, colorToken: "--sig-pink-bright" },
       ]}
       orientation="vertical"
       label="Spending by category"
@@ -473,7 +473,7 @@ function AreaChartPreview() {
         { label: "W3", value: 26 },
         { label: "W4", value: 41 },
       ]}
-      colorToken="--party-sky"
+      colorToken="--sig-sky"
       height={180}
       label="RSVP momentum"
     />
@@ -483,9 +483,9 @@ function AreaChartPreview() {
 /** Click a node to focus; Add & Link parents a new node to the selection. */
 function KnowledgeGraphPreview() {
   const [nodes, setNodes] = useState<GraphNode[]>([
-    { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "Every branch is one workstream." },
-    { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
-    { id: "catering", label: "Catering", parentId: "root", categoryToken: "--party-peach" },
+    { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "Every branch is one workstream." },
+    { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
+    { id: "catering", label: "Catering", parentId: "root", categoryToken: "--sig-peach" },
   ]);
   return (
     <KnowledgeGraph
@@ -507,9 +507,9 @@ function SmoothPathPreview() {
   ];
   return (
     <svg viewBox="0 0 208 88" width="100%" height="88" role="img" aria-label="smoothPath demo line">
-      <path d={smoothPath(points)} fill="none" stroke="var(--party-sky)" strokeWidth="2" strokeLinecap="round" />
+      <path d={smoothPath(points)} fill="none" stroke="var(--sig-sky)" strokeWidth="2" strokeLinecap="round" />
       {points.map((p) => (
-        <circle key={`${p.x}-${p.y}`} cx={p.x} cy={p.y} r="3" fill="var(--party-sky)" />
+        <circle key={`${p.x}-${p.y}`} cx={p.x} cy={p.y} r="3" fill="var(--sig-sky)" />
       ))}
     </svg>
   );
@@ -519,9 +519,9 @@ function SmoothPathPreview() {
     their own output — deterministic, no component required. */
 function GraphHelpersPreview() {
   const nodes: GraphNode[] = [
-    { id: "root", label: "Root", categoryToken: "--party-lavender" },
-    { id: "a", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
-    { id: "b", label: "Catering", parentId: "root", categoryToken: "--party-peach" },
+    { id: "root", label: "Root", categoryToken: "--sig-lavender" },
+    { id: "a", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
+    { id: "b", label: "Catering", parentId: "root", categoryToken: "--sig-peach" },
   ];
   const positions = layoutGraph(nodes);
   const edges = nodes
@@ -540,7 +540,7 @@ function GraphHelpersPreview() {
       ))}
       {Object.entries(positions).map(([id, pos]) => (
         <g key={id}>
-          <circle cx={pos.x} cy={pos.y} r="10" fill="var(--bg-surface)" stroke="var(--party-lavender)" strokeWidth="2" />
+          <circle cx={pos.x} cy={pos.y} r="10" fill="var(--bg-surface)" stroke="var(--sig-lavender)" strokeWidth="2" />
           <text x={pos.x} y={pos.y + 24} textAnchor="middle" fill="var(--text-muted)" fontSize="11">{id}</text>
         </g>
       ))}
@@ -553,9 +553,9 @@ function CubicBezierEdgePreview() {
   const to = { x: 280, y: 40 };
   return (
     <svg viewBox="0 0 320 160" width="100%" height="140" role="img" aria-label="cubicBezierEdge demo">
-      <path d={cubicBezierEdge(from, to)} fill="none" stroke="var(--party-lavender)" strokeWidth="2" />
-      <circle cx={from.x} cy={from.y} r="5" fill="var(--party-lavender)" />
-      <circle cx={to.x} cy={to.y} r="5" fill="var(--party-lavender)" />
+      <path d={cubicBezierEdge(from, to)} fill="none" stroke="var(--sig-lavender)" strokeWidth="2" />
+      <circle cx={from.x} cy={from.y} r="5" fill="var(--sig-lavender)" />
+      <circle cx={to.x} cy={to.y} r="5" fill="var(--sig-lavender)" />
       <text x={from.x} y={from.y + 20} fill="var(--text-muted)" fontSize="11">parent</text>
       <text x={to.x - 30} y={to.y - 12} fill="var(--text-muted)" fontSize="11">child</text>
     </svg>
@@ -572,7 +572,7 @@ const STUDIO_EVENTS: PtpEvent[] = [
     date: "October 2026",
     time: "15:00",
     title: "Cake cutting",
-    category: "--party-peach",
+    category: "--sig-peach",
     categoryLabel: "Birthday",
     icon: "Cake",
   },
@@ -581,7 +581,7 @@ const STUDIO_EVENTS: PtpEvent[] = [
     date: "October 2026",
     time: "13:30",
     title: "Sound check",
-    category: "--party-sky",
+    category: "--sig-sky",
     categoryLabel: "Logistics",
     icon: "AudioLines",
   },
@@ -590,7 +590,7 @@ const STUDIO_EVENTS: PtpEvent[] = [
     date: "November 2026",
     time: "20:00",
     title: "Fireworks",
-    category: "--party-mauve-soft",
+    category: "--sig-mauve-soft",
     categoryLabel: "Party",
     icon: "Sparkles",
   },
@@ -614,7 +614,7 @@ const STUDIO_SAMPLE_EVENT: PtpEvent = {
   date: "October 2026",
   time: "15:00",
   title: "Cake cutting",
-  category: "--party-peach",
+  category: "--sig-peach",
   categoryLabel: "Birthday",
   icon: "Cake",
 };
@@ -648,9 +648,9 @@ function EventModalPreview() {
 }
 
 const STUDIO_MILESTONES: TimelineItem[] = [
-  { id: "m1", date: "October 2026", time: "09:00", title: "Book the venue", category: "--party-mauve-soft", categoryLabel: "Planning", icon: "MapPin", settled: true },
-  { id: "m2", date: "November 2026", time: "18:00", title: "Send the invites", category: "--party-sky", categoryLabel: "Guests", icon: "Mail" },
-  { id: "m3", date: "December 2026", time: "20:00", title: "The party", category: "--party-peach", categoryLabel: "Party", icon: "PartyPopper" },
+  { id: "m1", date: "October 2026", time: "09:00", title: "Book the venue", category: "--sig-mauve-soft", categoryLabel: "Planning", icon: "MapPin", settled: true },
+  { id: "m2", date: "November 2026", time: "18:00", title: "Send the invites", category: "--sig-sky", categoryLabel: "Guests", icon: "Mail" },
+  { id: "m3", date: "December 2026", time: "20:00", title: "The party", category: "--sig-peach", categoryLabel: "Party", icon: "PartyPopper" },
 ];
 
 /** The full controlled manager: add, settle, delete, inspect → modal. */
@@ -688,9 +688,9 @@ function ChronicleTimelinePreview() {
     <ChronicleTimeline
       label="Studio chronicle"
       releases={[
-        { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 11 accents", accentToken: "--party-yellow" },
-        { tag: "v2.7.0", title: "Graphs, Charts & the Timeline Manager", stat: "pack 52", accentToken: "--party-mauve-soft" },
-        { tag: "v2.8.0", title: "The Signature Pattern Website", stat: "6 sets · 50 patterns", accentToken: "--party-pink-bright" },
+        { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 11 accents", accentToken: "--sig-yellow" },
+        { tag: "v2.7.0", title: "Graphs, Charts & the Timeline Manager", stat: "pack 52", accentToken: "--sig-mauve-soft" },
+        { tag: "v2.8.0", title: "The Signature Pattern Website", stat: "6 sets · 50 patterns", accentToken: "--sig-pink-bright" },
       ]}
     />
   );
@@ -729,9 +729,9 @@ function CalloutPreview() {
 function CarouselPreview() {
   return (
     <Carousel label="Studio clippings">
-      <CarouselItem><PartyBadge colorToken="--party-sky" label="Sky" /></CarouselItem>
-      <CarouselItem><PartyBadge colorToken="--party-peach" label="Peach" /></CarouselItem>
-      <CarouselItem><PartyBadge colorToken="--party-green" label="Green" /></CarouselItem>
+      <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+      <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
+      <CarouselItem><PartyBadge colorToken="--sig-green" label="Green" /></CarouselItem>
     </Carousel>
   );
 }

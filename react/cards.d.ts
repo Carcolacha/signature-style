@@ -36,7 +36,7 @@
  * (css/cards.css is shadow-free and hex-free; the e1 scope holds — the
  * featured TierCard's floating shadow arrives through the SHARED
  * [data-elevation] ladder in css/surface.css, not from this file);
- * Flamingo/Teal stays structural (hover borders, focus rings); --party-*
+ * Flamingo/Teal stays structural (hover borders, focus rings); --sig-*
  * rides where the Rule of Engagement admits it (avatar rings, Check
  * bullets, badges, chronicle accents). Zero decorative wrappers: every
  * element carries content or a justified composition job.
@@ -150,7 +150,7 @@ export declare function AccordionCard({ title, children }: AccordionCardProps): 
 export interface MatchupSide {
     /** The competitor's name — also the Avatar's accessible name. */
     name: string;
-    /** A `--party-*` content token for the 2px avatar ring (typed). */
+    /** A `--sig-*` content token for the 2px avatar ring (typed). */
     ringToken?: PartyTokenName;
 }
 /**
@@ -180,8 +180,8 @@ export interface MatchupCardProps {
  * @example
  * ```tsx
  * <MatchupCard
- *   left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
- *   right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+ *   left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+ *   right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
  *   stakes="Winner picks the next venue — loser brings the ice."
  * />
  * ```
@@ -211,7 +211,7 @@ export interface ContentCardProps {
     image?: string;
     /** The category badge label (rendered as a <PartyBadge>). */
     category?: string;
-    /** The `--party-*` token for the category badge (required with it). */
+    /** The `--sig-*` token for the category badge (required with it). */
     categoryToken?: PartyColorToken;
     /** Mono meta pills, e.g. ["25 MIN", "SPICY", "$14"]. */
     meta?: string[];
@@ -236,8 +236,8 @@ export interface ContentCardProps {
  * @example
  * ```tsx
  * <ContentCard
- *   category="Catering" categoryToken="--party-peach"
- *   meta={["25 MIN", "SPICY", "$14"]} accentToken="--party-yellow"
+ *   category="Catering" categoryToken="--sig-peach"
+ *   meta={["25 MIN", "SPICY", "$14"]} accentToken="--sig-yellow"
  *   title="Birria & Street Taco Catering"
  *   description="Slow-braised birria, consomé on the side."
  *   action={{ label: "Book the taco cart" }}
@@ -284,7 +284,7 @@ export interface ReferenceCardProps {
  * ```tsx
  * const toast = useToast();
  * <ReferenceCard
- *   tag="JSX" title="The Signature Surface" accentToken="--party-sky"
+ *   tag="JSX" title="The Signature Surface" accentToken="--sig-sky"
  *   code="<SurfaceCard eyebrow=\"Hi\" title=\"Hello\" />"
  *   onCopied={() => toast("success", "Snippet copied")}
  * />
@@ -328,7 +328,7 @@ export interface TierCardProps {
  * @example
  * ```tsx
  * <TierCard
- *   name="Arena Pass" price="$49" featured accentToken="--party-mauve-soft"
+ *   name="Arena Pass" price="$49" featured accentToken="--sig-mauve-soft"
  *   features={["All 40 game modules", "1v1 & 2v2 brackets"]}
  *   cta="Claim the pass"
  * />
@@ -344,7 +344,7 @@ export interface ProfileStat {
 }
 /** One skill badge in a `<ProfileCard>` (a PartyBadge). */
 export interface ProfileSkill {
-    /** The `--party-*` token for the badge. */
+    /** The `--sig-*` token for the badge. */
     colorToken: PartyColorToken;
     /** The badge label (e.g. "Catering"). */
     label: string;
@@ -363,7 +363,7 @@ export interface ProfileCardProps {
     stats?: ProfileStat[];
     /** Skill badges (PartyBadges) on the last row. */
     skills?: ProfileSkill[];
-    /** The `--party-*` token for the avatar ring (content-only rule). */
+    /** The `--sig-*` token for the avatar ring (content-only rule). */
     accentToken?: PartyColorToken;
     /** Avatar diameter (32 | 40, default 40 — the grid-perfect pair). */
     avatarSize?: 32 | 40;
@@ -382,9 +382,9 @@ export interface ProfileCardProps {
  * @example
  * ```tsx
  * <ProfileCard
- *   name="Ana Souza" role="Head of Catering" accentToken="--party-peach"
+ *   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
  *   stats={[{ label: "Events", value: "24" }, { label: "Guests", value: "412" }]}
- *   skills={[{ colorToken: "--party-peach", label: "Catering" }]}
+ *   skills={[{ colorToken: "--sig-peach", label: "Catering" }]}
  * />
  * ```
  */
@@ -399,7 +399,7 @@ export interface ChronicleRelease {
     story?: string;
     /** The mono stat footnote (e.g. "5 archetypes · 3 tiers"). */
     stat?: string;
-    /** The `--party-*` accent for this milestone's node + tag. */
+    /** The `--sig-*` accent for this milestone's node + tag. */
     accentToken?: PartyColorToken;
 }
 /**
@@ -433,7 +433,7 @@ export interface ChronicleTimelineProps {
  * <ChronicleTimeline
  *   releases={[
  *     { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34" },
- *     { tag: "v2.6.0", title: "Universal Developer Card Suite", accentToken: "--party-peach" },
+ *     { tag: "v2.6.0", title: "Universal Developer Card Suite", accentToken: "--sig-peach" },
  *   ]}
  * />
  * ```

@@ -607,7 +607,7 @@
   /* The Check bullets wear the party green — content outcomes, the Rule
      of Engagement (a confirmed feature is a success state). */
   .sig-tier-card__features li svg {
-    color: var(--party-green);
+    color: var(--sig-green);
     flex: none;
   }
 

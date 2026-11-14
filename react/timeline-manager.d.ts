@@ -29,7 +29,7 @@
  * live-map-valid equivalents "Trash" and "Funnel" render instead.
  *
  * Settled styling: the body fades to 0.6 and the title strikes
- * through; the settle toggle fills --party-green and a mono "Settled"
+ * through; the settle toggle fills --sig-green and a mono "Settled"
  * chip rides the body. NOT a PartyBadge — settled is a STATE, not a
  * content category.
  *

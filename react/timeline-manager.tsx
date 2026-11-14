@@ -29,7 +29,7 @@
  * live-map-valid equivalents "Trash" and "Funnel" render instead.
  *
  * Settled styling: the body fades to 0.6 and the title strikes
- * through; the settle toggle fills --party-green and a mono "Settled"
+ * through; the settle toggle fills --sig-green and a mono "Settled"
  * chip rides the body. NOT a PartyBadge — settled is a STATE, not a
  * content category.
  *
@@ -86,21 +86,21 @@ const MONTH_OPTIONS: readonly string[] = [
 
 /** The composer's category options — the party tokens with human labels. */
 const CATEGORY_OPTIONS: ReadonlyArray<{ token: PartyTokenName; label: string }> = [
-  { token: "--party-pink-bright", label: "Invites" },
-  { token: "--party-pink-soft", label: "Guests" },
-  { token: "--party-pink-alt", label: "Decor" },
-  { token: "--party-mauve-bright", label: "Venue" },
-  { token: "--party-mauve-soft", label: "Admin" },
-  { token: "--party-lavender", label: "Ceremony" },
-  { token: "--party-sky", label: "Music" },
-  { token: "--party-cobalt", label: "Logistics" }, /* 3.0.0: --party-blue
+  { token: "--sig-pink-bright", label: "Invites" },
+  { token: "--sig-pink-soft", label: "Guests" },
+  { token: "--sig-pink-alt", label: "Decor" },
+  { token: "--sig-mauve-bright", label: "Venue" },
+  { token: "--sig-mauve-soft", label: "Admin" },
+  { token: "--sig-lavender", label: "Ceremony" },
+  { token: "--sig-sky", label: "Music" },
+  { token: "--sig-cobalt", label: "Logistics" }, /* 3.0.0: --sig-blue
      RETIRED — value carried by cobalt (same hex). OWNER-SANCTIONED pin
      re-target: this frozen file's typed array pinned the retired name and
      the typecheck made the retirement unsatisfiable (the 2.9.1 verify.mjs
      precedent — the floor rebases with the release). */
-  { token: "--party-peach", label: "Catering" },
-  { token: "--party-green", label: "RSVP" },
-  { token: "--party-yellow", label: "Meter" },
+  { token: "--sig-peach", label: "Catering" },
+  { token: "--sig-green", label: "RSVP" },
+  { token: "--sig-yellow", label: "Meter" },
 ];
 
 /** The filter pills — attribute-driven (aria-pressed IS the state). */
@@ -129,7 +129,7 @@ export function TimelineManager({
 }: TimelineManagerProps) {
   const [draftTitle, setDraftTitle] = useState("");
   const [draftMonth, setDraftMonth] = useState<string>("January");
-  const [draftCategory, setDraftCategory] = useState<PartyTokenName>("--party-sky");
+  const [draftCategory, setDraftCategory] = useState<PartyTokenName>("--sig-sky");
   const [filter, setFilter] = useState<FilterId>("all");
 
   const settledCount = items.filter((item) => item.settled === true).length;

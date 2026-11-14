@@ -45,8 +45,8 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * ```tsx
  * <KnowledgeGraph
  *   nodes={[
- *     { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "One plan, many branches." },
- *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+ *     { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "One plan, many branches." },
+ *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
  *   ]}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
@@ -194,7 +194,7 @@ export function cubicBezierEdge(parent, child) {
 }
 /** The node ring's stroke: its party token, or structural Flamingo fallback. */
 function strokeFor(node) {
-    if (!node.categoryToken.startsWith("--party-")) {
+    if (!node.categoryToken.startsWith("--sig-")) {
         return "var(--color-cake-primary)";
     }
     return `var(${node.categoryToken})`;
@@ -298,7 +298,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
         // parentId stays undefined and the newcomer BECOMES the root.
         onAddNode({
             label: trimmed,
-            categoryToken: "--party-lavender",
+            categoryToken: "--sig-lavender",
             parentId: selectedId ?? rootId,
         });
         setDraftLabel("");

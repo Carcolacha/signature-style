@@ -51,11 +51,11 @@ const tokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
 const mocha = Object.values(tokens.themes.mocha.tokens);
 const latte = Object.values(tokens.themes.latte.tokens);
 const shared = Object.values(tokens.shared.tokens);
-const party = Object.values(tokens.partyPalette.tokens);
+const party = Object.values(tokens.sigPalette.tokens);
 const whitelist = new Set([
   ...Object.keys(tokens.themes.mocha.tokens),
   ...Object.keys(tokens.shared.tokens),
-  ...Object.keys(tokens.partyPalette.tokens),
+  ...Object.keys(tokens.sigPalette.tokens),
 ]);
 if (whitelist.size !== 50) {
   throw new Error(`generate-llms: expected the 50-token whitelist (3.0.0: 34 + cobalt + 15 chromatic + --radius-card), found ${String(whitelist.size)}`);
@@ -151,7 +151,7 @@ for (const t of party) {
   lines.push(`- \`${t.name}\` \`${t.value}\` — ${t.description}`);
 }
 lines.push("");
-lines.push("**Rule of Engagement (non-negotiable):** `--party-*` is content-only; Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) is structural-only. The two families never cross.");
+lines.push("**Rule of Engagement (non-negotiable):** `--sig-*` is content-only; Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) is structural-only. The two families never cross.");
 lines.push("");
 
 lines.push("## The Rules (The Dynamic Signature Engine v3.2)");
@@ -230,7 +230,7 @@ The official machine-readable index for AI agents. Full self-contained version: 
 
 - [SYSTEM_PROMPT.md](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): The Dynamic Signature Engine v3.0 — the Token Cascade, the Override Protocol, the Structural Pillars, the Pruning Protocol, the Rule of Engagement, and the Universal AI Replication Contract
 - [llms-full.txt — The Rules](llms-full.txt): the doctrines rendered verbatim-in-spirit
-- One-line doctrine: every state derives from the core tokens via color-mix()/transforms; --party-* is content-only, Flamingo/Teal structural-only; separation is hairlines, never shadows (the ONE sanction: css/surface.css's elevation blocks).
+- One-line doctrine: every state derives from the core tokens via color-mix()/transforms; --sig-* is content-only, Flamingo/Teal structural-only; separation is hairlines, never shadows (the ONE sanction: css/surface.css's elevation blocks).
 
 ## Component Sets
 

@@ -69,16 +69,16 @@ Ten theme-independent colors reserved **exclusively for content** — badges, ta
 
 | Swatch | Token | Hex | Reserved usage |
 |---|---|---|---|
-| <span style="background:#ea76cb;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-pink-bright` | `#ea76cb` | Badges, tag fills, event highlights |
-| <span style="background:#f5bde6;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-pink-soft` | `#f5bde6` | Tag surfaces, avatar rings, soft calendar fills |
-| <span style="background:#f4b8e4;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-pink-alt` | `#f4b8e4` | Alternate pink for content categories |
-| <span style="background:#8839ef;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-mauve-bright` | `#8839ef` | Chart series, bold tags |
-| <span style="background:#cba6f7;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-mauve-soft` | `#cba6f7` | Avatar dots, calendar blocks |
-| <span style="background:#7287fd;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-lavender` | `#7287fd` | Content links, calendar themes, data-viz series |
-| <span style="background:#04a5e5;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-sky` | `#04a5e5` | Informational tags, data-viz series |
-| <span style="background:#1e66f5;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-blue` | `#1e66f5` | Data-viz series, event themes |
-| <span style="background:#fe640b;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-peach` | `#fe640b` | Calendar block edges, attention tags |
-| <span style="background:#a6d189;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--party-green` | `#a6d189` | Status tags, positive data-viz series |
+| <span style="background:#ea76cb;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-pink-bright` | `#ea76cb` | Badges, tag fills, event highlights |
+| <span style="background:#f5bde6;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-pink-soft` | `#f5bde6` | Tag surfaces, avatar rings, soft calendar fills |
+| <span style="background:#f4b8e4;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-pink-alt` | `#f4b8e4` | Alternate pink for content categories |
+| <span style="background:#8839ef;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-mauve-bright` | `#8839ef` | Chart series, bold tags |
+| <span style="background:#cba6f7;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-mauve-soft` | `#cba6f7` | Avatar dots, calendar blocks |
+| <span style="background:#7287fd;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-lavender` | `#7287fd` | Content links, calendar themes, data-viz series |
+| <span style="background:#04a5e5;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-sky` | `#04a5e5` | Informational tags, data-viz series |
+| <span style="background:#1e66f5;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-blue` | `#1e66f5` | Data-viz series, event themes |
+| <span style="background:#fe640b;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-peach` | `#fe640b` | Calendar block edges, attention tags |
+| <span style="background:#a6d189;display:inline-block;width:1em;height:1em;border-radius:4px"></span> | `--sig-green` | `#a6d189` | Status tags, positive data-viz series |
 
 > Swatch legend: each chip is a tiny inline-styled square — rendered in color by Markdown viewers that allow inline styles (GitHub included), and silently skipped elsewhere. The hex column is always there, so nothing is lost.
 
@@ -90,7 +90,7 @@ Opt in with `<html data-theme="latte">`. The light theme is 100% official Catppu
 |---|---|---|
 | Signature accents | Flamingo `#F2CDCD` · Teal `#94E2D5` | Flamingo `#DD7878` · Teal `#179299` |
 | Structure | base `#1E1E2E` · surface `#313244` | base `#EFF1F5` · surface `#CCD0DA` |
-| Party tokens | ten `--party-*` values | *unchanged* — content keeps the same colors |
+| Party tokens | ten `--sig-*` values | *unchanged* — content keeps the same colors |
 
 ---
 
@@ -134,17 +134,17 @@ interface EmptyStateProps {
 
 ### `<PartyBadge>` — the Rule of Engagement, enforced by the compiler
 
-A party-colored content badge: a subtle tinted background of the chosen `--party-*` token with a guaranteed high-contrast label on both themes. `colorToken` **only** accepts `--party-*` tokens — handing it a structural token like `--color-cake-primary` fails at compile time, and a runtime guard warn-and-drops anything plain JavaScript slips past the types (rendering `null`).
+A party-colored content badge: a subtle tinted background of the chosen `--sig-*` token with a guaranteed high-contrast label on both themes. `colorToken` **only** accepts `--sig-*` tokens — handing it a structural token like `--color-cake-primary` fails at compile time, and a runtime guard warn-and-drops anything plain JavaScript slips past the types (rendering `null`).
 
 ```ts
 interface PartyBadgeProps {
-  colorToken: PartyTokenName; // Extract<KnownToken, `--party-${string}`> — party tokens ONLY
+  colorToken: PartyTokenName; // Extract<KnownToken, `--sig-${string}`> — party tokens ONLY
   label: string;
 }
 ```
 
 ```tsx
-<PartyBadge colorToken="--party-peach" label="Birthday" />
+<PartyBadge colorToken="--sig-peach" label="Birthday" />
 ```
 
 **Renders:** exactly one `<span>`.
@@ -164,7 +164,7 @@ interface PtpEvent {
   dateKey?: string;        // explicit grouping bucket, e.g. "2026-10"
   time?: string;
   title: string;
-  category: PartyTokenName; // --party-* tokens only (Rule of Engagement)
+  category: PartyTokenName; // --sig-* tokens only (Rule of Engagement)
   categoryLabel: string;
   icon?: IconName;          // defaults to "Circle"
   description?: string;     // becomes the modal's "About" row
@@ -248,7 +248,7 @@ This is why `<EmptyState>` is one div, `<PartyBadge>` is one span, and the timel
 Two color families, two jobs, one iron rule:
 
 - **Flamingo & Teal** (`--color-cake-primary`, `--color-cake-secondary`) own **structure**: buttons, inputs, focus rings, node rings, close-button hover — all interactive chrome.
-- **Party tokens** (`--party-*`) own **content categories**: badges, tags, avatars, calendar blocks, data-viz.
+- **Party tokens** (`--sig-*`) own **content categories**: badges, tags, avatars, calendar blocks, data-viz.
 
 The families never cross — and `<PartyBadge>` enforces this **at compile time**. Pass it `--color-cake-primary` and TypeScript answers with `TS2322: … not assignable to type 'PartyTokenName'` before your code ever runs; the runtime guard catches whatever JS sneaks past.
 

@@ -4,7 +4,7 @@
 
    DATA-INK DOCTRINE: high data-to-ink ratio, zero charting decoration.
    No grid lines, no drop shadows, no 3D. The track is structural chrome;
-   the data fill is ALWAYS a --party-* content token (Rule of
+   the data fill is ALWAYS a --sig-* content token (Rule of
    Engagement: party colors are the content/data colors).
 
    2.2.0 TELEMETRY LIMITS — the track token retarget, owner-authorized:
@@ -24,8 +24,8 @@
    2.4.0 ADDITION — `.sig-stat-card` (+ __label / __value / __delta
    [--up/--down]) — the KPI card. FLAT: surface background, the 20%
    hairline, NO shadow (the e1 doctrine extends to every new file).
-   Delta colors are content outcomes: up → --party-green, down →
-   --party-peach.
+   Delta colors are content outcomes: up → --sig-green, down →
+   --sig-peach.
 
    <StatRing> and <Sparkline> are still pure SVG attributes — geometry
    lives on the circles/points (the ring's boundary hairline is an SVG
@@ -125,10 +125,10 @@
   font-weight: 600;
 }
 .sig-stat-card__delta--up {
-  color: var(--party-green);
+  color: var(--sig-green);
 }
 .sig-stat-card__delta--down {
-  color: var(--party-peach);
+  color: var(--sig-peach);
 }
 
 /* 2.9.0 CONTAINER REFLOW — the docked trend. ≥ 360px containers grow a

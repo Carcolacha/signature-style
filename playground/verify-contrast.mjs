@@ -12,7 +12,7 @@
  *   (ct1) every INK-FLOOR token — the original 11 (cobalt now carries
  *         blue's value) — measures ≥ 3.0:1 against BOTH --bg-surface
  *         (#313244) and --bg-base (#1E1E2E);
- *   (ct2) the 2.9.1-fixed token --party-mauve-bright carries the
+ *   (ct2) the 2.9.1-fixed token --sig-mauve-bright carries the
  *         stricter 3.1:1 bar on BOTH backgrounds (headroom included);
  *   (ct3) the fixed/pinned hexes are exactly the release's chosen
  *         values — mauve-bright #9e5ff2 (the minimal in-family step)
@@ -79,34 +79,34 @@ if (SURFACE === undefined || BASE === undefined) {
 /** The 26-token table: ink-floor tokens (3.0 bar; the 2.9.1 fix at 3.1)
  *  + the 3.0.0 chromatic fills (2.0 visibility bar, surface only). */
 const INK_FLOOR = [
-  ["--party-pink-bright", null],
-  ["--party-pink-soft", null],
-  ["--party-pink-alt", null],
-  ["--party-mauve-bright", "#9e5ff2"], // 2.9.1: was #8839ef (2.32:1 surface) — 3.1 bar
-  ["--party-mauve-soft", null],
-  ["--party-lavender", null],
-  ["--party-sky", null],
-  ["--party-cobalt", "#89b4fa"], // 3.0.0: the retired blue's value, carried
-  ["--party-peach", null],
-  ["--party-green", null],
-  ["--party-yellow", null],
+  ["--sig-pink-bright", null],
+  ["--sig-pink-soft", null],
+  ["--sig-pink-alt", null],
+  ["--sig-mauve-bright", "#9e5ff2"], // 2.9.1: was #8839ef (2.32:1 surface) — 3.1 bar
+  ["--sig-mauve-soft", null],
+  ["--sig-lavender", null],
+  ["--sig-sky", null],
+  ["--sig-cobalt", "#89b4fa"], // 3.0.0: the retired blue's value, carried
+  ["--sig-peach", null],
+  ["--sig-green", null],
+  ["--sig-yellow", null],
 ];
 const CHROMATIC_FILLS = [
-  ["--party-orchid", "#F5C2E7"],
-  ["--party-cyan", "#64DFDF"],
-  ["--party-magenta", "#CF64DF"],
-  ["--party-mint", "#64DF99"],
-  ["--party-spring", "#6EDF64"],
-  ["--party-citron", "#DBDF64"],
-  ["--party-violet-glow", "#C29EFF"],
-  ["--party-pink-glow", "#F29EFF"],
-  ["--party-rose-glow", "#FF9EDB"],
-  ["--party-lime-glow", "#DBFF9E"],
-  ["--party-mint-glow", "#9EFFC2"],
-  ["--party-crimson", "#F22222"],
-  ["--party-azure", "#228AF2"],
-  ["--party-tangerine", "#F25622"],
-  ["--party-neon-green", "#56F222"],
+  ["--sig-orchid", "#F5C2E7"],
+  ["--sig-cyan", "#64DFDF"],
+  ["--sig-magenta", "#CF64DF"],
+  ["--sig-mint", "#64DF99"],
+  ["--sig-spring", "#6EDF64"],
+  ["--sig-citron", "#DBDF64"],
+  ["--sig-violet-glow", "#C29EFF"],
+  ["--sig-pink-glow", "#F29EFF"],
+  ["--sig-rose-glow", "#FF9EDB"],
+  ["--sig-lime-glow", "#DBFF9E"],
+  ["--sig-mint-glow", "#9EFFC2"],
+  ["--sig-crimson", "#F22222"],
+  ["--sig-azure", "#228AF2"],
+  ["--sig-tangerine", "#F25622"],
+  ["--sig-neon-green", "#56F222"],
 ];
 const PARTY = [...INK_FLOOR, ...CHROMATIC_FILLS];
 
@@ -121,8 +121,8 @@ if (!PARTY.every(([name]) => tokens[name] !== undefined)) {
   failures.push(`(ct1) the :root block is missing party token(s): ${missing.join(", ")}`);
 }
 // (chrom companion) the RETIRED name must be gone from the :root block.
-if (tokens["--party-blue"] !== undefined) {
-  failures.push("(ct1) --party-blue is retired (3.0.0) — its value lives on as --party-cobalt");
+if (tokens["--sig-blue"] !== undefined) {
+  failures.push("(ct1) --sig-blue is retired (3.0.0) — its value lives on as --sig-cobalt");
 }
 
 // ---- the 26-token ratio table -------------------------------------------------
@@ -146,7 +146,7 @@ for (const [name, pinned] of PARTY) {
   const ok = chromatic ? vsSurface >= floor : vsSurface >= floor && vsBase >= floor;
   const tag = chromatic
     ? "  ← 3.0.0 fill/series"
-    : name === "--party-cobalt"
+    : name === "--sig-cobalt"
       ? "  ← blue's value carried"
       : pinned !== null
         ? "  ← 2.9.1 fix"

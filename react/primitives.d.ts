@@ -61,24 +61,24 @@ export declare function EmptyState({ icon, title, message }: EmptyStateProps): i
  * `<PartyBadge>` — the Rule of Engagement, enforced in the type system.
  *
  * A party-colored content badge: subtle tinted background + guaranteed
- * high-contrast text on both themes. `colorToken` only accepts `--party-*`
+ * high-contrast text on both themes. `colorToken` only accepts `--sig-*`
  * tokens (`Extract` on `KnownToken`); passing `--color-cake-primary` or any
  * structural token is a compile error. A runtime guard keeps JS consumers
  * honest with the same warn-and-drop philosophy as ThemeProvider.
  *
  * @example
  * ```tsx
- * <PartyBadge colorToken="--party-peach" label="Birthday" />
+ * <PartyBadge colorToken="--sig-peach" label="Birthday" />
  * ```
  */
 export interface PartyBadgeProps {
-    /** A `--party-*` content token — the ONLY tokens allowed here. */
+    /** A `--sig-*` content token — the ONLY tokens allowed here. */
     colorToken: PartyTokenName;
     /** The badge label text. */
     label: string;
 }
-/** The content-only subset of KnownToken: `--party-*` tokens exclusively. */
-export type PartyTokenName = Extract<KnownToken, `--party-${string}`>;
+/** The content-only subset of KnownToken: `--sig-*` tokens exclusively. */
+export type PartyTokenName = Extract<KnownToken, `--sig-${string}`>;
 export declare function PartyBadge({ colorToken, label }: PartyBadgeProps): import("react").JSX.Element | null;
 /**
  * Props for `<Button>` — the ONE button of the package (2.5.0 "Button &

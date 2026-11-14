@@ -138,7 +138,7 @@ CREATE TABLE events (
   month       TEXT NOT NULL,                  -- the UI bucket: "December 2026"
   date        TEXT NOT NULL,                  -- ISO date (sortable truth)
   time        TEXT,                           -- "18:00"
-  color_token TEXT NOT NULL,                  -- a --party-* token
+  color_token TEXT NOT NULL,                  -- a --sig-* token
   icon_name   TEXT,                           -- a lucide key
   description TEXT,
   created_at  TEXT NOT NULL
@@ -172,7 +172,7 @@ CREATE TABLE milestones (
   event_id       TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
   title          TEXT NOT NULL,
   month          TEXT NOT NULL,
-  category_token TEXT NOT NULL,               -- a --party-* token
+  category_token TEXT NOT NULL,               -- a --sig-* token
   category_label TEXT,
   settled        INTEGER NOT NULL DEFAULT 0,  -- 0/1 (SQLite boolean)
   created_at     TEXT NOT NULL
@@ -184,7 +184,7 @@ CREATE TABLE graph_nodes (
   workspace_id  TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   event_id      TEXT REFERENCES events(id) ON DELETE SET NULL,
   label         TEXT NOT NULL,
-  category_token TEXT NOT NULL,               -- a --party-* token
+  category_token TEXT NOT NULL,               -- a --sig-* token
   note          TEXT,
   parent_id     TEXT REFERENCES graph_nodes(id) ON DELETE SET NULL, -- self; NULL = root
   created_at    TEXT NOT NULL
@@ -363,7 +363,7 @@ class Event(BaseModel):
     month: str                      # the UI bucket: "December 2026"
     date: str                       # ISO date
     time: str | None = None
-    color_token: str                # a --party-* token
+    color_token: str                # a --sig-* token
     icon_name: str | None = None
     description: str | None = None
     created_at: datetime
@@ -394,7 +394,7 @@ class Milestone(BaseModel):
     event_id: str
     title: str
     month: str
-    category_token: str             # a --party-* token
+    category_token: str             # a --sig-* token
     category_label: str | None = None
     settled: bool = False
     created_at: datetime
@@ -405,7 +405,7 @@ class GraphNodeRecord(BaseModel):
     workspace_id: str
     event_id: str | None = None
     label: str
-    category_token: str             # a --party-* token
+    category_token: str             # a --sig-* token
     note: str | None = None
     parent_id: str | None = None    # NULL = root
     created_at: datetime
@@ -459,7 +459,7 @@ always integer cents. Pagination is `?limit=&offset=` (limit ≤ 100).
 | Method | Path | Request DTO | Success | Error | Notes |
 |--------|------|-------------|---------|-------|-------|
 | GET | `/events` | — | `Paginated[Event]` | `ApiError` | `?limit/offset`, `?owner_id` |
-| POST | `/events` | `Event` (minus id/createdAt) | `Event` | `201` / `422 ApiError` | validates `color_token` is a `--party-*` name |
+| POST | `/events` | `Event` (minus id/createdAt) | `Event` | `201` / `422 ApiError` | validates `color_token` is a `--sig-*` name |
 | GET | `/events/{id}` | — | `Event` | `200` / `404 ApiError` | |
 | DELETE | `/events/{id}` | — | `204` | `404 ApiError` | cascades guests/ledger/milestones/matchups |
 | GET | `/events/{id}/guests` | — | `Paginated[Guest]` | `404 ApiError` | the live ledger's source |

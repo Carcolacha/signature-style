@@ -16,12 +16,12 @@ import { type ReactNode } from "react";
  * property in css/tokens.css: the core 6, the keeper tokens, the shared
  * theme-independent tokens, the z-index scale (Pillar 3, including the
  * 1.2.0 navbar notch --z-nav and the 1.4.0 zenith rung --z-toast) — and
- * since 0.4.0 — the ten --party-*
+ * since 0.4.0 — the ten --sig-*
  * content tokens (Rule of Engagement: party tokens are for CONTENT only —
  * badges, tags, avatars, calendar, data-viz; structural UI keeps
  * Flamingo/Teal).
  */
-declare const TOKEN_KEYS: readonly ["--bg-base", "--bg-surface", "--color-cake-primary", "--color-cake-secondary", "--text-main", "--text-muted", "--bg-inset", "--text-bright", "--color-success", "--text-muted-soft", "--color-on-cake", "--font-sans", "--radius-ui", "--radius-card", "--transition-standard", "--transition-transform", "--space-tight", "--space-standard", "--space-section", "--z-sticky", "--z-nav", "--z-overlay", "--z-modal", "--z-toast", "--party-pink-bright", "--party-pink-soft", "--party-pink-alt", "--party-mauve-bright", "--party-mauve-soft", "--party-lavender", "--party-sky", "--party-cobalt", "--party-peach", "--party-green", "--party-yellow", "--party-orchid", "--party-cyan", "--party-magenta", "--party-mint", "--party-spring", "--party-citron", "--party-violet-glow", "--party-pink-glow", "--party-rose-glow", "--party-lime-glow", "--party-mint-glow", "--party-crimson", "--party-azure", "--party-tangerine", "--party-neon-green"];
+declare const TOKEN_KEYS: readonly ["--bg-base", "--bg-surface", "--color-cake-primary", "--color-cake-secondary", "--text-main", "--text-muted", "--bg-inset", "--text-bright", "--color-success", "--text-muted-soft", "--color-on-cake", "--font-sans", "--radius-ui", "--radius-card", "--transition-standard", "--transition-transform", "--space-tight", "--space-standard", "--space-section", "--z-sticky", "--z-nav", "--z-overlay", "--z-modal", "--z-toast", "--sig-pink-bright", "--sig-pink-soft", "--sig-pink-alt", "--sig-mauve-bright", "--sig-mauve-soft", "--sig-lavender", "--sig-sky", "--sig-cobalt", "--sig-peach", "--sig-green", "--sig-yellow", "--sig-orchid", "--sig-cyan", "--sig-magenta", "--sig-mint", "--sig-spring", "--sig-citron", "--sig-violet-glow", "--sig-pink-glow", "--sig-rose-glow", "--sig-lime-glow", "--sig-mint-glow", "--sig-crimson", "--sig-azure", "--sig-tangerine", "--sig-neon-green"];
 /** A token name known to Signature Style. */
 export type KnownToken = (typeof TOKEN_KEYS)[number];
 /** Overrides accepted by <ThemeProvider>; keys outside KnownToken are dropped. */

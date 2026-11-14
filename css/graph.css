@@ -82,7 +82,7 @@
 /* ==========================================================================
    3.0.0 OBSIDIAN GRAPH — the interaction css. The geometry (drag/pan/
    zoom/tether math) lives in react/graph.tsx; this block paints it:
-     · .sig-graph__tether — the LIVE right-click tether: --party-azure
+     · .sig-graph__tether — the LIVE right-click tether: --sig-azure
        (the 3.0.0 chromatic token, a FILL/SERIES accent on an svg stroke
        — the Rule of Engagement holds: the tether is content ink), the
        owner-spec'd 6 4 dasharray, 1.5px, fill none.
@@ -94,7 +94,7 @@
 
 .sig-graph__tether {
   fill: none;
-  stroke: var(--party-azure);
+  stroke: var(--sig-azure);
   stroke-width: 1.5;
   stroke-dasharray: 6 4;
   pointer-events: none;

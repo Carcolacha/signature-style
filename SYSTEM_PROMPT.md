@@ -38,20 +38,20 @@ Shared, theme-independent tokens:
 - --space-tight: 0.5rem / --space-standard: 1rem / --space-section: 1.5rem (the 8px grid)
 
 ## The Party Palette (Content-Only Tokens):
-Eleven theme-independent CONTENT colors (v2.4; 2.5.0 adds --party-yellow, the strength meter's Fair stage), defined ONCE in `:root` and inherited by both Mocha and Latte untouched — a badge wears the same party color on both sides of the toggle:
-- --party-pink-bright: #ea76cb (badges, tag fills, event highlights)
-- --party-pink-soft: #f5bde6 (tag surfaces, avatar rings, soft calendar fills)
-- --party-pink-alt: #f4b8e4 (alternate pink for content categories)
-- --party-mauve-bright: #8839ef (chart series, bold tags)
-- --party-mauve-soft: #cba6f7 (avatar dots, calendar blocks)
-- --party-lavender: #7287fd (content links, calendar themes, data-viz series)
-- --party-sky: #04a5e5 (informational tags, data-viz series)
-- --party-blue: #1e66f5 (data-viz series, event themes)
-- --party-peach: #fe640b (calendar block edges, attention tags)
-- --party-green: #a6d189 (status tags, positive data-viz series)
-- --party-yellow: #F9E2AF (the strength meter's Fair stage — feedback meter stages, owner v2.5.0)
+Eleven theme-independent CONTENT colors (v2.4; 2.5.0 adds --sig-yellow, the strength meter's Fair stage), defined ONCE in `:root` and inherited by both Mocha and Latte untouched — a badge wears the same party color on both sides of the toggle:
+- --sig-pink-bright: #ea76cb (badges, tag fills, event highlights)
+- --sig-pink-soft: #f5bde6 (tag surfaces, avatar rings, soft calendar fills)
+- --sig-pink-alt: #f4b8e4 (alternate pink for content categories)
+- --sig-mauve-bright: #8839ef (chart series, bold tags)
+- --sig-mauve-soft: #cba6f7 (avatar dots, calendar blocks)
+- --sig-lavender: #7287fd (content links, calendar themes, data-viz series)
+- --sig-sky: #04a5e5 (informational tags, data-viz series)
+- --sig-blue: #1e66f5 (data-viz series, event themes)
+- --sig-peach: #fe640b (calendar block edges, attention tags)
+- --sig-green: #a6d189 (status tags, positive data-viz series)
+- --sig-yellow: #F9E2AF (the strength meter's Fair stage — feedback meter stages, owner v2.5.0)
 
-**Rule of Engagement (non-negotiable):** `--party-*` tokens are reserved EXCLUSIVELY for content — badges, tags, avatars, event theme overrides, calendar blocks, data visualization. The Engine continues using Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) for ALL structural UI actions — buttons, inputs, focus rings. Never use `--party-*` for structural chrome; never use Flamingo/Teal for content categories. The two families never cross.
+**Rule of Engagement (non-negotiable):** `--sig-*` tokens are reserved EXCLUSIVELY for content — badges, tags, avatars, event theme overrides, calendar blocks, data visualization. The Engine continues using Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) for ALL structural UI actions — buttons, inputs, focus rings. Never use `--sig-*` for structural chrome; never use Flamingo/Teal for content categories. The two families never cross.
 
 ## The Token Cascade (Fixing Heavy Setup):
 Do not ask me for hover, active, disabled, or focus states. You must dynamically calculate them using modern CSS (color-mix(), transforms) based strictly on the Core Tokens.
@@ -130,7 +130,7 @@ The announcing header — serif display h1, optional muted mono subtitle, childr
 
 ### <SurfaceCard>
 
-The official surface: teal all-caps eyebrow + muted mono path share one meta row, ruled h2 title, children slot; `interactive` adds the hover lift. 2.6.0 CHROMATIC ELEVATION — `accentToken` accepts any of the 11 `--party-*` tokens PLUS the two structural signatures (`"--color-cake-primary"` / `"--color-cake-secondary"`, the `AccentToken` union): it colors the eyebrow and grows the title underline to `2px solid var(--sig-accent)` (the GlobalNav/Tabs contract), and the interactive hover gains the chromatic glow. `elevation` picks the shadow tier: `"flat"` (hairline only, zero shadow) | `"raised"` (default — the ambient) | `"floating"` (the deep display shadow; `interactive` + floating lifts −4px on hover):
+The official surface: teal all-caps eyebrow + muted mono path share one meta row, ruled h2 title, children slot; `interactive` adds the hover lift. 2.6.0 CHROMATIC ELEVATION — `accentToken` accepts any of the 11 `--sig-*` tokens PLUS the two structural signatures (`"--color-cake-primary"` / `"--color-cake-secondary"`, the `AccentToken` union): it colors the eyebrow and grows the title underline to `2px solid var(--sig-accent)` (the GlobalNav/Tabs contract), and the interactive hover gains the chromatic glow. `elevation` picks the shadow tier: `"flat"` (hairline only, zero shadow) | `"raised"` (default — the ambient) | `"floating"` (the deep display shadow; `interactive` + floating lifts −4px on hover):
 
 ```tsx
 <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
@@ -140,7 +140,7 @@ The official surface: teal all-caps eyebrow + muted mono path share one meta row
   eyebrow="Planner" meta="views/planner.tsx" title="Event & Party Planner"
   interactive accentToken="--color-cake-primary" elevation="floating"
 >
-  <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
+  <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
 </SurfaceCard>
 ```
 
@@ -169,7 +169,7 @@ const [moduleId, setModuleId] = useState("core");
 
 ### <EventTimeline>
 
-Chronological alternating timeline; events group by `date`. `category` is strictly a `--party-*` token; `icon` must be a real lucide name:
+Chronological alternating timeline; events group by `date`. `category` is strictly a `--sig-*` token; `icon` must be a real lucide name:
 
 ```tsx
 <EventTimeline
@@ -178,7 +178,7 @@ Chronological alternating timeline; events group by `date`. `category` is strict
     date: "October 2026",
     time: "15:00",
     title: "Cake cutting",
-    category: "--party-peach",
+    category: "--sig-peach",
     categoryLabel: "Birthday",
     icon: "Cake",
   }]}
@@ -199,10 +199,10 @@ const modal = useModal<PtpEvent>();
 
 ### <ProgressBar>
 
-Party-colored budget bar with the limit caption; `colorToken` accepts `--party-*` tokens only — anything else is refused at runtime:
+Party-colored budget bar with the limit caption; `colorToken` accepts `--sig-*` tokens only — anything else is refused at runtime:
 
 ```tsx
-<ProgressBar value={72} colorToken="--party-green" label="Budget remaining" limitText="$720 / $1,000" />
+<ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" limitText="$720 / $1,000" />
 ```
 
 ### <StatRing>
@@ -210,8 +210,8 @@ Party-colored budget bar with the limit caption; `colorToken` accepts `--party-*
 The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only. 3.0.0 ZOOM + DETAIL: the dial defaults to 120px; pass `total` (+ optional `unit`) and the ring becomes zoomable — hover/press scale(1.07), a click toggles the detail strip ("85% · 170 / 200 Guests", tabular-nums, the 0fr→1fr slide, reduced-motion safe):
 
 ```tsx
-<StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
-<StatRing value={85} colorToken="--party-sky" label="RSVP ratio" total={200} unit="Guests" />
+<StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />
+<StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" total={200} unit="Guests" />
 ```
 
 ### <DataTable>
@@ -234,7 +234,7 @@ The ledger table inside a scroll-containment wrapper; `numeric: true` pins tabul
 
 ### <Callout>
 
-The persistent note — Toast's never-dismissing sibling; the 4px strip maps info → `--party-sky`, success → `--party-green`, warning → `--party-peach`:
+The persistent note — Toast's never-dismissing sibling; the 4px strip maps info → `--sig-sky`, success → `--sig-green`, warning → `--sig-peach`:
 
 ```tsx
 <Callout status="warning">3 pending RSVPs close Friday.</Callout>
@@ -242,11 +242,11 @@ The persistent note — Toast's never-dismissing sibling; the 4px strip maps inf
 
 ### <Avatar>
 
-Initials disc — word-initials, max two, uppercased, derived from `name`; ring is an inline 2px `--party-*` BORDER (never a shadow); `size` is `32 | 40`:
+Initials disc — word-initials, max two, uppercased, derived from `name`; ring is an inline 2px `--sig-*` BORDER (never a shadow); `size` is `32 | 40`:
 
 ```tsx
 <Avatar name="Ana Souza" />
-<Avatar name="Priya Nair" size={40} ringToken="--party-mauve-soft" />
+<Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />
 ```
 
 ### <FormField>
@@ -340,7 +340,7 @@ const [rsvp, setRsvp] = useState("attending");
 
 ### <PasswordInput>
 
-The password well with the live strength read-out (2.5.0) — controlled `value`; the eye toggle flips type password↔text (aria-pressed, Eye/EyeOff); the 4-segment meter fills its prefix peach → `--party-yellow` (Fair) → sky → green as `data-score` 1..4; the stage label (Weak/Fair/Good/Strong) and the four condition pills ("8+ chars", "Uppercase", "Number", "Symbol" — data-satisfied → the 20% party-green wash) follow. Score = satisfied rules, nothing weighted:
+The password well with the live strength read-out (2.5.0) — controlled `value`; the eye toggle flips type password↔text (aria-pressed, Eye/EyeOff); the 4-segment meter fills its prefix peach → `--sig-yellow` (Fair) → sky → green as `data-score` 1..4; the stage label (Weak/Fair/Good/Strong) and the four condition pills ("8+ chars", "Uppercase", "Number", "Symbol" — data-satisfied → the 20% party-green wash) follow. Score = satisfied rules, nothing weighted:
 
 ```tsx
 const [pw, setPw] = useState("");
@@ -360,7 +360,7 @@ The ONE button (2.5.0) — variants `primary` (Flamingo fill, on-cake ink, weigh
 
 ### <ToastProvider> + useToast()
 
-Wrap once; push outcomes — status is `"success" | "error"`, mapped to `--party-green` / `--party-peach` strips, 3s auto-dismiss:
+Wrap once; push outcomes — status is `"success" | "error"`, mapped to `--sig-green` / `--sig-peach` strips, 3s auto-dismiss:
 
 ```tsx
 <ToastProvider>
@@ -374,10 +374,10 @@ toast("success", "RSVP sent — see you there 🎉");
 
 ### <PartyBadge>
 
-Party-colored content badge — `colorToken` accepts ONLY `--party-*` tokens (compile error otherwise; runtime guard drops structural tokens):
+Party-colored content badge — `colorToken` accepts ONLY `--sig-*` tokens (compile error otherwise; runtime guard drops structural tokens):
 
 ```tsx
-<PartyBadge colorToken="--party-peach" label="Birthday" />
+<PartyBadge colorToken="--sig-peach" label="Birthday" />
 ```
 
 ### <Icon>
@@ -402,8 +402,8 @@ The horizontal scroll strip — TWO MODES (3.0.0, default `"free-scroll"`). free
 
 ```tsx
 <Carousel label="Palette clippings">
-  <CarouselItem><PartyBadge colorToken="--party-sky" label="Sky" /></CarouselItem>
-  <CarouselItem><PartyBadge colorToken="--party-peach" label="Peach" /></CarouselItem>
+  <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+  <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
 </Carousel>
 <Carousel label="Clippings" mode="paged-3">
   {/* 3-6+ items chunk into pages of three */}
@@ -412,7 +412,7 @@ The horizontal scroll strip — TWO MODES (3.0.0, default `"free-scroll"`). free
 
 ### <ProseBlock>
 
-The editorial slot — ONE typography container with styled descendants: `p`, `h3`, blockquote (4px **`--party-mauve`** rule, 2.4.1 owner override — quotes are content, the mauve editorial voice), inline `code`/`kbd` chips, mono `footer`/`cite`. You bring the markup; the block makes it read:
+The editorial slot — ONE typography container with styled descendants: `p`, `h3`, blockquote (4px **`--sig-mauve`** rule, 2.4.1 owner override — quotes are content, the mauve editorial voice), inline `code`/`kbd` chips, mono `footer`/`cite`. You bring the markup; the block makes it read:
 
 ```tsx
 <ProseBlock>
@@ -441,7 +441,7 @@ The full-width strip with role="status". `variant` is `"info" | "warning" | "ann
 
 ### <StatCard> + <Sparkline>
 
-The flat KPI card (surface + 20% hairline, ZERO shadow) — tabular-nums value, uppercase tracked label, optional delta (up → party-green, down → party-peach) and an inline trend; `<Sparkline>` alone takes numeric points + a `--party-*` token (guarded at runtime):
+The flat KPI card (surface + 20% hairline, ZERO shadow) — tabular-nums value, uppercase tracked label, optional delta (up → party-green, down → party-peach) and an inline trend; `<Sparkline>` alone takes numeric points + a `--sig-*` token (guarded at runtime):
 
 ```tsx
 <StatCard
@@ -450,9 +450,9 @@ The flat KPI card (surface + 20% hairline, ZERO shadow) — tabular-nums value, 
   delta="+12"
   deltaDirection="up"
   sparklineData={[118, 126, 132, 141, 158, 170]}
-  colorToken="--party-sky"
+  colorToken="--sig-sky"
 />
-<Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--party-mauve-soft" label="Rooms trend" />
+<Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--sig-mauve-soft" label="Rooms trend" />
 ```
 
 ### <ActionTile>
@@ -489,12 +489,12 @@ The ZERO-JavaScript disclosure (2.5.0) — `<details>`/`<summary>` with the toke
 
 ### <MatchupCard>
 
-The 1v1 grid (2.5.0) — `1fr auto 1fr`: two centered sides over 40px avatars (party rings typed `--party-*`), the mono VS pill between, the optional stakes footer spanning the grid:
+The 1v1 grid (2.5.0) — `1fr auto 1fr`: two centered sides over 40px avatars (party rings typed `--sig-*`), the mono VS pill between, the optional stakes footer spanning the grid:
 
 ```tsx
 <MatchupCard
-  left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-  right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+  left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
+  right={{ name: "Leo Martins", ringToken: "--sig-sky" }}
   stakes="Winner picks the next venue — loser brings the ice."
 />
 ```
@@ -505,9 +505,9 @@ The universal content card (2.6.0) — a 16/9 visual header (pass `image` as a U
 
 ```tsx
 <ContentCard
-  category="Catering" categoryToken="--party-peach"
+  category="Catering" categoryToken="--sig-peach"
   meta={["25 MIN", "SPICY", "$14"]}
-  accentToken="--party-yellow"
+  accentToken="--sig-yellow"
   title="Birria & Street Taco Catering"
   description="Slow-braised birria, consomé on the side."
   action={{ label: "Book the taco cart", onClick: book }}
@@ -520,7 +520,7 @@ The copy-to-clipboard reference card (2.6.0) — mono uppercase tag chip, accent
 
 ```tsx
 <ReferenceCard
-  tag="JSX" title="The Signature Surface" accentToken="--party-sky"
+  tag="JSX" title="The Signature Surface" accentToken="--sig-sky"
   code={'<SurfaceCard eyebrow="Hi" title="Hello" interactive />'}
   link="https://example.com/docs"
   onCopied={() => toast("success", "Snippet copied")}
@@ -533,7 +533,7 @@ The pricing tier (2.6.0) — eyebrow plan name, 2rem tabular-nums price, the fea
 
 ```tsx
 <TierCard
-  name="Arena Pass" price="$49" featured accentToken="--party-mauve-soft"
+  name="Arena Pass" price="$49" featured accentToken="--sig-mauve-soft"
   features={["All 40 game modules", "1v1 & 2v2 brackets", "Spectator betting pot", "Priority seating"]}
   cta="Claim the pass" onCta={claim}
 />
@@ -545,15 +545,15 @@ The person card (2.6.0) — the 40px Avatar (party ring via `accentToken`, typed
 
 ```tsx
 <ProfileCard
-  name="Ana Souza" role="Head of Catering" accentToken="--party-peach"
+  name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
   stats={[
     { label: "Events", value: "24" },
     { label: "Guests", value: "412" },
     { label: "Rating", value: "4.9" },
   ]}
   skills={[
-    { colorToken: "--party-peach", label: "Catering" },
-    { colorToken: "--party-green", label: "Logistics" },
+    { colorToken: "--sig-peach", label: "Catering" },
+    { colorToken: "--sig-green", label: "Logistics" },
   ]}
 />
 ```
@@ -566,8 +566,8 @@ The release chronicle (2.6.0) — ONE `<ol class="sig-chronicle">`: a 2px hairli
 <ChronicleTimeline
   label="Version chronicle"
   releases={[
-    { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34", accentToken: "--party-pink-bright" },
-    { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 3 tiers · 11 accents", accentToken: "--party-yellow" },
+    { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34", accentToken: "--sig-pink-bright" },
+    { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 3 tiers · 11 accents", accentToken: "--sig-yellow" },
   ]}
 />
 ```
@@ -580,8 +580,8 @@ The interactive node-link graph (2.7.0) — ONE pure-SVG `<svg role="application
 import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
 
 const nodes: GraphNode[] = [
-  { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "Every branch is one workstream." },
-  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+  { id: "root", label: "Party Planning", categoryToken: "--sig-lavender", note: "Every branch is one workstream." },
+  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
 ];
 
 <KnowledgeGraph
@@ -599,7 +599,7 @@ const nodes: GraphNode[] = [
 />
 ```
 
-THE 3.0.0 OBSIDIAN INTERACTIONS: generous nodes (r 34, 13px labels, 16-char truncation + a `<title>` full-label tooltip); DRAG at 60fps — pointerdown captures, pointermove mutates the node `<g>` transform DIRECTLY (rAF, zero setState per move), pointerup commits ONCE via `onMoveNode` (persist the position and feed it back through `positions`; keyboard parity: arrows nudge the selected node 8px); PAN on empty-canvas drag + WHEEL zoom (0.5×–2.5×, anchored at the cursor — both in viewBox math, so node coordinates stay in graph space); DOUBLE-CLICK empty canvas spawns a node at that coordinate (`onAddNodeAt`, nearest node or root parents it); RIGHT-CLICK a node enters TETHER mode — a live dashed azure line (`--party-azure`, 6 4, 1.5px) chases the cursor and releasing over another node fires `onLinkNodes(fromId, toId)`; Escape cancels any in-flight drag/tether. THE LINKS MODEL: parent edges stay derived from `parentId`; NON-parent tethers live in the consumer's persisted `links` array handed back through the `links` prop (same `GraphLink[]` in the snapshot payload).
+THE 3.0.0 OBSIDIAN INTERACTIONS: generous nodes (r 34, 13px labels, 16-char truncation + a `<title>` full-label tooltip); DRAG at 60fps — pointerdown captures, pointermove mutates the node `<g>` transform DIRECTLY (rAF, zero setState per move), pointerup commits ONCE via `onMoveNode` (persist the position and feed it back through `positions`; keyboard parity: arrows nudge the selected node 8px); PAN on empty-canvas drag + WHEEL zoom (0.5×–2.5×, anchored at the cursor — both in viewBox math, so node coordinates stay in graph space); DOUBLE-CLICK empty canvas spawns a node at that coordinate (`onAddNodeAt`, nearest node or root parents it); RIGHT-CLICK a node enters TETHER mode — a live dashed azure line (`--sig-azure`, 6 4, 1.5px) chases the cursor and releasing over another node fires `onLinkNodes(fromId, toId)`; Escape cancels any in-flight drag/tether. THE LINKS MODEL: parent edges stay derived from `parentId`; NON-parent tethers live in the consumer's persisted `links` array handed back through the `links` prop (same `GraphLink[]` in the snapshot payload).
 
 ### <BarChart>
 
@@ -610,10 +610,10 @@ The capacity bar chart (2.7.0) — pure SVG, one group per datum: an inset round
   data={[
     /* 3.0.0: the series reads as a SPECTRUM — four DIFFERENT chromatic
        tokens (cobalt/cyan/mint/tangerine), one per datum. */
-    { label: "Venue", value: 800, max: 1000, colorToken: "--party-cobalt" },
-    { label: "Catering", value: 620, max: 900, colorToken: "--party-tangerine" },
-    { label: "Invites", value: 240, max: 400, colorToken: "--party-cyan" },
-    { label: "Music", value: 450, max: 600, colorToken: "--party-mint" },
+    { label: "Venue", value: 800, max: 1000, colorToken: "--sig-cobalt" },
+    { label: "Catering", value: 620, max: 900, colorToken: "--sig-tangerine" },
+    { label: "Invites", value: 240, max: 400, colorToken: "--sig-cyan" },
+    { label: "Music", value: 450, max: 600, colorToken: "--sig-mint" },
   ]}
   orientation="vertical"
   label="Spending by category"
@@ -630,7 +630,7 @@ The gradient area (2.7.0) — pure SVG: a `useId`-keyed linearGradient (30% toke
     { label: "W1", value: 12 }, { label: "W2", value: 18 },
     { label: "W3", value: 26 }, { label: "W4", value: 41 },
   ]}
-  colorToken="--party-sky"
+  colorToken="--sig-sky"
   height={200}
   label="RSVP momentum"
 />
@@ -740,7 +740,7 @@ Phase 4 of this release tried to break the release from inside a browser (`playg
 2. **The Chronicle hero overflowed 18px at 375px**: "CHRONICLE" is ONE unbreakable word wearing the hero's 36px + 0.35em tracking; it cannot wrap and outgrew the 327px shell column. FIX (playground layer): below 480px the shell's hero folds to 28px / 0.22em — the word fits with air, nothing else moves.
 3. **A studio preview bled 2px at 375px**: a nowrap `<code>` chip escaped the preview stage. FIX (playground layer): `.pattern-frame__preview { overflow-x: auto; }` — a stage pans, it never page-breaks.
 4. **CommandPalette's Ctrl+K fired while typing in inputs**: the `isTypingTarget` guard was written but never wired into the launcher branch. FIX: the listener honors it; the palette now ignores the launcher in any input/textarea/select/contentEditable. (Found during the Phase 2 wiring, fixed there; recorded here because it is exactly the class of bug this audit exists for.)
-5. **Contrast flags, NOT touched (owner call required)**: `--party-mauve-bright` reads 2.32:1 on `--bg-surface` (3.03:1 on base) and `--party-blue` 2.56:1 on surface — both are chart/badge FILL tokens whose TEXT usages are rare (the ChronicleTimeline can wear mauve-bright as a tag color). Per the audit mandate: flagged and documented, no fix without owner approval.
+5. **Contrast flags, NOT touched (owner call required)**: `--sig-mauve-bright` reads 2.32:1 on `--bg-surface` (3.03:1 on base) and `--sig-blue` 2.56:1 on surface — both are chart/badge FILL tokens whose TEXT usages are rare (the ChronicleTimeline can wear mauve-bright as a tag color). Per the audit mandate: flagged and documented, no fix without owner approval.
 6. Also caught during Phase 2 (fixed before this audit): the palette's Escape closed without restoring focus — the trigger-capture existed but the restore effect was missing; keyboard users would have fallen off the page.
 
 Everything else: 32/32 viewport×target sweep cells at zero horizontal overflow with non-zero shell margins; the palette's full keyboard contract green; emulated reduced-motion collapses the shimmer/flip/shake/meter to the floor; zero console errors and zero pageerror events across every sweep.
@@ -781,7 +781,7 @@ function importSnapshot(text: string): boolean {
 function resetAll(): void { resetGraph(); resetTimeline(); }
 ```
 
-The three doctrines, one line each: **Token Cascade** — every state derives from the core tokens via color-mix()/transforms, never hand-authored; **Override Protocol** — scoped utility classes alter one element, the global variables never move; **Rule of Engagement** — `--party-*` is content-only, Flamingo/Teal is structural-only, the families never cross. Never invent tokens; never hardcode hex.
+The three doctrines, one line each: **Token Cascade** — every state derives from the core tokens via color-mix()/transforms, never hand-authored; **Override Protocol** — scoped utility classes alter one element, the global variables never move; **Rule of Engagement** — `--sig-*` is content-only, Flamingo/Teal is structural-only, the families never cross. Never invent tokens; never hardcode hex.
 
 ### The Data Architecture (3.0.0 — the contract source of truth)
 

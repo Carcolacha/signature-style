@@ -16,8 +16,8 @@ export function EmptyState({ icon, title, message }) {
     return (_jsxs("div", { className: "empty-state", children: [_jsx(Icon, { name: icon, "aria-hidden": true }), title !== undefined && (_jsx("strong", { style: { color: "var(--text-main)", fontWeight: 600 }, children: title })), _jsx("p", { style: { margin: 0 }, children: message })] }));
 }
 export function PartyBadge({ colorToken, label }) {
-    if (!colorToken.startsWith("--party-")) {
-        console.warn(`[signature-style] dropped "${colorToken}" — PartyBadge accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
+    if (!colorToken.startsWith("--sig-")) {
+        console.warn(`[signature-style] dropped "${colorToken}" — PartyBadge accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
         return null;
     }
     return (_jsx("span", { style: {

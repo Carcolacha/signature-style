@@ -81,30 +81,30 @@ export function EmptyState({ icon, title, message }: EmptyStateProps) {
  * `<PartyBadge>` — the Rule of Engagement, enforced in the type system.
  *
  * A party-colored content badge: subtle tinted background + guaranteed
- * high-contrast text on both themes. `colorToken` only accepts `--party-*`
+ * high-contrast text on both themes. `colorToken` only accepts `--sig-*`
  * tokens (`Extract` on `KnownToken`); passing `--color-cake-primary` or any
  * structural token is a compile error. A runtime guard keeps JS consumers
  * honest with the same warn-and-drop philosophy as ThemeProvider.
  *
  * @example
  * ```tsx
- * <PartyBadge colorToken="--party-peach" label="Birthday" />
+ * <PartyBadge colorToken="--sig-peach" label="Birthday" />
  * ```
  */
 export interface PartyBadgeProps {
-  /** A `--party-*` content token — the ONLY tokens allowed here. */
+  /** A `--sig-*` content token — the ONLY tokens allowed here. */
   colorToken: PartyTokenName;
   /** The badge label text. */
   label: string;
 }
 
-/** The content-only subset of KnownToken: `--party-*` tokens exclusively. */
-export type PartyTokenName = Extract<KnownToken, `--party-${string}`>;
+/** The content-only subset of KnownToken: `--sig-*` tokens exclusively. */
+export type PartyTokenName = Extract<KnownToken, `--sig-${string}`>;
 
 export function PartyBadge({ colorToken, label }: PartyBadgeProps) {
-  if (!colorToken.startsWith("--party-")) {
+  if (!colorToken.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped "${colorToken}" — PartyBadge accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+      `[signature-style] dropped "${colorToken}" — PartyBadge accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
     );
     return null;
   }

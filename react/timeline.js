@@ -78,7 +78,7 @@ function renderItem(event, row, index) {
  *       date: "October 2026",
  *       time: "15:00",
  *       title: "Cake cutting",
- *       category: "--party-peach",
+ *       category: "--sig-peach",
  *       categoryLabel: "Birthday",
  *       icon: "Cake",
  *     },

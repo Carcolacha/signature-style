@@ -39,17 +39,17 @@ import type { CSSProperties, ReactNode } from "react";
 import type { PartyTokenName } from "./primitives.js";
 
 /**
- * The content-accent alias: the ELEVEN `--party-*` tokens, typed. The
+ * The content-accent alias: the ELEVEN `--sig-*` tokens, typed. The
  * owner's shorthand names map 1:1 onto the reserved tokens:
  *
- *   pink bright → --party-pink-bright     sky    → --party-sky
- *   pink soft   → --party-pink-soft       blue   → --party-blue
- *   pink alt    → --party-pink-alt        peach  → --party-peach
- *   mauve       → --party-mauve-bright    green  → --party-green
- *   mauve soft  → --party-mauve-soft      yellow → --party-yellow
- *   lavender    → --party-lavender
+ *   pink bright → --sig-pink-bright     sky    → --sig-sky
+ *   pink soft   → --sig-pink-soft       blue   → --sig-blue
+ *   pink alt    → --sig-pink-alt        peach  → --sig-peach
+ *   mauve       → --sig-mauve-bright    green  → --sig-green
+ *   mauve soft  → --sig-mauve-soft      yellow → --sig-yellow
+ *   lavender    → --sig-lavender
  *
- * (The alias resolves through `Extract<KnownToken, `--party-${string}`>`,
+ * (The alias resolves through `Extract<KnownToken, `--sig-${string}`>`,
  * so the ThemeProvider whitelist IS the union — the 11-token sweep gate
  * pins the count against that whitelist.)
  */
@@ -104,7 +104,7 @@ export type SurfaceElevation = "flat" | "raised" | "floating";
  *   eyebrow="Planner" meta="views/planner.tsx" title="Event Planner Bento"
  *   interactive accentToken="--color-cake-primary" elevation="floating"
  * >
- *   <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
+ *   <ProgressBar value={72} colorToken="--sig-sky" label="RSVP ratio" />
  * </SurfaceCard>
  * ```
  */
@@ -118,7 +118,7 @@ export interface SurfaceCardProps {
   /** The tactile hover: translateY(-2px) + deepened ambient shadow. */
   interactive?: boolean;
   /**
-   * The chromatic accent (2.6.0): a `--party-*` content token or one of
+   * The chromatic accent (2.6.0): a `--sig-*` content token or one of
    * the two structural signatures. Colors the eyebrow + the ruled title
    * underline (2px solid — the GlobalNav/Tabs contract) and tints the
    * interactive hover glow. Omit for the classic teal/muted card.

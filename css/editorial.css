@@ -209,11 +209,11 @@
   margin: var(--space-standard) 0;
   padding: var(--space-standard);
   /* OWNER OVERRIDE (2.4.1): the quote rule moves Flamingo →
-     --party-mauve. A blockquote IS editorial content, so the Rule of
+     --sig-mauve. A blockquote IS editorial content, so the Rule of
      Engagement reads FOR the party token here — v2.4.0's Flamingo rule
      borrowed the structural action color for a content block; the
      owner moved it to the mauve editorial voice. */
-  border-left: 4px solid var(--party-mauve);
+  border-left: 4px solid var(--sig-mauve);
   background: var(--bg-inset);
   border-radius: var(--radius-ui);
   color: var(--text-bright);

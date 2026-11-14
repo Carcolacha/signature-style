@@ -189,10 +189,10 @@ export function PatternFrame({
     wears a content color; Set 01 takes lavender, the calm structural-
     adjacent). */
 const SET_ACCENTS: Record<SetId, Parameters<typeof PartyBadge>[0]["colorToken"]> = {
-  "01": "--party-lavender",
-  "02": "--party-pink-bright",
-  "03": "--party-green",
-  "04": "--party-sky",
-  "05": "--party-mauve-soft",
-  "06": "--party-yellow",
+  "01": "--sig-lavender",
+  "02": "--sig-pink-bright",
+  "03": "--sig-green",
+  "04": "--sig-sky",
+  "05": "--sig-mauve-soft",
+  "06": "--sig-yellow",
 };

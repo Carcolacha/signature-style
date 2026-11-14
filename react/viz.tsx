@@ -8,7 +8,7 @@
  * no grid lines, no drop shadows, no 3D. Tracks are structural chrome
  * (`var(--bg-inset)` since 2.2.0 — owner-authorized retarget: the old
  * `var(--bg-surface)` track was invisible on var(--bg-surface) cards);
- * data fills are STRICTLY `--party-*` content tokens (Rule of
+ * data fills are STRICTLY `--sig-*` content tokens (Rule of
  * Engagement: party colors are the content/data colors). The ring
  * needs no CSS at all — pure SVG attributes; the bar's and the stat
  * card's classes live in css/viz.css. `<Sparkline>` is likewise pure
@@ -18,7 +18,7 @@
  * Rule of Engagement, enforced per component: `colorToken` is
  * typed as `PartyTokenName` (an `Extract` on `KnownToken`), so passing
  * a structural token like `--color-cake-primary` is a compile error —
- * and a runtime guard (`startsWith("--party-")`) warns and renders
+ * and a runtime guard (`startsWith("--sig-")`) warns and renders
  * null for JS consumers, same warn-and-drop philosophy as PartyBadge.
  *
  * 2.2.0 TELEMETRY LIMITS (owner-authorized): ProgressBar grew the
@@ -61,7 +61,7 @@ import { memo, useId, useState } from "react";
  * (owner-mandated physics; `prefers-reduced-motion` disables it).
  * The track is `var(--bg-inset)` with the 20% hairline boundary
  * (2.2.0: visible 100% boundary on ANY card); the fill is
- * `var(colorToken)` — a `--party-*` token or the component refuses
+ * `var(colorToken)` — a `--sig-*` token or the component refuses
  * to render.
  *
  * `limitText` (2.2.0): when present, the value's LIMIT is rendered as
@@ -73,18 +73,18 @@ import { memo, useId, useState } from "react";
  * same grid by font-variant-numeric.
  *
  * The PlanThenParty use case: budget remaining (72 of 100 on
- * `--party-green`), savings progress, RSVP counts — any single
+ * `--sig-green`), savings progress, RSVP counts — any single
  * scalar that reads as a filled portion of a whole.
  *
  * @example
  * ```tsx
- * <ProgressBar value={72} colorToken="--party-green" label="Budget remaining" limitText="$720 / $1,000" />
+ * <ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" limitText="$720 / $1,000" />
  * ```
  */
 export interface ProgressBarProps {
   /** The filled percentage — clamped to 0–100 before rendering. */
   value: number;
-  /** A `--party-*` content token — the ONLY tokens allowed here. */
+  /** A `--sig-*` content token — the ONLY tokens allowed here. */
   colorToken: PartyTokenName;
   /** The accessible name for the progressbar (e.g. "Budget remaining"). */
   label?: string;
@@ -93,9 +93,9 @@ export interface ProgressBarProps {
 }
 
 export function ProgressBar({ value, colorToken, label, limitText }: ProgressBarProps) {
-  if (!colorToken.startsWith("--party-")) {
+  if (!colorToken.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped "${colorToken}" — ProgressBar accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+      `[signature-style] dropped "${colorToken}" — ProgressBar accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
     );
     return null;
   }
@@ -154,18 +154,18 @@ export function ProgressBar({ value, colorToken, label, limitText }: ProgressBar
  * Pass `showValue={false}` to restore the bare 2.1.0 dial.
  *
  * The PlanThenParty use case: the RSVP ratio (85% of invitees in on
- * `--party-sky`), attendance, completion — any single ratio that
+ * `--sig-sky`), attendance, completion — any single ratio that
  * reads as a dial.
  *
  * @example
  * ```tsx
- * <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
+ * <StatRing value={85} colorToken="--sig-sky" label="RSVP ratio" />
  * ```
  */
 export interface StatRingProps {
   /** The filled percentage — clamped to 0–100 before rendering. */
   value: number;
-  /** A `--party-*` content token — the ONLY tokens allowed here. */
+  /** A `--sig-*` content token — the ONLY tokens allowed here. */
   colorToken: PartyTokenName;
   /** Outer diameter in px. Default 120 — the 3.0.0 zoom default. */
   size?: number;
@@ -198,9 +198,9 @@ export function StatRing({
   total,
   unit,
 }: StatRingProps) {
-  if (!colorToken.startsWith("--party-")) {
+  if (!colorToken.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped "${colorToken}" — StatRing accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+      `[signature-style] dropped "${colorToken}" — StatRing accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
     );
     return null;
   }
@@ -299,7 +299,7 @@ export function StatRing({
 export interface SparklineProps {
   /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
   data: number[];
-  /** A `--party-*` content token — the ONLY tokens allowed here. Default --party-sky. */
+  /** A `--sig-*` content token — the ONLY tokens allowed here. Default --sig-sky. */
   colorToken?: PartyTokenName;
   /** Width in px (also the viewBox width). Default 120. */
   width?: number;
@@ -355,12 +355,12 @@ function sparkPoints(
  *
  * @example
  * ```tsx
- * <Sparkline data={[1200, 1450, 1380, 1600, 1780, 2000]} colorToken="--party-green" label="Budget trend" />
+ * <Sparkline data={[1200, 1450, 1380, 1600, 1780, 2000]} colorToken="--sig-green" label="Budget trend" />
  * ```
  */
 export function Sparkline({
   data,
-  colorToken = "--party-sky",
+  colorToken = "--sig-sky",
   width = 120,
   height = 36,
   label,
@@ -371,9 +371,9 @@ export function Sparkline({
     );
     return null;
   }
-  if (!colorToken.startsWith("--party-")) {
+  if (!colorToken.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped "${colorToken}" — Sparkline accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+      `[signature-style] dropped "${colorToken}" — Sparkline accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
     );
     return null;
   }
@@ -410,11 +410,11 @@ export interface StatCardProps {
   value: string;
   /** The optional change caption (e.g. "+$440"). */
   delta?: string;
-  /** The delta's direction — up → --party-green, down → --party-peach. */
+  /** The delta's direction — up → --sig-green, down → --sig-peach. */
   deltaDirection?: "up" | "down";
   /** The optional inline trend — renders a <Sparkline> labeled "<label> trend". */
   sparklineData?: number[];
-  /** A `--party-*` content token for the sparkline (passed through). */
+  /** A `--sig-*` content token for the sparkline (passed through). */
   colorToken?: PartyTokenName;
 }
 
@@ -423,8 +423,8 @@ export interface StatCardProps {
  *
  * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
- * → optional delta span (`--up` → var(--party-green), `--down` →
- * var(--party-peach) — content outcomes, party tokens) → optional
+ * → optional delta span (`--up` → var(--sig-green), `--down` →
+ * var(--sig-peach) — content outcomes, party tokens) → optional
  * `<Sparkline>` (labeled "<label> trend"). FLAT by the e1 doctrine:
  * the card separates with the 20% hairline, NO shadow (css/viz.css).
  * The sparkline's own token guard applies — a structural token drops
@@ -438,7 +438,7 @@ export interface StatCardProps {
  *   delta="+$440"
  *   deltaDirection="up"
  *   sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
- *   colorToken="--party-green"
+ *   colorToken="--sig-green"
  * />
  * ```
  */
@@ -488,7 +488,7 @@ export interface BarDatum {
   value: number;
   /** The capacity ceiling for THIS bar's track; defaults to the chart scale. */
   max?: number;
-  /** A `--party-*` content token — this bar's ink. Default --party-sky. */
+  /** A `--sig-*` content token — this bar's ink. Default --sig-sky. */
   colorToken?: PartyTokenName;
 }
 
@@ -524,10 +524,10 @@ function barScaleMax(data: readonly BarDatum[]): number {
 /** The bar's party ink — warn-and-drop to structural Flamingo is NOT allowed
     here (bars are content), so a structural token REFUSES the whole datum. */
 function barToken(datum: BarDatum): string | null {
-  const token = datum.colorToken ?? "--party-sky";
-  if (!token.startsWith("--party-")) {
+  const token = datum.colorToken ?? "--sig-sky";
+  if (!token.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped bar "${datum.label}" — colorToken accepts --party-* tokens only (Rule of Engagement).`,
+      `[signature-style] dropped bar "${datum.label}" — colorToken accepts --sig-* tokens only (Rule of Engagement).`,
     );
     return null;
   }
@@ -627,8 +627,8 @@ function horizontalBar(datum: BarDatum, index: number, count: number, scaleMax: 
  * ```tsx
  * <BarChart
  *   data={[
- *     { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
- *     { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
+ *     { label: "Venue", value: 800, max: 1000, colorToken: "--sig-mauve-soft" },
+ *     { label: "Catering", value: 620, max: 900, colorToken: "--sig-peach" },
  *   ]}
  *   label="Spending by category"
  * />
@@ -697,7 +697,7 @@ export interface AreaPoint {
 export interface AreaChartProps {
   /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
   points: AreaPoint[];
-  /** A `--party-*` content token. Default --party-sky. */
+  /** A `--sig-*` content token. Default --sig-sky. */
   colorToken?: PartyTokenName;
   /** The svg's rendered height in px. Default 200. */
   height?: number;
@@ -766,14 +766,14 @@ function areaCoords(points: readonly AreaPoint[]): Array<{ x: number; y: number 
  *     { label: "W1", value: 12 }, { label: "W2", value: 18 },
  *     { label: "W3", value: 26 }, { label: "W4", value: 41 },
  *   ]}
- *   colorToken="--party-sky"
+ *   colorToken="--sig-sky"
  *   label="RSVP momentum"
  * />
  * ```
  */
 export const AreaChart = memo(function AreaChart({
   points,
-  colorToken = "--party-sky",
+  colorToken = "--sig-sky",
   height = 200,
   label,
 }: AreaChartProps) {
@@ -783,9 +783,9 @@ export const AreaChart = memo(function AreaChart({
     );
     return null;
   }
-  if (!colorToken.startsWith("--party-")) {
+  if (!colorToken.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped "${colorToken}" — AreaChart accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+      `[signature-style] dropped "${colorToken}" — AreaChart accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
     );
     return null;
   }

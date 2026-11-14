@@ -22,7 +22,7 @@
  *
  * THE ERROR FLAG: `error` is a STATE FLAG, never rendered as text.
  * `<Input error>` / `<TextArea error>` only flip the DOM attribute
- * `aria-invalid="true"` (css/forms.css paints the --party-peach border —
+ * `aria-invalid="true"` (css/forms.css paints the --sig-peach border —
  * the owner-spec'd error state, attribute-driven like the nav's
  * aria-current). Consumers render their own error message next to the
  * field, where they control its id/aria-describedby wiring. This keeps
@@ -76,7 +76,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   /**
    * Error STATE flag — a boolean or a truthy string. Never rendered as
    * text: it only sets `aria-invalid="true"` on the element, which
-   * css/forms.css answers with the --party-peach error border. Render
+   * css/forms.css answers with the --sig-peach error border. Render
    * your own message beside the field (wire its id via
    * aria-describedby yourself).
    */
@@ -118,7 +118,7 @@ export interface TextAreaProps
   extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   /**
    * Error STATE flag — a boolean or a truthy string. Never rendered as
-   * text: it only sets `aria-invalid="true"` (→ the --party-peach
+   * text: it only sets `aria-invalid="true"` (→ the --sig-peach
    * border). Render your own message beside the field.
    */
   error?: boolean | string;
@@ -214,7 +214,7 @@ export function ToggleSwitch({ checked, onToggle, label }: ToggleSwitchProps) {
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   /**
    * Error STATE flag — a boolean or a truthy string. Never rendered as
-   * text: it only sets `aria-invalid="true"` (→ the --party-peach
+   * text: it only sets `aria-invalid="true"` (→ the --sig-peach
    * border, the v1.4.0 doctrine). Render your own message beside the
    * field.
    */
@@ -324,7 +324,7 @@ export function Checkbox({ checked, onToggle, label }: CheckboxProps) {
  * Props for `<Avatar>` — initials are DERIVED, never stored.
  *
  * `size` is a `32 | 40` union (grid-perfect diameters only) and
- * `ringToken` accepts `--party-*` tokens exclusively (PartyTokenName —
+ * `ringToken` accepts `--sig-*` tokens exclusively (PartyTokenName —
  * avatar rings are CONTENT decoration, the Rule of Engagement).
  */
 export interface AvatarProps {
@@ -333,7 +333,7 @@ export interface AvatarProps {
   /** Diameter in px — grid-perfect: 32 (default) or 40. */
   size?: 32 | 40;
   /**
-   * A `--party-*` content token for a 2px ring. Typed AND guarded:
+   * A `--sig-*` content token for a 2px ring. Typed AND guarded:
    * a structural token slipped past the types (JS consumers) warns and
    * renders WITHOUT the ring — an avatar without its ring is still an
    * avatar, so this guard drops the decoration, not the component
@@ -358,7 +358,7 @@ export interface AvatarProps {
  * @example
  * ```tsx
  * <Avatar name="Ana Souza" />
- * <Avatar name="Priya Nair" size={40} ringToken="--party-mauve-soft" />
+ * <Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />
  * ```
  */
 export function Avatar({ name, size = 32, ringToken }: AvatarProps) {
@@ -371,9 +371,9 @@ export function Avatar({ name, size = 32, ringToken }: AvatarProps) {
     .join("");
   const ringStyle: CSSProperties = {};
   if (ringToken !== undefined) {
-    if (!ringToken.startsWith("--party-")) {
+    if (!ringToken.startsWith("--sig-")) {
       console.warn(
-        `[signature-style] dropped ring "${ringToken}" — Avatar rings accept --party-* tokens only (Rule of Engagement); rendering without the ring.`,
+        `[signature-style] dropped ring "${ringToken}" — Avatar rings accept --sig-* tokens only (Rule of Engagement); rendering without the ring.`,
       );
     } else {
       ringStyle.border = `2px solid var(${ringToken})`;
@@ -440,7 +440,7 @@ export interface FormFieldProps {
   error?: string;
   /**
    * The live-validation SUCCESS line (2.5.0) — rendered below the
-   * control in `var(--party-green)`, outranked only by `error`. The
+   * control in `var(--sig-green)`, outranked only by `error`. The
    * "Valid ZIP" twin of the error slot: pass it when the value passes
    * your rule, e.g. `validMessage={/^\d{5}$/.test(postal) ? "Valid ZIP" : undefined}`.
    */
@@ -471,7 +471,7 @@ export interface FormFieldProps {
   /** The control (an `<Input>`, `<TextArea>`, `<Select>`, …). */
   children?: ReactNode;
   /**
-   * Marks the field visually required (2.4.1): a `--party-peach` `*`
+   * Marks the field visually required (2.4.1): a `--sig-peach` `*`
    * renders AFTER the label text. VISUAL ONLY — the asterisk span is
    * aria-hidden and the FIELD renders no aria-required of its own;
    * the CONTROL owns that contract. Pass it on the child yourself,
@@ -786,7 +786,7 @@ const PASSWORD_STAGES = ["Weak", "Fair", "Good", "Strong"] as const;
  *   3. The `.sig-password__meter` — ONE `<div role="progressbar">`
  *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
  *      segments and the `data-score` attribute. The css paints the
- *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
+ *      filled prefix: 1 → peach, 2 → yellow (--sig-yellow, the
  *      token this release exists for), 3 → sky, 4 → green.
  *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
  *   5. Four `.sig-password__pill` condition spans ("8+ chars",

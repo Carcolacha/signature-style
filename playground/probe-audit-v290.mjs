@@ -377,10 +377,10 @@ for (const [width, height] of VIEWPORTS) {
       "bg-surface": parseRgb(rootStyle.getPropertyValue("--bg-surface")) ?? [49, 50, 68, 1],
     };
     const tokens = [
-      "--party-pink-bright", "--party-pink-soft", "--party-pink-alt",
-      "--party-mauve-bright", "--party-mauve-soft", "--party-lavender",
-      "--party-sky", "--party-blue", "--party-peach", "--party-green",
-      "--party-yellow",
+      "--sig-pink-bright", "--sig-pink-soft", "--sig-pink-alt",
+      "--sig-mauve-bright", "--sig-mauve-soft", "--sig-lavender",
+      "--sig-sky", "--sig-blue", "--sig-peach", "--sig-green",
+      "--sig-yellow",
     ];
     const raw = [];
     for (const token of tokens) {

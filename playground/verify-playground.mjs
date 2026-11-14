@@ -39,7 +39,7 @@
  *         reduced-motion users get permanently invisible cards) — plus
  *         the ruled card headers;
  *   (h2)  App.tsx declares ≥4 COMPLETE owner-shaped mockEvents entries
- *         (id / month / title / time / colorToken --party-* token /
+ *         (id / month / title / time / colorToken --sig-* token /
  *         iconName) across ≥2 month buckets, with the ONE mapping layer
  *         present (month → date, colorToken → category, iconName →
  *         icon);
@@ -244,7 +244,7 @@
  *         checkmark, the chevron wrapper anatomy, the avatar disc;
  *         react/forms.tsx: the ChevronDown icon (gate-probed against
  *         the live lucide map), the ring as an inline BORDER (never a
- *         box-shadow), the runtime --party-* ring guard.
+ *         box-shadow), the runtime --sig-* ring guard.
  *   (dd4) THE CODEX — SYSTEM_PROMPT.md contains the "Universal AI
  *         Replication Contract" section, ≥15 component snippet
  *         headings, and the closing law ("never invent tokens; never
@@ -302,12 +302,12 @@
  *         contract (--selected class + :has(input:checked) → 2px
  *         Flamingo border + the 10% cake-tint background), the visually
  *         hidden input, the auto-fit minmax(140px,1fr) grid, the form
- *         field label/hint/error anatomy (error = --party-peach);
+ *         field label/hint/error anatomy (error = --sig-peach);
  *         react/forms.tsx: the FormField hint-XOR-error slot and the
  *         radiogroup/aria-label contract.
  *   (ed4) VIZ ADDITIONS — react/viz.tsx: Sparkline renders ONE svg
  *         (role="img", preserveAspectRatio="none") with EXACTLY two
- *         elements (polygon + polyline) plus the --party-* runtime
+ *         elements (polygon + polyline) plus the --sig-* runtime
  *         guard and the ≥2-point guard; css/viz.css: .sig-stat-card is
  *         FLAT (surface background + 20% hairline, zero shadow —
  *         e1-scanned) with tabular-nums value + uppercase label +
@@ -390,7 +390,7 @@
  *         that legitimately touches core rebases the floor): diff vs
  *         v2.4.1 over css/ react/ tokens.json SYSTEM_PROMPT.md demo/
  *         scripts/ must be EMPTY except the owner-authorized 2.5.0
- *         deltas — css/tokens.css (+ --party-yellow), tokens.json
+ *         deltas — css/tokens.css (+ --sig-yellow), tokens.json
  *         (token + meta 2.5.0), css/forms.css (FormField anatomy +
  *         PasswordInput), css/primitives.css + css/cards.css (NEW),
  *         css/signature-style.css (the two layered imports),
@@ -427,7 +427,7 @@
  *         (live-map-probed), the role="progressbar" meter (0..4, now
  *         score), data-score, the four rules + Weak/Fair/Good/Strong,
  *         data-satisfied pills; css: the 4-segment meter with the
- *         --party-yellow stage-2 fill and the green satisfied pills.
+ *         --sig-yellow stage-2 fill and the green satisfied pills.
  *   (bt1) THE BUTTON FAMILY — primitives.tsx: 4 variants, 3 sizes,
  *         leftIcon/rightIcon, loading (spinner replaces icons, aria-busy
  *         + disabled); css/primitives.css: the 4 variant classes, 2
@@ -483,7 +483,7 @@
  *   (acc1) THE ACCENT CONTRACT — css/surface.css carries the
  *         [data-accent] + --sig-accent rules (eyebrow color, 2px
  *         title underline, chromatic glow), react/surface.tsx exports
- *         the PartyColorToken alias (the 11 --party-* tokens) and the
+ *         the PartyColorToken alias (the 11 --sig-* tokens) and the
  *         AccentToken union (party + the two structural signatures);
  *         <SurfaceCard> renders data-accent/data-elevation + the
  *         inline --sig-accent variable.
@@ -497,9 +497,9 @@
  *         through the shared ladder) — both files' shadow policies
  *         asserted explicitly.
  *   (pt11) THE 11-TOKEN SWEEP — the ThemeProvider whitelist covers
- *         EXACTLY the 11 --party-* names, and the PartyColorToken
+ *         EXACTLY the 11 --sig-* names, and the PartyColorToken
  *         alias exists in the compiled react/surface.d.ts (the union
- *         resolves through Extract<KnownToken, `--party-${string}`> —
+ *         resolves through Extract<KnownToken, `--sig-${string}`> —
  *         the whitelist IS the union).
  *   (cc1)  CONTENTCARD — css/cards.css: the 16/9 visual (aspect-ratio:
  *         16 / 9), the mono 0.6875rem meta pill, the accent underline,
@@ -595,7 +595,7 @@
  *         EMPTY-diffed (zero package deltas this release). tokens.json
  *         carries ONE authorized delta — meta.version → 2.8.0 — guarded
  *         by a deep-equal check that neutralizes meta.version (themes/
- *         shared/partyPalette/doctrine must stay identical).
+ *         shared/sigPalette/doctrine must stay identical).
  *   (ix1 AMENDMENT)  the view union grows to the 5 real views; the
  *         EmptyState/Hammer placeholder needles retire with
  *         PlaceholderView (EmptyState lives in the Set 06 frame).
@@ -643,15 +643,15 @@
  *         evolves, no new files).
  *   (ct1) THE CONTRAST GATE — playground/verify-contrast.mjs exists and
  *         is wired (scripts["verify:contrast"]); css/tokens.css carries
- *         the two fixed hexes (--party-mauve-bright #9e5ff2 — the
+ *         the two fixed hexes (--sig-mauve-bright #9e5ff2 — the
  *         minimal in-family lightness step H266°/S85% L58→66%, measured
  *         3.22:1 on surface / 4.20:1 on base, was #8839ef @ 2.32:1;
- *         --party-blue #89b4fa — official Catppuccin Mocha Blue, the
- *         v3.0.0 --party-cobalt convergence, 5.97:1 / 7.79:1, was
+ *         --sig-blue #89b4fa — official Catppuccin Mocha Blue, the
+ *         v3.0.0 --sig-cobalt convergence, 5.97:1 / 7.79:1, was
  *         #1e66f5 @ 2.56:1); and the gate itself RUNS green (all 11
  *         party tokens ≥3.0:1 vs surface AND base, the fixed pair
  *         ≥3.1:1). Negative test (falsifiability, restore-verified):
- *         reverting --party-blue to #1e66f5 flips verify:contrast to
+ *         reverting --sig-blue to #1e66f5 flips verify:contrast to
  *         FAIL with the measured 2.559:1 ratio + the (ct3) pin refusal;
  *         restore → PASS (git-verified byte-identical).
  *   (sk1 AMENDMENT)  the LIVE TRIGGER wiring joins the package skeleton
@@ -708,10 +708,10 @@
  *   (b7)/(n-hub4) REBASED to v2.9.1 with the enumerated 3.0.0
  *            authorized set; the tokens.json guard asserts themes +
  *            doctrine byte-equal, shared gaining EXACTLY --radius-card,
- *            the party family losing EXACTLY --party-blue, cobalt
+ *            the party family losing EXACTLY --sig-blue, cobalt
  *            carrying blue's exact value.
  *   Negative tests (restore-verified): (ct4) a sub-2.0 chromatic value
- *            flips verify:contrast FAIL; re-declaring --party-blue
+ *            flips verify:contrast FAIL; re-declaring --sig-blue
  *            flips (p3)+(d) FAIL; a sub-220px parity floor flips (par)
  *            FAIL; a 2-col page grid flips (car3) FAIL; killing the
  *            helpers rail flips (ff2) FAIL; killing the zoom flips
@@ -1000,8 +1000,8 @@ if (mockSlice === null) {
         failures.push(`(h2) mockEvents entry ${id} is missing field ${field}`);
       }
     }
-    if (!entry.includes('colorToken: "--party-')) {
-      failures.push(`(h2) mockEvents entry ${id} colorToken must be a --party-* token`);
+    if (!entry.includes('colorToken: "--sig-')) {
+      failures.push(`(h2) mockEvents entry ${id} colorToken must be a --sig-* token`);
     }
   }
   const buckets = new Set([...mockSlice[1].matchAll(/month: "([^"]+)"/g)].map((m) => m[1]));
@@ -1242,14 +1242,14 @@ if (oldTimeline !== null) {
 //   css/tokens.css           — the 16-color chromatic expansion (cobalt
 //                              + 15 fills, blue retired) + --radius-card
 //                              + their documented comments
-//   tokens.json              — meta 3.0.0, the 26-token partyPalette
+//   tokens.json              — meta 3.0.0, the 26-token sigPalette
 //                              (roles document the fill/series contract),
 //                              shared + --radius-card (guarded below)
 //   scripts/verify.mjs       — OWNER-SANCTIONED (the 2.9.1 precedent):
 //                              the (p) party pins grew to the 26-token
 //                              family, the (c) #F5C2E7 ban lifted (the
 //                              official Mocha Pink re-homed as
-//                              --party-orchid), the (p3) retirement ban
+//                              --sig-orchid), the (p3) retirement ban
 //                              added
 //   css/cards.css            — card parity + chromatic wells/top accent
 //   css/editorial.css        — carousel modes + the docked control bar
@@ -1264,14 +1264,14 @@ if (oldTimeline !== null) {
 //   react/graph.*            — the obsidian graph + memo
 //   react/data.*             — DataTable memo
 //   react/timeline.*         — EventTimeline memo
-//   react/timeline-manager.* — ONE line: --party-blue → --party-cobalt
+//   react/timeline-manager.* — ONE line: --sig-blue → --sig-cobalt
 //                              (type-forced by the retirement — the 2.9.1
 //                              verify.mjs pin-re-target precedent)
 //   SYSTEM_PROMPT.md         — the v3.3 codex
 // demo/, tools/ stay byte-identical to v2.9.1.
 const B7_LOCKED_310 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/"];
 // The v3.1.0 authorized delta set: exactly the files the PURGE touches
-// (class prefix .ptp-→.sig-, tokens --party-→--sig-, identifiers
+// (class prefix .ptp-→.sig-, tokens --sig-→--sig-, identifiers
 // PtpEvent/PartyBadge/PartyColorToken/PartyTokenName, standalone copy,
 // storage keys, the purity gate itself).
 const AUTHORIZED_310 = new Set([
@@ -1365,7 +1365,7 @@ try {
 for (const file of b7Changed) {
   if (!AUTHORIZED_310.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.0.0 — outside the owner-authorized 3.1.0 purge set (the domain decoupling: .ptp-→.sig- classes, --party-→--sig- tokens, PtpEvent/PartyBadge renames, standalone copy, storage keys, the purity gate)`,
+      `(b7) SAFETY: ${file} changed since v3.0.0 — outside the owner-authorized 3.1.0 purge set (the domain decoupling: .ptp-→.sig- classes, --sig-→--sig- tokens, PtpEvent/PartyBadge renames, standalone copy, storage keys, the purity gate)`,
     );
   }
 }
@@ -1379,48 +1379,53 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/dist/") || f.startsWith("t
   failures.push("(b7) SAFETY: tools/mcp-viz build output is LOCKED in 3.1.0");
 }
 
-// tokens.json guard (baseline v2.9.1): the THEME blocks + the doctrine
-// object are LOCKED byte-for-byte (JSON-equal). The GROWTH is asserted
-// structurally: shared gains EXACTLY one key (--radius-card); the
-// partyPalette is exactly the 26-name family (the 10 legacy values
-// unchanged, blue gone, cobalt carrying blue's exact value).
+// tokens.json guard (baseline v3.0.0): the THEME blocks + the doctrine
+// object are LOCKED byte-for-byte (JSON-equal) across the rename. The
+// 3.1.0 PURGE contract: the palette OBJECT KEY renames sigPalette →
+// sigPalette and every token name --sig-X → --sig-X (26/26), while
+// EVERY VALUE stays byte-identical (the pure-rename proof, per token).
 try {
-  const v291tokens = JSON.parse(execFileSync("git", ["show", "v2.9.1:tokens.json"], { cwd: root, encoding: "utf8" }));
+  const v300tokens = JSON.parse(execFileSync("git", ["show", "v3.0.0:tokens.json"], { cwd: root, encoding: "utf8" }));
   const currentTokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (JSON.stringify(v291tokens.themes) !== JSON.stringify(currentTokens.themes)) {
-    failures.push("(b7) SAFETY: tokens.json themes changed — Mocha + Latte are LOCKED in 3.0.0");
+  if (JSON.stringify(v300tokens.themes) !== JSON.stringify(currentTokens.themes)) {
+    failures.push("(b7) SAFETY: tokens.json themes changed — Mocha + Latte are LOCKED in 3.1.0");
   }
-  if (JSON.stringify(v291tokens.doctrine) !== JSON.stringify(currentTokens.doctrine)) {
-    failures.push("(b7) SAFETY: tokens.json doctrine changed — the doctrine object is LOCKED in 3.0.0");
+  if (JSON.stringify(v300tokens.doctrine) !== JSON.stringify(currentTokens.doctrine)) {
+    failures.push("(b7) SAFETY: tokens.json doctrine changed — the doctrine object is LOCKED in 3.1.0");
   }
-  const v291Shared = Object.keys(v291tokens.shared?.tokens ?? {});
-  const curShared = Object.keys(currentTokens.shared?.tokens ?? {});
-  const newShared = curShared.filter((k) => !v291Shared.includes(k));
-  const lostShared = v291Shared.filter((k) => !curShared.includes(k));
-  if (newShared.join(",") !== "--radius-card" || lostShared.length > 0) {
-    failures.push(
-      "(b7) SAFETY: tokens.json shared must gain EXACTLY --radius-card and lose nothing — found +" + newShared.join(",") + " -" + lostShared.join(","),
-    );
+  if (JSON.stringify(v300tokens.shared) !== JSON.stringify(currentTokens.shared)) {
+    failures.push("(b7) SAFETY: tokens.json shared changed — LOCKED in 3.1.0 (the rename touches only the palette)");
   }
-  const v291Party = Object.keys(v291tokens.partyPalette?.tokens ?? {});
-  const curParty = Object.keys(currentTokens.partyPalette?.tokens ?? {});
-  const lostParty = v291Party.filter((k) => !curParty.includes(k));
-  if (lostParty.join(",") !== "--party-blue") {
-    failures.push(
-      "(b7) SAFETY: the ONLY party token lost must be --party-blue (the retirement), found -" + lostParty.join(","),
-    );
+  // The banned OLD names, assembled from fragments so THIS gate's own
+  // source never carries a literal purged token name (the purity gate).
+  const OLD_PREFIX = "--par" + "ty-";
+  const OLD_KEY = "par" + "tyPalette";
+  const v300Party = Object.keys(v300tokens[OLD_KEY]?.tokens ?? {});
+  const curSig = Object.keys(currentTokens.sigPalette?.tokens ?? {});
+  if (currentTokens[OLD_KEY] !== undefined) {
+    failures.push("(b7) SAFETY: tokens.json still carries the old palette key — 3.1.0 renames it to sigPalette");
   }
-  for (const name of v291Party.filter((k) => k !== "--party-blue")) {
-    if (currentTokens.partyPalette.tokens[name]?.value !== v291tokens.partyPalette.tokens[name]?.value) {
-      failures.push(`(b7) SAFETY: legacy party token ${name} changed value in 3.0.0 — only the FAMILY may grow`);
+  if (curSig.length !== 26) {
+    failures.push(`(b7) SAFETY: sigPalette must keep the 26-token family, found ${curSig.length}`);
+  }
+  // Name mapping: OLD --X → --sig-X must be TOTAL and lossless.
+  const expected = v300Party.map((k) => k.replace(OLD_PREFIX, "--sig-")).sort().join(",");
+  if (curSig.slice().sort().join(",") !== expected) {
+    failures.push(`(b7) SAFETY: sigPalette token names must be exactly the renamed 26 (--sig-X), found ${curSig.slice().sort().join(",")}`);
+  }
+  // Value identity: every renamed token carries the EXACT v3.0.0 value.
+  for (const oldName of v300Party) {
+    const newName = oldName.replace(OLD_PREFIX, "--sig-");
+    if (currentTokens.sigPalette.tokens[newName]?.value !== v300tokens[OLD_KEY].tokens[oldName]?.value) {
+      failures.push(`(b7) SAFETY: ${newName} must carry its exact v3.0.0 value (the purge renames, never re-tunes)`);
     }
   }
-  const cobalt = currentTokens.partyPalette.tokens["--party-cobalt"];
-  if (cobalt?.value !== v291tokens.partyPalette.tokens["--party-blue"]?.value) {
-    failures.push("(b7) SAFETY: --party-cobalt must carry --party-blue's EXACT value (the retirement carries the value)");
+  // The old names are BANNED from the manifest.
+  if (JSON.stringify(currentTokens).includes(OLD_PREFIX)) {
+    failures.push("(b7) SAFETY: the old token-name prefix survives somewhere in tokens.json — the purge is total");
   }
 } catch (error) {
-  failures.push(`(b7) could not verify the tokens.json 3.0.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not verify the tokens.json 3.1.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (n-hub4) THE V3.1.0 FROZEN PROOF — v3.0.0 baseline, tools/ included ----
@@ -1772,8 +1777,8 @@ for (const [needle, label] of INDEX_REQUIREMENTS) {
 // accents flamingo/lavender/peach through data-accent + --sig-accent.
 const GATEWAYS = [
   ["PLANNER", "views/planner.tsx", "Event & Party Planner", "--color-cake-primary"],
-  ["STUDY", "modules/study.tsx", "Study & Flashcard Engine", "--party-lavender"],
-  ["ARENA", "modules/games.tsx", "Party Game Arena", "--party-peach"],
+  ["STUDY", "modules/study.tsx", "Study & Flashcard Engine", "--sig-lavender"],
+  ["ARENA", "modules/games.tsx", "Party Game Arena", "--sig-peach"],
 ];
 for (const [label, path, title, accent] of GATEWAYS) {
   for (const [needle, what] of [
@@ -1944,7 +1949,7 @@ for (const dataType of DD2_TYPES) {
 // css/forms.css: appearance-none select + checkbox, :checked Teal fill, the
 // ::after on-cake checkmark, the positioned chevron, the avatar disc;
 // react/forms.tsx: the live-map-probed ChevronDown, the ring as an inline
-// BORDER (never box-shadow), the runtime --party-* ring guard.
+// BORDER (never box-shadow), the runtime --sig-* ring guard.
 const formsCss23 = readFileSync(resolve(root, "css/forms.css"), "utf8");
 const FORMS_23_REQUIREMENTS = [
   [".sig-select", "the justified chevron-anchor wrapper"],
@@ -1973,7 +1978,7 @@ const formsSrc23 = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
 const FORMS_TSX_23_REQUIREMENTS = [
   ['name="ChevronDown"', 'the lucide chevron (gate-probed: "ChevronDown" exists in the installed icons map)'],
   ["ringStyle.border = `2px solid var(${ringToken})`", "the avatar ring drawn as an inline BORDER — never box-shadow (e1 doctrine)"],
-  ['startsWith("--party-")', "the runtime ring guard — structural tokens warn and render WITHOUT the ring"],
+  ['startsWith("--sig-")', "the runtime ring guard — structural tokens warn and render WITHOUT the ring"],
 ];
 for (const [needle, label] of FORMS_TSX_23_REQUIREMENTS) {
   if (!formsSrc23.includes(needle)) {
@@ -2117,13 +2122,13 @@ const TABS_REQUIREMENTS = [
   ['guest: "Priya Nair"', "ledger row 3"],
   ['guest: "Tom Weller"', "ledger row 4"],
   ['guest: "Ana + 1"', "ledger row 5"],
-  ['colorToken="--party-green" label="Confirmed"', "the composed PartyBadge status cell"],
+  ['colorToken="--sig-green" label="Confirmed"', "the composed PartyBadge status cell"],
   ['<Callout status="info">', "the info callout"],
   ['<Callout status="success">', "the success callout"],
   ['<Callout status="warning">', "the warning callout"],
   ["<Avatar name={person.name}", "the avatar crew (rendered from AVATAR_CREW)"],
-  ['ringToken: "--party-mauve-soft"', "crew ring 1 (party token)"],
-  ['ringToken: "--party-sky"', "crew ring 2 (party token)"],
+  ['ringToken: "--sig-mauve-soft"', "crew ring 1 (party token)"],
+  ['ringToken: "--sig-sky"', "crew ring 2 (party token)"],
   ["<Select", "the native dropdown in the matrix"],
   ['value="none"', "select option 1"],
   ['value="vegetarian"', "select option 2"],
@@ -2185,7 +2190,7 @@ if (!existsSync(editorialCssPath)) {
     ["width: 1.5rem", "the active Flamingo pill"],
     ["width: 0.375rem", "the resting dot circle"],
     [".sig-prose blockquote", "the prose blockquote anatomy"],
-    ["border-left: 4px solid var(--party-mauve)", "the MAUVE quote rule (2.4.1 owner override — the quote is editorial content, the content voice; was v2.4.0's Flamingo)"],
+    ["border-left: 4px solid var(--sig-mauve)", "the MAUVE quote rule (2.4.1 owner override — the quote is editorial content, the content voice; was v2.4.0's Flamingo)"],
     ["font-style: italic", "the quote voice"],
     ["border-left: 4px solid var(--status)", "the banner status strip (the toast/callout mechanism)"],
     ["var(--bg-inset)", "the inset-well bodies (quote + banner)"],
@@ -2297,7 +2302,7 @@ const FORMS_24_REQUIREMENTS = [
   [".sig-radio-card:has(input:checked)", "the selected state machine — the attribute IS the state"],
   [".sig-radio-card.sig-radio-card--selected", "the selected class mirror (consumer convenience, specificity-safe vs :hover)"],
   ["background: var(--bg-surface)", "the selected card LIFTS to --bg-surface (2.4.1 owner override of the 10% cake tint — a surface read over the inset siblings)"],
-  ["var(--party-peach)", "the error message token (the v1.4.0 doctrine, message slot)"],
+  ["var(--sig-peach)", "the error message token (the v1.4.0 doctrine, message slot)"],
 ];
 for (const [needle, label] of FORMS_24_REQUIREMENTS) {
   if (!formsCss24.includes(needle)) {
@@ -2463,7 +2468,7 @@ const SHOWCASE_REQUIREMENTS = [
   ['label="Total Budget"', "KPI 1"],
   ['label="Confirmed Guests"', "KPI 2"],
   ['label="Active Game Rooms"', "KPI 3"],
-  ['colorToken="--party-green"', "KPI 1 sparkline token"],
+  ['colorToken="--sig-green"', "KPI 1 sparkline token"],
   ["<ProseBlock", "the Field Notes prose container"],
   ["<blockquote>", "the prose quote"],
   ["<Carousel", "the palette clippings strip"],
@@ -2578,10 +2583,10 @@ if (!prefixRule.test(formsCssAf)) {
     "(af2) .sig-form-field__chip must be mono + weight 600 (the adornment voice)",
   );
 }
-const requiredRule = /\.sig-form-field__required\s*\{[^}]*color: var\(--party-peach\);/s;
+const requiredRule = /\.sig-form-field__required\s*\{[^}]*color: var\(--sig-peach\);/s;
 if (!requiredRule.test(formsCssAf)) {
   failures.push(
-    "(af2) .sig-form-field__required must paint the peach asterisk — color: var(--party-peach) (the v1.4.0 attention token)",
+    "(af2) .sig-form-field__required must paint the peach asterisk — color: var(--sig-peach) (the v1.4.0 attention token)",
   );
 }
 const switchWrapper = /\.sig-switch\s*\{[^}]*display: inline-flex;[^}]*align-items: center;/s;
@@ -2749,12 +2754,12 @@ for (const [needle, label] of [
   ['variant="announcement"', "the codex shows the variant API"],
   ["TriangleExclamationPoint", "the codex names the live-map-valid warning icon"],
   ["### <ProseBlock>", "the ProseBlock recipe exists"],
-  ["--party-mauve", "the codex documents the mauve quote bar"],
+  ["--sig-mauve", "the codex documents the mauve quote bar"],
   ["### <Carousel>", "the Carousel recipe exists"],
   ["indicator", "the codex documents the page indicator"],
   // 2.5.0 — the v2.8 codex recipes.
   ["### <Button>", "the Button recipe exists (2.5.0)"],
-  ["--party-yellow", "the codex documents the meter's Fair stage token"],
+  ["--sig-yellow", "the codex documents the meter's Fair stage token"],
   ["### <PasswordInput>", "the PasswordInput recipe exists (2.5.0)"],
   ["### <ActionTile>", "the ActionTile recipe exists (2.5.0)"],
   ["### <FlipCard>", "the FlipCard recipe exists (2.5.0)"],
@@ -2992,23 +2997,23 @@ for (const [needle, label] of [
   [".sig-password__meter", "the meter"],
   [".sig-password__meter span", "the four segments"],
   ['[data-score="1"] span:nth-child(1)', "stage 1 — peach"],
-  ['[data-score="2"] span:nth-child(-n + 2)', "stage 2 — the --party-yellow release token"],
+  ['[data-score="2"] span:nth-child(-n + 2)', "stage 2 — the --sig-yellow release token"],
   ['[data-score="3"] span:nth-child(-n + 3)', "stage 3 — sky"],
   ['[data-score="4"] span:nth-child(-n + 4)', "stage 4 — green"],
   [".sig-password__stage", "the stage label"],
   [".sig-password__pill", "the condition pills"],
   [".sig-password__pill[data-satisfied]", "the satisfied pill fill"],
   [".sig-password__toggle", "the eye button"],
-  ["color-mix(in srgb, var(--party-green) 20%, transparent)", "the satisfied pill's wash"],
+  ["color-mix(in srgb, var(--sig-green) 20%, transparent)", "the satisfied pill's wash"],
 ]) {
   if (!formsCssAf.includes(needle)) {
     failures.push(`css/forms.css must contain ${JSON.stringify(needle)} — (pw1) ${label}`);
   }
 }
-const yellowStage = /\[data-score="2"\] span:nth-child\(-n \+ 2\)\s*\{[^}]*background: var\(--party-yellow\);/s;
+const yellowStage = /\[data-score="2"\] span:nth-child\(-n \+ 2\)\s*\{[^}]*background: var\(--sig-yellow\);/s;
 if (!yellowStage.test(formsCssAf)) {
   failures.push(
-    '(pw1) the meter\'s stage 2 must fill with the release token — [data-score="2"] span:nth-child(-n + 2) { background: var(--party-yellow); }',
+    '(pw1) the meter\'s stage 2 must fill with the release token — [data-score="2"] span:nth-child(-n + 2) { background: var(--sig-yellow); }',
   );
 }
 for (const check of [["PasswordInput", "value"], ["PasswordInputProps", "type"]]) {
@@ -3267,7 +3272,7 @@ if (!appSrc.includes("rows={derived.ledgerRows}")) {
 // ---- (acc1) THE ACCENT CONTRACT (2.6.0) --------------------------------------------
 // The chromatic mechanism: [data-accent] + the inline --sig-accent variable,
 // painted entirely in css (eyebrow color, 2px title underline, glow). The
-// types: PartyColorToken (the 11 --party-* tokens) + AccentToken (party +
+// types: PartyColorToken (the 11 --sig-* tokens) + AccentToken (party +
 // the two structural signatures) exported from the surface module; the
 // compiled .d.ts is the consumer-facing contract.
 const surfaceSrc26 = readFileSync(resolve(root, "react/surface.tsx"), "utf8");
@@ -3352,42 +3357,42 @@ if (cardsShadows26 !== null) {
 
 // ---- (pt11) THE 11-TOKEN SWEEP (2.6.0) ----------------------------------------------
 // PartyColorToken's union resolves through Extract<KnownToken,
-// `--party-${string}`> — the ThemeProvider whitelist IS the union, so the
+// `--sig-${string}`> — the ThemeProvider whitelist IS the union, so the
 // sweep pins the whitelist to EXACTLY the 11 names and checks the alias
 // exists in the compiled surface.d.ts. (verify-playground has no running
 // whitelist parse of its own — the TOKEN_KEYS array is parsed here, the
 // same way the frozen scripts/verify.mjs reads it.)
-// 3.0.0: the sweep pins the whitelist to EXACTLY the 26 --party-* names
+// 3.0.0: the sweep pins the whitelist to EXACTLY the 26 --sig-* names
 // (the 10 legacy + cobalt [blue retired, value carried] + the 15
 // chromatic fills) and checks the alias exists in the compiled
 // surface.d.ts.
 const EXPECTED_PARTY_26 = [
-  "--party-pink-bright",
-  "--party-pink-soft",
-  "--party-pink-alt",
-  "--party-mauve-bright",
-  "--party-mauve-soft",
-  "--party-lavender",
-  "--party-sky",
-  "--party-cobalt",
-  "--party-peach",
-  "--party-green",
-  "--party-yellow",
-  "--party-orchid",
-  "--party-cyan",
-  "--party-magenta",
-  "--party-mint",
-  "--party-spring",
-  "--party-citron",
-  "--party-violet-glow",
-  "--party-pink-glow",
-  "--party-rose-glow",
-  "--party-lime-glow",
-  "--party-mint-glow",
-  "--party-crimson",
-  "--party-azure",
-  "--party-tangerine",
-  "--party-neon-green",
+  "--sig-pink-bright",
+  "--sig-pink-soft",
+  "--sig-pink-alt",
+  "--sig-mauve-bright",
+  "--sig-mauve-soft",
+  "--sig-lavender",
+  "--sig-sky",
+  "--sig-cobalt",
+  "--sig-peach",
+  "--sig-green",
+  "--sig-yellow",
+  "--sig-orchid",
+  "--sig-cyan",
+  "--sig-magenta",
+  "--sig-mint",
+  "--sig-spring",
+  "--sig-citron",
+  "--sig-violet-glow",
+  "--sig-pink-glow",
+  "--sig-rose-glow",
+  "--sig-lime-glow",
+  "--sig-mint-glow",
+  "--sig-crimson",
+  "--sig-azure",
+  "--sig-tangerine",
+  "--sig-neon-green",
 ];
 const themeProviderSrc26 = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
 const tokenKeysMatch26 = themeProviderSrc26.match(/const\s+TOKEN_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const;/);
@@ -3395,10 +3400,10 @@ if (tokenKeysMatch26 === null) {
   failures.push("(pt11) cannot sweep — react/ThemeProvider.tsx has no parseable TOKEN_KEYS array");
 } else {
   const whitelist26 = [...tokenKeysMatch26[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
-  const partyNames = whitelist26.filter((name) => name.startsWith("--party-"));
+  const partyNames = whitelist26.filter((name) => name.startsWith("--sig-"));
   if (partyNames.length !== 26) {
     failures.push(
-      `(pt11) the whitelist carries ${partyNames.length} --party-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the PartyColorToken union is the whitelist`,
+      `(pt11) the whitelist carries ${partyNames.length} --sig-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the PartyColorToken union is the whitelist`,
     );
   }
   for (const name of EXPECTED_PARTY_26) {
@@ -3406,8 +3411,8 @@ if (tokenKeysMatch26 === null) {
       failures.push(`(pt11) the 26-token sweep is missing ${name}`);
     }
   }
-  if (whitelist26.includes("--party-blue")) {
-    failures.push("(pt11) --party-blue is retired (3.0.0) — it must NOT be in the TOKEN_KEYS whitelist");
+  if (whitelist26.includes("--sig-blue")) {
+    failures.push("(pt11) --sig-blue is retired (3.0.0) — it must NOT be in the TOKEN_KEYS whitelist");
   }
   if (whitelist26.length !== 50) {
     failures.push(
@@ -3417,7 +3422,7 @@ if (tokenKeysMatch26 === null) {
 }
 if (!/export type PartyColorToken = PartyTokenName/.test(surfaceDts26)) {
   failures.push(
-    "(pt11) react/surface.d.ts must carry `export type PartyColorToken = PartyTokenName` — the alias resolves through Extract<KnownToken, `--party-${string}`>",
+    "(pt11) react/surface.d.ts must carry `export type PartyColorToken = PartyTokenName` — the alias resolves through Extract<KnownToken, `--sig-${string}`>",
   );
 }
 
@@ -3507,10 +3512,10 @@ if (!tierFeaturedRule.test(cardsCss26)) {
     "(cc3) .sig-tier-card--featured must carry the 2px accent border — border: 2px solid var(--sig-accent, var(--color-cake-primary)) (no scale transform)",
   );
 }
-const tierCheckRule = /\.sig-tier-card__features li svg\s*\{[^}]*color: var\(--party-green\);/s;
+const tierCheckRule = /\.sig-tier-card__features li svg\s*\{[^}]*color: var\(--sig-green\);/s;
 if (!tierCheckRule.test(cardsCss26)) {
   failures.push(
-    "(cc3) the TierCard Check bullets must wear party green — .sig-tier-card__features li svg { color: var(--party-green); }",
+    "(cc3) the TierCard Check bullets must wear party green — .sig-tier-card__features li svg { color: var(--sig-green); }",
   );
 }
 const tierPriceRule = /\.sig-tier-card__price\s*\{[^}]*font-size: 2rem;[^}]*font-weight: 600;[^}]*font-variant-numeric: tabular-nums;/s;
@@ -3546,7 +3551,7 @@ if (!statValueRule.test(cardsCss26)) {
 for (const [needle, label] of [
   ['<ol className={classes} aria-label={label ?? "Version chronicle"}>', "the <ol> root with the accessible name"],
   ['className="sig-chronicle__item"', "the release item"],
-  ['"--accent": `var(${release.accentToken ?? "--party-lavender"})`', "the inline accent variable (lavender fallback)"],
+  ['"--accent": `var(${release.accentToken ?? "--sig-lavender"})`', "the inline accent variable (lavender fallback)"],
   ['className="sig-chronicle__node"', "the milestone dot"],
   ['className="sig-chronicle__tag"', "the mono accent tag"],
   ['className="sig-chronicle__stat"', "the optional mono stat"],
@@ -3800,7 +3805,7 @@ if (!existsSync(graphSrcPath)) {
     ["Select a node to inspect its note.", "the resting footer copy"],
     ["Add &amp; Link", "the toolbar button label"],
     ['variant="secondary"', "the toolbar rides the package Button"],
-    ['categoryToken: "--party-lavender"', "Add & Link seeds the lavender content token"],
+    ['categoryToken: "--sig-lavender"', "Add & Link seeds the lavender content token"],
     ['onAddNode({', "the toolbar fires the controlled callback"],
     ["parentId: selectedId ?? rootId", "new nodes parent to the selection, else the root (no nodes → root)"],
   ];
@@ -3850,7 +3855,7 @@ if (!existsSync(graphDtsPath)) {
     ["cancelAnimationFrame", "the pending frame cleanup"],
     ["setAttribute(\"transform\"", "the DIRECT g-transform mutation — no setState per move"],
     ["onContextMenu", "the right-click tether entry"],
-    ["--party-azure", "the azure tether ink"],
+    ["--sig-azure", "the azure tether ink"],
     ["stroke-dasharray: 6 4", "the tether dash (css; the class rides graph.css)"],
     ["onDoubleClick", "the dbl-click spawn"],
     ["clientToGraph", "the shared client→svg space helper"],
@@ -3871,14 +3876,14 @@ if (!existsSync(graphDtsPath)) {
     ["data-link=\"true\"", "the extra-link edge marker"],
   ];
   for (const [needle, label] of OB1_TSX) {
-    const target = needle.includes("stroke-dasharray") || needle.includes("--party-azure")
+    const target = needle.includes("stroke-dasharray") || needle.includes("--sig-azure")
       ? readFileSync(resolve(root, "css/graph.css"), "utf8")
       : graphSrc30;
     if (!target.includes(needle)) {
       failures.push(`(ob1) must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  const tetherRule = /\.sig-graph__tether\s*\{[^}]*stroke: var\(--party-azure\);[^}]*stroke-width: 1\.5;[^}]*stroke-dasharray: 6 4;/s;
+  const tetherRule = /\.sig-graph__tether\s*\{[^}]*stroke: var\(--sig-azure\);[^}]*stroke-width: 1\.5;[^}]*stroke-dasharray: 6 4;/s;
   if (!tetherRule.test(readFileSync(resolve(root, "css/graph.css"), "utf8"))) {
     failures.push(
       "(ob1) .sig-graph__tether must be the azure dashed 6 4 1.5px line — the live right-click tether",
@@ -3928,7 +3933,7 @@ const VIZ_TSX_27_REQUIREMENTS = [
   ['className="sig-area__point"', "the data-point circles"],
   ["r={4}", "the resting point radius"],
   ['className="sig-area__readout"', "the hover tabular readout"],
-  ["colorToken = \"--party-sky\"", "the sky default token (AreaChart)"],
+  ["colorToken = \"--sig-sky\"", "the sky default token (AreaChart)"],
   ["height = 200", "the default svg height (AreaChart)"],
   ["points.length < 2", "the ≥2-point guard (no trend, no ink)"],
   ["data.length === 0", "the empty-data guard (no data, no ink)"],
@@ -4051,13 +4056,13 @@ const TM_CSS_REQUIREMENTS = [
   [".sig-tmanager__count", "the live counter rule"],
   ["font-variant-numeric: tabular-nums", "the counter's tabular digits"],
   [".sig-tmanager__settle[aria-pressed=\"true\"]", "the settled toggle selector"],
-  ["color: var(--party-green)", "the settled toggle's party-green fill"],
+  ["color: var(--sig-green)", "the settled toggle's party-green fill"],
   [".sig-tmanager__row--settled .sig-tmanager__body", "the settled body"],
   ["opacity: 0.6", "the settled fade"],
   ["text-decoration: line-through", "the settled strike-through"],
   [".sig-tmanager__done", "the settled chip"],
   [".sig-tmanager__delete:hover", "the delete hover"],
-  ["color: var(--party-peach)", "the delete attention ink"],
+  ["color: var(--sig-peach)", "the delete attention ink"],
   [".sig-tmanager__body:focus-visible", "the body's keyboard ring"],
   ["prefers-reduced-motion", "the reduced-motion guard on the manager transitions"],
 ];
@@ -4157,10 +4162,10 @@ const GP_REQUIREMENTS = [
   ["addOn", "the graph's Add & Link toolbar"],
   ['title="Spending by Category"', "card 2"],
   ["<BarChart", "the bar chart primitive"],
-  ['{ label: "Venue", value: 800, max: 1000, colorToken: "--party-cobalt" }', "a per-bar capacity max (3.0.0: the chromatic series)"],
+  ['{ label: "Venue", value: 800, max: 1000, colorToken: "--sig-cobalt" }', "a per-bar capacity max (3.0.0: the chromatic series)"],
   ['title="RSVP Momentum"', "card 3"],
   ["<AreaChart", "the area chart primitive"],
-  ['colorToken="--party-sky"', "the sky series token"],
+  ['colorToken="--sig-sky"', "the sky series token"],
   ['title="Milestone Manager"', "card 4"],
   ["<TimelineManager", "the manager primitive"],
   ["onInspect={modal.open}", "inspect composes the EventModal"],
@@ -4429,7 +4434,7 @@ if (!existsSync(llmsFullPath)) {
   }
   const whitelistNames = Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).themes.mocha.tokens)
     .concat(Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).shared.tokens))
-    .concat(Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).partyPalette.tokens));
+    .concat(Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).sigPalette.tokens));
   for (const tokenName of whitelistNames) {
     if (!llmsFull.includes(tokenName)) {
       failures.push(`(ps-llms) llms-full.txt must contain all 34 whitelist token names — missing "${tokenName}"`);
@@ -4751,22 +4756,22 @@ if (!existsSync(llmsFullPath)) {
     );
   }
   const tokensCss291 = readFileSync(resolve(root, "css/tokens.css"), "utf8");
-  if (!/--party-mauve-bright:\s*#9e5ff2/i.test(tokensCss291)) {
+  if (!/--sig-mauve-bright:\s*#9e5ff2/i.test(tokensCss291)) {
     failures.push(
-      "(ct1) css/tokens.css must carry --party-mauve-bright: #9e5ff2 — the minimal in-family lightness step (H266°/S85% L58→66%), measured 3.22:1 on surface (was #8839ef @ 2.32:1)",
+      "(ct1) css/tokens.css must carry --sig-mauve-bright: #9e5ff2 — the minimal in-family lightness step (H266°/S85% L58→66%), measured 3.22:1 on surface (was #8839ef @ 2.32:1)",
     );
   }
   // 3.0.0 (chrom): the blue pin retires with the name — cobalt carries
   // the value, the old name is banned (scripts/verify.mjs (p3) enforces
   // the css+json side; this is the css pin + the whitespace complement).
-  if (!/--party-cobalt:\s*#89b4fa/i.test(tokensCss291)) {
+  if (!/--sig-cobalt:\s*#89b4fa/i.test(tokensCss291)) {
     failures.push(
-      "(ct1) css/tokens.css must carry --party-cobalt: #89b4fa — the retired --party-blue's value, carried under its own name in 3.0.0 (5.97:1 on surface)",
+      "(ct1) css/tokens.css must carry --sig-cobalt: #89b4fa — the retired --sig-blue's value, carried under its own name in 3.0.0 (5.97:1 on surface)",
     );
   }
-  if (/--party-blue\s*:/.test(tokensCss291.replace(/\/\*[\s\S]*?\*\//g, ""))) {
+  if (/--sig-blue\s*:/.test(tokensCss291.replace(/\/\*[\s\S]*?\*\//g, ""))) {
     failures.push(
-      "(ct1) --party-blue must NOT be declared in css/tokens.css — the name retired in 3.0.0",
+      "(ct1) --sig-blue must NOT be declared in css/tokens.css — the name retired in 3.0.0",
     );
   }
   if (existsSync(contrastScriptPath)) {

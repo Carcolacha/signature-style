@@ -1,16 +1,16 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
 import { memo, useId, useState } from "react";
 export function ProgressBar({ value, colorToken, label, limitText }) {
-    if (!colorToken.startsWith("--party-")) {
-        console.warn(`[signature-style] dropped "${colorToken}" — ProgressBar accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
+    if (!colorToken.startsWith("--sig-")) {
+        console.warn(`[signature-style] dropped "${colorToken}" — ProgressBar accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
         return null;
     }
     const clamped = Math.min(100, Math.max(0, value));
     return (_jsxs(_Fragment, { children: [_jsx("div", { className: "sig-progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": clamped, "aria-label": label, children: _jsx("div", { className: "sig-progress__fill", style: { width: `${clamped}%`, background: `var(${colorToken})` } }) }), limitText !== undefined && (_jsx("div", { className: "sig-progress__caption", children: limitText }))] }));
 }
 export function StatRing({ value, colorToken, size = 120, strokeWidth = 8, showValue = true, label, total, unit, }) {
-    if (!colorToken.startsWith("--party-")) {
-        console.warn(`[signature-style] dropped "${colorToken}" — StatRing accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
+    if (!colorToken.startsWith("--sig-")) {
+        console.warn(`[signature-style] dropped "${colorToken}" — StatRing accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
         return null;
     }
     // 3.0.0 — the internal EXPAND state (the zoom): a click toggles
@@ -77,16 +77,16 @@ function sparkPoints(data, width, height) {
  *
  * @example
  * ```tsx
- * <Sparkline data={[1200, 1450, 1380, 1600, 1780, 2000]} colorToken="--party-green" label="Budget trend" />
+ * <Sparkline data={[1200, 1450, 1380, 1600, 1780, 2000]} colorToken="--sig-green" label="Budget trend" />
  * ```
  */
-export function Sparkline({ data, colorToken = "--party-sky", width = 120, height = 36, label, }) {
+export function Sparkline({ data, colorToken = "--sig-sky", width = 120, height = 36, label, }) {
     if (data.length < 2) {
         console.warn(`[signature-style] dropped sparkline — data needs ≥2 points (got ${data.length}); no trend, no ink.`);
         return null;
     }
-    if (!colorToken.startsWith("--party-")) {
-        console.warn(`[signature-style] dropped "${colorToken}" — Sparkline accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
+    if (!colorToken.startsWith("--sig-")) {
+        console.warn(`[signature-style] dropped "${colorToken}" — Sparkline accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
         return null;
     }
     const { line, area } = sparkPoints(data, width, height);
@@ -97,8 +97,8 @@ export function Sparkline({ data, colorToken = "--party-sky", width = 120, heigh
  *
  * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
- * → optional delta span (`--up` → var(--party-green), `--down` →
- * var(--party-peach) — content outcomes, party tokens) → optional
+ * → optional delta span (`--up` → var(--sig-green), `--down` →
+ * var(--sig-peach) — content outcomes, party tokens) → optional
  * `<Sparkline>` (labeled "<label> trend"). FLAT by the e1 doctrine:
  * the card separates with the 20% hairline, NO shadow (css/viz.css).
  * The sparkline's own token guard applies — a structural token drops
@@ -112,7 +112,7 @@ export function Sparkline({ data, colorToken = "--party-sky", width = 120, heigh
  *   delta="+$440"
  *   deltaDirection="up"
  *   sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
- *   colorToken="--party-green"
+ *   colorToken="--sig-green"
  * />
  * ```
  */
@@ -143,9 +143,9 @@ function barScaleMax(data) {
 /** The bar's party ink — warn-and-drop to structural Flamingo is NOT allowed
     here (bars are content), so a structural token REFUSES the whole datum. */
 function barToken(datum) {
-    const token = datum.colorToken ?? "--party-sky";
-    if (!token.startsWith("--party-")) {
-        console.warn(`[signature-style] dropped bar "${datum.label}" — colorToken accepts --party-* tokens only (Rule of Engagement).`);
+    const token = datum.colorToken ?? "--sig-sky";
+    if (!token.startsWith("--sig-")) {
+        console.warn(`[signature-style] dropped bar "${datum.label}" — colorToken accepts --sig-* tokens only (Rule of Engagement).`);
         return null;
     }
     return token;
@@ -191,8 +191,8 @@ function horizontalBar(datum, index, count, scaleMax) {
  * ```tsx
  * <BarChart
  *   data={[
- *     { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
- *     { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
+ *     { label: "Venue", value: 800, max: 1000, colorToken: "--sig-mauve-soft" },
+ *     { label: "Catering", value: 620, max: 900, colorToken: "--sig-peach" },
  *   ]}
  *   label="Spending by category"
  * />
@@ -286,18 +286,18 @@ function areaCoords(points) {
  *     { label: "W1", value: 12 }, { label: "W2", value: 18 },
  *     { label: "W3", value: 26 }, { label: "W4", value: 41 },
  *   ]}
- *   colorToken="--party-sky"
+ *   colorToken="--sig-sky"
  *   label="RSVP momentum"
  * />
  * ```
  */
-export const AreaChart = memo(function AreaChart({ points, colorToken = "--party-sky", height = 200, label, }) {
+export const AreaChart = memo(function AreaChart({ points, colorToken = "--sig-sky", height = 200, label, }) {
     if (points.length < 2) {
         console.warn(`[signature-style] dropped area chart — points needs ≥2 samples (got ${points.length}); no trend, no ink.`);
         return null;
     }
-    if (!colorToken.startsWith("--party-")) {
-        console.warn(`[signature-style] dropped "${colorToken}" — AreaChart accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
+    if (!colorToken.startsWith("--sig-")) {
+        console.warn(`[signature-style] dropped "${colorToken}" — AreaChart accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
         return null;
     }
     // React ids carry colons — strip them so url(#id) parses everywhere.
