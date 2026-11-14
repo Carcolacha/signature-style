@@ -57,9 +57,15 @@ const SKIP_EXTS = new Set([
  * number of banned-vocabulary matches sanctioned there. A file in this
  * map with a DIFFERENT count fails; a file NOT in this map with ANY
  * match fails.
+ *
+ * README.md is pinned to 9: the BREAKING CHANGES table EXISTS to name
+ * the old API surface so consumers can migrate (v3.0.0 → v3.1.0) —
+ * the owner-sanctioned "formerly" case. Old names anywhere else are
+ * residue.
  */
 const ALLOWLIST = new Map([
   ["playground/verify-playground.mjs", 3],
+  ["README.md", 9],
 ]);
 /** This gate excludes itself (its source names the banned words). */
 const SELF = relative(root, resolve(here, "verify-standalone.mjs")).split(sep).join("/");
@@ -123,7 +129,7 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
+const pinned = [...ALLOWLIST.entries()].map(([f, n]) => `${f}=${n}`).join(", ");
 console.log(
-  `PASS — verify:standalone: zero banned-vocabulary matches in the working tree ` +
-  `(${ALLOWLIST.get("playground/verify-playground.mjs")} pinned gate-machinery mentions in playground/verify-playground.mjs)`,
+  `PASS — verify:standalone: zero unallowed banned-vocabulary matches in the working tree (pinned allowlist: ${pinned})`,
 );

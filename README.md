@@ -4,6 +4,20 @@
 
 📖 **Read the manual:** [STORYBOOK.md](./STORYBOOK.md) — the official, human-readable guide to the philosophy, every color token, and the component API.
 
+## Standalone identity (v3.1.0 — "Pure Engine")
+
+`@edwyn/signature-style` is a **standalone, general-purpose design
+engine** — a universal Catppuccin-based design system, not a sub-folder
+of any other project. v3.1.0 is the complete domain decoupling: the
+engine's vocabulary is its own (`sig-` classes, `--sig-*` tokens,
+`TimelineEvent`, `SigBadge`, `Attendee`/`attendance`), its examples are
+universal engineering samples (workbench telemetry, resource
+allocation, benchmarks, milestone planners, knowledge graphs), and a
+dedicated purity gate (`npm run verify:standalone`) proves the working
+tree carries zero residue of any former host project. Same discipline
+as every release: token VALUES byte-identical, layout byte-stable —
+a pure rename, proven by the zero-delta cortex probe.
+
 `@edwyn/signature-style` installs edwyn's **Signature Style** into any project:
 a **harmonized** foundation — 100% official Catppuccin, per-theme
 (**Mocha (dark) by default, Latte (light) on request**, each wearing its own
@@ -11,12 +25,37 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v3.0** system prompt so AI agents can extend the
+**Dynamic Signature Engine v3.4** system prompt so AI agents can extend the
 style faithfully.
 
 ```
 npm i @edwyn/signature-style
 ```
+
+## BREAKING CHANGES (v3.1.0 — the renames table for consumers)
+
+The 3.1.0 release is a **pure rename**: every value, layout metric and
+behavior is byte-stable — but the PUBLIC NAMES changed. Consumers must
+mechanically re-aim:
+
+| v3.0.0 (old) | v3.1.0 (new) |
+|---|---|
+| `.ptp-*` CSS classes (191 names, e.g. `.ptp-btn`, `.ptp-timeline__node`, `.ptp-stat-card`) | `.sig-*` (identity map: `.sig-btn`, `.sig-timeline__node`, `.sig-stat-card` — zero collisions with the pre-existing `.sig-shell`/`.sig-cell`/`.sig-span-*`/card-archetype classes) |
+| `--party-*` tokens (26) | `--sig-*` (the 26 chromatic tokens: `--sig-cobalt`, `--sig-orchid`, `--sig-azure`, `--sig-neon-green`, … + the 10 legacy-suffix tokens `--sig-pink-bright`, `--sig-mauve-soft`, `--sig-lavender`, `--sig-sky`, `--sig-peach`, `--sig-green`, `--sig-yellow`, `--sig-pink-alt`, `--sig-pink-soft`, `--sig-mauve-bright`) — VALUES byte-identical |
+| tokens.json `partyPalette` key | `sigPalette` |
+| `PartyColorToken` type | `SigColorToken` |
+| `PartyTokenName` type | `SigTokenName` |
+| `PartyBadge` / `PartyBadgeProps` | `SigBadge` / `SigBadgeProps` |
+| `PtpEvent` interface | `TimelineEvent` |
+| `RsvpStatus` / `isRsvpStatus` (shared/schema.ts) | `AttendanceStatus` / `isAttendanceStatus` |
+| `Guest` / `isGuest` (shared/schema.ts) | `Attendee` / `isAttendee` (`rsvp` → `attendance`, `contributionCents` → `allocationCents`, `guestId` → `attendeeId`) |
+| localStorage keys `sig.v27.graph` / `sig.v27.timeline` (+ `-positions`/`links`) | `sig.workspace.v3.graph` / `sig.workspace.v3.timeline` (+ `-positions`/`links`) |
+| snapshot version `"sig.v27"` | `"sig.workspace.v3"` |
+| export filename `signature-snapshot.json` | `signature-workspace.json` |
+
+Sample copy changed too (guest → member, RSVP → attendance, party →
+chromatic/gathering-neutral): strings your tests may assert — the
+ledger badge labels (`Confirmed/Pending/Declined`) are unchanged.
 
 ## Import paths (v1.0.0)
 

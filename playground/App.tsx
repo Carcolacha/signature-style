@@ -1692,7 +1692,7 @@ function AllocationForm({
           id="checkin-share"
           placeholder="120"
           inputMode="numeric"
-          aria-invalid={!!contributionError || undefined}
+          aria-invalid={!!allocationError || undefined}
           value={allocation}
           onChange={(event) => setAllocation(event.target.value)}
         />
@@ -2428,7 +2428,7 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
   const [invited, setInvited] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
   const [memberName, setMemberName] = useState("");
-  const [contribution, setContribution] = useState("");
+  const [allocation, setAllocation] = useState("");
   const [postal, setPostal] = useState("");
   const [password, setPassword] = useState("");
   const [attendance, setAttendance] = useState("confirmed");
@@ -2512,7 +2512,7 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
               id="matrix-share"
               placeholder="120"
               inputMode="numeric"
-              aria-invalid={!!contributionError || undefined}
+              aria-invalid={!!allocationError || undefined}
               value={allocation}
               onChange={(event) => setAllocation(event.target.value)}
             />

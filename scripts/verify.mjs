@@ -1208,7 +1208,7 @@ for (const feedbackExport of [
 // ---- (pure) THE STANDALONE PURITY GATE (3.1.0, the release gate) ------------
 // The owner-mandated centerpiece: the working tree carries ZERO banned
 // domain vocabulary. verify-standalone.mjs owns the scan (the
-// word-bounded class-token pattern, substring generics, the 3-pin
+// word-bounded class-token pattern, substring generics, the pinned
 // allowlist); this runner wires it into `npm run verify` so no release
 // ships without it.
 try {
