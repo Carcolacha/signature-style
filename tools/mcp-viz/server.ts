@@ -28,6 +28,10 @@
  * PREFIX; the concrete `.sig-bars__bar` class is what querySelector can
  * actually sweep — the documented specialization.)
  *
+ * 3.2.0: the server version string moves to 3.2.0 (tooling-only bump —
+ * the Multi-Theme Surface Engine release; the SELECTORS are unchanged,
+ * the sweep measures any surface theme).
+ *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
  * Signature Style dashboard. Two tools:
  *
@@ -227,7 +231,7 @@ async function persistPng(
 }
 
 /** The shared McpServer instance advertising the visual cortex tools. */
-const server = new McpServer({ name: "visual-cortex", version: "2.7.0" });
+const server = new McpServer({ name: "visual-cortex", version: "3.2.0" });
 
 server.registerTool(
   "inspect_layout",

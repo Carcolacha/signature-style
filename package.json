@@ -1,7 +1,7 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "3.1.0",
-  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Harmonized — 100% official Catppuccin, per-theme (Mocha dark default, Latte light mode) with the signature Flamingo/Teal accents. Standalone universal design engine (3.1.0 Pure Engine: sig- classes, --sig-* tokens).",
+  "version": "3.2.0",
+  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.2.0 Multi-Flavor Surface Engine: sig- classes, --sig-* tokens, data-sig-theme triad).",
   "type": "module",
   "license": "MIT",
   "author": "edwyn",

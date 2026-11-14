@@ -6,9 +6,9 @@ The official machine-readable index for AI agents. Full self-contained version: 
 
 ## Tokens
 
-- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 50-token whitelist, Mocha + Latte themes, shared tokens, the Chromatic Palette, the doctrine objects
-- [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json
-- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
+- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 51-token whitelist, Mocha + Latte themes, the surface themes (Mocha / OLED true-black / Daylight) with the computed daylight ink variants, the geometry presets, shared tokens, the Chromatic Palette, the doctrine objects
+- [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json — plus the three verified surface themes and the daylight ink-variant ratio table
+- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — theme blocks, geometry presets, 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
 
 ## Rules
 

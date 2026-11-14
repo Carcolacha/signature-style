@@ -1997,9 +1997,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.4")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.5")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.4 (the 3.1.0 codex: the Pure Engine standalone identity — the complete domain decoupling, the sig- vocabulary, the purity gate — riding the chromatic era recipes)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.5 (the 3.2.0 codex: the Multi-Theme Surface Engine — the canonical data-sig-theme triad, the daylight ink variants, the data-sig-radius geometry presets, the live customizer)",
   );
 }
 
@@ -2141,9 +2141,9 @@ for (const selector of [".sig-data-table", ".sig-tabs__tab", ".sig-callout", ".s
     );
   }
 }
-if (!mcpServerSrc.includes('version: "2.7.0"')) {
+if (!mcpServerSrc.includes('version: "3.2.0"')) {
   failures.push(
-    'tools/mcp-viz/server.ts server version string must be 2.7.0 (tooling-only bump)',
+    'tools/mcp-viz/server.ts server version string must be 3.2.0 (the surface-engine tooling bump; selectors unchanged)',
   );
 }
 

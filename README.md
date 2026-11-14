@@ -25,7 +25,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v3.4** system prompt so AI agents can extend the
+**Dynamic Signature Engine v3.5** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -83,10 +83,38 @@ it. The granular stylesheets and `SYSTEM_PROMPT.md` still ship in the
 tarball, but there are no export-map entries for them anymore: import
 them via the node_modules path (or a deep import) at your own risk.
 
-### Light theme — one attribute
+### Surface themes — one attribute (v3.2.0)
 
-The white version is Catppuccin Latte. Opt in on any element that wraps your
-app (usually `<html>`):
+Three verified surface themes ride the canonical `data-sig-theme` attribute
+on `<html>` (absent = Mocha). Every theme is WCAG-gated against its OWN
+surface — the per-theme contrast tables are part of the release gate:
+
+| theme | attribute | --bg-base | --bg-surface | --bg-inset | text |
+|---|---|---|---|---|---|
+| Mocha (default) | absent / `"mocha"` | #1E1E2E | #313244 | #282A36 | #CDD6F4 family |
+| OLED true-black | `"oled"` | #000000 | #0B0C10 | #12141C | inherits (≥13.5:1) |
+| Daylight | `"daylight"` | #F8FAFC | #FFFFFF | #F1F5F9 | dark slate ink |
+
+```html
+<html data-sig-theme="oled">
+```
+
+OLED declares ONLY the background trio — every other token inherits, and
+the chromatic ratios only increase on true black. Daylight re-inks the
+chromatic family with COMPUTED ink variants — each override measured ≥3.1:1
+against #FFFFFF and documented with its ratio in `tokens.json →
+sigThemes.daylight.inkVariants` (cross-checked by the contrast gate).
+Geometry is an orthogonal axis: `data-sig-radius="standard"` (8px UI / 12px
+cards — 8px-grid-pure) or `"sharp"` (0px/0px, brutalist); the `:root`
+defaults stay 6px/12px. The live Theme & Surface Customizer ships in the
+playground's Pattern Studio (theme + radius + per-token contrast badges +
+tokens.css download/copy), also reachable via ⌘K.
+
+### Light theme (legacy) — one attribute
+
+The white version is Catppuccin Latte — the v3.2.0 canonical triad above
+supersedes it, and the legacy toggle keeps working untouched. Opt in on any
+element that wraps your app (usually `<html>`):
 
 ```html
 <html data-theme="latte">
@@ -167,6 +195,82 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 3.2.0 — Multi-Flavor Surface Engine & Live Theme Customizer
+
+Milestone 1 of the ecosystem roadmap. The surface becomes a VERIFIED AXLE:
+three WCAG-gated themes, a geometry axis, and a live customizer — with the
+per-theme contrast contract enforced by the release gate.
+
+**The three surface themes** (canonical `data-sig-theme` on `<html>`;
+absent = mocha; the `data-theme="latte"` light toggle stays working as the
+documented legacy mechanism):
+
+| theme | --bg-base | --bg-surface | --bg-inset | text | chromatic ink |
+|---|---|---|---|---|---|
+| Mocha (default) | #1E1E2E | #313244 | #282A36 | #CDD6F4 family | the 26 mocha values, byte-identical |
+| OLED true-black | **#000000** | **#0B0C10** | **#12141C** | inherited (13.52:1 on surface) | inherited — ratios only increase (worst fill crimson 4.68:1 vs surface / 5.03:1 vs black; floor 3.1) |
+| Daylight | #F8FAFC | **#FFFFFF** | #F1F5F9 (light wells — the dark-well concept inverts) | #0F172A / #020617 / #475569 / #64748B | COMPUTED INK VARIANTS |
+
+**The 16 daylight ink variants** — each computed with the WCAG engine to
+measure ≥ 3.1:1 vs #FFFFFF (the strictest daylight surface), every chosen
+hex + measured ratio documented in css/tokens.css comments AND
+`tokens.json → sigThemes.daylight.inkVariants` (the contrast gate
+cross-checks the two; ratios re-measured per gate run):
+
+| token | mocha | daylight | ratio |
+|---|---|---|---|
+| --sig-cobalt | #89b4fa | #2563EB | 5.17:1 |
+| --sig-orchid | #F5C2E7 | #DB2777 | 4.60:1 |
+| --sig-cyan | #64DFDF | #0E7490 | 5.36:1 |
+| --sig-magenta | #CF64DF | inherits | 3.21:1 |
+| --sig-mint | #64DF99 | #059669 | 3.77:1 |
+| --sig-spring | #6EDF64 | #16A34A | 3.30:1 |
+| --sig-citron | #DBDF64 | #4D7C0F | 4.99:1 |
+| --sig-violet-glow | #C29EFF | #6D28D9 | 7.10:1 |
+| --sig-pink-glow | #F29EFF | #C026D3 | 4.71:1 |
+| --sig-rose-glow | #FF9EDB | #BE185D | 6.04:1 |
+| --sig-lime-glow | #DBFF9E | #3F6212 | 7.08:1 |
+| --sig-mint-glow | #9EFFC2 | #047857 | 5.48:1 |
+| --sig-crimson | #F22222 | inherits | 4.18:1 |
+| --sig-azure | #228AF2 | inherits | 3.51:1 |
+| --sig-tangerine | #F25622 | inherits | 3.43:1 |
+| --sig-neon-green | #56F222 | #15803D | 5.02:1 |
+
+Plus the ink-floor re-inks the same engine requires on white:
+pink-bright #A21CAF (6.32) · pink-soft #9D174D (7.88) · pink-alt #86198F
+(8.24) · mauve-soft #7C3AED (5.70) · sky #0369A1 (5.93) · peach #C2410C
+(5.18) · green #166534 (7.13) · yellow #A16207 (4.92, the amber-900 family —
+the meter's Fair stage was 1.27:1 on white); mauve-bright (3.91) and
+lavender (3.18) inherit. Cakes stay official pastels carrying dark ink:
+--color-on-cake keeps #1E1E2E (11.24:1 on #F2CDCD / 10.74:1 on #F5C2E7).
+
+**Geometry presets** — the orthogonal `data-sig-radius` axis:
+`"standard"` → 8px UI / 12px cards (8px-GRID-PURE: the legacy 6px never
+snapped to the grid; 12 keeps the cards-earn-rounder step);
+`"sharp"` → 0px/0px (brutalist). `:root` keeps 6px/12px — absent attribute
+renders the historical look, byte-stable.
+
+**The live Theme & Surface Customizer** — a panel at the top of the
+playground's Pattern Studio (before Set 01) and seven ⌘K commands
+("Theme: Mocha / OLED / Daylight", "Radius: Standard / Sharp",
+"Download tokens.css", "Copy CSS Variables"). One `useSigTheme` owner
+persists `sig.workspace.v3.theme` + `sig.workspace.v3.radius`, mirrors
+`data-sig-theme` / `data-sig-radius` onto `documentElement`, and renders
+the LIVE contrast badges — all 16 chromatic tokens scored per WCAG against
+the ACTIVE theme's surface (green ≥3.1 / amber 2.0–3.1 / red <2.0) with the
+SHARED `sig-contrast.ts` math the contrast gate imports (a badge ratio IS a
+gate ratio). Download/Copy emit the active theme's resolved `:root` block,
+generated client-side from tokens.json.
+
+**Gates evolved:** (th3) theme blocks + the `--bg-canvas` alias (the
+owner's name for --bg-base — whitelist 50 → 51) + the manifest cross-check;
+(rad2) the radius presets; (cus) the customizer wiring; verify:contrast
+grew to PER-THEME tables (mocha contract unchanged; OLED ≥3.1 vs #0B0C10
+AND #000000; daylight ≥3.0 ink-floor / ≥3.1 canonical vs #FFFFFF; the
+negative test — deleting the daylight yellow override FAILs at the measured
+1.27:1, restore-verified). Pack stays EXACTLY 58 (zero new shipped files);
+llms.txt/llms-full.txt regenerate with the theme tables.
 
 ### 3.0.0 — 16-Color Chromatic System, Obsidian Graph, 3×3 Carousel, Symmetrical Forms & 60fps
 

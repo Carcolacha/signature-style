@@ -154,6 +154,42 @@ lines.push("");
 lines.push("**Rule of Engagement (non-negotiable):** `--sig-*` is content-only; Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) is structural-only. The two families never cross.");
 lines.push("");
 
+/* ---- 3.2.0 THE SURFACE THEMES + GEOMETRY PRESETS ----------------------- */
+const sigThemes = tokens.sigThemes ?? {};
+const oledTokens = sigThemes.oled?.tokens ?? {};
+const dayTokens = sigThemes.daylight?.tokens ?? {};
+const inkVariants = sigThemes.daylight?.inkVariants ?? {};
+lines.push("## The Multi-Theme Surface Engine (3.2.0)");
+lines.push("");
+lines.push("The canonical theme mechanism: `data-sig-theme` on `<html>` — absent or \"mocha\" = the :root default; \"oled\" = true-black; \"daylight\" = high-contrast light. The legacy `<html data-theme=\"latte\">` light toggle keeps working, outside the triad. Every theme is WCAG-gated per surface by the contrast engine; the manifest mirrors the css (cross-checked).");
+lines.push("");
+lines.push("| theme | attribute | --bg-base | --bg-surface | --bg-inset | text |");
+lines.push("|---|---|---|---|---|---|");
+lines.push("| Mocha (default) | absent / mocha | #1E1E2E | #313244 | #282A36 | #CDD6F4 family |");
+lines.push(`| OLED true-black | data-sig-theme="oled" | ${oledTokens["--bg-base"] ?? "#000000"} | ${oledTokens["--bg-surface"] ?? "#0B0C10"} | ${oledTokens["--bg-inset"] ?? "#12141C"} | inherits #CDD6F4 (≥13.5:1) |`);
+lines.push(`| Daylight | data-sig-theme="daylight" | ${dayTokens["--bg-base"] ?? "#F8FAFC"} | ${dayTokens["--bg-surface"] ?? "#FFFFFF"} | ${dayTokens["--bg-inset"] ?? "#F1F5F9"} | dark slate ink |`);
+lines.push("");
+lines.push("OLED declares ONLY the bg trio — everything else inherits (ratios only increase on true black). Daylight re-inks the chromatic family for white:");
+lines.push("");
+lines.push("### The Daylight Ink Variants (computed, ≥3.1:1 vs #FFFFFF)");
+lines.push("");
+lines.push("| token | mocha | daylight | ratio vs #FFFFFF |");
+lines.push("|---|---|---|---|");
+for (const [name, entry] of Object.entries(inkVariants)) {
+  if (name === "contract") continue;
+  const inherited = entry.inherits === true;
+  lines.push(`| \`${name}\` | ${entry.mocha ?? "—"} | ${entry.value}${inherited ? " (inherits)" : ""} | ${typeof entry.ratio === "number" ? entry.ratio.toFixed(2) + ":1" : "—"} |`);
+}
+lines.push("");
+const geo = tokens.geometryPresets ?? {};
+lines.push("### Geometry Presets (the data-sig-radius axis)");
+lines.push("");
+lines.push(`- standard: \`--radius-ui: ${geo.standard?.radiusUi ?? "8px"}\` · \`--radius-card: ${geo.standard?.radiusCard ?? "12px"}\` (8px-grid-pure — 6px never was)`);
+lines.push(`- sharp: \`--radius-ui: ${geo.sharp?.radiusUi ?? "0px"}\` · \`--radius-card: ${geo.sharp?.radiusCard ?? "0px"}\` (brutalist)`);
+lines.push("");
+lines.push(":root keeps the 6px/12px defaults — an absent attribute renders the historical look. Radius and color are orthogonal axes.");
+lines.push("");
+
 lines.push("## The Rules (The Dynamic Signature Engine v3.2)");
 lines.push("");
 lines.push(doctrines);
@@ -222,9 +258,9 @@ The official machine-readable index for AI agents. Full self-contained version: 
 
 ## Tokens
 
-- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 50-token whitelist, Mocha + Latte themes, shared tokens, the Chromatic Palette, the doctrine objects
-- [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json
-- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
+- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 51-token whitelist, Mocha + Latte themes, the surface themes (Mocha / OLED true-black / Daylight) with the computed daylight ink variants, the geometry presets, shared tokens, the Chromatic Palette, the doctrine objects
+- [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json — plus the three verified surface themes and the daylight ink-variant ratio table
+- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — theme blocks, geometry presets, 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
 
 ## Rules
 
