@@ -11,7 +11,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v2.4** system prompt so AI agents can extend the
+**Dynamic Signature Engine v2.6** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -125,9 +125,67 @@ and dropped; unknown keys are warned and dropped.
 |---|---|---|
 | VULN-1 | `color-mix()` unsupported → hover/active silently dead | `@supports not (color: color-mix(in srgb, red, blue))` block re-derives states via `filter: brightness(1.12)` / `brightness(0.88)` |
 | VULN-2 | `@layer` fragility: unlayered host CSS beats layered CSS; layer-order races | `ThemeProvider` injects `@layer tokens, base, cascade, overrides;` as the FIRST style tag in `<head>` + `CSSLayerBlockRule` support warning; bundle declares the same order statically |
-| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 33 tokens, type + runtime), CSS-injection guard on values |
+| VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 2.5.0 — Ergonomic Form Rules, Button & Card Archetypes, and the 12-Column Bento
+
+The first release built backwards from five owner defects. `npm pack`
+now packs EXACTLY 47 files (43 + css/primitives.css + css/cards.css +
+react/cards.js + react/cards.d.ts — the negations precedent adds
+`!react/cards.tsx`). `tokens.json` gains one token (`--party-yellow`,
+Mocha Yellow — the strength meter's Fair stage) and moves to meta
+2.5.0; the whitelist is 34. `react/viz.tsx` and `scripts/verify.mjs`
+stay BYTE-FROZEN (the ring animates through a playground-scoped
+stroke-dashoffset transition).
+
+| # | The defect (owner) | The fix | Where |
+|---|---|---|---|
+| 1 | Data & Tables + Form & Input Matrix tabs render edge-to-edge (0px side margins) | `.sig-shell` wraps EVERY view's content — max-width 1400px, centered, `padding-inline: clamp(20px, 4vw, 48px)`; the tab modules and their cards render inside it. GlobalNav stays outside (it is its own bar). Measured: ≥20px viewport margins on all three tabs | playground/App.tsx (Shell), playground/styles.css (.sig-shell; .hub__module de-constrained) |
+| 2 | FormField rendered format rules BELOW the input; "$" was concatenated into the label | FormField top-down anatomy: label (PROMOTED: text-main 0.875rem/500) → `description` ABOVE the control ("5 numbers only · e.g., 79901") → control → validation zone (error → `validMessage` → hint). `prefix`/`suffix` compose the `.ptp-form-field__well` — mono chips flanking a BARE input, separated from the cursor by a hairline; the well owns border/focus ring/error. The `$` chip is never glued into the label again | react/forms.tsx (FormField), css/forms.css (__label/__desc/__well/__chip/__valid, `ptp-shake`), playground FormsModule + check-in |
+| 3 | ToggleSwitch had no visible label text | Fixed in 2.4.1 (`.ptp-switch__text`), EXERCISED here: the check-in card's "Add to game rotation" switch renders visible text beside the pill | playground/App.tsx (CheckInForm) |
+| 4 | CONTRIBUTION table header left-aligned while values right-align | Fixed in 2.4.1 (`.ptp-data-table__align-right`, ancestor-scoped 0,2,0), EXERCISED here: the LIVE ledger's Contribution column carries `numeric: true, align: "right"`; the probe measures th/td right edges within ±2px | playground/App.tsx (BENTO_LEDGER_COLUMNS), react/data.tsx (unchanged) |
+| 5 | Core Dashboard = old rigid grid, no card archetypes, no button variants, no live validation | The 12-column bento (`.bento12`, explicit spans 12/4/5/4/3/5/3/7/5) with LIVE state (`SEED_GUESTS` → `useMemo` → ledger/ring/bars/KPI react to check-ins), `<Button>` (4 variants, 3 sizes, loading), the archetypes (ActionTile, FlipCard, AccordionCard, MatchupCard), PasswordInput, and per-field live validation (`/^\d+$/`, `/^\d{5}$/`) | playground/App.tsx (BentoCore, CheckInForm), react/primitives.tsx (Button), react/cards.tsx (NEW), css/primitives.css + css/cards.css (NEW), css/forms.css (PasswordInput) |
+
+**The live-state wiring** — one array, everything derives:
+
+```
+SEED_GUESTS (5 typed rows)
+        │  useState<Guest[]>                      (DashboardView)
+        ▼
+┌─ guests ────────────────────────────────────────────────┐
+│                                                          │
+│  checkIn() ← CheckInForm submit                          │
+│  (name, rsvp→state, numeric contribution) — appends      │
+└──────────┬───────────────────────────────────────────────┘
+           ▼  useMemo(guests)
+   confirmedCount ──► Confirmed Guests StatCard (span 4)
+                  ──► Guests bar + "n / 200" caption
+                  ──► ringValue = confirmed/200 %
+                  ──► StatRing (span 3) — stroke-dashoffset
+                        glides via playground-scoped css
+           potTotal (Σ confirmed contributions)
+                  ──► Budget spent bar ($sum / $2,000, peach)
+                  ──► Budget remaining bar ($rest / $2,000, green)
+           ledgerRows ──► DataTable (span 7, RSVP badge cells,
+                          Contribution numeric + align right)
+           toast ──► "Checked in — see you there 🎉"
+```
+
+**Signature changes** — ADDITIVE: `Button`/`ButtonProps`,
+`PasswordInput`/`PasswordInputProps`, `ActionTile`/`FlipCard`/
+`AccordionCard`/`MatchupCard` (+ types), `FormField.description`,
+`FormField.validMessage`, `FormField.suffix`, `--party-yellow`
+(KnownToken 33 → 34). BEHAVIORAL: `FormField.prefix` now composes the
+owning well (children must be bare inputs — the 2.4.1 `__row`/`__prefix`
+retire); the field label is promoted to the primary text voice;
+RadioCardGroup warns at dev-time when an option lacks a description.
+`css/primitives.css` is ZERO-shadow (the flat primary is package law;
+the playground re-adds the v1.6.0 button shadow as a composition
+layer decision). The well focus halo renders as a 3px translucent
+Flamingo OUTLINE — the box-shadow spelling is banned by the frozen (f1)
+gate and the release safety scan.
 
 ### 2.4.1 — Intuitive Form Anatomy & Alignment Fix
 

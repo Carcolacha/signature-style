@@ -1,11 +1,32 @@
 /**
- * App — THE ENGINE + THE MASTER INDEX (2.3.0 "Universal Web Components
- * & AI Signature Codex").
+ * App — THE ENGINE + THE MASTER INDEX (2.5.0 "Ergonomic Form Rules,
+ * Button & Card Archetypes, and the 12-Column Bento").
+ *
+ * 2.5.0 — LIVE STATE MODE + THE 12-COLUMN BENTO. The core dashboard
+ * stops being a static board: `SEED_GUESTS` seeds a `Guest[]` state,
+ * every check-in appends a row, and the bento REACTS — the ledger
+ * table, the Confirmed Guests StatCard, the RSVP StatRing (its
+ * stroke-dashoffset glides through a playground-scoped css rule,
+ * viz.tsx byte-frozen), the budget bars and their limit captions are
+ * all `useMemo` derivatives of the one array. The five owner defects
+ * this release buries:
+ *
+ *   1. edge-to-edge tab modules   → everything renders inside
+ *                                    `.sig-shell` (styles.css);
+ *   2. format rules below inputs  → FormField description-above +
+ *                                    prefix/suffix well (package);
+ *   3. orphan switches            → ToggleSwitch visible label
+ *                                    (2.4.1, exercised here);
+ *   4. ledger header misalignment → DataTable align: "right" on the
+ *                                    live Contribution column;
+ *   5. the rigid dashboard        → the 12-column bento: Button
+ *                                    variants, card archetypes, live
+ *                                    validation (guest-form).
  *
  * 2.3.0 — THE DASHBOARD GROWS MODULE TABS. The dashboard view gains the
  * package's <Tabs> (attribute-driven: aria-selected, ZERO .is-active
  * classes — the nav contract) switching three modules: "core" (the
- * unchanged 4-SurfaceCard board), "data" (the Guest & Budget Ledger —
+ * live bento), "data" (the Guest & Budget Ledger —
  * <DataTable> with a composed <PartyBadge> status cell, the three
  * persistent <Callout> moods, five <Avatar> discs, two wearing party
  * rings), and "forms" (the Input Matrix — Input/TextArea/Select/
@@ -73,8 +94,8 @@
  * `category` throws in PartyBadge's token guard and unmounts the
  * timeline). The mapping layer below is why the nodes are alive.
  */
-import { useCallback, useMemo, useState } from "react";
-import type { MouseEvent, ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { FormEvent, MouseEvent, ReactNode } from "react";
 import {
   ThemeProvider,
   ToastProvider,
@@ -87,6 +108,8 @@ import {
   Checkbox,
   FormField,
   RadioCardGroup,
+  PasswordInput,
+  Button,
   EventTimeline,
   EventModal,
   useModal,
@@ -94,7 +117,6 @@ import {
   StatRing,
   PartyBadge,
   EmptyState,
-  Button,
   SurfaceCard,
   PageHero,
   Tabs,
@@ -106,6 +128,10 @@ import {
   CarouselItem,
   ProseBlock,
   StatCard,
+  ActionTile,
+  AccordionCard,
+  FlipCard,
+  MatchupCard,
   type NavItem,
   type PtpEvent,
   type DataTableColumn,
@@ -347,6 +373,7 @@ const CATEGORY_LABELS: Record<PtpEvent["category"], string> = {
   "--party-blue": "Logistics",
   "--party-peach": "Catering",
   "--party-green": "RSVP",
+  "--party-yellow": "Meter",
 };
 
 /**
@@ -366,6 +393,55 @@ export const events: PtpEvent[] = mockEvents.map((e) => ({
   icon: e.iconName,
   ...(e.description !== undefined && { description: e.description }),
 }));
+
+/* ==========================================================================
+   LIVE STATE (2.5.0) — the one array the bento reacts to.
+   SEED_GUESTS is the ledger's opening state; every check-in APPENDS to
+   it, and every live read (ledger rows, Confirmed Guests StatCard, the
+   RSVP ring, the budget bars) is a useMemo derivative. STATE → DERIVED
+   → WIRING lives in DashboardView → BentoCore below.
+   ========================================================================== */
+
+/** One guest in the live ledger. RSVP is the three-word contract. */
+interface Guest {
+  id: string;
+  name: string;
+  rsvp: "confirmed" | "pending" | "declined";
+  contribution: number;
+}
+
+/** The ledger's opening five — the v2.3.0 crew, now typed and live. */
+const SEED_GUESTS: Guest[] = [
+  { id: "g-001", name: "Ana Souza", rsvp: "confirmed", contribution: 120 },
+  { id: "g-002", name: "Leo Martins", rsvp: "pending", contribution: 0 },
+  { id: "g-003", name: "Priya Nair", rsvp: "confirmed", contribution: 200 },
+  { id: "g-004", name: "Tom Weller", rsvp: "declined", contribution: 0 },
+  { id: "g-005", name: "Ana + 1", rsvp: "pending", contribution: 120 },
+];
+
+/** The party's two fixed denominators (the metrics' limit captions). */
+const TOTAL_BUDGET = 2000;
+const GUEST_CAPACITY = 200;
+
+/** RSVP value → ledger word (the RadioCardGroup submits the left key). */
+const RSVP_TO_STATE: Record<string, Guest["rsvp"]> = {
+  attending: "confirmed",
+  maybe: "pending",
+  declined: "declined",
+};
+
+const RSVP_LABELS: Record<Guest["rsvp"], string> = {
+  confirmed: "Confirmed",
+  pending: "Pending",
+  declined: "Declined",
+};
+
+/** The live ledger's columns — Contribution numeric + align right. */
+const BENTO_LEDGER_COLUMNS: DataTableColumn[] = [
+  { key: "guest", header: "Guest" },
+  { key: "rsvp", header: "RSVP" },
+  { key: "share", header: "Contribution", numeric: true, align: "right" },
+];
 
 /** All ten Party Palette tokens with their human names (content-only rule). */
 const PALETTE: ReadonlyArray<{ token: PtpEvent["category"]; label: string }> = [
@@ -406,31 +482,48 @@ function Shell() {
   return (
     <>
       <GlobalNav items={NAV_ITEMS} as={navLink} activeHref={VIEW_HREFS[view]} />
-      <PageHero title={hero.title} subtitle={hero.sub} />
-      {view === "dashboard" ? (
-        <DashboardView />
-      ) : view === "index" ? (
-        <IndexView onNavigate={navigate} />
-      ) : (
-        <PlaceholderView view={view} />
-      )}
+      {/* 2.5.0 — THE SHELL: every view's content lives inside this
+          column (hero + dashboard + index + placeholders + ALL tab
+          modules). GlobalNav stays outside — it is its own bar. This
+          wrapper is defect #1's tombstone. */}
+      <div className="sig-shell">
+        <PageHero title={hero.title} subtitle={hero.sub} />
+        {view === "dashboard" ? (
+          <DashboardView />
+        ) : view === "index" ? (
+          <IndexView onNavigate={navigate} />
+        ) : (
+          <PlaceholderView view={view} />
+        )}
+      </div>
     </>
   );
 }
 
 /**
- * The hub dashboard — the 2.0.0 board, now rendered through the PACKAGE's
- * own <SurfaceCard> (the Shed anatomy it inherited from this playground).
- * All four cards are `interactive` — they are hover modules, timeline
- * included. The chronology keeps the `hub__card--timeline` modifier via
- * className: the grid span + the measured breathing-room overrides stay
- * playground-scoped (styles.css), composed ON the primitive.
+ * The dashboard — view state + THE LIVE LEDGER (2.5.0). The guests
+ * array lives HERE (above the module switch) so checking in survives
+ * tab flips; the core module renders <BentoCore>, the data/forms
+ * showcases render below it — ALL inside the shell (styles.css).
  */
 function DashboardView() {
-  const toast = useToast();
-  const modal = useModal<PtpEvent>();
-  const [isPublic, setIsPublic] = useState(true);
   const [moduleId, setModuleId] = useState<ModuleId>("core");
+  // THE LIVE STATE — one array, every metric derives from it.
+  const [guests, setGuests] = useState<Guest[]>(SEED_GUESTS);
+  const checkIn = useCallback(
+    (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => {
+      setGuests((current) => [
+        ...current,
+        {
+          id: `g-${String(current.length + 1).padStart(3, "0")}`,
+          name: guest.name,
+          rsvp: guest.rsvp,
+          contribution: guest.contribution,
+        },
+      ]);
+    },
+    [],
+  );
 
   return (
     <>
@@ -455,108 +548,444 @@ function DashboardView() {
         </div>
       ) : (
         <div className="hub__tabs-content">
-          <main className="hub">
-            <SurfaceCard
-              eyebrow="Forms"
-              meta="components/forms.tsx"
-              title="Form Controls"
-              interactive
-            >
-              <Input placeholder="Guest name" />
-              <TextArea placeholder="Notes for the host…" rows={3} />
-              <ToggleSwitch
-                checked={isPublic}
-                onToggle={setIsPublic}
-                label="Make event public"
-              />
-              {/* 2.5.0: the Button migration — the hand-rolled .hub__btn
-                  died; the package's own <Button> takes the action. */}
-              <Button
-                variant="primary"
-                size="md"
-                data-testid="btn-toast"
-                onClick={() => toast("success", "RSVP sent — see you there 🎉")}
-              >
-                Send test toast
-              </Button>
-            </SurfaceCard>
-
-            <SurfaceCard
-              eyebrow="Timeline"
-              meta="components/timeline.tsx"
-              title="The Chronology"
-              interactive
-              className="hub__card--timeline"
-            >
-              <EventTimeline events={events} onEventSelect={modal.open} />
-              {modal.selectedEvent !== null && (
-                <EventModal
-                  event={modal.selectedEvent}
-                  open={modal.isOpen}
-                  onClose={modal.close}
-                />
-              )}
-            </SurfaceCard>
-
-            <SurfaceCard
-              eyebrow="Telemetry"
-              meta="components/viz.tsx"
-              title="Budget & RSVP"
-              interactive
-            >
-              <div className="hub__metric" data-testid="metric-budget-remaining">
-                <span className="hub__metric-label">Budget remaining</span>
-                <span className="hub__metric-value">72%</span>
-              </div>
-              <ProgressBar
-                value={72}
-                colorToken="--party-green"
-                label="Budget remaining"
-                limitText="$1,440 / $2,000"
-              />
-              <div className="hub__metric" data-testid="metric-budget-spent">
-                <span className="hub__metric-label">Budget spent</span>
-                <span className="hub__metric-value">45%</span>
-              </div>
-              <ProgressBar
-                value={45}
-                colorToken="--party-peach"
-                label="Budget spent"
-                limitText="$1,325 / $2,000"
-              />
-              <div className="hub__metric" data-testid="metric-guests">
-                <span className="hub__metric-label">Guests confirmed</span>
-                <span className="hub__metric-value">170 / 200</span>
-              </div>
-              <ProgressBar
-                value={85}
-                colorToken="--party-sky"
-                label="Guests confirmed"
-                limitText="170 / 200 Guests"
-              />
-              <div className="hub__metric" data-testid="metric-rsvp">
-                <span className="hub__metric-label">RSVP ratio</span>
-                <span className="hub__metric-value">85%</span>
-              </div>
-              <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
-            </SurfaceCard>
-
-            <SurfaceCard
-              eyebrow="Palette"
-              meta="components/primitives.tsx"
-              title="The Party Palette"
-              interactive
-            >
-              <div className="hub__palette">
-                {PALETTE.map(({ token, label }) => (
-                  <PartyBadge key={token} colorToken={token} label={label} />
-                ))}
-              </div>
-            </SurfaceCard>
-          </main>
+          <BentoCore guests={guests} onCheckIn={checkIn} />
         </div>
       )}
     </>
+  );
+}
+
+/**
+ * BENTOCORE — the 12-column bento (2.5.0, defect #5). THE ASSEMBLY,
+ * explicit spans (grid-column: span N):
+ *
+ *   span 12  the v2.5.0 announcement banner
+ *   span 4   StatCard ×3 — Total Budget / Confirmed Guests (LIVE) /
+ *            Active Game Rooms
+ *   span 5   Quick Guest Check-In (the live-validation form)
+ *   span 4   The Chronology, ROW-SPAN 2 (timeline + modal, unchanged)
+ *   span 3   Budget & RSVP Telemetry (ring + bars, LIVE)
+ *   span 5   Interactive Deck & Rules (FlipCard / AccordionCard /
+ *            ActionTile row)
+ *   span 3   The Party Palette (unchanged badges)
+ *   span 7   Guest & Budget Ledger (DataTable, LIVE from state)
+ *   span 5   1v1 Game Matchup & Editorial (MatchupCard + ProseBlock)
+ *
+ * DERIVED (useMemo over guests): confirmedCount, potTotal (sum of
+ * CONFIRMED contributions), ringValue = confirmed/200 %, spentPct =
+ * potTotal/2000 %, ledgerRows (formatted for DataTable).
+ */
+function BentoCore({
+  guests,
+  onCheckIn,
+}: {
+  guests: Guest[];
+  onCheckIn: (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => void;
+}) {
+  const toast = useToast();
+  const modal = useModal<PtpEvent>();
+  const [bannerVisible, setBannerVisible] = useState(true);
+
+  // DERIVED — the single useMemo every live read consumes. Causal by
+  // construction: it reads only the current guests array.
+  const derived = useMemo(() => {
+    const confirmed = guests.filter((guest) => guest.rsvp === "confirmed");
+    const confirmedCount = confirmed.length;
+    const potTotal = confirmed.reduce((sum, guest) => sum + guest.contribution, 0);
+    const ringValue = Math.min(100, Math.round((confirmedCount / GUEST_CAPACITY) * 100));
+    const spentPct = Math.min(100, Math.round((potTotal / TOTAL_BUDGET) * 100));
+    const ledgerRows = guests.map((guest) => ({
+      guest: guest.name,
+      rsvp:
+        guest.rsvp === "confirmed" ? (
+          <PartyBadge colorToken="--party-green" label="Confirmed" />
+        ) : (
+          RSVP_LABELS[guest.rsvp]
+        ),
+      share: `$${guest.contribution.toLocaleString("en-US")}`,
+    }));
+    return { confirmedCount, potTotal, ringValue, spentPct, ledgerRows };
+  }, [guests]);
+
+  return (
+    <main className="bento12">
+      {/* span 12 — the announcement banner */}
+      {bannerVisible && (
+        <div className="sig-span-12">
+          <AnnouncementBanner
+            variant="announcement"
+            dismissible
+            onDismiss={() => setBannerVisible(false)}
+          >
+            <span data-testid="banner-release">
+              v2.5.0 — live state mode: check in a guest and watch the
+              ledger, ring, and toast react.
+            </span>
+          </AnnouncementBanner>
+        </div>
+      )}
+
+      {/* span 4 ×3 — the KPI trio (the middle cell carries the trio's
+          cortex hook; its value is LIVE) */}
+      <div className="sig-span-4">
+        <StatCard
+          label="Total Budget"
+          value={`$${TOTAL_BUDGET.toLocaleString("en-US")}`}
+          delta="+$440"
+          deltaDirection="up"
+          sparklineData={[1200, 1450, 1380, 1600, 1780, TOTAL_BUDGET]}
+          colorToken="--party-green"
+        />
+      </div>
+      <div className="sig-span-4" data-testid="kpi-trio">
+        <StatCard
+          label="Confirmed Guests"
+          value={String(derived.confirmedCount)}
+          delta="live"
+          sparklineData={[2, 3, 3, 4, 4, derived.confirmedCount]}
+          colorToken="--party-sky"
+        />
+      </div>
+      <div className="sig-span-4">
+        <StatCard
+          label="Active Game Rooms"
+          value="6"
+          delta="+2"
+          deltaDirection="up"
+          sparklineData={[2, 3, 3, 4, 4, 6]}
+          colorToken="--party-mauve-soft"
+        />
+      </div>
+
+      {/* span 5 — Quick Guest Check-In (live validation + Button) */}
+      <SurfaceCard
+        eyebrow="Forms"
+        meta="components/forms.tsx"
+        title="Quick Guest Check-In"
+        interactive
+        className="sig-span-5"
+      >
+        <CheckInForm onCheckIn={onCheckIn} />
+      </SurfaceCard>
+
+      {/* span 4, ROW-SPAN 2 — The Chronology (timeline + modal) */}
+      <SurfaceCard
+        eyebrow="Timeline"
+        meta="components/timeline.tsx"
+        title="The Chronology"
+        interactive
+        className="sig-span-4 sig-row-2 hub__card--timeline"
+      >
+        <EventTimeline events={events} onEventSelect={modal.open} />
+        {modal.selectedEvent !== null && (
+          <EventModal
+            event={modal.selectedEvent}
+            open={modal.isOpen}
+            onClose={modal.close}
+          />
+        )}
+      </SurfaceCard>
+
+      {/* span 3 — Budget & RSVP Telemetry (LIVE) */}
+      <SurfaceCard
+        eyebrow="Telemetry"
+        meta="components/viz.tsx"
+        title="Budget & RSVP Telemetry"
+        interactive
+        className="sig-span-3"
+      >
+        <div className="hub__metric" data-testid="metric-guests">
+          <span className="hub__metric-label">Guests confirmed</span>
+          <span className="hub__metric-value">
+            {derived.confirmedCount} / {GUEST_CAPACITY}
+          </span>
+        </div>
+        <ProgressBar
+          value={derived.ringValue}
+          colorToken="--party-sky"
+          label="Guests confirmed"
+          limitText={`${derived.confirmedCount} / ${GUEST_CAPACITY} Guests`}
+        />
+        <div className="hub__metric" data-testid="metric-rsvp">
+          <span className="hub__metric-label">RSVP ratio</span>
+          <span className="hub__metric-value">{derived.ringValue}%</span>
+        </div>
+        {/* LIVE RING — the stroke-dashoffset glides via the
+            playground-scoped rule (styles.css); viz.tsx byte-frozen. */}
+        <div data-testid="ring-rsvp">
+          <StatRing value={derived.ringValue} colorToken="--party-sky" label="RSVP ratio" />
+        </div>
+        <div className="hub__metric" data-testid="metric-budget-spent">
+          <span className="hub__metric-label">Budget spent</span>
+          <span className="hub__metric-value">{derived.spentPct}%</span>
+        </div>
+        <ProgressBar
+          value={derived.spentPct}
+          colorToken="--party-peach"
+          label="Budget spent"
+          limitText={`$${derived.potTotal.toLocaleString("en-US")} / $${TOTAL_BUDGET.toLocaleString("en-US")}`}
+        />
+        <div className="hub__metric" data-testid="metric-budget-remaining">
+          <span className="hub__metric-label">Budget remaining</span>
+          <span className="hub__metric-value">{100 - derived.spentPct}%</span>
+        </div>
+        <ProgressBar
+          value={100 - derived.spentPct}
+          colorToken="--party-green"
+          label="Budget remaining"
+          limitText={`$${(TOTAL_BUDGET - derived.potTotal).toLocaleString("en-US")} / $${TOTAL_BUDGET.toLocaleString("en-US")}`}
+        />
+      </SurfaceCard>
+
+      {/* span 5 — Interactive Deck & Rules (the archetypes) */}
+      <SurfaceCard
+        eyebrow="Deck"
+        meta="components/cards.tsx"
+        title="Interactive Deck & Rules"
+        interactive
+        className="sig-span-5"
+      >
+        <FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />
+        <AccordionCard title="House Rules">
+          <p>
+            Best of one decides every matchup. Ties resolve to
+            rock-paper-scissors; the loser of THAT brings ice for the
+            next round. No take-backs after the ring sounds.
+          </p>
+        </AccordionCard>
+        <div className="hub__tiles">
+          <ActionTile
+            title="Open Deck Editor"
+            subtitle="42 prompts · draft mode"
+            icon="SquarePen"
+            kbdShortcut="D"
+            onClick={() => toast("success", "The deck editor is on the roadmap.")}
+          />
+          <ActionTile
+            title="Shuffle Prompts"
+            subtitle="Fresh dare, zero repeats"
+            icon="Shuffle"
+            kbdShortcut="S"
+            onClick={() => toast("success", "Prompts shuffled — the deck is fresh.")}
+          />
+        </div>
+        {/* The ghost variant + the cortex's toast hook (m3): the deck
+            card is the feedback playground. */}
+        <Button
+          variant="secondary"
+          size="sm"
+          data-testid="btn-toast"
+          onClick={() => toast("success", "RSVP sent — see you there 🎉")}
+        >
+          Send test toast
+        </Button>
+      </SurfaceCard>
+
+      {/* span 3 — The Party Palette (unchanged badges) */}
+      <SurfaceCard
+        eyebrow="Palette"
+        meta="components/primitives.tsx"
+        title="The Party Palette"
+        interactive
+        className="sig-span-3"
+      >
+        <div className="hub__palette">
+          {PALETTE.map(({ token, label }) => (
+            <PartyBadge key={token} colorToken={token} label={label} />
+          ))}
+        </div>
+      </SurfaceCard>
+
+      {/* span 7 — Guest & Budget Ledger (LIVE) */}
+      <SurfaceCard
+        eyebrow="Data"
+        meta="components/data.tsx"
+        title="Guest & Budget Ledger"
+        interactive
+        className="sig-span-7"
+      >
+        <div data-testid="ledger-table">
+          <DataTable
+            columns={BENTO_LEDGER_COLUMNS}
+            rows={derived.ledgerRows}
+            caption="Shared pot ledger · live — every check-in lands here"
+          />
+        </div>
+        <Callout status="info">
+          Payments settle via the shared pot — no cash at the door.
+        </Callout>
+      </SurfaceCard>
+
+      {/* span 5 — 1v1 Game Matchup & Editorial */}
+      <SurfaceCard
+        eyebrow="Games"
+        meta="components/cards.tsx"
+        title="1v1 Game Matchup & Editorial"
+        interactive
+        className="sig-span-5"
+      >
+        <MatchupCard
+          left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
+          right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+          stakes="Winner picks the next venue — loser brings the ice."
+        />
+        <ProseBlock>
+          <p>
+            The bracket is a promise: two names, one round, a verdict
+            everyone accepts. The ledger above feeds it — confirmed
+            guests seed the pairs, and every forfeit re-shuffles the
+            deck.
+          </p>
+          <blockquote>
+            <p>“A party without a bracket is just a crowd with snacks.”</p>
+            <footer>— the tournament ledger, page one</footer>
+          </blockquote>
+          <cite>PlanThenParty Field Notes, vol. 3 — the matchup chapters</cite>
+        </ProseBlock>
+      </SurfaceCard>
+    </main>
+  );
+}
+
+/**
+ * CHECKINFORM — the Quick Guest Check-In surface (2.5.0). Local field
+ * state + LIVE validation:
+ *
+ *   Contribution — /^\d+$/ → validMessage; non-empty and failing →
+ *                  error (the well shakes; the border goes peach).
+ *   Postal Code  — /^\d{5}$/ → "Valid ZIP" / error otherwise.
+ *   Name         — required (submit-level: the toast refuses).
+ *
+ * SUBMIT (form onSubmit, preventDefault): invalid → an error toast;
+ * valid → a short loading state on the <Button>, then the guest rides
+ * up to DashboardView's state, the success toast fires ("Checked in —
+ * see you there 🎉"), and the fields reset.
+ */
+function CheckInForm({
+  onCheckIn,
+}: {
+  onCheckIn: (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => void;
+}) {
+  const toast = useToast();
+  const [name, setName] = useState("");
+  const [contribution, setContribution] = useState("");
+  const [postal, setPostal] = useState("");
+  const [rsvp, setRsvp] = useState("attending");
+  const [rotation, setRotation] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const submitTimer = useRef<number | null>(null);
+  // The one-shot loading timer never outlives the form.
+  useEffect(
+    () => () => {
+      if (submitTimer.current !== null) window.clearTimeout(submitTimer.current);
+    },
+    [],
+  );
+
+  // LIVE RULES — value passes → validMessage; non-empty and failing →
+  // error. Empty stays quiet (an empty field is not yet wrong).
+  const trimmedContribution = contribution.trim();
+  const contributionValid = /^\d+$/.test(trimmedContribution);
+  const contributionError =
+    trimmedContribution !== "" && !contributionValid
+      ? "The contribution must be a number"
+      : undefined;
+  const postalValid = /^\d{5}$/.test(postal);
+  const postalError =
+    postal !== "" && !postalValid ? "Postal codes are 5 digits" : undefined;
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (name.trim() === "" || !contributionValid) {
+      toast("error", "A name and a numeric contribution are required to check in.");
+      return;
+    }
+    setSubmitting(true);
+    submitTimer.current = window.setTimeout(() => {
+      onCheckIn({
+        name: name.trim(),
+        rsvp: RSVP_TO_STATE[rsvp] ?? "pending",
+        contribution: Number(trimmedContribution),
+      });
+      toast("success", "Checked in — see you there 🎉");
+      setName("");
+      setContribution("");
+      setPostal("");
+      setRotation(false);
+      setSubmitting(false);
+      submitTimer.current = null;
+    }, 450);
+  };
+
+  return (
+    <form className="hub__checkin" data-testid="guest-form" onSubmit={handleSubmit}>
+      <FormField label="Name" htmlFor="checkin-name" required>
+        <Input
+          id="checkin-name"
+          required
+          placeholder="Guest name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+        />
+      </FormField>
+      {/* The money field: "$" rides the chip (defect #2), the format
+          rule rides the description ABOVE the input, and the value is
+          live-validated. */}
+      <FormField
+        label="Contribution"
+        htmlFor="checkin-share"
+        prefix="$"
+        description="Numbers only · e.g., 120"
+        validMessage={contributionValid ? "Valid amount" : undefined}
+        error={contributionError}
+      >
+        <Input
+          id="checkin-share"
+          placeholder="120"
+          inputMode="numeric"
+          aria-invalid={!!contributionError || undefined}
+          value={contribution}
+          onChange={(event) => setContribution(event.target.value)}
+        />
+      </FormField>
+      <FormField
+        label="Postal Code"
+        htmlFor="checkin-postal"
+        description="5 numbers only · e.g., 79901"
+        validMessage={postalValid ? "Valid ZIP" : undefined}
+        error={postalError}
+      >
+        <Input
+          id="checkin-postal"
+          placeholder="79901"
+          inputMode="numeric"
+          aria-invalid={!!postalError || undefined}
+          value={postal}
+          onChange={(event) => setPostal(event.target.value)}
+        />
+      </FormField>
+      <RadioCardGroup
+        label="RSVP"
+        name="checkin-rsvp"
+        value={rsvp}
+        onChange={setRsvp}
+        options={[
+          { value: "attending", label: "Attending", description: "See you there" },
+          { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
+          { value: "declined", label: "Can't make it", description: "Sorry — next time" },
+        ]}
+      />
+      {/* 2.4.1's visible switch label, exercised: "Add to game
+          rotation" renders as text beside the pill. */}
+      <ToggleSwitch
+        checked={rotation}
+        onToggle={setRotation}
+        label="Add to game rotation"
+      />
+      <Button variant="primary" size="md" type="submit" loading={submitting}>
+        Check In
+      </Button>
+    </form>
   );
 }
 
@@ -817,6 +1246,7 @@ function FormsModule() {
   const [guestName, setGuestName] = useState("");
   const [contribution, setContribution] = useState("");
   const [postal, setPostal] = useState("");
+  const [password, setPassword] = useState("");
   const [rsvp, setRsvp] = useState("attending");
 
   // Live validation rules (2.5.0): the value passes → validMessage; the
@@ -902,6 +1332,14 @@ function FormsModule() {
       </Select>
       <Checkbox checked={invited} onToggle={setInvited} label="Send me the invite" />
       <ToggleSwitch checked={isPublic} onToggle={setIsPublic} label="Make event public" />
+      {/* 2.5.0: the new PasswordInput (eye toggle + 4-stage meter +
+          condition pills), and the RSVP cards ALL carry descriptions —
+          the balanced grid contract, enforced in the package. */}
+      <PasswordInput
+        label="Password"
+        value={password}
+        onChange={setPassword}
+      />
       <RadioCardGroup
         label="RSVP"
         name="rsvp"
@@ -909,8 +1347,8 @@ function FormsModule() {
         onChange={setRsvp}
         options={[
           { value: "attending", label: "Attending", description: "See you there" },
-          { value: "maybe", label: "Maybe" },
-          { value: "declined", label: "Can't make it" },
+          { value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" },
+          { value: "declined", label: "Can't make it", description: "Sorry — next time" },
         ]}
       />
     </SurfaceCard>

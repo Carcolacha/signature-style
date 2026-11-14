@@ -1,69 +1,131 @@
 /**
  * THE ENGINE — hub styles (2.0.0 "The Hub Migration — Shed Aesthetic",
- * 2.2.0 "Telemetry Limits & Official Surface Primitives").
+ * 2.2.0 "Telemetry Limits & Official Surface Primitives", 2.5.0 "The
+ * 12-Column Bento & Live State").
+ *
+ * 2.5.0 — THE SHELL + THE 12-COLUMN BENTO. The .sig-shell wraps EVERY
+ * view's content (dashboard, index, events, guests, budget, ALL tab
+ * modules): max-width 1400px, centered, clamp(20px, 4vw, 48px) side
+ * padding — the owner's defect #1 (the Data & Tables and Form &
+ * Input Matrix tab modules rendered edge-to-edge) dies here. The core
+ * dashboard is the 12-column bento (.bento12) with explicit spans; the
+ * old auto-fit .hub survives only as the index/placeholder grid (the
+ * column constraint moved to the shell). The ring's stroke-dashoffset
+ * animates through a playground-SCOPED css rule (react/viz.tsx is
+ * byte-frozen — the StatRing has no class; the selector targets
+ * svg[role="progressbar"]). Live state lives in App.tsx.
  *
  * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
  * outside the package too). The only raw colors are the owner-mandated
- * rgba ELEVATION shadows on the button and the timeline nodes, legal
- * here by the same standing override:
+ * rgba ELEVATION shadows on the primary Button and the timeline nodes,
+ * legal here by the same standing override:
  *
  * DOCTRINE BOUNDARY — OWNER OVERRIDE (1.6.0, reaffirmed 1.8.0 + 2.0.0):
  * elevation lives in THE COMPOSITION LAYER — and, since 2.2.0, in the
  * PACKAGE's css/surface.css (the .sig-surface-card primitive ships its
  * ambient elevation contract; gate (e1) scopes the exception to that
- * file). What remains HERE is the button pop and the timeline node
- * elevation — how the composition organizes attention, never a package
- * concern beyond the surface primitive itself.
- *
- * 2.2.0 — THE PLAYGROUND BECOMES A CONSUMER. The card anatomy this
- * layer invented (surface, meta row, ruled title, hover lift, the
- * announcing hero) is now the package's OFFICIAL exports
- * (css/surface.css: .sig-surface-card / .sig-page-hero) — the
- * corresponding local styles are DELETED, the package owns them. What
- * stays playground-local, each with its reason:
- *
- *   1. THE CONSTRAINED CENTERED COLUMN — .hub is a max-width 1400px
- *      auto-fit minmax(400px, 1fr) grid (gap 2rem); grid packing is
- *      THIS page's layout decision, not a primitive concern.
- *   2. THE STAGGER — slideUpFade + nth-child delays + the MANDATORY
- *      prefers-reduced-motion escape, retargeted 2.2.0 to
- *      .sig-surface-card (the composition animates the package's
- *      primitives; entry choreography is per-page).
- *   3. THE METRIC ROWS — .hub__metric space-between/flex-end + the
- *      ≥16px air mandate + the breathing bars (1.8.0, unchanged).
- *   4. THE GATEWAY BUTTONS — v2.1.0 <button> cards kept local: a
- *      button cannot be the package's <section>-rendering SurfaceCard,
- *      so the buttons WEAR the package's sig classes and this layer
- *      only neutralizes the UA button chrome (see App.tsx).
- *   5. THE NODE ELEVATION — retargeted 2.2.0 to the .sig-surface-card
- *      ancestor (1.8.0 doctrine boundary unchanged: the package stays
- *      shadow-free outside surface.css).
- *   6. THE BUTTON POP — .hub__btn's Flamingo fill + its own ambient
- *      shadow (v1.6.0 hierarchy, unchanged).
+ * file). What remains HERE is the primary-button pop and the timeline
+ * node elevation — how the composition organizes attention, never a
+ * package concern beyond the surface primitive itself.
  *
  * Kept from earlier eras: the 2.1.0 MEASURED timeline header breathing
  * room (scoped slab padding + mirrored group-first clearance, ≥16px
  * probe-verified — unchanged, composed on the hub__card--timeline
- * modifier that now rides <SurfaceCard className>), the two-row
- * timeline span with its 768px reset, and the 900px index column.
+ * modifier that now rides <SurfaceCard className>), the metric rows,
+ * the gateway buttons, the 900px index column.
  */
 
-/* ---- the hub column (2.0.0) --------------------------------------------- */
-.hub {
+/* ---- THE SHELL (2.5.0, defect #1) -----------------------------------------
+   Every view's content renders INSIDE this column — the dashboard, the
+   master index, the workshop placeholders, and ALL tab modules (data,
+   forms). GlobalNav stays outside: it is its own bar. The clamp keeps
+   ≥20px of viewport margin at every width (the cortex proof measures
+   it on all three tabs). padding-bottom gives the last card air. */
+.sig-shell {
   max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-section);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 48px);
+  padding-bottom: 64px;
+}
+
+/* ---- the hub column (2.0.0; 2.5.0: the shell owns the column) -------------
+   .hub is now ONLY the auto-fit packing grid for the master index and
+   the workshop placeholders — the 1400px constraint and the page
+   padding moved UP to .sig-shell. */
+.hub {
   display: grid;
   /* Auto-fit floors every card at 400px and lets the browser pack the
-     columns — the 1.8.0 hand-tuned asymmetric stage is gone; discipline
-     comes from the column constraint, not from coordinates. */
+     columns — discipline comes from the column constraint, not from
+     coordinates. */
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
 }
 
-/* ---- staggered load-in (1.5.1, retargeted to the primitive 2.2.0) --------
-   The composition animates the PACKAGE's .sig-surface-card primitives:
-   entry choreography is a per-page decision, the primitive ships none. */
+/* ---- THE 12-COLUMN BENTO (2.5.0, defect #5) --------------------------------
+   The core dashboard's explicit grid: 12 columns, section-gap rhythm,
+   and the span utility classes the assembly declares. Mobile (≤768px,
+   Pillar 2): the grid collapses to ONE column and every span resets —
+   the proof measures all cards at the same x. */
+.bento12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--space-section);
+}
+.bento12 > .sig-span-12 {
+  grid-column: span 12;
+}
+.bento12 > .sig-span-7 {
+  grid-column: span 7;
+}
+.bento12 > .sig-span-5 {
+  grid-column: span 5;
+}
+.bento12 > .sig-span-4 {
+  grid-column: span 4;
+}
+.bento12 > .sig-span-3 {
+  grid-column: span 3;
+}
+.bento12 > .sig-row-2 {
+  grid-row: span 2;
+}
+
+@media (max-width: 768px) {
+  .bento12 {
+    grid-template-columns: 1fr;
+  }
+  .bento12 > .sig-span-12,
+  .bento12 > .sig-span-7,
+  .bento12 > .sig-span-5,
+  .bento12 > .sig-span-4,
+  .bento12 > .sig-span-3,
+  .bento12 > .sig-row-2 {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+/* ---- LIVE RING (2.5.0) ------------------------------------------------------
+   The RSVP ring reacts to check-ins: the stroke-dashoffset transition
+   lives HERE, scoped to the composition (react/viz.tsx is byte-frozen
+   and the StatRing ships no css — it is pure SVG attributes; the
+   selector targets the ring's role="progressbar" svg inside the card).
+   Reduced motion: the ring jumps, it does not glide. */
+.sig-surface-card svg[role="progressbar"] circle {
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sig-surface-card svg[role="progressbar"] circle {
+    transition: none;
+  }
+}
+
+/* ---- staggered load-in (1.5.1; 2.5.0: retargeted to the bento cells) -------
+   The composition animates the bento's direct children (banner, KPI
+   cells, cards) — the 12-column grid has 11 cells, staggered at 50ms
+   steps. Reduced-motion escape is MANDATORY (opacity would otherwise
+   strand reduced-motion users with invisible cards). */
 @keyframes slideUpFade {
   from {
     opacity: 0;
@@ -75,32 +137,60 @@
   }
 }
 
-.sig-surface-card {
+.bento12 > * {
   animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
   opacity: 0;
 }
 
-/* DOM order of the dashboard cards: forms, timeline, telemetry, palette. */
-.sig-surface-card:nth-child(1) {
+.bento12 > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.bento12 > *:nth-child(2) {
   animation-delay: 0.1s;
 }
 
-.sig-surface-card:nth-child(2) {
+.bento12 > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.bento12 > *:nth-child(4) {
   animation-delay: 0.2s;
 }
 
-.sig-surface-card:nth-child(3) {
+.bento12 > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.bento12 > *:nth-child(6) {
   animation-delay: 0.3s;
 }
 
-.sig-surface-card:nth-child(4) {
+.bento12 > *:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.bento12 > *:nth-child(8) {
   animation-delay: 0.4s;
+}
+
+.bento12 > *:nth-child(9) {
+  animation-delay: 0.45s;
+}
+
+.bento12 > *:nth-child(10) {
+  animation-delay: 0.5s;
+}
+
+.bento12 > *:nth-child(11) {
+  animation-delay: 0.55s;
 }
 
 /* MANDATORY accessibility escape: `opacity: 0` + a running animation
    would leave reduced-motion users with permanently invisible cards. */
 @media (prefers-reduced-motion: reduce) {
-  .sig-surface-card {
+  .sig-surface-card,
+  .bento12 > * {
     animation: none;
     opacity: 1;
   }
@@ -248,15 +338,14 @@
   line-height: 1.5;
 }
 
-/* ---- 2.3.0 module tabs ----------------------------------------------------
-   The tab bar lives ABOVE the .hub grid (a .hub__module container with
-   the same max-width/section padding) so the four core cards stay direct
-   grid children — the nth-child stagger above is untouched. The branch
-   content hangs one --space-standard step below the tabs' hairline. */
+/* ---- 2.3.0 module tabs (2.5.0: the shell owns the column) ------------------
+   The tab bar + branch content now live INSIDE .sig-shell — the
+   2.4.1-era max-width/padding here were the defect #1 bleed (only the
+   CORE module had a constrained grid; Data & Tables and Form & Input
+   Matrix ran edge-to-edge). The shell's clamp padding reaches them
+   now; the bar keeps only its rhythm. */
 .hub__module {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 var(--space-section) var(--space-standard);
+  padding-bottom: var(--space-standard);
 }
 
 .hub__tabs-content {
@@ -288,6 +377,34 @@
 .hub__form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-standard);
+}
+
+@media (max-width: 768px) {
+  /* Pillar 2: the 768px proof measures single-column cards — the
+     preview grids collapse explicitly. */
+  .hub__form-grid,
+  .hub__kpis,
+  .hub__tiles {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- 2.5.0 bento-local composition ---------------------------------------- */
+/* The action-tile row (Deck & Rules card): two tiles side by side,
+   collapsing via the 768px rule above. */
+.hub__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-tight);
+}
+
+/* The check-in form: SurfaceCard supplies the surface; the form itself
+   is a flex column with the standard rhythm (the card's flex gap does
+   not reach THROUGH the form element). */
+.hub__checkin {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-standard);
 }
 
