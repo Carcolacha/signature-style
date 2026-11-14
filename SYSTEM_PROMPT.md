@@ -53,19 +53,29 @@ The surface is a VERIFIED AXLE, not a hardcoded palette: the canonical theme mec
 - **Legacy:** the old light toggle `<html data-theme="latte">` keeps working untouched — it is the LEGACY mechanism, outside the canonical triad; never author new work against it.
 - **The live customizer:** the playground's Pattern Studio carries the Theme & Surface Customizer panel (also reachable via the ⌘K palette: "Theme: Mocha/OLED/Daylight", "Radius: Standard/Sharp", "Download tokens.css", "Copy CSS Variables"). Theme state persists under `sig.workspace.v3.theme` / `sig.workspace.v3.radius`; until the user picks, BOTH attributes stay ABSENT (the mocha/6px legacy look). Contrast badges render the 16 chromatic tokens for the ACTIVE theme with the same WCAG math the gate uses.
 
+## Scaffolding (3.3.0 — the npx init CLI):
+New projects don't hand-wire tokens anymore: `npx @edwyn/signature-style init` scaffolds a resolved `signature-tokens.css` (one of the three themes + the standard geometry preset, zero dependencies) and, with `--template bento`, a standalone 12-column starter that already obeys every pillar on this page. The CLI's embedded theme map is drift-gated against `css/tokens.css` by `verify:cli` (cli2) — when scaffolding, the palette you get IS this document's palette. Prefer the CLI for fresh surfaces; hand-injection stays reserved for retrofits.
+
 ## The Chromatic Palette (Content-Only Tokens):
-Eleven theme-independent CONTENT colors (v2.4; 2.5.0 adds --sig-yellow, the strength meter's Fair stage), defined ONCE in `:root` and inherited by both Mocha and Latte untouched — a badge wears the same chromatic color on both sides of the toggle:
+Twenty-six theme-independent CONTENT colors (v2.4 origin; 2.5.0 adds --sig-yellow, the strength meter's Fair stage; 2.9.1 re-inks mauve-bright for zero contrast debt; 3.0.0 the 16-color expansion — --sig-blue RETIRES, its value surviving as --sig-cobalt; 3.1.0 the --sig-* rename; 3.2.0 adds the daylight ink variants), defined ONCE in `:root` and inherited by every surface theme untouched (daylight re-inks 20 of them — see the Multi-Theme Surface Engine above):
+
+The legacy eleven (suffix names):
 - --sig-pink-bright: #ea76cb (badges, tag fills, event highlights)
 - --sig-pink-soft: #f5bde6 (tag surfaces, avatar rings, soft calendar fills)
 - --sig-pink-alt: #f4b8e4 (alternate pink for content categories)
-- --sig-mauve-bright: #8839ef (chart series, bold tags)
+- --sig-mauve-bright: #9e5ff2 (chart series, bold tags — 2.9.1: was #8839ef, a 2.32:1 sub-floor FAIL)
 - --sig-mauve-soft: #cba6f7 (avatar dots, calendar blocks)
 - --sig-lavender: #7287fd (content links, calendar themes, data-viz series)
 - --sig-sky: #04a5e5 (informational tags, data-viz series)
-- --sig-blue: #1e66f5 (data-viz series, event themes)
+- --sig-cobalt: #89b4fa (data-viz series, event themes — 3.0.0: the retired --sig-blue's exact value, the official Mocha Blue under its own name; the old name is banned)
 - --sig-peach: #fe640b (calendar block edges, attention tags)
 - --sig-green: #a6d189 (status tags, positive data-viz series)
 - --sig-yellow: #F9E2AF (the strength meter's Fair stage — feedback meter stages, owner v2.5.0)
+
+The chromatic fifteen (3.0.0 — DECLARED fill/series accents: bars, node rings, borders, tinted wells; every value ≥2.0:1 vs --bg-surface, floor leader crimson 3.01:1):
+- --sig-orchid: #F5C2E7 · --sig-cyan: #64DFDF · --sig-magenta: #CF64DF · --sig-mint: #64DF99 · --sig-spring: #6EDF64 · --sig-citron: #DBDF64
+- --sig-violet-glow: #C29EFF · --sig-pink-glow: #F29EFF · --sig-rose-glow: #FF9EDB · --sig-lime-glow: #DBFF9E · --sig-mint-glow: #9EFFC2
+- --sig-crimson: #F22222 · --sig-azure: #228AF2 · --sig-tangerine: #F25622 · --sig-neon-green: #56F222
 
 **Rule of Engagement (non-negotiable):** `--sig-*` tokens are reserved EXCLUSIVELY for content — badges, tags, avatars, event theme overrides, calendar blocks, data visualization. The Engine continues using Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) for ALL structural UI actions — buttons, inputs, focus rings. Never use `--sig-*` for structural chrome; never use Flamingo/Teal for content categories. The two families never cross.
 
@@ -756,7 +766,7 @@ Phase 4 of this release tried to break the release from inside a browser (`playg
 2. **The Chronicle hero overflowed 18px at 375px**: "CHRONICLE" is ONE unbreakable word wearing the hero's 36px + 0.35em tracking; it cannot wrap and outgrew the 327px shell column. FIX (playground layer): below 480px the shell's hero folds to 28px / 0.22em — the word fits with air, nothing else moves.
 3. **A studio preview bled 2px at 375px**: a nowrap `<code>` chip escaped the preview stage. FIX (playground layer): `.pattern-frame__preview { overflow-x: auto; }` — a stage pans, it never page-breaks.
 4. **CommandPalette's Ctrl+K fired while typing in inputs**: the `isTypingTarget` guard was written but never wired into the launcher branch. FIX: the listener honors it; the palette now ignores the launcher in any input/textarea/select/contentEditable. (Found during the Phase 2 wiring, fixed there; recorded here because it is exactly the class of bug this audit exists for.)
-5. **Contrast flags, NOT touched (owner call required)**: `--sig-mauve-bright` reads 2.32:1 on `--bg-surface` (3.03:1 on base) and `--sig-blue` 2.56:1 on surface — both are chart/badge FILL tokens whose TEXT usages are rare (the ChronicleTimeline can wear mauve-bright as a tag color). Per the audit mandate: flagged and documented, no fix without owner approval.
+5. **Contrast flags — RESOLVED (2.9.1 / 3.0.0, owner-approved)**: at audit time `--sig-mauve-bright` read 2.32:1 on `--bg-surface` and `--sig-blue` 2.56:1. Since then: mauve-bright was lightened in-hue to `#9e5ff2` (3.22:1 on surface / 4.20:1 on base — the 2.9.1 "zero contrast debt" release), and `--sig-blue` retired as `--sig-cobalt` (#89b4fa, 5.97:1 on surface) in 3.0.0. Both are now gate-enforced (`verify:contrast`); this entry remains as the audit's historical record.
 6. Also caught during Phase 2 (fixed before this audit): the palette's Escape closed without restoring focus — the trigger-capture existed but the restore effect was missing; keyboard users would have fallen off the page.
 
 Everything else: 32/32 viewport×target sweep cells at zero horizontal overflow with non-zero shell margins; the palette's full keyboard contract green; emulated reduced-motion collapses the shimmer/flip/shake/meter to the floor; zero console errors and zero pageerror events across every sweep.
