@@ -66,6 +66,30 @@
    Media queries are NOT used here — the card answers its CONTAINER,
    not the viewport (two cards in one row can reflow differently).
 
+   3.0.0 CARD PARITY — the three hand-rolled archetypes (.ptp-flip-card,
+   .ptp-accordion, .ptp-matchup) become SELF-CONTAINED surfaces: the card
+   owns var(--bg-surface) + the 1px glass-inset border (15% token mix —
+   the surface-card derivation) + var(--radius-card) (3.0.0: cards earn
+   rounder corners than the 6px controls) + min-height 220px, so a grid
+   row can never collapse them to transparent slivers. The flip FACES
+   keep their inset interior (the card is the surface, the face is the
+   well) and inherit the card radius.
+
+   3.0.0 CHROMATIC ENRICHMENT — icon wells tint and cards gain a top
+   accent:
+     - .ptp-action-tile__well (the icon disc) tints from the accent:
+       color-mix(in srgb, var(--sig-accent, <teal fallback>) 12%,
+       transparent) — a 12% tinted well. Cards under a [data-accent]
+       ancestor (which defines --sig-accent inline) get the category
+       color; bare consumers get the structural Teal fallback.
+     - [data-accent] .ptp-flip-card / .ptp-accordion / .ptp-matchup
+       gain a chromatic TOP accent: border-top 2px solid color-mix(
+       in srgb, var(--sig-accent) 45%, transparent). DISTINCT FROM THE
+       TITLE UNDERLINE: the underline is the ruled-title treatment on
+       h2s (surface.css/cards.css titles); the top accent is the CARD's
+       own chromatic identity — a 45% translucent wash, not a solid.
+       Attribute-driven (the attribute IS the state), zero JS.
+
    DOCTRINE: cards are structure — separation is hairlines, NEVER
    shadows (the e1 scope: ZERO box-shadow in this file, featured tier
    included — its shadow is the shared [data-elevation] ladder in
@@ -110,7 +134,11 @@
     width: 2.5rem;  /* 40px — the avatar's grid-perfect diameter */
     height: 2.5rem;
     border-radius: var(--radius-ui);
-    background: var(--bg-inset);
+    /* 3.0.0 CHROMATIC WELL — a 12% tinted disc: the accent arrives
+       through --sig-accent (set inline by any [data-accent] ancestor);
+       bare consumers fall back to the structural Teal. Tint, not fill —
+       the icon ink stays readable on any card. */
+    background: color-mix(in srgb, var(--sig-accent, var(--color-cake-secondary)) 12%, transparent);
     color: var(--color-cake-secondary); /* the icon wears the Teal (structural) */
     flex: none;
   }
@@ -143,12 +171,16 @@
   }
 
   /* -- FlipCard ---------------------------------------------------------------- */
+  /* 3.0.0 CARD PARITY: the card IS the surface now — bg-surface + the
+     15% glass-inset border + var(--radius-card) + the 220px floor. The
+     button owns the box; the faces ride INSIDE it (absolute, inset). */
   .ptp-flip-card {
     position: relative;
     width: 100%;
-    min-height: 9rem; /* the faces are absolute — the button owns the box */
-    background: transparent;
-    border: none;
+    min-height: 220px; /* the parity floor — never a collapsed sliver */
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-card); /* 3.0.0: cards > 6px controls */
     padding: 0;
     cursor: pointer;
     text-align: left;
@@ -178,8 +210,8 @@
     gap: var(--space-tight);
     padding: var(--space-standard);
     background: var(--bg-inset);
-    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
-    border-radius: var(--radius-ui);
+    border: none;
+    border-radius: var(--radius-card); /* follows the card's own radius */
     backface-visibility: hidden;
     overflow: hidden;
   }
@@ -195,10 +227,13 @@
   }
 
   /* -- AccordionCard ------------------------------------------------------------ */
+  /* 3.0.0 CARD PARITY: surface + glass hairline + radius-card + the
+     220px floor (the details body grows the box from there). */
   .ptp-accordion {
-    background: var(--bg-inset);
-    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
-    border-radius: var(--radius-ui);
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-card);
+    min-height: 220px;
   }
   .ptp-accordion__summary {
     display: flex;
@@ -240,12 +275,21 @@
   }
 
   /* -- MatchupCard ---------------------------------------------------------------- */
+  /* 3.0.0 CARD PARITY: the matchup was a bare transparent grid (it
+     read as a collapsed sliver in lone grid rows) — now it is the
+     self-contained surface: bg-surface + the 15% glass hairline +
+     radius-card + the 220px floor + its own padding. */
   .ptp-matchup {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     gap: var(--space-standard);
     align-items: center;
     text-align: center;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-card);
+    min-height: 220px;
+    padding: var(--space-standard);
   }
   .ptp-matchup__title {
     grid-column: 1 / -1;
@@ -279,6 +323,17 @@
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.75rem;
     color: var(--text-muted);
+  }
+
+  /* 3.0.0 CHROMATIC TOP ACCENT — cards riding a [data-accent] ancestor
+     (which sets --sig-accent inline) wear the 45% translucent chromatic
+     border-top. This is the CARD's identity mark, deliberately distinct
+     from the ruled-title underline (the h2 treatment): a translucent
+     2px wash at the top edge, not a solid rule under a title. */
+  [data-accent] .ptp-flip-card,
+  [data-accent] .ptp-accordion,
+  [data-accent] .ptp-matchup {
+    border-top: 2px solid color-mix(in srgb, var(--sig-accent) 45%, transparent);
   }
 
   /* 2.9.0 CONTAINER REFLOW — narrow cells (< 380px) stack the sides

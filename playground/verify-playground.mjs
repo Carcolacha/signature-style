@@ -2832,7 +2832,7 @@ if (!existsSync(cardsCssPath)) {
     [".ptp-flip-card[aria-pressed=\"true\"]", "the flip state rides aria-pressed"],
     ["::-webkit-details-marker", "the UA marker stripped (plus list-style: none)"],
     ["prefers-reduced-motion", "the reduced-motion guard (the opacity swap)"],
-    ["min-height: 9rem", "the flip button owns its box (faces are absolute)"],
+    ["min-height: 220px", "the flip card's parity floor (3.0.0: cards never collapse — the faces are absolute)"],
   ];
   for (const [needle, label] of CD1_CSS) {
     if (!cardsCss.includes(needle)) {
@@ -2885,6 +2885,63 @@ for (const name of ["ActionTile", "FlipCard", "AccordionCard", "MatchupCard"]) {
   }
   if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
     failures.push(`react/index.js must re-export ${name} — (cd1)`);
+  }
+}
+
+// ---- (par) CARD PARITY + CHROMATIC ENRICHMENT (3.0.0) ----------------------------
+// The three hand-rolled archetypes become self-contained surfaces (never
+// transparent/collapsed in grid rows) and gain the chromatic enrichment:
+// bg-surface + the 15% glass-inset border + var(--radius-card) + the 220px
+// floor on .ptp-flip-card / .ptp-accordion / .ptp-matchup; the ActionTile
+// well tints 12% from --sig-accent (Teal fallback); [data-accent] cards wear
+// the 45% translucent chromatic border-top. Shadow policy unchanged:
+// cards.css stays ABSOLUTE ZERO (belt-and-braces with (cd1)/(e1)).
+{
+  const cardsCss30 = readFileSync(resolve(root, "css/cards.css"), "utf8");
+  for (const archetype of [".ptp-flip-card", ".ptp-accordion", ".ptp-matchup"]) {
+    const block = cardsCss30.match(
+      new RegExp(`${archetype.replace(/-/g, "\\-")}\\s*\\{([^}]*)\\}`, "s"),
+    );
+    if (block === null) {
+      failures.push(`(par) css/cards.css has no parseable ${archetype} rule block`);
+      continue;
+    }
+    const body = block[1];
+    if (!body.includes("background: var(--bg-surface)")) {
+      failures.push(`(par) ${archetype} must carry background: var(--bg-surface) — the self-contained surface (3.0.0 parity)`);
+    }
+    if (!body.includes("border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent)")) {
+      failures.push(`(par) ${archetype} must carry the 15% glass-inset border (3.0.0 parity)`);
+    }
+    if (!body.includes("border-radius: var(--radius-card)")) {
+      failures.push(`(par) ${archetype} must carry border-radius: var(--radius-card) — cards earn rounder corners than 6px controls`);
+    }
+    if (!body.includes("min-height: 220px")) {
+      failures.push(`(par) ${archetype} must carry min-height: 220px — never transparent/collapsed in grid rows`);
+    }
+  }
+  const wellTint = /\.ptp-action-tile__well\s*\{[^}]*background: color-mix\(in srgb, var\(--sig-accent, var\(--color-cake-secondary\)\) 12%, transparent\);/s;
+  if (!wellTint.test(cardsCss30)) {
+    failures.push(
+      "(par) .ptp-action-tile__well must tint 12% — background: color-mix(in srgb, var(--sig-accent, var(--color-cake-secondary)) 12%, transparent)",
+    );
+  }
+  if (!cardsCss30.includes("[data-accent] .ptp-flip-card,\n  [data-accent] .ptp-accordion,\n  [data-accent] .ptp-matchup")) {
+    failures.push(
+      "(par) the [data-accent] chromatic top-accent rule must cover all three archetypes",
+    );
+  }
+  const topAccent = /\[data-accent\] \.ptp-flip-card,\s*\n\s*\[data-accent\] \.ptp-accordion,\s*\n\s*\[data-accent\] \.ptp-matchup\s*\{[^}]*border-top: 2px solid color-mix\(in srgb, var\(--sig-accent\) 45%, transparent\);/s;
+  if (!topAccent.test(cardsCss30)) {
+    failures.push(
+      "(par) the chromatic top accent must be border-top: 2px solid color-mix(in srgb, var(--sig-accent) 45%, transparent) — the card's identity mark, distinct from the title underline",
+    );
+  }
+  const cardsShadows30 = cardsCss30.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (cardsShadows30 !== null) {
+    failures.push(
+      `(par) css/cards.css declares a box-shadow (${cardsShadows30.join(" ")}) — the 3.0.0 enrichment keeps the e1 treaty: cards.css stays ABSOLUTE ZERO`,
+    );
   }
 }
 
