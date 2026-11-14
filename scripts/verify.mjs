@@ -145,7 +145,7 @@
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -1203,6 +1203,26 @@ for (const feedbackExport of [
       `react/index.js must re-export ${feedbackExport} from the umbrella entry point`,
     );
   }
+}
+
+// ---- (pure) THE STANDALONE PURITY GATE (3.1.0, the release gate) ------------
+// The owner-mandated centerpiece: the working tree carries ZERO banned
+// domain vocabulary. verify-standalone.mjs owns the scan (the
+// word-bounded class-token pattern, substring generics, the 3-pin
+// allowlist); this runner wires it into `npm run verify` so no release
+// ships without it.
+try {
+  const purity = spawnSync("node", [resolve(root, "scripts/verify-standalone.mjs")], {
+    cwd: root,
+    encoding: "utf8",
+  });
+  const out = `${purity.stdout ?? ""}${purity.stderr ?? ""}`.trim();
+  if (out !== "") console.log(out);
+  if (purity.status !== 0) {
+    failures.push("(pure) verify:standalone FAILED — the working tree carries banned domain vocabulary (see the list above)");
+  }
+} catch (error) {
+  failures.push(`(pure) could not run verify:standalone — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- verdict ------------------------------------------------------------------

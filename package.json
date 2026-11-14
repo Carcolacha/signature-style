@@ -53,6 +53,7 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "verify": "node scripts/verify.mjs",
+    "verify:standalone": "node scripts/verify-standalone.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
     "verify:contrast": "node playground/verify-contrast.mjs",
     "verify:mcp": "npm --prefix tools/mcp-viz run build && node tools/mcp-viz/smoke.mjs",
