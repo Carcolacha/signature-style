@@ -775,7 +775,18 @@ if (!selfWired) {
 // 3.3.0 AMENDMENT: the zero-dep CLI ships — the array gains "bin" at the
 // front (bin/cli.mjs + bin/themes.mjs; the npx runtime needs both). The
 // FROZEN_KEYS distribution surface (exports/main/peers) is untouched.
+// 3.4.0 AMENDMENT: the WC umbrella joins — exports gains EXACTLY the
+// "./wc" condition object (types/import/default → dist/wc, the react
+// shape mirrored; every other export key deep-equal to v1.4.0), and the
+// files array gains "dist/wc" (the compiled bundle + the tsc-honest
+// declarations ship; the wc/src sources stay out of the tarball like the
+// react .tsx sources do). main/peers stay untouched.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
+const WC_EXPORT = {
+  types: "./dist/wc/index.d.ts",
+  import: "./dist/wc/signature-wc.es.js",
+  default: "./dist/wc/signature-wc.es.js",
+};
 const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx", "!react/command.tsx", "!react/skeleton.tsx"];
 let v140pkg = null;
 try {
@@ -786,22 +797,41 @@ try {
 if (v140pkg !== null) {
   const stableJson = (value) => JSON.stringify(value === undefined ? null : value);
   for (const key of FROZEN_KEYS) {
-    if (stableJson(pkg[key]) !== stableJson(v140pkg[key])) {
-      failures.push(`(b2) package.json "${key}" changed vs v1.4.0 — the distribution surface is FROZEN`);
+    // 3.4.0: exports is checked with the "./wc" key neutralized — the
+    // new key is asserted EXACTLY below (the react umbrella shape,
+    // mirrored); every OTHER export key must remain deep-equal to v1.4.0.
+    const current =
+      key === "exports"
+        ? { ...pkg[key], "./wc": undefined }
+        : pkg[key];
+    const baseline =
+      key === "exports"
+        ? { ...v140pkg[key], "./wc": undefined }
+        : v140pkg[key];
+    if (stableJson(current) !== stableJson(baseline)) {
+      failures.push(`(b2) package.json "${key}" changed vs v1.4.0 beyond the authorized 3.4.0 ./wc delta — the distribution surface is FROZEN`);
     }
   }
-  // files = "bin" (3.3.0) + v1.4.0's array + the 2.2.0→2.9.0 negations, exactly, in order.
-  const expectedFiles = ["bin", ...(v140pkg.files ?? []), ...FILES_NEGATIONS];
+  // 3.4.0: the ./wc block must be EXACTLY the react shape, mirrored.
+  if (stableJson(pkg.exports?.["./wc"]) !== stableJson(WC_EXPORT)) {
+    failures.push(
+      '(b2) package.json exports["./wc"] must be EXACTLY { types: "./dist/wc/index.d.ts", import: "./dist/wc/signature-wc.es.js", default: "./dist/wc/signature-wc.es.js" } — the react umbrella shape, mirrored',
+    );
+  }
+  // files = "bin" (3.3.0) + v1.4.0's array + "dist/wc" (3.4.0) + the negations, exactly, in order.
+  const expectedFiles = ["bin", ...(v140pkg.files ?? []), "dist/wc", ...FILES_NEGATIONS];
   if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
     failures.push(
-      "(b2) package.json files must be \"bin\" (the 3.3.0 CLI amendment) + the v1.4.0 array EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx — the packing contract evolves documented steps",
+      "(b2) package.json files must be \"bin\" (3.3.0) + the v1.4.0 array + \"dist/wc\" (the 3.4.0 WC amendment) EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx — the packing contract evolves documented steps",
     );
   }
 }
 
-// ---- (b3) npm pack stays EXACTLY 60 files (3.3.0: 58 + bin/cli.mjs +
-// bin/themes.mjs — BOTH ship: cli.mjs imports themes.mjs at npx runtime).
-// 2.9.0 history: 52 → 58 (css/command.css + css/skeleton.css +
+// ---- (b3) npm pack stays EXACTLY 64 files (3.4.0: 60 + the dist/wc
+// quartet — signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts;
+// the wc/src sources stay OUT of the tarball like the react .tsx
+// sources). 3.3.0 was 60 (58 + bin/cli.mjs + bin/themes.mjs); 2.9.0
+// history: 52 → 58 (css/command.css + css/skeleton.css +
 // react/command.{js,d.ts} + react/skeleton.{js,d.ts}); playground/ and
 // tools/ stay excluded by the files array. ----
 let packOutput = "";
@@ -822,9 +852,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "60") {
+} else if (totalFiles[1] !== "64") {
   failures.push(
-    `(b3) npm pack must stay at exactly 60 files (3.3.0: 58 + bin/cli.mjs + bin/themes.mjs — the zero-dep CLI ships both), found ${totalFiles[1]}`,
+    `(b3) npm pack must stay at exactly 64 files (3.4.0: 60 + the dist/wc quartet — signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts), found ${totalFiles[1]}`,
   );
 }
 
@@ -1236,60 +1266,73 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v3.2.0 are owner-authorized ----------
-// 3.3.0 REBASE (the floor moves v3.1.0 → v3.2.0): the ZERO-DEPENDENCY npx CLI
-// SCAFFOLDER release. The owner-mandated 3.3.0 deltas (the per-task
-// enumerated set), and NOTHING else — the token VALUES and the package css
-// stay byte-identical to v3.2.0:
-//   bin/cli.mjs              — NEW: the zero-dep CLI (init, themes, templates,
-//                              safe injection)
-//   bin/themes.mjs           — NEW: the embedded frozen theme map (cli2 drift
-//                              needle wires it to css/tokens.css :root)
-//   scripts/verify-cli.mjs   — NEW: the verify:cli gate (scenarios A–D +
-//                              cli1/cli2/cli3/b3)
-//   SYSTEM_PROMPT.md         — the drive-by: the stale Chromatic Palette
-//                              section rewritten to the 26-token truth + the
-//                              Scaffolding note (title stays v3.5)
-// css/, react/, tokens values, scripts/verify.mjs, tools/, demo/ stay
-// byte-identical to v3.2.0. playground/ is NOT under the freeze (the
-// composition layer); README/package.json/lock are release plumbing.
-const B7_LOCKED_320 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
-// The v3.3.0 authorized delta set: exactly the files the CLI release
+// ---- (b7) SAFETY PROOF: core deltas vs v3.3.0 are owner-authorized ----------
+// 3.4.0 REBASE (the floor moves v3.2.0 → v3.3.0): the ZERO-REACT NATIVE
+// WEB COMPONENTS release. The owner-mandated 3.4.0 deltas, and NOTHING
+// else — css/, react/, demo/, bin/ and the tokens.json VALUES stay
+// byte-identical to v3.3.0:
+//   scripts/verify.mjs       — the (e2) contract evolves one documented
+//                              step: the exports map grows 3 → 4 paths
+//                              ("./wc" joins; the tokens gates untouched)
+//   scripts/verify-cli.mjs   — gatePack evolves 60 → 64 (the dist/wc
+//                              quartet ships)
+//   scripts/verify-wc.mjs    — NEW: the verify:wc gate (zero-react greps
+//                              + the Playwright render proof)
+//   SYSTEM_PROMPT.md         — title → v3.6 + the "Web Components
+//                              (Zero-React Surface)" subsection
+//   tools/mcp-viz/server.ts  — version string → 3.4.0 + the six sig-*
+//                              element selectors join the sweep
+//   tools/mcp-viz/smoke.mjs  — the (s2b) studio wc hits proof
+// tokens.json meta.version → 3.4.0 is guarded by the SEPARATE tokens
+// block below (mocha/latte/shared/sigPalette/doctrine stay byte-equal vs
+// v3.1.0 — NO token changes this release). playground/ is NOT under the
+// freeze (the composition layer); README/package.json/lock are release
+// plumbing; wc/ + dist/wc are NEW paths outside the locked list.
+const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
+// The v3.4.0 authorized delta set: exactly the files the WC release
 // touches. playground/ is NOT under the freeze (the composition layer).
-const AUTHORIZED_320 = new Set([
-  "bin/cli.mjs",
-  "bin/themes.mjs",
-  "SYSTEM_PROMPT.md",
+const AUTHORIZED_330 = new Set([
+  "scripts/verify.mjs",
   "scripts/verify-cli.mjs",
+  "scripts/verify-wc.mjs",
+  "SYSTEM_PROMPT.md",
+  "tools/mcp-viz/server.ts",
+  "tools/mcp-viz/smoke.mjs",
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v3.2.0", "--name-only", "--", ...B7_LOCKED_320],
+    ["diff", "v3.3.0", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v3.2.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
-  if (!AUTHORIZED_320.has(file)) {
+  if (!AUTHORIZED_330.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.2.0 — outside the owner-authorized 3.3.0 zero-dep CLI set (bin/cli.mjs + bin/themes.mjs + the verify:cli gate + the SYSTEM_PROMPT chromatic-truth fix)`,
+      `(b7) SAFETY: ${file} changed since v3.3.0 — outside the owner-authorized 3.4.0 zero-react WC set (the verify gates + verify-wc + the codex additions + the cortex selector/version adds)`,
     );
   }
 }
-if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify-cli.mjs")) {
-  failures.push("(b7) SAFETY: scripts/ beyond verify-cli.mjs is LOCKED in 3.3.0 (scripts/verify.mjs stays byte-identical)");
+const SCRIPTS_330_ALLOWED = new Set(["scripts/verify.mjs", "scripts/verify-cli.mjs", "scripts/verify-wc.mjs"]);
+if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f))) {
+  failures.push("(b7) SAFETY: scripts/ beyond the three authorized gates is LOCKED in 3.4.0 (verify.mjs: only the (e2) 4-path evolution)");
 }
-if (b7Changed.some((f) => f === "css/signature-style.css" || f === "css/cascade.css" || f === "css/overrides.css")) {
-  failures.push("(b7) SAFETY: css/signature-style.css, cascade.css, overrides.css are LOCKED in 3.3.0 (the import order and the override layer carry no theme blocks)");
+if (b7Changed.some((f) => f.startsWith("css/"))) {
+  // css/ must not change AT ALL — the e1 treaty is mirrored inside the
+  // shadow style strings, not by editing the package css.
+  failures.push("(b7) SAFETY: css/ is LOCKED in 3.4.0 (the shadow sheets mirror the anatomy; no css edit)");
 }
-if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/dist/") || f.startsWith("tools/mcp-viz/node_modules/"))) {
-  failures.push("(b7) SAFETY: tools/mcp-viz build output is LOCKED in 3.3.0");
+if (b7Changed.some((f) => f.startsWith("react/"))) {
+  failures.push("(b7) SAFETY: react/ is LOCKED in 3.4.0 (wc/ is the framework-free twin, not a react edit)");
+}
+if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
+  failures.push("(b7) SAFETY: tools/mcp-viz node_modules is LOCKED in 3.4.0");
 }
 
 // tokens.json guard (baseline v3.1.0): the 3.2.0 SURFACE-ENGINE contract —
@@ -1406,26 +1449,27 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V3.3.0 FROZEN PROOF — v3.2.0 baseline, bin/ included ----
-// The CLI release adds bin/ to the watched surface (it SHIPS in the tarball
-// now). The authorized set is the 3.3.0 list from (b7).
-const N_HUB4_LOCKED_320 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
+// ---- (n-hub4) THE V3.4.0 FROZEN PROOF — v3.3.0 baseline ----
+// Rebased 3.4.0 (the floor moves v3.2.0 → v3.3.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 3.4.0
+// list from (b7).
+const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.2.0", "--name-only", "--", ...N_HUB4_LOCKED_320],
+    ["diff", "v3.3.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line !== "" && !AUTHORIZED_320.has(line));
+    .filter((line) => line !== "" && !AUTHORIZED_330.has(line));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.2.0 beyond the 3.3.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated zero-dep CLI set)`,
+      `(n-hub4) SAFETY: files changed since v3.3.0 beyond the 3.4.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated zero-react WC set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.2.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists -----------------------------------------

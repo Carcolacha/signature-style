@@ -346,7 +346,7 @@ function gateCli3() {
 }
 
 // ---------------------------------------------------------------------------
-// Gate b3 — the tarball grows 58 → EXACTLY 60
+// Gate b3 — the tarball grows 60 → EXACTLY 64
 // ---------------------------------------------------------------------------
 function gatePack() {
   process.stdout.write("\ngate b3 — pack expectation\n");
@@ -355,9 +355,11 @@ function gatePack() {
   const notice = `${res.stdout ?? ""}\n${res.stderr ?? ""}`;
   const match = notice.match(/total files:\s*(\d+)/);
   const total = match ? Number(match[1]) : -1;
-  // 58 (the 3.2.0 tarball) + bin/cli.mjs + bin/themes.mjs — BOTH ship:
-  // cli.mjs imports themes.mjs, so an npx run needs the whole bin/ dir.
-  check(total === 60, "b3 \u00b7 pack reports EXACTLY 60 files (58 + bin/cli.mjs + bin/themes.mjs)", `found ${total}`);
+  // 60 (the 3.3.0 tarball) + the dist/wc quartet — signature-wc.es.js +
+  // index.d.ts + base.d.ts + elements.d.ts: the compiled bundle AND the
+  // tsc-honest declarations ship (the wc/src sources stay out, like the
+  // react .tsx sources).
+  check(total === 64, "b3 \u00b7 pack reports EXACTLY 64 files (60 + the dist/wc quartet: signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts)", `found ${total}`);
 }
 
 // ---------------------------------------------------------------------------

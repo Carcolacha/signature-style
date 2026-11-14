@@ -40,7 +40,7 @@
  *       and ./tokens.css as the second (so the font @import precedes all
  *       other rules, per CSS spec); every package.json export target
  *       (and `main`) exists on disk;
- *   (e2) DISTRIBUTION CONTRACT (1.0.0): the exports map is EXACTLY the
+ *   (e2) DISTRIBUTION CONTRACT (1.0.0): the exports map is exactly the
  *       3-path public surface — "." -> ./tokens.json (AI tooling core),
  *       "./css" -> ./css/signature-style.css (the compiled bundle), and
  *       "./react" -> the umbrella react/index.js + react/index.d.ts
@@ -48,6 +48,11 @@
  *       export entries (./tokens.css, ./cascade.css, ./overrides.css,
  *       ./system-prompt.md were removed in 1.0.0 — the bundle covers
  *       everything);
+ *       3.4.0 EVOLUTION (the one authorized delta this release): the map
+ *       grows 3 → 4 paths — "./wc" joins as the zero-react custom
+ *       elements umbrella (dist/wc/signature-wc.es.js +
+ *       dist/wc/index.d.ts, types/import/default — the react shape
+ *       mirrored).
  *   (f) HARDENING: react/ThemeProvider.tsx still contains the guard
  *       strings — the CSSLayerBlockRule support check (VULN-2), the
  *       value-injection warn (VULN-3), and the canonical layer-order
@@ -577,6 +582,12 @@ for (const missing of targets.filter(([, p]) => !existsSync(resolve(root, p)))) 
 
 // (e2) DISTRIBUTION CONTRACT (1.0.0): the exports map is exactly the
 // 3-path public surface; `main` is the tokens manifest.
+// 3.4.0 EVOLUTION (THE ONE AUTHORIZED DELTA THIS RELEASE): the map grows
+// 3 → 4 paths — "./wc" joins (the zero-react custom elements bundle:
+// dist/wc/signature-wc.es.js + the tsc-honest index.d.ts). The react
+// umbrella shape is mirrored exactly (types/import/default). Everything
+// else in this file stays byte-identical; the tokens contracts are
+// untouched (NO token changes in 3.4.0).
 const DISTRIBUTION_CONTRACT = {
   ".": "./tokens.json",
   "./css": "./css/signature-style.css",
@@ -585,6 +596,11 @@ const reactConditions = {
   types: "./react/index.d.ts",
   import: "./react/index.js",
   default: "./react/index.js",
+};
+const wcConditions = {
+  types: "./dist/wc/index.d.ts",
+  import: "./dist/wc/signature-wc.es.js",
+  default: "./dist/wc/signature-wc.es.js",
 };
 const FORBIDDEN_EXPORT_KEYS = [
   "./tokens.css",
@@ -603,11 +619,11 @@ if (pkg.exports === undefined || typeof pkg.exports !== "object") {
   failures.push("package.json has no parseable exports map for the distribution contract");
 } else {
   const exportKeys = Object.keys(pkg.exports);
-  const expectedKeys = [...Object.keys(DISTRIBUTION_CONTRACT), "./react"];
+  const expectedKeys = [...Object.keys(DISTRIBUTION_CONTRACT), "./react", "./wc"];
   const unexpected = exportKeys.filter((k) => !expectedKeys.includes(k));
   if (unexpected.length > 0) {
     failures.push(
-      `exports map has entries outside the 3-path v1.0.0 contract: ${unexpected.join(", ")} (granular entries were removed — the bundle covers everything)`,
+      `exports map has entries outside the 4-path v3.4.0 contract: ${unexpected.join(", ")} (granular entries were removed — the bundle covers everything)`,
     );
   }
   const missingKeys = expectedKeys.filter((k) => !exportKeys.includes(k));
@@ -637,6 +653,24 @@ if (pkg.exports === undefined || typeof pkg.exports !== "object") {
           );
         } else if (!existsSync(resolve(root, actual))) {
           failures.push(`exports["./react"].${condition} resolves to a missing file: ${actual}`);
+        }
+      }
+    }
+  }
+  // 3.4.0: the ./wc umbrella — same shape check as ./react.
+  const wcEntry = pkg.exports["./wc"];
+  if (exportKeys.includes("./wc")) {
+    if (wcEntry === null || typeof wcEntry !== "object" || Array.isArray(wcEntry)) {
+      failures.push('exports["./wc"] must be the condition object (types/import/default)');
+    } else {
+      for (const [condition, expectedTarget] of Object.entries(wcConditions)) {
+        const actual = wcEntry[condition];
+        if (actual !== expectedTarget) {
+          failures.push(
+            `exports["./wc"].${condition} must be exactly "${expectedTarget}", found ${JSON.stringify(actual)}`,
+          );
+        } else if (!existsSync(resolve(root, actual))) {
+          failures.push(`exports["./wc"].${condition} resolves to a missing file: ${actual}`);
         }
       }
     }

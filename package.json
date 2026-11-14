@@ -20,6 +20,11 @@
       "types": "./react/index.d.ts",
       "import": "./react/index.js",
       "default": "./react/index.js"
+    },
+    "./wc": {
+      "types": "./dist/wc/index.d.ts",
+      "import": "./dist/wc/signature-wc.es.js",
+      "default": "./dist/wc/signature-wc.es.js"
     }
   },
   "bin": {
@@ -41,6 +46,7 @@
     "!react/viz.tsx",
     "!react/forms.tsx",
     "!react/toast.tsx",
+    "dist/wc",
     "!react/surface.tsx",
     "!react/data.tsx",
     "!react/editorial.tsx",
@@ -55,9 +61,12 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "build:wc": "vite build --config vite.wc.config.ts && tsc -p wc/tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck:wc": "tsc -p wc/tsconfig.json --noEmit",
     "cli": "node bin/cli.mjs",
     "verify": "node scripts/verify.mjs",
+    "verify:wc": "node scripts/verify-wc.mjs",
     "verify:cli": "node scripts/verify-cli.mjs",
     "verify:standalone": "node scripts/verify-standalone.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
