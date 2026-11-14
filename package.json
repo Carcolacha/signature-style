@@ -53,6 +53,7 @@
     "verify": "node scripts/verify.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
     "verify:mcp": "npm --prefix tools/mcp-viz run build && node tools/mcp-viz/smoke.mjs",
+    "llms": "node playground/generate-llms.mjs",
     "inspect": "node tools/mcp-viz/dist/server.js",
     "playground": "vite --config playground/vite.config.ts",
     "playground:build": "vite build --config playground/vite.config.ts"

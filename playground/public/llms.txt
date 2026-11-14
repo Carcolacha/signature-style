@@ -1,0 +1,34 @@
+# @edwyn/signature-style — The Signature Style
+
+> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Party Palette content colors, mechanical physics.
+
+The official machine-readable index for AI agents. Full self-contained version: [llms-full.txt](llms-full.txt) — every token, every rule, every copy-paste snippet + prop tables. Package source: [npm:@edwyn/signature-style](https://www.npmjs.com/package/@edwyn/signature-style).
+
+## Tokens
+
+- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 34-token whitelist, Mocha + Latte themes, shared tokens, the Party Palette, the doctrine objects
+- [llms-full.txt — The 34-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json
+- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — 22 colors + 12 spatial/z/type/motion tokens in @layer tokens
+
+## Rules
+
+- [SYSTEM_PROMPT.md](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): The Dynamic Signature Engine v3.0 — the Token Cascade, the Override Protocol, the Structural Pillars, the Pruning Protocol, the Rule of Engagement, and the Universal AI Replication Contract
+- [llms-full.txt — The Rules](llms-full.txt): the doctrines rendered verbatim-in-spirit
+- One-line doctrine: every state derives from the core tokens via color-mix()/transforms; --party-* is content-only, Flamingo/Teal structural-only; separation is hairlines, never shadows (the ONE sanction: css/surface.css's elevation blocks).
+
+## Component Sets
+
+The 6-Set Taxonomy — 50 documented exports, one copy-paste snippet each:
+
+- [Set 01 — Shell & Navigation](llms-full.txt): ThemeProvider, GlobalNav, Tabs, SigShell (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 02 — Surface & Card Archetypes](llms-full.txt): SurfaceCard, PageHero, Icon, Avatar, PartyBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 03 — Ergonomic Forms & Inputs](llms-full.txt): FormField, Input, TextArea, Select, Checkbox, RadioCardGroup, ToggleSwitch, PasswordInput, Button (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 04 — Analytical Telemetry & Graphs](llms-full.txt): ProgressBar, StatRing, StatCard, Sparkline, BarChart, AreaChart, KnowledgeGraph, smoothPath, layoutGraph, cubicBezierEdge (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 05 — Chronology & Planners](llms-full.txt): EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 06 — Data, Editorial & Feedback](llms-full.txt): DataTable, Callout, Carousel, CarouselItem, ProseBlock, AnnouncementBanner, EmptyState, ToastProvider, useToast (live demos + copy-paste in the playground's Pattern Studio)
+
+## Recipes
+
+- [llms-full.txt — copy-paste snippets](llms-full.txt): every component's JSX recipe (+ HTML variants where documented), each with its prop surface extracted from react/*.d.ts
+- [The Universal AI Replication Contract](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): "Any AI consuming @edwyn/signature-style can reproduce this signature verbatim — read the snippet, copy the snippet."
+- [STORYBOOK.md](https://unpkg.com/@edwyn/signature-style/STORYBOOK.md): the human-readable manual — philosophy, every color token, every component API
