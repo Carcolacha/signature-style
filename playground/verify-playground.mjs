@@ -681,9 +681,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "50") {
+} else if (totalFiles[1] !== "52") {
   failures.push(
-    `(b3) npm pack must yield exactly 50 files at 2.7.0 step 1 (47 + css/graph.css + react/graph.{js,d.ts}; step 2 grows to 52 with react/timeline-manager.{js,d.ts}; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 52 files (47 + css/graph.css + react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts}; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -2012,6 +2012,10 @@ try {
     "EyeOff",
     "SquarePen",
     "Shuffle",
+    // 2.7.0: the manager's live-map-probed icons (Trash2/Filter are NOT
+    // lucide-react 1.72.0 keys — the AudioLines/Music precedent again).
+    "Trash",
+    "Funnel",
     // 2.6.0: the ReferenceCard copy/link icons + the TierCard Check bullet.
     "Copy",
     "Check",
@@ -3295,10 +3299,120 @@ for (const name of ["BarChart", "AreaChart", "smoothPath"]) {
   }
 }
 
+// ---- (tm1) THE TIMELINE MANAGER (2.7.0) --------------------------------------------
+// react/timeline-manager.tsx: the CONTROLLED contract (items + the three
+// mutation callbacks + optional inspect), the composer (package Input +
+// two package Selects + the primary sm Button), the aria-pressed filter
+// pills, the tabular counter, the aria-pressed settle toggles, the
+// Funnel EmptyState edge, the Trash delete buttons. css/timeline.css: the
+// APPEND-only .ptp-tmanager block (EventTimeline rules untouched — the
+// e2 deletion guard proves it) with the tabular counter, the Flamingo
+// pill underline, the party-green settle fill, reduced-motion.
+// LIVE-MAP PROBE NOTE (the "Music" lesson): the owner-spec'd "Trash2" and
+// "Filter" are NOT keys of the installed lucide-react 1.72.0 icons map —
+// the live-map-valid equivalents "Trash" and "Funnel" render instead.
+const tmSrcPath = resolve(root, "react/timeline-manager.tsx");
+if (!existsSync(tmSrcPath)) {
+  failures.push("(tm1) react/timeline-manager.tsx is missing — the TimelineManager is a new module");
+} else {
+  const tmSrc = readFileSync(tmSrcPath, "utf8");
+  const TM_REQUIREMENTS = [
+    ["export interface TimelineItem extends PtpEvent", "the EXTENSION contract (EventTimeline untouched)"],
+    ["settled?: boolean", "the settle state"],
+    ["export interface TimelineManagerProps", "the props contract"],
+    ["items: TimelineItem[]", "CONTROLLED — the items come in"],
+    ["onAdd: (item: Omit<TimelineItem, \"id\">) => void", "the controlled add callback"],
+    ["onToggleSettled: (id: string) => void", "the controlled toggle callback"],
+    ["onDelete: (id: string) => void", "the controlled delete callback"],
+    ["onInspect?: (item: TimelineItem) => void", "the optional inspect callback"],
+    ['className="ptp-tmanager"', "the section root"],
+    ['className="ptp-tmanager__composer"', "the composer row"],
+    ['placeholder="Milestone title"', "the composer title field"],
+    ['label="Month"', "the month select's accessible name"],
+    ['label="Category"', "the category select's accessible name"],
+    ['variant="primary" size="sm"', "the composer's primary sm Button"],
+    ["Settle Item", "the composer submit label"],
+    ["trimmed === \"\"", "the empty-title guard (warn + ignore)"],
+    ['className="ptp-tmanager__pill"', "the filter pill"],
+    ["aria-pressed={filter === entry.id}", "THE pill state — the attribute IS the state"],
+    ['className="ptp-tmanager__count"', "the live counter"],
+    ["{settledCount} / {items.length} Settled", "the counter's N / M Settled readout"],
+    ['className="ptp-tmanager__settle"', "the settle toggle"],
+    ['aria-pressed={item.settled === true}', "the settle state attribute"],
+    ['aria-label="Toggle settled"', "the toggle's accessible name"],
+    ['name="Check"', "the toggle's icon (live-map-probed key)"],
+    ['className="ptp-tmanager__body"', "the row body button"],
+    ["onInspect?.(item)", "the inspect fires with the item"],
+    ["PartyBadge", "the category chip (the official primitive)"],
+    ['className="ptp-tmanager__done"', "the settled chip"],
+    ["Settled", "the settled chip text"],
+    ['className="ptp-tmanager__delete"', "the delete button"],
+    ["`Delete ${item.title}`", "the delete's per-item accessible name"],
+    ['name="Trash"', "the delete icon — LIVE-MAP PROBE: \"Trash2\" is NOT a lucide-react 1.72.0 key; \"Trash\" is (the AudioLines/Music precedent)"],
+    ['icon="Funnel"', "the EmptyState icon — LIVE-MAP PROBE: \"Filter\" is NOT a lucide-react 1.72.0 key; \"Funnel\" is (the AudioLines/Music precedent)"],
+    ['title="Nothing here"', "the EmptyState title"],
+    ['message="No milestones match this filter."', "the EmptyState edge fires on the CURRENT filter"],
+  ];
+  for (const [needle, label] of TM_REQUIREMENTS) {
+    if (!tmSrc.includes(needle)) {
+      failures.push(`(tm1) react/timeline-manager.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const tmHexes = tmSrc.match(/#[0-9a-f]{6}/gi);
+  if (tmHexes !== null) {
+    failures.push(
+      `(tm1) react/timeline-manager.tsx contains hardcoded hex literal(s) ${[...new Set(tmHexes)].join(", ")} — the manager consumes var(--token) only (r4 doctrine)`,
+    );
+  }
+}
+const timelineCss27 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
+const TM_CSS_REQUIREMENTS = [
+  [".ptp-tmanager", "the manager section root"],
+  [".ptp-tmanager__composer", "the composer row"],
+  ["gap: var(--space-tight)", "the 8px-grid gap"],
+  [".ptp-tmanager__pill[aria-pressed=\"true\"]", "THE pill state selector"],
+  ["border-bottom-color: var(--color-cake-primary)", "the Flamingo active underline (the Tabs/GlobalNav contract)"],
+  [".ptp-tmanager__count", "the live counter rule"],
+  ["font-variant-numeric: tabular-nums", "the counter's tabular digits"],
+  [".ptp-tmanager__settle[aria-pressed=\"true\"]", "the settled toggle selector"],
+  ["color: var(--party-green)", "the settled toggle's party-green fill"],
+  [".ptp-tmanager__row--settled .ptp-tmanager__body", "the settled body"],
+  ["opacity: 0.6", "the settled fade"],
+  ["text-decoration: line-through", "the settled strike-through"],
+  [".ptp-tmanager__done", "the settled chip"],
+  [".ptp-tmanager__delete:hover", "the delete hover"],
+  ["color: var(--party-peach)", "the delete attention ink"],
+  [".ptp-tmanager__body:focus-visible", "the body's keyboard ring"],
+  ["prefers-reduced-motion", "the reduced-motion guard on the manager transitions"],
+];
+for (const [needle, label] of TM_CSS_REQUIREMENTS) {
+  if (!timelineCss27.includes(needle)) {
+    failures.push(`(tm1) css/timeline.css must contain ${needle} — ${label}`);
+  }
+}
+for (const name of ["TimelineManager", "TimelineManagerProps", "TimelineItem"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${name} — (tm1)`);
+  }
+}
+for (const name of ["TimelineManager"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${name} — (tm1)`);
+  }
+}
+const tmJsPath = resolve(root, "react/timeline-manager.js");
+const tmDtsPath = resolve(root, "react/timeline-manager.d.ts");
+if (!existsSync(tmJsPath)) {
+  failures.push("(tm1) react/timeline-manager.js is missing — build it: npx tsc -p tsconfig.json");
+}
+if (!existsSync(tmDtsPath)) {
+  failures.push("(tm1) react/timeline-manager.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1): scaffold, wiring, pack=50→52 (2.7.0 two steps: css/graph.css + react/graph.{js,d.ts}, then react/timeline-manager.{js,d.ts}), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.6.0: Copy/Check/ArrowUpRight join the probe), v2.5.0 safety diff empty beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex; forms.tsx + viz.tsx + tokens + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4, version 2.6.0), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the 2.6.0 shadow amendment (surface.css: .sig-surface-card rules + the three [data-elevation] tier blocks + [data-accent] glow; cards.css absolute zero), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column (1520px catalog width) + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css incl. the scrollbar-free track + dot indicators); 2.5.0 gates intact (bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0: (acc1) the accent contract (data-accent + --sig-accent painted in css, PartyColorToken/AccentToken typed + compiled), (elev) the three-tier ladder (flat/raised/floating; interactive+floating lifts -4px, cards.css stays absolute zero), (pt11) the 11-token sweep (the whitelist IS the union), (cc1)-(cc5) the five universal archetypes (16/9 content, clipboard reference, featured tier, tabular profile, the flat chronicle), (mi1) the master index (filter tabs, three chromatic gateways in the balanced row, the commerce trio, the food slab + 4-up profiles, the 23-release memorial chronicle); negative test: deleting the [data-elevation=\"floating\"] tier block flips (elev)/(cc3) FAIL, restore PASS");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1): scaffold, wiring, pack=52 (2.7.0: css/graph.css + react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts}), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.6.0: Copy/Check/ArrowUpRight join the probe), v2.5.0 safety diff empty beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex; forms.tsx + viz.tsx + tokens + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4, version 2.6.0), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the 2.6.0 shadow amendment (surface.css: .sig-surface-card rules + the three [data-elevation] tier blocks + [data-accent] glow; cards.css absolute zero), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column (1520px catalog width) + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css incl. the scrollbar-free track + dot indicators); 2.5.0 gates intact (bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0: (acc1) the accent contract (data-accent + --sig-accent painted in css, PartyColorToken/AccentToken typed + compiled), (elev) the three-tier ladder (flat/raised/floating; interactive+floating lifts -4px, cards.css stays absolute zero), (pt11) the 11-token sweep (the whitelist IS the union), (cc1)-(cc5) the five universal archetypes (16/9 content, clipboard reference, featured tier, tabular profile, the flat chronicle), (mi1) the master index (filter tabs, three chromatic gateways in the balanced row, the commerce trio, the food slab + 4-up profiles, the 23-release memorial chronicle); negative test: deleting the [data-elevation=\"floating\"] tier block flips (elev)/(cc3) FAIL, restore PASS");

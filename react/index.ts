@@ -31,6 +31,11 @@ export {
   type PtpEvent,
 } from "./timeline.js";
 export {
+  TimelineManager,
+  type TimelineManagerProps,
+  type TimelineItem,
+} from "./timeline-manager.js";
+export {
   EventModal,
   useModal,
   type EventModalProps,

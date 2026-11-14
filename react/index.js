@@ -8,6 +8,7 @@
 export { default, ThemeProvider, } from "./ThemeProvider.js";
 export { Icon, EmptyState, PartyBadge, Button, } from "./primitives.js";
 export { EventTimeline, } from "./timeline.js";
+export { TimelineManager, } from "./timeline-manager.js";
 export { EventModal, useModal, } from "./modal.js";
 export { GlobalNav, } from "./nav.js";
 export { ProgressBar, StatRing, Sparkline, StatCard, BarChart, AreaChart, smoothPath, } from "./viz.js";

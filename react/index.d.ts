@@ -8,6 +8,7 @@
 export { default, ThemeProvider, type KnownToken, type ThemeProviderProps, type ThemeOverrides, } from "./ThemeProvider.js";
 export { Icon, type IconProps, type IconName, EmptyState, type EmptyStateProps, PartyBadge, type PartyBadgeProps, type PartyTokenName, Button, type ButtonProps, } from "./primitives.js";
 export { EventTimeline, type EventTimelineProps, type PtpEvent, } from "./timeline.js";
+export { TimelineManager, type TimelineManagerProps, type TimelineItem, } from "./timeline-manager.js";
 export { EventModal, useModal, type EventModalProps, type UseModalReturn, } from "./modal.js";
 export { GlobalNav, type NavItem, type GlobalNavProps, } from "./nav.js";
 export { ProgressBar, type ProgressBarProps, StatRing, type StatRingProps, Sparkline, type SparklineProps, StatCard, type StatCardProps, BarChart, type BarChartProps, type BarDatum, AreaChart, type AreaChartProps, type AreaPoint, smoothPath, } from "./viz.js";

@@ -225,3 +225,197 @@
     text-align: left;
   }
 }
+
+/* ==========================================================================
+   2.7.0 APPEND-ONLY BLOCK — <TimelineManager> (.ptp-tmanager namespace).
+   Everything ABOVE this block belongs to <EventTimeline> and is
+   untouched (backward compatibility is the release's hard line); this
+   block only APPENDS the manager's anatomy. Same doctrine as the rest
+   of the file: token-driven, ZERO hex, ZERO box-shadow, 8px-grid
+   spacing, reduced-motion respected.
+   ========================================================================== */
+
+/* The section root — one column, standard rhythm. */
+.ptp-tmanager {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+/* The composer — one flex row, 8px gaps; the title field breathes. */
+.ptp-tmanager__composer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+}
+.ptp-tmanager__composer .ptp-input {
+  flex: 1 1 12rem;
+  width: auto;
+}
+.ptp-tmanager__composer .ptp-select {
+  width: auto;
+}
+
+/* The filter strip — attribute-driven pills (aria-pressed IS the state,
+   the Tabs/GlobalNav lesson) + the tabular live counter. The active
+   pill answers with the Flamingo underline — the nav visual contract. */
+.ptp-tmanager__filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+}
+.ptp-tmanager__pill {
+  padding: var(--space-tight) 0;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-standard);
+}
+.ptp-tmanager__pill:hover {
+  color: var(--text-main);
+}
+.ptp-tmanager__pill[aria-pressed="true"] {
+  border-bottom-color: var(--color-cake-primary);
+  color: var(--text-main);
+}
+.ptp-tmanager__pill:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+.ptp-tmanager__count {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The rows — settle toggle · body · delete; hairline-divided. */
+.ptp-tmanager__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+.ptp-tmanager__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-tight) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+}
+
+/* The settle toggle — hairline circle; aria-pressed fills party green
+   (settled is a STATE; the toggle is the only place it turns content-green). */
+.ptp-tmanager__settle {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 40%, transparent);
+  border-radius: 50%;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-standard);
+}
+.ptp-tmanager__settle[aria-pressed="true"] {
+  border-color: var(--party-green);
+  background: color-mix(in srgb, var(--party-green) 20%, transparent);
+  color: var(--party-green);
+}
+.ptp-tmanager__settle:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* The body — the row's inspector button: date, title, category badge. */
+.ptp-tmanager__body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-main);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-standard);
+}
+.ptp-tmanager__body:hover {
+  color: var(--color-cake-primary);
+}
+.ptp-tmanager__body:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+.ptp-tmanager__meta {
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.75rem;
+}
+.ptp-tmanager__title {
+  font-weight: 500;
+}
+
+/* Settled rows fade and strike through — the work is done. */
+.ptp-tmanager__row--settled .ptp-tmanager__body {
+  opacity: 0.6;
+}
+.ptp-tmanager__row--settled .ptp-tmanager__title {
+  text-decoration: line-through;
+}
+
+/* The settled chip — mono party-green text (a state marker, NOT a
+   PartyBadge: settled is not a content category). */
+.ptp-tmanager__done {
+  color: var(--party-green);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* The delete button — quiet until hovered, peach on attention. */
+.ptp-tmanager__delete {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-standard);
+}
+.ptp-tmanager__delete:hover {
+  color: var(--party-peach);
+}
+.ptp-tmanager__delete:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* Motion is a gift, not a requirement. */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-tmanager__pill,
+  .ptp-tmanager__settle,
+  .ptp-tmanager__body,
+  .ptp-tmanager__delete {
+    transition: none;
+  }
+}
