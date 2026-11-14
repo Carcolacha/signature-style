@@ -124,6 +124,28 @@
    1fr stack; wider containers keep the auto-fit packing. Container
    queries, never media queries — a field beside a wide sibling keeps
    its row while a narrow one stacks.
+
+   3.0.0 SYMMETRICAL FORMS — THE OWNER'S REVERSAL OF THE 2.5.0 ORDER,
+   documented here because the comment IS the contract:
+     - THE LABEL ROW — .ptp-form-field__label-row carries a fixed
+       1.25rem (20px, grid multiple) min-height, so every side-by-side
+       field's label sits on the same baseline; the infoTooltip button
+       rides beside the label (never inside it).
+     - THE INFO TOOLTIP — .ptp-form-field__info is a pure-CSS tooltip:
+       a ::after bubble reading data-tooltip, parked above the button,
+       revealed on :hover AND :focus-visible (keyboard parity by
+       construction). Zero deps, zero JS state, zero shadow (e1).
+     - THE HELPERS SLOT MOVES BELOW THE WELL — .ptp-form-field__helpers
+       (min-height 20px, flex wrap, tight gap) carries description +
+       hint UNDERNEATH the control. THE A11Y PRESERVATION: the
+       description renders with a generated id wired onto the control
+       via aria-describedby (cloneElement merge in react/forms.tsx) —
+       screen readers STILL announce the format rule when the input
+       takes focus (the GOV.UK concern survives the visual move; the
+       reversal is visual, the contract is programmatic).
+     - THE VALIDATION ZONE stays last (error first — role="alert" —
+       then validMessage); hint left the priority contest and joined
+       the helpers slot.
    ========================================================================== */
 
 @layer cascade {
@@ -358,27 +380,111 @@
     flex: none;
   }
 
-  /* -- the form field: the accessible scaffold (2.4.0) ------------------------
-     The ROOT carries the __field slot contract (flex column + tight gap)
-     — one class fewer. The label is display:block with its own
-     margin-bottom so the anatomy survives even if a consumer strips the
-     flex. ONE message slot: react renders hint XOR error, never both —
-     an erroring field shows the error, the hint stands down. */
+  /* -- the form field: the accessible scaffold (2.4.0; SYMMETRICAL
+      3.0.0) ---------------------------------------------------------------
+      The ROOT carries the __field slot contract (flex column + tight gap)
+      — one class fewer. 3.0.0 REVERSAL, OWNER-SPEC'D: the 2.5.0
+      description-ABOVE-the-input anatomy moves the helpers BELOW the
+      control (the v2.5.0 defect-"rule under the input reads as an error"
+      concern is retired by the owner in favor of the symmetrical read:
+      labels top-aligned on the 20px rail, helpers bottom-docked on their
+      own 20px rail).
+
+      THE A11Y PRESERVATION (the GOV.UK concern survives the visual move):
+      the description renders with a generated id and react/forms.tsx
+      wires it onto the control via aria-describedby (cloneElement merge,
+      consumer values preserved) — screen readers STILL announce the
+      format rule when the input takes focus, no matter where the pixels
+      sit. The reversal is visual; the contract is programmatic. */
   .ptp-form-field {
     display: flex;
     flex-direction: column;
     gap: var(--space-tight);
   }
+  /* 3.0.0 — THE LABEL ROW: fixed 1.25rem (20px, a grid multiple)
+     min-height so side-by-side fields' labels align on the same
+     baseline, with or without the ⓘ button. Flex centers the row. */
+  .ptp-form-field__label-row {
+    min-height: 1.25rem; /* 20px — the alignment rail */
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* glyph geometry (the __required lead precedent) */
+  }
   .ptp-form-field__label {
     color: var(--text-main);
     font-size: 0.875rem;
     font-weight: 500;
-    margin-bottom: var(--space-tight);
+    margin-bottom: 0; /* the ROW owns the rhythm now */
     display: block;
   }
-  /* 2.5.0 — the format line ABOVE the control, directly below the
-     title. 12px muted: the spec speaks softly, but it lives with the
-     title (the v2.4.1 defect: rules under the input read as errors). */
+  /* 3.0.0 — THE ⓘ INFO BUTTON + PURE-CSS TOOLTIP: no dependencies, no
+     JS state. The bubble is a ::after reading data-tooltip, parked
+     ABOVE the button; :hover AND :focus-visible reveal it (keyboard
+     parity by construction). title + aria-label carry the text for
+     native/AT fallbacks. Flat: hairline border only, zero shadow (e1). */
+  .ptp-form-field__info {
+    position: relative;
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    width: 1rem;
+    height: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: help;
+    flex: none;
+    transition: var(--transition-standard);
+  }
+  .ptp-form-field__info:hover {
+    color: var(--text-main);
+  }
+  .ptp-form-field__info:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+    color: var(--text-main);
+  }
+  .ptp-form-field__info::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 16rem;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-tight);
+    font-size: 0.75rem;
+    line-height: 1.5;
+    color: var(--text-main);
+    text-align: left;
+    z-index: var(--z-sticky, 10);
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition-standard);
+  }
+  .ptp-form-field__info:hover::after,
+  .ptp-form-field__info:focus-visible::after {
+    opacity: 1;
+  }
+  /* 3.0.0 — THE HELPERS SLOT (below the well): description + hint, flex
+     wrap with the tight gap, the 20px bottom rail mirroring the label
+     rail so every field keeps its rhythm. Muted 0.75rem slots. */
+  .ptp-form-field__helpers {
+    min-height: 1.25rem; /* 20px — the bottom rail (mirror of the label rail) */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-tight);
+  }
+  /* 2.5.0 — the format line; 3.0.0: it lives in the HELPERS SLOT below
+     the control (the reversal — see the .ptp-form-field header). 12px
+     muted: the spec speaks softly, but it is still announced (the
+     aria-describedby wiring lives in react/forms.tsx). */
   .ptp-form-field__desc {
     color: var(--text-muted);
     font-size: 0.75rem;
@@ -668,6 +774,8 @@
     .ptp-checkbox__input::after,
     .ptp-radio-card,
     .ptp-form-field__well,
+    .ptp-form-field__info,
+    .ptp-form-field__info::after,
     .ptp-password__meter span,
     .ptp-password__pill {
       transition: none;

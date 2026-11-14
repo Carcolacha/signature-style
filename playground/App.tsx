@@ -1637,6 +1637,7 @@ function CheckInForm({
       <FormField
         label="Postal Code"
         htmlFor="checkin-postal"
+        infoTooltip="The ZIP drives the catering headcount — we route by food zone."
         description="5 numbers only · e.g., 79901"
         validMessage={postalValid ? "Valid ZIP" : undefined}
         error={postalError}

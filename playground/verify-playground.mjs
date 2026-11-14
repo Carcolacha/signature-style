@@ -2674,19 +2674,24 @@ const formFieldSrc = formsSrcAf.slice(
   formsSrcAf.indexOf("export function FormField"),
   formsSrcAf.indexOf("export function PasswordInput"),
 );
+// 3.0.0 (ff2) AMENDMENT of the 2.5.0 (ff1) DOM-order law: the owner
+// REVERSED the helpers position — description + hint now render BELOW
+// the control in the .ptp-form-field__helpers slot (the a11y survival
+// is programmatic: aria-describedby). The validation zone still renders
+// after everything.
 const descIdx = formFieldSrc.indexOf('className="ptp-form-field__desc"');
 const controlRenderIdx = formFieldSrc.indexOf("{control}");
 const wellDefIdx = formFieldSrc.indexOf('className="ptp-form-field__well"');
 const alertIdx = formFieldSrc.indexOf('className="ptp-form-field__error" role="alert"');
 const validIdx = formFieldSrc.indexOf('className="ptp-form-field__valid"');
-if (descIdx === -1 || controlRenderIdx === -1 || descIdx > controlRenderIdx) {
+if (descIdx === -1 || controlRenderIdx === -1 || descIdx < controlRenderIdx) {
   failures.push(
-    "(ff1) FormField must render .ptp-form-field__desc BEFORE the control zone — the format rule lives ABOVE the input (the v2.4.1 defect)",
+    "(ff1, 3.0.0 amendment) FormField must render .ptp-form-field__desc in the HELPERS slot AFTER the control zone — the owner's v3.0.0 reversal of the 2.5.0 desc-above anatomy (helpers below the well)",
   );
 }
 if (wellDefIdx === -1 || alertIdx === -1 || controlRenderIdx > alertIdx) {
   failures.push(
-    "(ff1) FormField must render the validation zone AFTER the control zone — label → description → control → error/valid/hint",
+    "(ff1) FormField must render the validation zone AFTER the control zone — label row → control → helpers → error/valid",
   );
 }
 if (validIdx === -1) {
@@ -2733,6 +2738,61 @@ if (!shakeKill.test(formsCssAf)) {
   failures.push(
     "(ff1) the reduced-motion guard must kill the shake — .ptp-form-field__well[data-invalid] { animation: none; } inside prefers-reduced-motion",
   );
+}
+
+// ---- (ff2) SYMMETRICAL FORMS (3.0.0) ----------------------------------------------
+// The label rail (fixed 20px), the helpers-below slot (20px), the pure-CSS
+// info tooltip (hover + focus-visible), and the aria-describedby preservation.
+{
+  const formsCss30 = formsCssAf;
+  const FF2_CSS = [
+    [".ptp-form-field__label-row", "the label alignment row"],
+    [".ptp-form-field__info", "the tooltip trigger button"],
+    ["content: attr(data-tooltip)", "the pure-CSS bubble text"],
+    [".ptp-form-field__info:hover::after,\n  .ptp-form-field__info:focus-visible::after", "hover AND keyboard focus reveal the tooltip"],
+    [".ptp-form-field__helpers", "the helpers slot (description + hint below the well)"],
+  ];
+  for (const [needle, label] of FF2_CSS) {
+    if (!formsCss30.includes(needle)) {
+      failures.push(`(ff2) css/forms.css must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const labelRail = /\.ptp-form-field__label-row\s*\{[^}]*min-height: 1\.25rem;/s;
+  if (!labelRail.test(formsCss30)) {
+    failures.push(
+      "(ff2) the label row must carry the fixed 1.25rem (20px) min-height — every side-by-side field's label aligns on the same baseline",
+    );
+  }
+  const helpersRail = /\.ptp-form-field__helpers\s*\{[^}]*min-height: 1\.25rem;[^}]*display: flex;[^}]*flex-wrap: wrap;[^}]*gap: var\(--space-tight\);/s;
+  if (!helpersRail.test(formsCss30)) {
+    failures.push(
+      "(ff2) .ptp-form-field__helpers must be min-height 20px + flex wrap + the tight gap — the bottom rail of the symmetrical field",
+    );
+  }
+  if (!/bottom: calc\(100% \+ 4px\);/.test(formsCss30)) {
+    failures.push(
+      "(ff2) the tooltip bubble must park ABOVE the trigger — bottom: calc(100% + 4px) (position absolute, pure CSS, no deps)",
+    );
+  }
+  const formsDts30 = formsDtsAf;
+  for (const [needle, label] of [
+    ["infoTooltip?: string", "the infoTooltip prop (compiled contract)"],
+    ['className="ptp-form-field__label-row"', "the label row renders"],
+    ['className="ptp-form-field__helpers"', "the helpers slot renders"],
+    ['name="Info"', "the tooltip icon (live-map-probed key)"],
+    ['title={infoTooltip}', "the native title fallback"],
+    ["aria-describedby", "the describedby preservation — the format rule stays announced"],
+    ["cloneElement", "the describedby merge mechanism (consumer values preserved)"],
+    ['data-tooltip={infoTooltip}', "the ::after text source"],
+  ]) {
+    const target = needle === "infoTooltip?: string" ? formsDts30 : formsSrcAf;
+    if (!target.includes(needle)) {
+      failures.push(`(ff2) must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  if (!appSrc.includes('infoTooltip=')) {
+    failures.push("(ff2) App.tsx must demo the infoTooltip (a live tooltip call site)");
+  }
 }
 
 // ---- (pw1) PASSWORDINPUT (2.5.0) ---------------------------------------------------

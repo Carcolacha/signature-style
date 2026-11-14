@@ -7,7 +7,14 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * FormField.prefix and the visible switch label; 2.5.0 "Ergonomic Form
  * Rules" REWORKS FormField into the top-down anatomy (description above
  * the input, prefix/suffix chips in the owning well, validMessage slot,
- * the error shake) and grows PasswordInput).
+ * the error shake) and grows PasswordInput; 3.0.0 "Symmetrical Forms"
+ * REVERSES the owner's own 2.5.0 call — helpers (description + hint)
+ * move BELOW the control into the .ptp-form-field__helpers slot, the
+ * label row gets the fixed 20px alignment rail, and infoTooltip adds
+ * the pure-CSS ⓘ bubble. THE A11Y PRESERVATION makes the reversal safe:
+ * the description id rides aria-describedby onto the control
+ * (cloneElement merge) — screen readers still announce the format rule
+ * (the GOV.UK concern survives the visual move).
  *
  * Nine controls + the accessible wrapper, wired to the form styles in
  * css/forms.css: `<FormField>`, `<Input>`, `<TextArea>`,
@@ -50,7 +57,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * The visual state is the attribute: aria-checked drives both the
  * Teal track and the knob travel.
  */
-import { useId, useState } from "react";
+import { cloneElement, isValidElement, useId, useState } from "react";
 import { Icon } from "./primitives.js";
 /**
  * `<Input>` — the inset-well text field.
@@ -205,33 +212,47 @@ export function Avatar({ name, size = 32, ringToken }) {
     return (_jsx("span", { className: "ptp-avatar", style: { width: size, height: size, ...ringStyle }, "aria-label": name, children: initials }));
 }
 /**
- * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, REWORKED
- * 2.5.0 into the owner-mandated top-down anatomy).
+ * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, reworked
+ * 2.5.0, SYMMETRIZED 3.0.0).
  *
  * `<div class="ptp-form-field">` (flex column, tight gap — the css
  * carries the `__field` slot contract ON the root, one class fewer).
- * THE STRICT VERTICAL ORDER (2.5.0 owner spec, top to bottom):
+ * THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of the 2.5.0
+ * top-down: helpers move BELOW the control — top-down labels, bottom-up
+ * helpers, every side-by-side field aligning on both rails):
  *
- *   1. `<label class="ptp-form-field__label">` — PROMOTED to the
- *      primary text voice (text-main, 0.875rem, weight 500) + the
- *      optional aria-hidden `__required` peach asterisk.
- *   2. `<span class="ptp-form-field__desc">` — the format line ABOVE
- *      the control ("5 numbers only · e.g., 79901"). Format rules live
- *      with the title, never under the input.
- *   3. The control zone — bare children (old behavior, existing call
+ *   1. The label ROW — `.ptp-form-field__label-row` (fixed 20px
+ *      min-height = the 1.25rem grid step, so side-by-side fields'
+ *      labels align on the same baseline): the PROMOTED label
+ *      (text-main, 0.875rem, weight 500) + the optional aria-hidden
+ *      `__required` peach asterisk + the optional 3.0.0 `__info` ⓘ
+ *      button (infoTooltip; pure-CSS bubble above, hover + focus).
+ *   2. The control zone — bare children (old behavior, existing call
  *      sites keep working), or — when `prefix`/`suffix` are present —
  *      the `.ptp-form-field__well` adornment zone: mono `__chip`s
  *      flanking the bare control. The well OWNS the border/focus ring
  *      (`data-invalid` flips it peach and fires the shake).
- *   4. The validation zone at the bottom — ONE line, priority order
- *      `error` (role="alert", peach) → `validMessage` (party-green) →
- *      `hint` (muted). Never two at once.
+ *   3. THE HELPERS SLOT (3.0.0 — below the well):
+ *      `.ptp-form-field__helpers` (min-height 20px, flex wrap tight
+ *      gap) carries the description (format examples — "120", "5
+ *      numbers only · e.g., 79901") and the hint. THE REVERSAL IS
+ *      DOCUMENTED IN css/forms.css; THE A11Y PRESERVATION LIVES HERE:
+ *      the description renders with a generated id and FormField wires
+ *      it onto the control via aria-describedby (cloneElement merge —
+ *      the GOV.UK concern survives the visual move: screen readers
+ *      still announce the format rule when the input takes focus).
+ *      Multi-child consumers (no single control to wire) keep the old
+ *      manual contract.
+ *   4. The validation zone at the bottom — ONE line, error first:
+ *      `error` (role="alert", peach) → `validMessage` (party-green).
+ *      `hint` no longer lives here — it joined the helpers slot.
  *
  * @example
  * ```tsx
  * <FormField
  *   label="Postal Code"
  *   htmlFor="zip"
+ *   infoTooltip="Drives the catering headcount"
  *   description="5 numbers only · e.g., 79901"
  *   validMessage={/^\d{5}$/.test(zip) ? "Valid ZIP" : undefined}
  *   error={zip !== "" && !/^\d{5}$/.test(zip) ? "Postal codes are 5 digits" : undefined}
@@ -240,15 +261,32 @@ export function Avatar({ name, size = 32, ringToken }) {
  * </FormField>
  * ```
  */
-export function FormField({ label, htmlFor, description, hint, error, validMessage, required = false, prefix, suffix, children, }) {
+export function FormField({ label, htmlFor, description, hint, error, validMessage, required = false, prefix, suffix, infoTooltip, children, }) {
     // The adornment zone (2.5.0): prefix/suffix present → the control
     // rides in the justified __well flex wrapper, mono chips flanking it,
     // the well owning the border, focus ring and error state. Neither
     // adornment → children stay DIRECT children (zero new DOM, peak
     // pruning — every 2.4.x call site keeps rendering untouched).
     const hasWell = prefix !== undefined || suffix !== undefined;
-    const control = hasWell ? (_jsxs("span", { className: "ptp-form-field__well", "data-invalid": !!error || undefined, children: [prefix !== undefined && (_jsx("span", { className: "ptp-form-field__chip", children: prefix })), children, suffix !== undefined && (_jsx("span", { className: "ptp-form-field__chip ptp-form-field__chip--right", children: suffix }))] })) : (children);
-    return (_jsxs("div", { className: "ptp-form-field", children: [_jsxs("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "ptp-form-field__required", "aria-hidden": "true", children: "*" }))] }), description !== undefined && (_jsx("span", { className: "ptp-form-field__desc", children: description })), control, error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : validMessage !== undefined ? (_jsx("span", { className: "ptp-form-field__valid", children: validMessage })) : hint !== undefined ? (_jsx("span", { className: "ptp-form-field__hint", children: hint })) : null] }));
+    // 3.0.0 A11Y PRESERVATION: the helpers' description carries a
+    // generated id, wired onto the CONTROL via aria-describedby (merged
+    // with any consumer-provided value) — the format rule is announced
+    // even though it now renders BELOW the input.
+    const descId = useId();
+    const describedBy = description !== undefined && isValidSingleChild(children)
+        ? [children.props["aria-describedby"], descId].filter(Boolean).join(" ")
+        : undefined;
+    const controlChild = describedBy !== undefined
+        ? cloneElement(children, {
+            "aria-describedby": describedBy,
+        })
+        : children;
+    const control = hasWell ? (_jsxs("span", { className: "ptp-form-field__well", "data-invalid": !!error || undefined, children: [prefix !== undefined && (_jsx("span", { className: "ptp-form-field__chip", children: prefix })), controlChild, suffix !== undefined && (_jsx("span", { className: "ptp-form-field__chip ptp-form-field__chip--right", children: suffix }))] })) : (controlChild);
+    return (_jsxs("div", { className: "ptp-form-field", children: [_jsxs("div", { className: "ptp-form-field__label-row", children: [_jsxs("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "ptp-form-field__required", "aria-hidden": "true", children: "*" }))] }), infoTooltip !== undefined && (_jsx("button", { type: "button", className: "ptp-form-field__info", title: infoTooltip, "aria-label": `Info: ${infoTooltip}`, "data-tooltip": infoTooltip, children: _jsx(Icon, { name: "Info", "aria-hidden": true }) }))] }), control, (description !== undefined || hint !== undefined) && (_jsxs("div", { className: "ptp-form-field__helpers", children: [description !== undefined && (_jsx("span", { className: "ptp-form-field__desc", id: descId, children: description })), hint !== undefined && (_jsx("span", { className: "ptp-form-field__hint", children: hint }))] })), error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : validMessage !== undefined ? (_jsx("span", { className: "ptp-form-field__valid", children: validMessage })) : null] }));
+}
+/** Single valid element = wireable via cloneElement (the describedby merge). */
+function isValidSingleChild(children) {
+    return isValidElement(children);
 }
 /**
  * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).

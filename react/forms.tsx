@@ -6,7 +6,14 @@
  * FormField.prefix and the visible switch label; 2.5.0 "Ergonomic Form
  * Rules" REWORKS FormField into the top-down anatomy (description above
  * the input, prefix/suffix chips in the owning well, validMessage slot,
- * the error shake) and grows PasswordInput).
+ * the error shake) and grows PasswordInput; 3.0.0 "Symmetrical Forms"
+ * REVERSES the owner's own 2.5.0 call — helpers (description + hint)
+ * move BELOW the control into the .ptp-form-field__helpers slot, the
+ * label row gets the fixed 20px alignment rail, and infoTooltip adds
+ * the pure-CSS ⓘ bubble. THE A11Y PRESERVATION makes the reversal safe:
+ * the description id rides aria-describedby onto the control
+ * (cloneElement merge) — screen readers still announce the format rule
+ * (the GOV.UK concern survives the visual move).
  *
  * Nine controls + the accessible wrapper, wired to the form styles in
  * css/forms.css: `<FormField>`, `<Input>`, `<TextArea>`,
@@ -50,10 +57,11 @@
  * Teal track and the knob travel.
  */
 
-import { useId, useState } from "react";
+import { cloneElement, isValidElement, useId, useState } from "react";
 import type {
   CSSProperties,
   InputHTMLAttributes,
+  ReactElement,
   ReactNode,
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
@@ -472,36 +480,60 @@ export interface FormFieldProps {
    * for a control it cannot verify, the same doctrine as id/htmlFor.
    */
   required?: boolean;
+  /**
+   * 3.0.0 — the ⓘ tooltip text. When present, an Info-icon button
+   * renders beside the label (title + aria-label carry the text; the
+   * visible tooltip is PURE CSS: a ::after bubble above the button,
+   * shown on :hover AND :focus-visible — keyboard parity by
+   * construction, zero dependencies). Tooltips are for non-critical
+   * context; format rules stay in `description` (announced to screen
+   * readers via aria-describedby — see the helpers slot).
+   */
+  infoTooltip?: string;
 }
 
 /**
- * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, REWORKED
- * 2.5.0 into the owner-mandated top-down anatomy).
+ * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, reworked
+ * 2.5.0, SYMMETRIZED 3.0.0).
  *
  * `<div class="ptp-form-field">` (flex column, tight gap — the css
  * carries the `__field` slot contract ON the root, one class fewer).
- * THE STRICT VERTICAL ORDER (2.5.0 owner spec, top to bottom):
+ * THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of the 2.5.0
+ * top-down: helpers move BELOW the control — top-down labels, bottom-up
+ * helpers, every side-by-side field aligning on both rails):
  *
- *   1. `<label class="ptp-form-field__label">` — PROMOTED to the
- *      primary text voice (text-main, 0.875rem, weight 500) + the
- *      optional aria-hidden `__required` peach asterisk.
- *   2. `<span class="ptp-form-field__desc">` — the format line ABOVE
- *      the control ("5 numbers only · e.g., 79901"). Format rules live
- *      with the title, never under the input.
- *   3. The control zone — bare children (old behavior, existing call
+ *   1. The label ROW — `.ptp-form-field__label-row` (fixed 20px
+ *      min-height = the 1.25rem grid step, so side-by-side fields'
+ *      labels align on the same baseline): the PROMOTED label
+ *      (text-main, 0.875rem, weight 500) + the optional aria-hidden
+ *      `__required` peach asterisk + the optional 3.0.0 `__info` ⓘ
+ *      button (infoTooltip; pure-CSS bubble above, hover + focus).
+ *   2. The control zone — bare children (old behavior, existing call
  *      sites keep working), or — when `prefix`/`suffix` are present —
  *      the `.ptp-form-field__well` adornment zone: mono `__chip`s
  *      flanking the bare control. The well OWNS the border/focus ring
  *      (`data-invalid` flips it peach and fires the shake).
- *   4. The validation zone at the bottom — ONE line, priority order
- *      `error` (role="alert", peach) → `validMessage` (party-green) →
- *      `hint` (muted). Never two at once.
+ *   3. THE HELPERS SLOT (3.0.0 — below the well):
+ *      `.ptp-form-field__helpers` (min-height 20px, flex wrap tight
+ *      gap) carries the description (format examples — "120", "5
+ *      numbers only · e.g., 79901") and the hint. THE REVERSAL IS
+ *      DOCUMENTED IN css/forms.css; THE A11Y PRESERVATION LIVES HERE:
+ *      the description renders with a generated id and FormField wires
+ *      it onto the control via aria-describedby (cloneElement merge —
+ *      the GOV.UK concern survives the visual move: screen readers
+ *      still announce the format rule when the input takes focus).
+ *      Multi-child consumers (no single control to wire) keep the old
+ *      manual contract.
+ *   4. The validation zone at the bottom — ONE line, error first:
+ *      `error` (role="alert", peach) → `validMessage` (party-green).
+ *      `hint` no longer lives here — it joined the helpers slot.
  *
  * @example
  * ```tsx
  * <FormField
  *   label="Postal Code"
  *   htmlFor="zip"
+ *   infoTooltip="Drives the catering headcount"
  *   description="5 numbers only · e.g., 79901"
  *   validMessage={/^\d{5}$/.test(zip) ? "Valid ZIP" : undefined}
  *   error={zip !== "" && !/^\d{5}$/.test(zip) ? "Postal codes are 5 digits" : undefined}
@@ -520,6 +552,7 @@ export function FormField({
   required = false,
   prefix,
   suffix,
+  infoTooltip,
   children,
 }: FormFieldProps) {
   // The adornment zone (2.5.0): prefix/suffix present → the control
@@ -528,12 +561,27 @@ export function FormField({
   // adornment → children stay DIRECT children (zero new DOM, peak
   // pruning — every 2.4.x call site keeps rendering untouched).
   const hasWell = prefix !== undefined || suffix !== undefined;
+  // 3.0.0 A11Y PRESERVATION: the helpers' description carries a
+  // generated id, wired onto the CONTROL via aria-describedby (merged
+  // with any consumer-provided value) — the format rule is announced
+  // even though it now renders BELOW the input.
+  const descId = useId();
+  const describedBy =
+    description !== undefined && isValidSingleChild(children)
+      ? [children.props["aria-describedby"], descId].filter(Boolean).join(" ")
+      : undefined;
+  const controlChild =
+    describedBy !== undefined
+      ? cloneElement(children as ReactElement<Record<string, unknown>>, {
+          "aria-describedby": describedBy,
+        })
+      : children;
   const control = hasWell ? (
     <span className="ptp-form-field__well" data-invalid={!!error || undefined}>
       {prefix !== undefined && (
         <span className="ptp-form-field__chip">{prefix}</span>
       )}
-      {children}
+      {controlChild}
       {suffix !== undefined && (
         <span className="ptp-form-field__chip ptp-form-field__chip--right">
           {suffix}
@@ -541,33 +589,66 @@ export function FormField({
       )}
     </span>
   ) : (
-    children
+    controlChild
   );
   return (
     <div className="ptp-form-field">
-      <label className="ptp-form-field__label" htmlFor={htmlFor}>
-        {label}
-        {required && (
-          <span className="ptp-form-field__required" aria-hidden="true">
-            *
-          </span>
+      {/* THE LABEL ROW (3.0.0): fixed 20px min-height so side-by-side
+          fields' labels align on the same baseline; the ⓘ button rides
+          beside the label (never inside it — nested controls in a
+          <label> would steal its clicks). */}
+      <div className="ptp-form-field__label-row">
+        <label className="ptp-form-field__label" htmlFor={htmlFor}>
+          {label}
+          {required && (
+            <span className="ptp-form-field__required" aria-hidden="true">
+              *
+            </span>
+          )}
+        </label>
+        {infoTooltip !== undefined && (
+          <button
+            type="button"
+            className="ptp-form-field__info"
+            title={infoTooltip}
+            aria-label={`Info: ${infoTooltip}`}
+            data-tooltip={infoTooltip}
+          >
+            <Icon name="Info" aria-hidden />
+          </button>
         )}
-      </label>
-      {description !== undefined && (
-        <span className="ptp-form-field__desc">{description}</span>
-      )}
+      </div>
       {control}
+      {/* THE HELPERS SLOT (3.0.0, below the well): description first,
+          then hint — flex wrap, tight gap, 20px min-height. */}
+      {(description !== undefined || hint !== undefined) && (
+        <div className="ptp-form-field__helpers">
+          {description !== undefined && (
+            <span className="ptp-form-field__desc" id={descId}>
+              {description}
+            </span>
+          )}
+          {hint !== undefined && (
+            <span className="ptp-form-field__hint">{hint}</span>
+          )}
+        </div>
+      )}
       {error !== undefined ? (
         <span className="ptp-form-field__error" role="alert">
           {error}
         </span>
       ) : validMessage !== undefined ? (
         <span className="ptp-form-field__valid">{validMessage}</span>
-      ) : hint !== undefined ? (
-        <span className="ptp-form-field__hint">{hint}</span>
       ) : null}
     </div>
   );
+}
+
+/** Single valid element = wireable via cloneElement (the describedby merge). */
+function isValidSingleChild(
+  children: ReactNode,
+): children is ReactElement<Record<string, unknown>> {
+  return isValidElement(children);
 }
 
 /** One option of a `<RadioCardGroup>`: the value it submits, its visible label, an optional description line. */
