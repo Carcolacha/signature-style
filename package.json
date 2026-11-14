@@ -81,9 +81,9 @@
     "playground:build": "vite build --config playground/vite.config.ts"
   },
   "peerDependencies": {
-    "lucide-react": ">=0.400.0",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "lucide-react": ">=0.400.0"
   },
   "peerDependenciesMeta": {
     "lucide-react": {

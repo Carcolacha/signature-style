@@ -1,0 +1,147 @@
+# CI — the gate workflows (3.5.0 "Standalone Visual Cortex MCP Server &
+# CI Pixel-Diff Certification").
+#
+# Two parallel jobs:
+#   gates       — every deterministic suite: typecheck + the verify battery
+#                 (core, standalone, contrast, cli, wc) + the builds +
+#                 the playground gates + the MCP JSON-RPC smoke (needs the
+#                 dev server AND Chromium — the signature-mcp tools drive
+#                 headless Chromium at runtime).
+#   a11y-visual — the browser certifications: the a11y keyboard audit +
+#                 the pixel-diff golden masters. The visual-diff step is
+#                 continue-on-error BY DOCUMENTED DECISION: the committed
+#                 goldens are font-dependent (they were rasterized on the
+#                 owner's machine; a different runner OS/font stack
+#                 anti-aliases differently). Local runs are the STRICT
+#                 gate — tighten this after the first CI run regenerates
+#                 goldens on the runner class.
+#
+# publish.yml stays the release path (tag push → gates → npm publish);
+# this file adds the per-push/per-PR gate matrix and publishes nothing.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        run: npm ci
+
+      # The signature-mcp package builds and RUNS in CI (verify:mcp spawns
+      # its server, which launches Chromium at runtime): install its
+      # runtime deps from its own lock (playwright pinned EXACTLY to the
+      # root's 1.65.0 so the browser download below is shared, never
+      # duplicated).
+      - name: Install signature-mcp package dependencies
+        run: npm ci --prefix packages/signature-mcp
+
+      # verify:wc drives a real Chromium (the render proof) and verify:mcp
+      # spawns the MCP server which launches Chromium at runtime — install
+      # the browser once, with the OS deps.
+      - name: Install Chromium for the browser gates
+        run: npx playwright install chromium --with-deps
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Core gate (verify)
+        run: npm run verify
+
+      - name: Standalone gate (verify:standalone)
+        run: npm run verify:standalone
+
+      - name: Contrast gate (verify:contrast)
+        run: npm run verify:contrast
+
+      - name: CLI gate (verify:cli)
+        run: npm run verify:cli
+
+      - name: Build (react emit)
+        run: npm run build
+
+      - name: Build WC bundle
+        run: npm run build:wc
+
+      - name: WC gate (verify:wc)
+        run: npm run verify:wc
+
+      - name: Start playground dev server (detached) and wait for 200
+        run: |
+          nohup npm run playground > /tmp/playground.log 2>&1 &
+          for i in $(seq 1 60); do
+            sleep 1
+            if curl -sf http://localhost:5173/ > /dev/null; then
+              echo "playground dev server is up (after ${i}s)"
+              break
+            fi
+          done
+          curl -sf http://localhost:5173/ > /dev/null || {
+            echo "dev server failed to start — log tail:"
+            tail -50 /tmp/playground.log
+            exit 1
+          }
+
+      - name: Playground gates (verify:playground)
+        run: npm run verify:playground
+
+      - name: MCP smoke (verify:mcp — JSON-RPC over stdio, 4 tools)
+        run: npm run verify:mcp
+
+  a11y-visual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install Chromium for the browser certifications
+        run: npx playwright install chromium --with-deps
+
+      - name: Start playground dev server (detached) and wait for 200
+        run: |
+          nohup npm run playground > /tmp/playground.log 2>&1 &
+          for i in $(seq 1 60); do
+            sleep 1
+            if curl -sf http://localhost:5173/ > /dev/null; then
+              echo "playground dev server is up (after ${i}s)"
+              break
+            fi
+          done
+          curl -sf http://localhost:5173/ > /dev/null || {
+            echo "dev server failed to start — log tail:"
+            tail -50 /tmp/playground.log
+            exit 1
+          }
+
+      # Accessibility is OS/font-independent enough to gate strictly.
+      - name: A11y certification (verify:a11y)
+        run: npm run verify:a11y
+
+      # FONT RISK (the honest one): the committed goldens are rasterized
+      # with the OWNER's font stack; a different runner anti-aliases text
+      # differently and can exceed the 0.1% tolerance without any real
+      # regression. continue-on-error keeps the signal visible without
+      # blocking CI. The LOCAL run is the strict gate; regenerate the
+      # goldens on the CI runner class (update:snapshots + commit) and
+      # then drop this flag to tighten.
+      - name: Visual-diff certification (verify:visual-diff)
+        continue-on-error: true
+        run: npm run verify:visual-diff

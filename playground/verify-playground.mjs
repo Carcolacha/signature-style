@@ -1381,7 +1381,9 @@ try {
   failures.push(`(b7) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
-  if (!AUTHORIZED_330.has(file)) {
+  // scripts/goldens/ is the 3.5.0 golden-master base (NEW directory — the
+  // prefix exemption mirrors the SCRIPTS_330_ALLOWED check below).
+  if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
       `(b7) SAFETY: ${file} changed since v3.3.0 — outside the owner-authorized 3.4.0 zero-react WC set (the verify gates + verify-wc + the codex additions + the cortex selector/version adds)`,
     );
@@ -1552,7 +1554,7 @@ try {
   )
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line !== "" && !AUTHORIZED_330.has(line));
+    .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
       `(n-hub4) SAFETY: files changed since v3.3.0 beyond the 3.4.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated zero-react WC set)`,
