@@ -21,7 +21,7 @@ import { type ReactNode } from "react";
  * badges, tags, avatars, calendar, data-viz; structural UI keeps
  * Flamingo/Teal).
  */
-declare const TOKEN_KEYS: readonly ["--bg-base", "--bg-surface", "--color-cake-primary", "--color-cake-secondary", "--text-main", "--text-muted", "--bg-inset", "--text-bright", "--color-success", "--text-muted-soft", "--color-on-cake", "--font-sans", "--radius-ui", "--transition-standard", "--transition-transform", "--space-tight", "--space-standard", "--space-section", "--z-sticky", "--z-nav", "--z-overlay", "--z-modal", "--z-toast", "--party-pink-bright", "--party-pink-soft", "--party-pink-alt", "--party-mauve-bright", "--party-mauve-soft", "--party-lavender", "--party-sky", "--party-blue", "--party-peach", "--party-green"];
+declare const TOKEN_KEYS: readonly ["--bg-base", "--bg-surface", "--color-cake-primary", "--color-cake-secondary", "--text-main", "--text-muted", "--bg-inset", "--text-bright", "--color-success", "--text-muted-soft", "--color-on-cake", "--font-sans", "--radius-ui", "--transition-standard", "--transition-transform", "--space-tight", "--space-standard", "--space-section", "--z-sticky", "--z-nav", "--z-overlay", "--z-modal", "--z-toast", "--party-pink-bright", "--party-pink-soft", "--party-pink-alt", "--party-mauve-bright", "--party-mauve-soft", "--party-lavender", "--party-sky", "--party-blue", "--party-peach", "--party-green", "--party-yellow"];
 /** A token name known to Signature Style. */
 export type KnownToken = (typeof TOKEN_KEYS)[number];
 /** Overrides accepted by <ThemeProvider>; keys outside KnownToken are dropped. */

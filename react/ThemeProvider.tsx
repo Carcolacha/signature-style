@@ -57,7 +57,9 @@ const TOKEN_KEYS = [
   "--z-overlay",
   "--z-modal",
   "--z-toast",
-  /* party palette — CONTENT-only tokens (0.4.0); never for structural chrome */
+  /* party palette — CONTENT-only tokens (0.4.0); never for structural chrome.
+     2.5.0 adds --party-yellow: the strength meter's Fair stage (feedback
+     meter stages join the content reservation, the peach-error precedent). */
   "--party-pink-bright",
   "--party-pink-soft",
   "--party-pink-alt",
@@ -68,6 +70,7 @@ const TOKEN_KEYS = [
   "--party-blue",
   "--party-peach",
   "--party-green",
+  "--party-yellow",
 ] as const;
 
 /** A token name known to Signature Style. */

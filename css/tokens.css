@@ -39,9 +39,11 @@
    exactly one rung above sticky chrome, one below the overlay scrim.
    --z-toast (1.4.0) is the zenith: toasts float above modals.
 
-   PARTY PALETTE (0.4.0) — RULE OF ENGAGEMENT: the ten --party-* tokens are
+   PARTY PALETTE (0.4.0) — RULE OF ENGAGEMENT: the --party-* tokens are
    reserved EXCLUSIVELY for CONTENT (badges, tags, avatars, event theme
-   overrides, calendar blocks, data-viz). Structural UI — buttons, inputs,
+   overrides, calendar blocks, data-viz) — plus, since 2.5.0, FEEDBACK
+   METER STAGES (the strength meter reads as content decoration, the
+   --party-peach error-border precedent). Structural UI — buttons, inputs,
    focus rings — keeps Flamingo/Teal, always. Never crossed.
 
    The ONLY `:root` rule in the package lives inside this `@layer tokens`
@@ -102,6 +104,7 @@
     --party-blue: #1e66f5;
     --party-peach: #fe640b;
     --party-green: #a6d189;
+    --party-yellow: #F9E2AF; /* strength-meter Fair stage, owner v2.5.0 */
   }
 
   /* -- the white version: 100% official Catppuccin Latte --------------------- */
