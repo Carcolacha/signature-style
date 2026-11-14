@@ -54,6 +54,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "verify": "node scripts/verify.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
+    "verify:contrast": "node playground/verify-contrast.mjs",
     "verify:mcp": "npm --prefix tools/mcp-viz run build && node tools/mcp-viz/smoke.mjs",
     "llms": "node playground/generate-llms.mjs",
     "inspect": "node tools/mcp-viz/dist/server.js",
