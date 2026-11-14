@@ -8,6 +8,7 @@
  */
 
 import { icons, type LucideProps } from "lucide-react";
+import type { ButtonHTMLAttributes } from "react";
 import type { KnownToken } from "./ThemeProvider.js";
 
 /** The strict, exhaustive set of installable lucide icon names. */
@@ -120,5 +121,98 @@ export function PartyBadge({ colorToken, label }: PartyBadgeProps) {
     >
       {label}
     </span>
+  );
+}
+
+/**
+ * Props for `<Button>` — the ONE button of the package (2.5.0 "Button &
+ * Card Archetypes"). Every native button attribute flows through
+ * (`onClick`, `type`, `disabled`, …).
+ */
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  /**
+   * The visual variant (default "primary"):
+   *  - primary — Flamingo fill, on-cake ink, weight 600. FLAT by
+   *    package law: css/primitives.css carries ZERO box-shadow (the e1
+   *    doctrine — elevation is a composition-layer decision; the
+   *    playground shadows its own primary buttons there).
+   *  - secondary — surface fill + hairline, text-main.
+   *  - ghost — transparent; hover paints the inset well.
+   *  - danger — the party-peach attention wash (the error-border
+   *    precedent: danger is attention, party territory by owner spec).
+   */
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  /**
+   * Size tier (default "md"): sm → tight padding + 0.8125rem, md → the
+   * doctrine button padding (tight vertical / standard horizontal) +
+   * 0.875rem, lg → standard padding + 1rem.
+   */
+  size?: "sm" | "md" | "lg";
+  /** A lucide icon rendered BEFORE the children. */
+  leftIcon?: IconName;
+  /** A lucide icon rendered AFTER the children. */
+  rightIcon?: IconName;
+  /**
+   * The busy state: the icons are REPLACED by the
+   * `.ptp-btn__spinner` (aria-hidden), the button gains
+   * `aria-busy="true"` and `disabled` — a loading button cannot be
+   * re-submitted.
+   */
+  loading?: boolean;
+}
+
+/**
+ * `<Button>` — the ONE button (2.5.0).
+ *
+ * Renders ONE `<button class="ptp-btn ptp-btn--{variant} [-sm/-lg]">` —
+ * the flat, token-driven action the composition layer has been
+ * hand-rolling since 1.6.0, now official. Press physics: `:active
+ * scale(0.97)` (the doctrine press), focus-visible: the Flamingo ring,
+ * loading: the css spinner (2px currentColor ring with a transparent
+ * top arc, `ptp-spin` 0.8s linear infinite) REPLACING the icons —
+ * never spinning beside them. Icons are strict `IconName`s (the same
+ * live-map contract as `<Icon>`), constrained to 1rem via
+ * css/primitives.css so they sit inside the text line.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary" size="md" leftIcon="Check" loading={submitting}>
+ *   Check In
+ * </Button>
+ * ```
+ */
+export function Button({
+  variant = "primary",
+  size = "md",
+  leftIcon,
+  rightIcon,
+  loading = false,
+  className,
+  disabled,
+  children,
+  ...rest
+}: ButtonProps) {
+  const sizeClass = size === "sm" ? " ptp-btn--sm" : size === "lg" ? " ptp-btn--lg" : "";
+  return (
+    <button
+      className={`ptp-btn ptp-btn--${variant}${sizeClass}${className !== undefined ? ` ${className}` : ""}`}
+      aria-busy={loading || undefined}
+      disabled={loading || disabled}
+      {...rest}
+    >
+      {loading ? (
+        <span className="ptp-btn__spinner" aria-hidden="true" />
+      ) : (
+        <>
+          {leftIcon !== undefined && (
+            <Icon name={leftIcon} className="ptp-btn__icon" aria-hidden />
+          )}
+          {children}
+          {rightIcon !== undefined && (
+            <Icon name={rightIcon} className="ptp-btn__icon" aria-hidden />
+          )}
+        </>
+      )}
+    </button>
   );
 }

@@ -1,0 +1,133 @@
+/* ==========================================================================
+   PRIMITIVES — the Button family (2.5.0 "Ergonomic Form Rules, Button &
+   Card Archetypes"). Layered into `cascade` by signature-style.css
+   (imported after data.css).
+
+   THE ONE BUTTON: .ptp-btn + the --{variant} modifier + the optional
+   size modifier. Everything rides the tokens:
+
+     primary    — Flamingo fill (--color-cake-primary), on-cake ink,
+                  weight 600. FLAT — see the shadow law below.
+     secondary  — surface fill + the 20% hairline, text-main.
+     ghost      — transparent; hover paints the inset well.
+     danger     — the party-peach attention wash (18% body, 45%
+                  border): danger is attention, the error-border
+                  precedent puts it in party territory.
+
+   THE SHADOW LAW (owner e1 doctrine, hard): this file declares ZERO
+   box-shadow — a package primitive ships flat, and the release safety
+   scan forbids box-shadows outside css/surface.css's sanctioned
+   .sig-surface-card rules. The primary's hierarchy pop (weight 600) is
+   typographic, not luminous; ELEVATION stays a composition-layer
+   decision (the playground re-adds its v1.6.0 ambient shadow on
+   .ptp-btn--primary in its own stylesheet).
+
+   SIZES — the 8px grid, all sides:
+     sm — tight padding, 0.8125rem (13px, a grid half-step)
+     md — the doctrine button padding: tight vertical / standard
+          horizontal, 0.875rem (14px)
+     lg — standard padding, 1rem (16px)
+
+   STATES: :active scale(0.97) (the doctrine press), :focus-visible the
+   Flamingo ring, :disabled the doctrine gray-out (--bg-surface +
+   --text-muted, no press). LOADING: the spinner is a 2px currentColor
+   ring with a transparent top arc — ptp-spin, 0.8s linear infinite,
+   aria-hidden in react (aria-busy on the button is the real state).
+
+   COLOR DOCTRINE: zero hex, zero box-shadow. Zero raw rgba.
+   ========================================================================== */
+
+@layer cascade {
+  .ptp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-tight);
+    border: 1px solid transparent;
+    border-radius: var(--radius-ui);
+    padding: var(--space-tight) var(--space-standard);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition-standard), var(--transition-transform);
+  }
+  .ptp-btn:not(:disabled):active {
+    transform: scale(0.97);
+  }
+  .ptp-btn:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+  .ptp-btn:disabled {
+    background: var(--bg-surface);
+    border-color: transparent;
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* -- variants ----------------------------------------------------------- */
+  .ptp-btn--primary {
+    background: var(--color-cake-primary);
+    color: var(--color-on-cake);
+    font-weight: 600;
+  }
+  .ptp-btn--secondary {
+    background: var(--bg-surface);
+    border-color: color-mix(in srgb, var(--text-muted) 20%, transparent);
+    color: var(--text-main);
+  }
+  .ptp-btn--ghost {
+    background: transparent;
+    color: var(--text-main);
+  }
+  .ptp-btn--ghost:hover {
+    background: var(--bg-inset);
+  }
+  .ptp-btn--danger {
+    background: color-mix(in srgb, var(--party-peach) 18%, transparent);
+    border-color: color-mix(in srgb, var(--party-peach) 45%, transparent);
+    color: var(--party-peach);
+    font-weight: 600;
+  }
+
+  /* -- sizes --------------------------------------------------------------- */
+  .ptp-btn--sm {
+    padding: var(--space-tight);
+    font-size: 0.8125rem;
+  }
+  .ptp-btn--lg {
+    padding: var(--space-standard);
+    font-size: 1rem;
+  }
+
+  /* -- icons + the loading spinner ------------------------------------------ */
+  .ptp-btn__icon {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+  }
+  .ptp-btn__spinner {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    animation: ptp-spin 0.8s linear infinite;
+  }
+  @keyframes ptp-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Motion is a gift, not a requirement. */
+  @media (prefers-reduced-motion: reduce) {
+    .ptp-btn {
+      transition: none;
+    }
+    .ptp-btn__spinner {
+      animation: none;
+    }
+  }
+}

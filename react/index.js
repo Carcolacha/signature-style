@@ -6,7 +6,7 @@
  * ```
  */
 export { default, ThemeProvider, } from "./ThemeProvider.js";
-export { Icon, EmptyState, PartyBadge, } from "./primitives.js";
+export { Icon, EmptyState, PartyBadge, Button, } from "./primitives.js";
 export { EventTimeline, } from "./timeline.js";
 export { EventModal, useModal, } from "./modal.js";
 export { GlobalNav, } from "./nav.js";

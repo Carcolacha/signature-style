@@ -312,24 +312,13 @@
   border-radius: var(--radius-ui);
 }
 
-/* ---- doctrine button (btn-primary echo, v1.6.0 shape) --------------------- */
-/* 1.6.0 hierarchy, unchanged in 2.0.0: the primary action pops against
-   the elevated cards — Flamingo fill, on-cake ink, weight 600, and a
-   small ambient shadow of its own (0 4px 16px rgba(0, 0, 0, 0.3) —
-   composition-layer rgba, covered by the owner elevation override).
-   Press physics: :active scale(0.97) + the transition tokens. */
-.hub__btn {
-  background: var(--color-cake-primary);
-  color: var(--color-on-cake);
-  border: none;
-  border-radius: var(--radius-ui);
-  padding: var(--space-tight) var(--space-standard);
-  font-weight: 600;
-  cursor: pointer;
+/* ---- composition elevation on the package Button (2.5.0) ------------------
+   The hand-rolled .hub__btn died in the Button migration; the package's
+   .ptp-btn--primary is deliberately FLAT (package law: primitives.css
+   carries zero shadows — the e1 doctrine). The hierarchy pop stays a
+   COMPOSITION decision: this layer re-adds the v1.6.0 ambient shadow on
+   the primary variant, playground-scoped. Press physics (:active scale
+   0.97) and the Flamingo focus ring are package-owned now. */
+.ptp-btn--primary {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  transition: var(--transition-standard), var(--transition-transform);
-}
-
-.hub__btn:active {
-  transform: scale(0.97);
 }

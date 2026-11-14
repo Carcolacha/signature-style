@@ -1,4 +1,4 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 /**
  * primitives — the official React primitives for Signature Style (0.5.0).
  *
@@ -28,4 +28,28 @@ export function PartyBadge({ colorToken, label }) {
             padding: "var(--space-tight) var(--space-standard)",
             borderRadius: "var(--radius-ui)",
         }, children: label }));
+}
+/**
+ * `<Button>` — the ONE button (2.5.0).
+ *
+ * Renders ONE `<button class="ptp-btn ptp-btn--{variant} [-sm/-lg]">` —
+ * the flat, token-driven action the composition layer has been
+ * hand-rolling since 1.6.0, now official. Press physics: `:active
+ * scale(0.97)` (the doctrine press), focus-visible: the Flamingo ring,
+ * loading: the css spinner (2px currentColor ring with a transparent
+ * top arc, `ptp-spin` 0.8s linear infinite) REPLACING the icons —
+ * never spinning beside them. Icons are strict `IconName`s (the same
+ * live-map contract as `<Icon>`), constrained to 1rem via
+ * css/primitives.css so they sit inside the text line.
+ *
+ * @example
+ * ```tsx
+ * <Button variant="primary" size="md" leftIcon="Check" loading={submitting}>
+ *   Check In
+ * </Button>
+ * ```
+ */
+export function Button({ variant = "primary", size = "md", leftIcon, rightIcon, loading = false, className, disabled, children, ...rest }) {
+    const sizeClass = size === "sm" ? " ptp-btn--sm" : size === "lg" ? " ptp-btn--lg" : "";
+    return (_jsx("button", { className: `ptp-btn ptp-btn--${variant}${sizeClass}${className !== undefined ? ` ${className}` : ""}`, "aria-busy": loading || undefined, disabled: loading || disabled, ...rest, children: loading ? (_jsx("span", { className: "ptp-btn__spinner", "aria-hidden": "true" })) : (_jsxs(_Fragment, { children: [leftIcon !== undefined && (_jsx(Icon, { name: leftIcon, className: "ptp-btn__icon", "aria-hidden": true })), children, rightIcon !== undefined && (_jsx(Icon, { name: rightIcon, className: "ptp-btn__icon", "aria-hidden": true }))] })) }));
 }

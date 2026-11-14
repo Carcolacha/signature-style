@@ -22,6 +22,8 @@ export {
   PartyBadge,
   type PartyBadgeProps,
   type PartyTokenName,
+  Button,
+  type ButtonProps,
 } from "./primitives.js";
 export {
   EventTimeline,

@@ -94,6 +94,7 @@ import {
   StatRing,
   PartyBadge,
   EmptyState,
+  Button,
   SurfaceCard,
   PageHero,
   Tabs,
@@ -468,14 +469,16 @@ function DashboardView() {
                 onToggle={setIsPublic}
                 label="Make event public"
               />
-              <button
-                type="button"
-                className="hub__btn"
+              {/* 2.5.0: the Button migration — the hand-rolled .hub__btn
+                  died; the package's own <Button> takes the action. */}
+              <Button
+                variant="primary"
+                size="md"
                 data-testid="btn-toast"
                 onClick={() => toast("success", "RSVP sent — see you there 🎉")}
               >
                 Send test toast
-              </button>
+              </Button>
             </SurfaceCard>
 
             <SurfaceCard
