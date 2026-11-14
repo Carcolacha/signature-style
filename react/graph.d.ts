@@ -67,20 +67,9 @@ export interface GraphNode {
     /** The parent node's id; undefined renders this node as a root. */
     parentId?: string;
 }
-export interface KnowledgeGraphProps {
-    /** The nodes — order is irrelevant; the layout is id-hash deterministic. */
-    nodes: GraphNode[];
-    /** Called by the "Add & Link" toolbar with the new node (minus its id). */
-    onAddNode?: (node: Omit<GraphNode, "id">) => void;
-    /** Fired when a node is clicked/keyboard-activated (selection stays internal). */
-    onSelectNode?: (node: GraphNode) => void;
-    /** The svg's rendered height in px. Default 320. */
-    height?: number;
-    /** The accessible name for the graph application. Default "Knowledge graph". */
-    label?: string;
-    /** Renders the compact add-and-link toolbar. Default false. */
-    addOn?: boolean;
-}
+/** The full node contract — see KnowledgeGraphProps (3.0.0, below) for the
+ *  interaction surface; this interface is the DATA shape (unchanged 2.7.0 →
+ *  3.0.0: id/label/categoryToken/note/parentId). */
 /** One laid-out node: final viewBox coordinates plus its ring/angle math. */
 export interface GraphPosition {
     x: number;
@@ -108,4 +97,61 @@ export declare function cubicBezierEdge(parent: {
     x: number;
     y: number;
 }): string;
-export declare function KnowledgeGraph({ nodes, onAddNode, onSelectNode, height, label, addOn, }: KnowledgeGraphProps): import("react").JSX.Element;
+/** The pan/zoom view — projected into the viewBox string (graph space stays stable). */
+export interface GraphView {
+    x: number;
+    y: number;
+    zoom: number;
+}
+/** One extra (non-parent) edge — the 3.0.0 links model extension. */
+export interface GraphLink {
+    from: string;
+    to: string;
+}
+export interface KnowledgeGraphProps {
+    /** The nodes — order is irrelevant; the layout is id-hash deterministic. */
+    nodes: GraphNode[];
+    /** Called by the "Add & Link" toolbar with the new node (minus its id). */
+    onAddNode?: (node: Omit<GraphNode, "id">) => void;
+    /**
+     * 3.0.0 — called by double-click on empty canvas with the graph-space
+     * point and the parent hint (the nearest node, or the root).
+     */
+    onAddNodeAt?: (point: {
+        x: number;
+        y: number;
+    }, parentId?: string) => void;
+    /** Fired when a node is clicked/keyboard-activated (selection stays internal). */
+    onSelectNode?: (node: GraphNode) => void;
+    /**
+     * 3.0.0 — the drag commit: fires ONCE per drag (pointerup) with the
+     * node id and its final graph-space position. Persist it and feed it
+     * back through `positions`.
+     */
+    onMoveNode?: (id: string, position: {
+        x: number;
+        y: number;
+    }) => void;
+    /**
+     * 3.0.0 — the right-click tether commit: source → target. Non-parent
+     * links live in the consumer's persisted state (the links prop).
+     */
+    onLinkNodes?: (fromId: string, toId: string) => void;
+    /**
+     * 3.0.0 — user-dragged positions, merged OVER the deterministic
+     * layout (the persistence round-trip: onMoveNode writes here).
+     */
+    positions?: Record<string, {
+        x: number;
+        y: number;
+    }>;
+    /** 3.0.0 — the extra (non-parent) links, rendered as bezier edges. */
+    links?: GraphLink[];
+    /** The svg's rendered height in px. Default 320. */
+    height?: number;
+    /** The accessible name for the graph application. Default "Knowledge graph". */
+    label?: string;
+    /** Renders the compact add-and-link toolbar. Default false. */
+    addOn?: boolean;
+}
+export declare function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onMoveNode, onLinkNodes, positions: draggedPositions, links, height, label, addOn, }: KnowledgeGraphProps): import("react").JSX.Element;

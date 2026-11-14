@@ -3637,6 +3637,72 @@ if (!existsSync(graphDtsPath)) {
   failures.push("(kg1) react/graph.d.ts is missing — build it: npx tsc -p tsconfig.json");
 }
 
+// ---- (ob1) THE OBSIDIAN GRAPH (3.0.0) ----------------------------------------------
+// react/graph.tsx needles: 60fps drag (setPointerCapture + rAF + direct
+// transform mutation), right-click tether (contextmenu + azure dashed),
+// dbl-click spawn, wheel zoom clamped, Escape cancel, arrow-key nudge,
+// the onMoveNode/onLinkNodes/onAddNodeAt callbacks. css/graph.css: the
+// azure dashed tether + the cursor states. Playground: the persisted
+// positions/links model + the wiring.
+{
+  const graphSrc30 = readFileSync(resolve(root, "react/graph.tsx"), "utf8");
+  const OB1_TSX = [
+    ["setPointerCapture", "the pointer capture (drag + tether)"],
+    ["requestAnimationFrame", "the rAF-throttled move loop"],
+    ["cancelAnimationFrame", "the pending frame cleanup"],
+    ["setAttribute(\"transform\"", "the DIRECT g-transform mutation — no setState per move"],
+    ["onContextMenu", "the right-click tether entry"],
+    ["--party-azure", "the azure tether ink"],
+    ["stroke-dasharray: 6 4", "the tether dash (css; the class rides graph.css)"],
+    ["onDoubleClick", "the dbl-click spawn"],
+    ["clientToGraph", "the shared client→svg space helper"],
+    ["ZOOM_MIN = 0.5", "the zoom floor"],
+    ["ZOOM_MAX = 2.5", "the zoom ceiling"],
+    ['"Escape"', "the Escape cancel"],
+    ["NUDGE_PX = 8", "the keyboard nudge step (the grid)"],
+    ["ArrowUp", "the nudge keys"],
+    ["onMoveNode", "the drag commit callback"],
+    ["onLinkNodes", "the tether commit callback"],
+    ["onAddNodeAt", "the dbl-click spawn callback"],
+    ["<title>{node.label}</title>", "the full-label tooltip child"],
+    ["fontSize={13}", "the generous label voice (was 11)"],
+    ["NODE_RADIUS = 34", "the generous radius (was 26)"],
+    ["LABEL_MAX = 16", "the longer truncation threshold (was 12)"],
+    ["elementFromPoint", "the tether hit test"],
+    ["GraphLink", "the links model type"],
+    ["data-link=\"true\"", "the extra-link edge marker"],
+  ];
+  for (const [needle, label] of OB1_TSX) {
+    const target = needle.includes("stroke-dasharray") || needle.includes("--party-azure")
+      ? readFileSync(resolve(root, "css/graph.css"), "utf8")
+      : graphSrc30;
+    if (!target.includes(needle)) {
+      failures.push(`(ob1) must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const tetherRule = /\.ptp-graph__tether\s*\{[^}]*stroke: var\(--party-azure\);[^}]*stroke-width: 1\.5;[^}]*stroke-dasharray: 6 4;/s;
+  if (!tetherRule.test(readFileSync(resolve(root, "css/graph.css"), "utf8"))) {
+    failures.push(
+      "(ob1) .ptp-graph__tether must be the azure dashed 6 4 1.5px line — the live right-click tether",
+    );
+  }
+  for (const [needle, label] of [
+    ['"sig.v27.graph-positions"', "the persisted dragged positions key"],
+    ['"sig.v27.links"', "the persisted extra links key"],
+    ["onMoveNode={moveNode}", "the drag wiring"],
+    ["onLinkNodes={linkNodes}", "the tether wiring"],
+    ["onAddNodeAt={addNodeAt}", "the spawn wiring"],
+    ["positions={positions}", "the positions round-trip"],
+    ["links={links}", "the links round-trip"],
+    ["resetPositions()", "the reset clears the positions"],
+    ["resetLinks()", "the reset clears the links"],
+  ]) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(ob1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+
 // ---- (vz1) ANALYTICAL CHARTS — BarChart + AreaChart (2.7.0) -------------------------
 // react/viz.tsx: the pure smoothPath export, dasharray reference lines, inset
 // track class, hover readout classes, the useId-gradient, point circles.
@@ -3855,7 +3921,7 @@ const PS_APP_REQUIREMENTS = [
   ['usePersistentState<TimelineItem[]>(\n    "sig.v27.timeline",', "the timeline array under its versioned key"],
   ["SEED_GRAPH", "the graph's seed fallback"],
   ["SEED_TIMELINE", "the timeline's seed fallback"],
-  ['{ version: "sig.v27", graph, timeline }', "the snapshot payload"],
+  ['{ version: "sig.v27", graph, timeline, links }', "the snapshot payload (3.0.0: the links model joins)"],
   ["signature-snapshot.json", "the download filename"],
   ["URL.createObjectURL", "the download dance, step 1"],
   ["URL.revokeObjectURL", "the download dance, step 3 — revoke immediately"],

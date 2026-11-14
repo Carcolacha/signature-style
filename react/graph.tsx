@@ -54,7 +54,13 @@
  * ```
  */
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type {
+  KeyboardEvent as ReactKeyboardEvent,
+  MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
+  WheelEvent as ReactWheelEvent,
+} from "react";
 import type { PartyColorToken } from "./surface.js";
 import { Button } from "./primitives.js";
 import { Input } from "./forms.js";
@@ -73,20 +79,13 @@ export interface GraphNode {
   parentId?: string;
 }
 
-export interface KnowledgeGraphProps {
-  /** The nodes — order is irrelevant; the layout is id-hash deterministic. */
-  nodes: GraphNode[];
-  /** Called by the "Add & Link" toolbar with the new node (minus its id). */
-  onAddNode?: (node: Omit<GraphNode, "id">) => void;
-  /** Fired when a node is clicked/keyboard-activated (selection stays internal). */
-  onSelectNode?: (node: GraphNode) => void;
-  /** The svg's rendered height in px. Default 320. */
-  height?: number;
-  /** The accessible name for the graph application. Default "Knowledge graph". */
-  label?: string;
-  /** Renders the compact add-and-link toolbar. Default false. */
-  addOn?: boolean;
-}
+/** The full node contract — see KnowledgeGraphProps (3.0.0, below) for the
+ *  interaction surface; this interface is the DATA shape (unchanged 2.7.0 →
+ *  3.0.0: id/label/categoryToken/note/parentId). */
+
+/* (3.0.0) The KnowledgeGraphProps interface lives below the
+   interaction-model block (GraphView/GraphLink), carrying the full
+   drag/tether/pan/zoom surface next to the code that implements it. */
 
 /** One laid-out node: final viewBox coordinates plus its ring/angle math. */
 export interface GraphPosition {
@@ -101,12 +100,12 @@ const VIEW_WIDTH = 640;
 const VIEW_HEIGHT = 320;
 const CENTER_X = VIEW_WIDTH / 2;
 const CENTER_Y = VIEW_HEIGHT / 2;
-const NODE_RADIUS = 26;
+const NODE_RADIUS = 34; /* 3.0.0 obsidian: generous nodes (was 26) */
 const NODE_PAD = NODE_RADIUS + 2;
 const RING_BASE = 90;
 const RING_STEP = 110;
 const ROOT_SPREAD_RADIUS = 40;
-const LABEL_MAX = 12;
+const LABEL_MAX = 16; /* 3.0.0 obsidian: longer labels before the ellipsis (was 12) */
 
 /** Deterministic, order-independent tie-break hash (FNV-style, 32-bit). */
 function idHash(id: string): number {
@@ -276,24 +275,156 @@ function strokeFor(node: GraphNode): string {
   return `var(${node.categoryToken})`;
 }
 
-/** The ≤12-char canvas label (11 glyphs + ellipsis when truncating). */
+/** The ≤16-char canvas label (15 glyphs + ellipsis when truncating). */
 function canvasLabel(label: string): string {
   return label.length > LABEL_MAX ? `${label.slice(0, LABEL_MAX - 1)}…` : label;
+}
+
+/* ==========================================================================
+   3.0.0 OBSIDIAN GRAPH — the interaction model (owner spec):
+     · GENEROUS NODES — r 26 → 34, labels 11 → 13px, truncation threshold
+       12 → 16 chars, full label in a <title> tooltip child.
+     · DRAG (60fps) — pointerdown on a node → setPointerCapture →
+       pointermove mutates the <g> transform DIRECTLY through a ref map
+       (requestAnimationFrame-throttled, ZERO setState per move) →
+       pointerup commits once via onMoveNode(id, position) — the
+       playground persists positions through usePersistentState.
+     · PAN/ZOOM — implemented in VIEWBOX MATH (documented choice): the
+       view is a {x, y, zoom} state projected into the viewBox string,
+       so node coordinates stay in GRAPH SPACE — dragging a node while
+       zoomed needs no inverse transforms, and the tether math shares
+       the same client→svg helper. Zoom clamps 0.5–2.5, anchored at the
+       cursor (wheel).
+     · DBL-CLICK SPAWN — double-click on empty canvas converts the point
+       to graph space and fires onAddNodeAt(point, nearest-or-root).
+     · RIGHT-CLICK TETHER — contextmenu on a node captures the pointer
+       and draws the live dashed .ptp-graph__tether (azure, 6 4, 1.5px)
+       to the cursor; release over another node fires
+       onLinkNodes(fromId, toId) — the EXTRA-LINKS MODEL (non-parent
+       edges): the playground stores them in its own persisted state and
+       hands them back through the links prop.
+     · Escape cancels an in-flight drag or tether; keyboard arrows nudge
+       the selected node 8px (a11y parity, the grid step).
+   ========================================================================== */
+
+/** The pan/zoom view — projected into the viewBox string (graph space stays stable). */
+export interface GraphView {
+  x: number;
+  y: number;
+  zoom: number;
+}
+
+/** One extra (non-parent) edge — the 3.0.0 links model extension. */
+export interface GraphLink {
+  from: string;
+  to: string;
+}
+
+export interface KnowledgeGraphProps {
+  /** The nodes — order is irrelevant; the layout is id-hash deterministic. */
+  nodes: GraphNode[];
+  /** Called by the "Add & Link" toolbar with the new node (minus its id). */
+  onAddNode?: (node: Omit<GraphNode, "id">) => void;
+  /**
+   * 3.0.0 — called by double-click on empty canvas with the graph-space
+   * point and the parent hint (the nearest node, or the root).
+   */
+  onAddNodeAt?: (point: { x: number; y: number }, parentId?: string) => void;
+  /** Fired when a node is clicked/keyboard-activated (selection stays internal). */
+  onSelectNode?: (node: GraphNode) => void;
+  /**
+   * 3.0.0 — the drag commit: fires ONCE per drag (pointerup) with the
+   * node id and its final graph-space position. Persist it and feed it
+   * back through `positions`.
+   */
+  onMoveNode?: (id: string, position: { x: number; y: number }) => void;
+  /**
+   * 3.0.0 — the right-click tether commit: source → target. Non-parent
+   * links live in the consumer's persisted state (the links prop).
+   */
+  onLinkNodes?: (fromId: string, toId: string) => void;
+  /**
+   * 3.0.0 — user-dragged positions, merged OVER the deterministic
+   * layout (the persistence round-trip: onMoveNode writes here).
+   */
+  positions?: Record<string, { x: number; y: number }>;
+  /** 3.0.0 — the extra (non-parent) links, rendered as bezier edges. */
+  links?: GraphLink[];
+  /** The svg's rendered height in px. Default 320. */
+  height?: number;
+  /** The accessible name for the graph application. Default "Knowledge graph". */
+  label?: string;
+  /** Renders the compact add-and-link toolbar. Default false. */
+  addOn?: boolean;
+}
+
+/* The zoom clamp (3.0.0): 0.5×–2.5× around the cursor. */
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 2.5;
+/* The keyboard nudge step — the 8px grid (a11y parity with mouse drag). */
+const NUDGE_PX = 8;
+
+/** A client (pointer) point in graph-space coordinates (viewBox-aware). */
+function clientToGraph(
+  svg: SVGSVGElement,
+  clientX: number,
+  clientY: number,
+  view: GraphView,
+): { x: number; y: number } {
+  const rect = svg.getBoundingClientRect();
+  const width = VIEW_WIDTH / view.zoom;
+  const height = VIEW_HEIGHT / view.zoom;
+  return {
+    x: view.x + ((clientX - rect.left) / Math.max(rect.width, 1)) * width,
+    y: view.y + ((clientY - rect.top) / Math.max(rect.height, 1)) * height,
+  };
 }
 
 export function KnowledgeGraph({
   nodes,
   onAddNode,
+  onAddNodeAt,
   onSelectNode,
+  onMoveNode,
+  onLinkNodes,
+  positions: draggedPositions,
+  links = [],
   height = 320,
   label,
   addOn = false,
 }: KnowledgeGraphProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draftLabel, setDraftLabel] = useState("");
-  const positions = useMemo(() => layoutGraph(nodes), [nodes]);
+  const [view, setView] = useState<GraphView>({ x: 0, y: 0, zoom: 1 });
+  // The live tether — source id + current cursor point (graph space).
+  const [tether, setTether] = useState<{ fromId: string; to: { x: number; y: number } } | null>(null);
+  const layout = useMemo(() => layoutGraph(nodes), [nodes]);
+  // User-dragged positions WIN over the deterministic layout (the
+  // persistence round-trip: onMoveNode → parent state → this prop).
+  const positions = useMemo(() => ({ ...layout, ...draggedPositions }), [layout, draggedPositions]);
   const selected = nodes.find((node) => node.id === selectedId) ?? null;
   const rootId = nodes.find((node) => node.parentId === undefined)?.id;
+
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const tetherPathRef = useRef<SVGPathElement | null>(null);
+  /** Per-node <g> refs — the 60fps drag mutates transforms DIRECTLY. */
+  const nodeRefs = useRef(new Map<string, SVGGElement>());
+  const frameRef = useRef<number | null>(null);
+  const dragRef = useRef<{
+    id: string;
+    pointerId: number;
+    startClient: { x: number; y: number };
+    startPos: { x: number; y: number };
+    last: { x: number; y: number };
+  } | null>(null);
+  const panRef = useRef<{
+    pointerId: number;
+    startClient: { x: number; y: number };
+    startView: GraphView;
+  } | null>(null);
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  const [interacting, setInteracting] = useState(false);
 
   // Focus-dimming bookkeeping: everything NOT adjacent to the selection dims.
   const connectedIds = useMemo(() => {
@@ -305,6 +436,38 @@ export function KnowledgeGraph({
     }
     return ids;
   }, [nodes, selected]);
+
+  // ESCAPE CANCELS — an in-flight drag (restore the committed transform)
+  // or tether (drop the live path) dies here, keyboard first.
+  useEffect(() => {
+    if (!interacting) return;
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== "Escape") return;
+      if (dragRef.current !== null) {
+        const drag = dragRef.current;
+        const g = nodeRefs.current.get(drag.id);
+        if (g !== undefined) {
+          g.setAttribute("transform", `translate(${drag.startPos.x} ${drag.startPos.y})`);
+        }
+        dragRef.current = null;
+      }
+      if (tetherPathRef.current !== null) {
+        tetherPathRef.current.setAttribute("d", "");
+        tetherPathRef.current = null;
+      }
+      setTether(null);
+      panRef.current = null;
+      setInteracting(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [interacting]);
+
+  useEffect(() => {
+    return () => {
+      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    };
+  }, []);
 
   const handleSelect = (node: GraphNode): void => {
     setSelectedId(node.id);
@@ -323,6 +486,228 @@ export function KnowledgeGraph({
     });
     setDraftLabel("");
   };
+
+  /* -- DRAG (60fps): capture → rAF mutate the g transform → commit once -- */
+  const handleNodePointerDown = (node: GraphNode, event: ReactPointerEvent<SVGGElement>): void => {
+    if (event.button !== 0 || onMoveNode === undefined) return;
+    const position = positions[node.id];
+    if (position === undefined) return;
+    event.stopPropagation();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      id: node.id,
+      pointerId: event.pointerId,
+      startClient: { x: event.clientX, y: event.clientY },
+      startPos: { x: position.x, y: position.y },
+      last: { x: position.x, y: position.y },
+    };
+    setInteracting(true);
+  };
+
+  const handleNodePointerMove = (event: ReactPointerEvent<SVGGElement>): void => {
+    const drag = dragRef.current;
+    const svg = svgRef.current;
+    if (drag === null || svg === null || event.pointerId !== drag.pointerId) return;
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      const current = dragRef.current;
+      if (current === null) return;
+      const rect = svg.getBoundingClientRect();
+      const scale = VIEW_WIDTH / viewRef.current.zoom / Math.max(rect.width, 1);
+      const x = current.startPos.x + (event.clientX - current.startClient.x) * scale;
+      const y = current.startPos.y + (event.clientY - current.startClient.y) * scale;
+      current.last = { x, y };
+      // THE 60fps PATH: mutate the <g> transform DIRECTLY — no setState
+      // per move, React never re-renders during the drag.
+      const g = nodeRefs.current.get(current.id);
+      if (g !== undefined) g.setAttribute("transform", `translate(${x} ${y})`);
+    });
+  };
+
+  const handleNodePointerUp = (node: GraphNode, event: ReactPointerEvent<SVGGElement>): void => {
+    const drag = dragRef.current;
+    if (drag === null || event.pointerId !== drag.pointerId) return;
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+    dragRef.current = null;
+    setInteracting(false);
+    // ONE commit per drag — the playground persists through state.
+    if (onMoveNode !== undefined) {
+      onMoveNode(node.id, { x: Math.round(drag.last.x * 100) / 100, y: Math.round(drag.last.y * 100) / 100 });
+    }
+  };
+
+  /* -- TETHER (right-click): capture on the svg, live dashed path ----- */
+  const handleNodeContextMenu = (node: GraphNode, event: ReactMouseEvent<SVGGElement>): void => {
+    if (onLinkNodes === undefined) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const svg = svgRef.current;
+    if (svg === null) return;
+    // contextmenu carries no pointerId — capture the tether on the svg's
+    // NEXT pointerdown-derived id via releasePointerCapture-safe tracking:
+    // we record tracking in tether state; the svg-level pointermove/up
+    // handlers own the line while the button is held.
+    const point = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
+    setTether({ fromId: node.id, to: point });
+    setInteracting(true);
+    handleSelect(node);
+  };
+
+  const handleTetherMove = (event: ReactPointerEvent<SVGSVGElement>): void => {
+    if (tether === null) return;
+    const svg = svgRef.current;
+    if (svg === null) return;
+    const from = positions[tether.fromId];
+    if (from === undefined) return;
+    const point = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
+    setTether({ fromId: tether.fromId, to: point });
+    if (tetherPathRef.current !== null) {
+      tetherPathRef.current.setAttribute("d", `M ${from.x} ${from.y} L ${point.x} ${point.y}`);
+    }
+  };
+
+  const handleTetherUp = (event: ReactPointerEvent<SVGSVGElement>): void => {
+    if (tether === null || onLinkNodes === undefined) return;
+    const svg = svgRef.current;
+    if (svg === null) return;
+    // THE HIT TEST: elementFromPoint → the nearest node under the cursor.
+    const target = document.elementFromPoint(event.clientX, event.clientY);
+    const nodeG = target?.closest?.("g.ptp-graph__node") as SVGGElement | null;
+    const targetId = nodeG?.dataset?.id;
+    const sourceId = tether.fromId;
+    setTether(null);
+    setInteracting(false);
+    if (tetherPathRef.current !== null) {
+      tetherPathRef.current.setAttribute("d", "");
+      tetherPathRef.current = null;
+    }
+    if (targetId !== undefined && targetId !== sourceId) {
+      onLinkNodes(sourceId, targetId);
+    }
+  };
+
+  /* -- PAN (empty canvas) + ZOOM (wheel) — viewBox math, rAF-throttled -- */
+  const handleCanvasPointerDown = (event: ReactPointerEvent<SVGSVGElement>): void => {
+    if (event.button !== 0) return;
+    const target = event.target as Element;
+    if (target.closest("g.ptp-graph__node") !== null) return; // nodes drag, not pan
+    const svg = svgRef.current;
+    if (svg === null) return;
+    svg.setPointerCapture(event.pointerId);
+    panRef.current = {
+      pointerId: event.pointerId,
+      startClient: { x: event.clientX, y: event.clientY },
+      startView: viewRef.current,
+    };
+    setInteracting(true);
+  };
+
+  const handleCanvasPointerMove = (event: ReactPointerEvent<SVGSVGElement>): void => {
+    if (tether !== null) {
+      handleTetherMove(event);
+      return;
+    }
+    const pan = panRef.current;
+    if (pan === null || event.pointerId !== pan.pointerId) return;
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    frameRef.current = requestAnimationFrame(() => {
+      frameRef.current = null;
+      const active = panRef.current;
+      const svg = svgRef.current;
+      if (active === null || svg === null) return;
+      const rect = svg.getBoundingClientRect();
+      const scale = VIEW_WIDTH / active.startView.zoom / Math.max(rect.width, 1);
+      setView({
+        x: active.startView.x - (event.clientX - active.startClient.x) * scale,
+        y: active.startView.y - (event.clientY - active.startClient.y) * scale,
+        zoom: active.startView.zoom,
+      });
+    });
+  };
+
+  const handleCanvasPointerUp = (event: ReactPointerEvent<SVGSVGElement>): void => {
+    if (tether !== null) {
+      handleTetherUp(event);
+      return;
+    }
+    if (panRef.current !== null && event.pointerId === panRef.current.pointerId) {
+      panRef.current = null;
+      setInteracting(false);
+    }
+  };
+
+  const handleWheel = (event: ReactWheelEvent<SVGSVGElement>): void => {
+    const svg = svgRef.current;
+    if (svg === null) return;
+    event.preventDefault();
+    const before = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
+    const factor = event.deltaY < 0 ? 1.1 : 0.9;
+    const zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, viewRef.current.zoom * factor));
+    const rect = svg.getBoundingClientRect();
+    const fx = (event.clientX - rect.left) / Math.max(rect.width, 1);
+    const fy = (event.clientY - rect.top) / Math.max(rect.height, 1);
+    // Anchor the zoom at the cursor: the graph point under it must stay put.
+    setView({
+      x: before.x - fx * (VIEW_WIDTH / zoom),
+      y: before.y - fy * (VIEW_HEIGHT / zoom),
+      zoom,
+    });
+  };
+
+  /* -- DBL-CLICK SPAWN — empty canvas → a node at that graph point ----- */
+  const handleDoubleClick = (event: ReactMouseEvent<SVGSVGElement>): void => {
+    if (onAddNodeAt === undefined) return;
+    const target = event.target as Element;
+    if (target.closest("g.ptp-graph__node") !== null) return;
+    const svg = svgRef.current;
+    if (svg === null) return;
+    const point = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
+    // The nearest node within reach parents the newcomer; else the root.
+    let nearest: string | undefined = rootId;
+    let best = Number.POSITIVE_INFINITY;
+    for (const node of nodes) {
+      const position = positions[node.id];
+      if (position === undefined) continue;
+      const distance = Math.hypot(position.x - point.x, position.y - point.y);
+      if (distance < best) {
+        best = distance;
+        nearest = node.id;
+      }
+    }
+    onAddNodeAt({ x: Math.round(point.x), y: Math.round(point.y) }, nearest);
+  };
+
+  const handleNodeKeyDown = (node: GraphNode, event: ReactKeyboardEvent<SVGGElement>): void => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleSelect(node);
+      return;
+    }
+    // 3.0.0 KEYBOARD PARITY: arrows nudge the selected node 8px — the
+    // same onMoveNode commit the mouse drag uses.
+    const deltas: Record<string, { x: number; y: number }> = {
+      ArrowUp: { x: 0, y: -NUDGE_PX },
+      ArrowDown: { x: 0, y: NUDGE_PX },
+      ArrowLeft: { x: -NUDGE_PX, y: 0 },
+      ArrowRight: { x: NUDGE_PX, y: 0 },
+    };
+    const delta = deltas[event.key];
+    if (delta === undefined || onMoveNode === undefined) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const position = positions[node.id];
+    if (position === undefined) return;
+    onMoveNode(node.id, {
+      x: Math.round((position.x + delta.x) * 100) / 100,
+      y: Math.round((position.y + delta.y) * 100) / 100,
+    });
+  };
+
+  const tetherSource = tether !== null ? positions[tether.fromId] : undefined;
 
   return (
     <>
@@ -345,11 +730,25 @@ export function KnowledgeGraph({
         </div>
       )}
       <svg
+        ref={svgRef}
         role="application"
         aria-label={label ?? "Knowledge graph"}
-        className={selected !== null ? "ptp-graph ptp-graph--focused" : "ptp-graph"}
-        viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`}
-        style={{ height }}
+        className={
+          selected !== null
+            ? tether !== null
+              ? "ptp-graph ptp-graph--focused ptp-graph--tethering"
+              : "ptp-graph ptp-graph--focused"
+            : tether !== null
+              ? "ptp-graph ptp-graph--tethering"
+              : "ptp-graph"
+        }
+        viewBox={`${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`}
+        style={{ height, touchAction: "none" }}
+        onPointerDown={handleCanvasPointerDown}
+        onPointerMove={handleCanvasPointerMove}
+        onPointerUp={handleCanvasPointerUp}
+        onWheel={handleWheel}
+        onDoubleClick={handleDoubleClick}
       >
         {nodes
           .filter((node) => node.parentId !== undefined && positions[node.parentId] !== undefined)
@@ -371,6 +770,31 @@ export function KnowledgeGraph({
               />
             );
           })}
+        {/* 3.0.0 EXTRA LINKS — the tether model's edges (non-parent).
+            Same bezier geometry, marked data-link for styling/probes. */}
+        {links.map((link, index) => {
+          const fromPos = positions[link.from];
+          const toPos = positions[link.to];
+          if (fromPos === undefined || toPos === undefined) return null;
+          return (
+            <path
+              key={`link-${link.from}-${link.to}-${index}`}
+              className="ptp-graph__edge"
+              data-link="true"
+              data-parent={link.from}
+              data-child={link.to}
+              d={cubicBezierEdge(fromPos, toPos)}
+            />
+          );
+        })}
+        {/* THE LIVE TETHER — the azure dashed line chasing the cursor. */}
+        {tether !== null && tetherSource !== undefined && (
+          <path
+            ref={tetherPathRef}
+            className="ptp-graph__tether"
+            d={`M ${tetherSource.x} ${tetherSource.y} L ${tether.to.x} ${tether.to.y}`}
+          />
+        )}
         {nodes.map((node) => {
           const position = positions[node.id];
           if (position === undefined) return null;
@@ -379,21 +803,26 @@ export function KnowledgeGraph({
           return (
             <g
               key={node.id}
+              ref={(el) => {
+                if (el === null) nodeRefs.current.delete(node.id);
+                else nodeRefs.current.set(node.id, el);
+              }}
               className="ptp-graph__node"
               data-id={node.id}
               data-dim={dim || undefined}
               transform={`translate(${position.x} ${position.y})`}
               onClick={() => handleSelect(node)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  handleSelect(node);
-                }
-              }}
+              onPointerDown={(event) => handleNodePointerDown(node, event)}
+              onPointerMove={handleNodePointerMove}
+              onPointerUp={(event) => handleNodePointerUp(node, event)}
+              onContextMenu={(event) => handleNodeContextMenu(node, event)}
+              onKeyDown={(event) => handleNodeKeyDown(node, event)}
               tabIndex={0}
               role="button"
               aria-label={node.label}
             >
+              {/* Full label tooltip — the truncation escape hatch. */}
+              <title>{node.label}</title>
               <circle
                 r={NODE_RADIUS}
                 fill="var(--bg-surface)"
@@ -403,7 +832,7 @@ export function KnowledgeGraph({
               <text
                 textAnchor="middle"
                 y={4}
-                fontSize={11}
+                fontSize={13}
                 fill="var(--text-main)"
                 style={{ fontVariantNumeric: "tabular-nums" }}
               >

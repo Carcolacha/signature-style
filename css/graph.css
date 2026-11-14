@@ -79,6 +79,49 @@
   width: auto;
 }
 
+/* ==========================================================================
+   3.0.0 OBSIDIAN GRAPH — the interaction css. The geometry (drag/pan/
+   zoom/tether math) lives in react/graph.tsx; this block paints it:
+     · .ptp-graph__tether — the LIVE right-click tether: --party-azure
+       (the 3.0.0 chromatic token, a FILL/SERIES accent on an svg stroke
+       — the Rule of Engagement holds: the tether is content ink), the
+       owner-spec'd 6 4 dasharray, 1.5px, fill none.
+     · cursor states — the canvas grabs for panning; nodes grab/grabbing
+       for dragging; the tethering canvas cross-hairs.
+     · touch-action: none rides the component's inline style (pointer
+       events need it; not a css concern here).
+   ========================================================================== */
+
+.ptp-graph__tether {
+  fill: none;
+  stroke: var(--party-azure);
+  stroke-width: 1.5;
+  stroke-dasharray: 6 4;
+  pointer-events: none;
+}
+
+.ptp-graph {
+  cursor: grab;
+}
+.ptp-graph:active {
+  cursor: grabbing;
+}
+.ptp-graph--tethering {
+  cursor: crosshair;
+}
+.ptp-graph__node {
+  cursor: pointer;
+}
+.ptp-graph__node:active {
+  cursor: grabbing;
+}
+/* While dragging/tethering, keep every transition OUT of the loop —
+   the transform is mutated per frame; a css transition would fight it. */
+.ptp-graph--tethering .ptp-graph__node circle,
+.ptp-graph.is-dragging .ptp-graph__node circle {
+  transition: none;
+}
+
 /* Motion is a gift, not a requirement. */
 @media (prefers-reduced-motion: reduce) {
   .ptp-graph__edge,

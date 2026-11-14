@@ -229,6 +229,8 @@ import {
   type AccentToken,
   type ChronicleRelease,
   type GraphNode,
+  type GraphLink,
+  type GraphPosition,
   type TimelineItem,
   type CommandEntry,
   type BreadcrumbItem,
@@ -2560,6 +2562,58 @@ function GraphPlannerModule() {
     "sig.v27.timeline",
     SEED_TIMELINE,
   );
+  /* 3.0.0 OBSIDIAN MODEL EXTENSIONS — the dragged positions and the
+     tether links are their own persisted arrays (the graph NODES stay
+     the 2.7.0 shape; positions/links are separate keys, so a 2.7.0
+     snapshot still imports cleanly). */
+  const [positions, setPositions, resetPositions] = usePersistentState<
+    Record<string, { x: number; y: number }>
+  >("sig.v27.graph-positions", {});
+  const [links, setLinks, resetLinks] = usePersistentState<GraphLink[]>(
+    "sig.v27.links",
+    [],
+  );
+
+  const moveNode = useCallback(
+    (id: string, position: { x: number; y: number }) => {
+      setPositions((current) => ({ ...current, [id]: position }));
+    },
+    [setPositions],
+  );
+
+  // THE TETHER COMMIT — a right-click drag from node to node lands here.
+  // Extra links are APPENDED (deduped); the docs model: non-parent edges
+  // live in this array, parent edges stay derived from parentId.
+  const linkNodes = useCallback(
+    (fromId: string, toId: string) => {
+      setLinks((current) => {
+        const exists = current.some(
+          (link) =>
+            (link.from === fromId && link.to === toId) ||
+            (link.from === toId && link.to === fromId),
+        );
+        if (exists) return current;
+        return [...current, { from: fromId, to: toId }];
+      });
+      toast("success", "Tethered — the graph keeps the link.");
+    },
+    [setLinks, toast],
+  );
+
+  // THE DBL-CLICK SPAWN — a node at the clicked point, parented to the
+  // nearest node (or the root), position persisted immediately.
+  const addNodeAt = useCallback(
+    (point: { x: number; y: number }, parentId?: string) => {
+      const id = `kg-${Date.now().toString(36)}`;
+      setGraph((current) => [
+        ...current,
+        { id, label: "New note", categoryToken: "--party-lavender", parentId },
+      ]);
+      setPositions((current) => ({ ...current, [id]: point }));
+      toast("success", "Node spawned — drag it, or tether it with a right-click.");
+    },
+    [setGraph, setPositions, toast],
+  );
 
   const addNode = useCallback(
     (node: Omit<GraphNode, "id">) => {
@@ -2645,8 +2699,10 @@ function GraphPlannerModule() {
   const resetAll = useCallback(() => {
     resetGraph();
     resetTimeline();
+    resetPositions();
+    resetLinks();
     toast("error", "Local state reset");
-  }, [resetGraph, resetTimeline, toast]);
+  }, [resetGraph, resetTimeline, resetPositions, resetLinks, toast]);
 
   return (
     <>
@@ -2659,7 +2715,12 @@ function GraphPlannerModule() {
         <div data-testid="knowledge-graph">
           <KnowledgeGraph
             nodes={graph}
+            positions={positions}
+            links={links}
             onAddNode={addNode}
+            onAddNodeAt={addNodeAt}
+            onMoveNode={moveNode}
+            onLinkNodes={linkNodes}
             addOn
             label="Party planning knowledge graph"
           />
