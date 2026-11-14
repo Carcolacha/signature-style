@@ -50,7 +50,7 @@
  */
 
 import type { PartyTokenName } from "./primitives.js";
-import { useId } from "react";
+import { useId, useState } from "react";
 
 /**
  * `<ProgressBar>` — the party-colored budget bar.
@@ -167,7 +167,7 @@ export interface StatRingProps {
   value: number;
   /** A `--party-*` content token — the ONLY tokens allowed here. */
   colorToken: PartyTokenName;
-  /** Outer diameter in px. Default 64 — an 8px-grid multiple. */
+  /** Outer diameter in px. Default 120 — the 3.0.0 zoom default. */
   size?: number;
   /** Track/fill weight in px — grid-perfect: 4 (half unit) or 8 (one unit). Default 8. */
   strokeWidth?: 4 | 8;
@@ -175,15 +175,28 @@ export interface StatRingProps {
   showValue?: boolean;
   /** The accessible name for the progressbar (e.g. "RSVP ratio"). */
   label?: string;
+  /**
+   * 3.0.0 — the denominator for the expandable detail strip (e.g. 200).
+   * When present, the ring renders zoomable: hover/press scale(1.07),
+   * and a click toggles the `.ptp-ring__detail` strip below the ring —
+   * "{value}% · {numerator}/{denominator} {unit}" with the numerator
+   * derived from the value (85% of 200 → "170 / 200 Guests"). The core
+   * dash geometry + the ARIA contract are untouched.
+   */
+  total?: number;
+  /** 3.0.0 — the detail strip's unit label ("Guests"). Requires `total`. */
+  unit?: string;
 }
 
 export function StatRing({
   value,
   colorToken,
-  size = 64,
+  size = 120,
   strokeWidth = 8,
   showValue = true,
   label,
+  total,
+  unit,
 }: StatRingProps) {
   if (!colorToken.startsWith("--party-")) {
     console.warn(
@@ -191,20 +204,26 @@ export function StatRing({
     );
     return null;
   }
+  // 3.0.0 — the internal EXPAND state (the zoom): a click toggles
+  // data-expanded on the wrapper (css/viz.css answers scale(1.07)) and
+  // slides the detail strip open (the 0fr → 1fr grid trick).
+  const [detail, setDetail] = useState(false);
   const clamped = Math.min(100, Math.max(0, value));
   const radius = 44;
   const circumference = 2 * Math.PI * radius;
   // px → viewBox units: identical visual weight at every size.
   const strokeUnits = (strokeWidth / size) * 100;
-  return (
+  const hasDetail = total !== undefined && total > 0;
+  const numerator = hasDetail
+    ? Math.round((clamped / 100) * (total as number))
+    : 0;
+  const ring = (
     <svg
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={clamped}
       aria-label={label}
-      width={size}
-      height={size}
       viewBox="0 0 100 100"
     >
       <circle
@@ -254,6 +273,26 @@ export function StatRing({
         </text>
       )}
     </svg>
+  );
+  if (!hasDetail) {
+    // The bare dial (pre-3.0.0 consumers): svg direct, nothing new.
+    return ring;
+  }
+  return (
+    <div className="ptp-ring" data-expanded={detail || undefined}>
+      <div
+        className="ptp-ring__dial"
+        style={{ width: size, height: size }}
+        onClick={() => setDetail((current) => !current)}
+      >
+        {ring}
+      </div>
+      <div className="ptp-ring__detail" data-open={detail || undefined}>
+        <div className="ptp-ring__detail-inner">
+          {clamped}% · {numerator} / {total} {unit ?? ""}
+        </div>
+      </div>
+    </div>
   );
 }
 

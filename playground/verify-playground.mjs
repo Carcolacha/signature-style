@@ -3371,6 +3371,64 @@ if (!chronicleNode.test(cardsCss26)) {
   );
 }
 
+// ---- (ring2) STATRING ZOOM + DETAIL (3.0.0) ----------------------------------------
+// css/viz.css: the square dial (aspect-ratio 1/1, 120px default), the
+// scale(1.07) zoom on hover + [data-expanded], the 0fr→1fr detail strip,
+// the reduced-motion kill. react/viz.tsx: total?/unit? props + the internal
+// expand state (the owner-authorized MINIMAL growth — core dash logic
+// untouched: the three circles + the dash math needles stay via (v22)).
+{
+  const vizCss30 = vizCss24;
+  const vizSrc30 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
+  const RING2_CSS = [
+    [".ptp-ring__dial", "the square dial wrapper"],
+    ["aspect-ratio: 1 / 1", "the 1/1 square"],
+    ["width: 120px", "the 120px default box"],
+    ["transform: scale(1.07)", "the zoom"],
+    [".ptp-ring[data-expanded=\"true\"] .ptp-ring__dial", "the expanded zoom state"],
+    [".ptp-ring__detail", "the detail strip"],
+    ["grid-template-rows: 0fr", "the collapsed strip (the 0fr→1fr trick)"],
+    ["grid-template-rows: 1fr", "the open strip"],
+    ["font-variant-numeric: tabular-nums", "the strip's tabular digits"],
+  ];
+  for (const [needle, label] of RING2_CSS) {
+    if (!vizCss30.includes(needle)) {
+      failures.push(`(ring2) css/viz.css must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const dialSquare = /\.ptp-ring__dial\s*\{[^}]*aspect-ratio: 1 \/ 1;[^}]*width: 120px;/s;
+  if (!dialSquare.test(vizCss30)) {
+    failures.push(
+      "(ring2) .ptp-ring__dial must be the aspect-ratio 1/1 square with the 120px default",
+    );
+  }
+  const reducedRing = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.ptp-ring__dial,\s*\n\s*\.ptp-ring__detail\s*\{[^}]*transition: none;/s;
+  if (!reducedRing.test(vizCss30)) {
+    failures.push(
+      "(ring2) the reduced-motion guard must kill the zoom + the slide (dial + detail, transition: none)",
+    );
+  }
+  for (const [needle, label] of [
+    ["total?: number", "the detail denominator prop"],
+    ["unit?: string", "the detail unit label prop"],
+    ["useState(false)", "the internal detail expand state"],
+    ['"ptp-ring"', "the wrapper renders"],
+    ['"ptp-ring__dial"', "the square dial renders"],
+    ['"ptp-ring__detail"', "the strip renders"],
+    ["{clamped}% · {numerator} / {total} {unit", "the detail readout format"],
+  ]) {
+    if (!vizSrc30.includes(needle)) {
+      failures.push(`(ring2) react/viz.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  if (!appSrc.includes('total={GUEST_CAPACITY}')) {
+    failures.push("(ring2) App.tsx must wire the live ring's total (the RSVP denominator)");
+  }
+  if (!appSrc.includes('unit="Guests"')) {
+    failures.push('(ring2) App.tsx must wire the live ring\'s unit="Guests"');
+  }
+}
+
 // ---- (mi1) THE MASTER INDEX (2.6.0) -----------------------------------------------------------
 for (const [needle, label] of [
   ['label="Catalog categories"', "the filter tablist name"],

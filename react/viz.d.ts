@@ -134,7 +134,7 @@ export interface StatRingProps {
     value: number;
     /** A `--party-*` content token — the ONLY tokens allowed here. */
     colorToken: PartyTokenName;
-    /** Outer diameter in px. Default 64 — an 8px-grid multiple. */
+    /** Outer diameter in px. Default 120 — the 3.0.0 zoom default. */
     size?: number;
     /** Track/fill weight in px — grid-perfect: 4 (half unit) or 8 (one unit). Default 8. */
     strokeWidth?: 4 | 8;
@@ -142,8 +142,19 @@ export interface StatRingProps {
     showValue?: boolean;
     /** The accessible name for the progressbar (e.g. "RSVP ratio"). */
     label?: string;
+    /**
+     * 3.0.0 — the denominator for the expandable detail strip (e.g. 200).
+     * When present, the ring renders zoomable: hover/press scale(1.07),
+     * and a click toggles the `.ptp-ring__detail` strip below the ring —
+     * "{value}% · {numerator}/{denominator} {unit}" with the numerator
+     * derived from the value (85% of 200 → "170 / 200 Guests"). The core
+     * dash geometry + the ARIA contract are untouched.
+     */
+    total?: number;
+    /** 3.0.0 — the detail strip's unit label ("Guests"). Requires `total`. */
+    unit?: string;
 }
-export declare function StatRing({ value, colorToken, size, strokeWidth, showValue, label, }: StatRingProps): import("react").JSX.Element | null;
+export declare function StatRing({ value, colorToken, size, strokeWidth, showValue, label, total, unit, }: StatRingProps): import("react").JSX.Element | null;
 export interface SparklineProps {
     /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
     data: number[];

@@ -1346,9 +1346,17 @@ function BentoCore({
           <span className="hub__metric-value">{derived.ringValue}%</span>
         </div>
         {/* LIVE RING — the stroke-dashoffset glides via the
-            playground-scoped rule (styles.css); viz.tsx byte-frozen. */}
+            playground-scoped rule (styles.css); 3.0.0: the ring is
+            zoomable (total + unit → the expandable detail strip:
+            "85% · 170 / 200 Guests" on click). */}
         <div data-testid="ring-rsvp">
-          <StatRing value={derived.ringValue} colorToken="--party-sky" label="RSVP ratio" />
+          <StatRing
+            value={derived.ringValue}
+            colorToken="--party-sky"
+            label="RSVP ratio"
+            total={GUEST_CAPACITY}
+            unit="Guests"
+          />
         </div>
         <div className="hub__metric" data-testid="metric-budget-spent">
           <span className="hub__metric-label">Budget spent</span>
