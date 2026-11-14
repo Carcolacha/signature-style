@@ -1,7 +1,7 @@
 node_modules/
 *.tsbuildinfo
 .DS_Store
-tools/mcp-viz/dist/
+packages/signature-mcp/dist/
 playground/dist/
 .dev-server.log
 .vite-*.log

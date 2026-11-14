@@ -28,9 +28,9 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
-// playwright lives in tools/mcp-viz (the cortex's dependency).
+// playwright lives in packages/signature-mcp (the cortex's dependency).
 const require = createRequire(
-  pathToFileURL(resolve(root, "tools/mcp-viz/package.json")),
+  pathToFileURL(resolve(root, "packages/signature-mcp/package.json")),
 );
 const { chromium } = require("playwright");
 

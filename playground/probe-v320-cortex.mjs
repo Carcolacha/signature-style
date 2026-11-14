@@ -37,7 +37,7 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
-const require = createRequire(pathToFileURL(resolve(root, "tools/mcp-viz/package.json")));
+const require = createRequire(pathToFileURL(resolve(root, "packages/signature-mcp/package.json")));
 const { chromium } = require("playwright");
 
 const URL_TO_PROBE = "http://localhost:5173";
