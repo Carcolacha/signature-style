@@ -1,9 +1,10 @@
 /**
  * cards — the ARCHETYPE CARDS (2.5.0 "Ergonomic Form Rules, Button &
- * Card Archetypes, and the 12-Column Bento").
+ * Card Archetypes, and the 12-Column Bento"; 2.6.0 "Universal Developer
+ * Card Suite" grows the five UNIVERSAL archetypes).
  *
- * Four composable card metaphors the composition layer kept hand-
- * rolling, now official, wired to css/cards.css:
+ * 2.5.0 — four composable card metaphors the composition layer kept
+ * hand-rolling, now official, wired to css/cards.css:
  *
  *   <ActionTile>    — the ONE-button action row (icon well + title/
  *                     subtitle + optional kbd shortcut chip). ZERO divs.
@@ -15,15 +16,34 @@
  *   <MatchupCard>   — the 1v1 grid (side / VS pill / side + stakes
  *                     footer) over two <Avatar> discs.
  *
+ * 2.6.0 — the UNIVERSAL DEVELOPER CARD SUITE, five archetypes that make
+ * "a card about anything" a one-line import (token-driven, flat DOM,
+ * `PartyColorToken`/`AccentToken` typed):
+ *
+ *   <ContentCard>       — image/gradient header + category badge +
+ *                         meta pills + accent-underlined title + action.
+ *   <ReferenceCard>     — mono tag chip + code snippet + copy button
+ *                         (clipboard + onCopied toast contract).
+ *   <TierCard>          — plan name / price / Check features / CTA;
+ *                         featured → floating elevation + accent border.
+ *   <ProfileCard>       — avatar (party ring) + role + tabular stats +
+ *                         skill badges.
+ *   <ChronicleTimeline> — the "Night of Versions" memorial as an
+ *                         official primitive: an <ol> of tagged releases
+ *                         down a hairline spine (credits in the JSDoc).
+ *
  * DOCTRINE: cards are STRUCTURE — hairlines separate, never shadows
- * (css/cards.css is shadow-free and hex-free, the e1 scope holds);
+ * (css/cards.css is shadow-free and hex-free; the e1 scope holds — the
+ * featured TierCard's floating shadow arrives through the SHARED
+ * [data-elevation] ladder in css/surface.css, not from this file);
  * Flamingo/Teal stays structural (hover borders, focus rings); --party-*
- * rides only where the Rule of Engagement already admits it (avatar
- * rings). Zero decorative wrappers: every element carries content or a
- * justified composition job.
+ * rides where the Rule of Engagement admits it (avatar rings, Check
+ * bullets, badges, chronicle accents). Zero decorative wrappers: every
+ * element carries content or a justified composition job.
  */
 import type { ReactNode } from "react";
 import { type IconName, type PartyTokenName } from "./primitives.js";
+import type { AccentToken, PartyColorToken } from "./surface.js";
 /**
  * Props for `<ActionTile>` — the action-row card. `onClick` optional:
  * a tile without a handler is a static affordance (still a button —
@@ -167,3 +187,255 @@ export interface MatchupCardProps {
  * ```
  */
 export declare function MatchupCard({ title, left, right, stakes }: MatchupCardProps): import("react").JSX.Element;
+/** The footer action of a `<ContentCard>`: label + optional handler. */
+export interface ContentCardAction {
+    /** The visible button text. */
+    label: string;
+    /** The click handler (the Button renders regardless — give it one). */
+    onClick?: () => void;
+}
+/**
+ * Props for `<ContentCard>` — the universal content card. `image` is
+ * optional: WITHOUT it the 16/9 visual header paints the token-driven
+ * gradient art (accent-tinted, zero hex); WITH it the URL renders as a
+ * cover image. To compose richer art (inline SVG, layered gradients),
+ * treat the visual slot's contract as "one decorative block" and pass
+ * the art through `image` as a data URL — the card itself stays flat.
+ */
+export interface ContentCardProps {
+    /** The card title (h3, accent-underlined when accentToken is set). */
+    title: string;
+    /** The muted description paragraph under the title. */
+    description?: string;
+    /** An image URL for the 16/9 visual header (rendered cover). */
+    image?: string;
+    /** The category badge label (rendered as a <PartyBadge>). */
+    category?: string;
+    /** The `--party-*` token for the category badge (required with it). */
+    categoryToken?: PartyColorToken;
+    /** Mono meta pills, e.g. ["25 MIN", "SPICY", "$14"]. */
+    meta?: string[];
+    /** The chromatic accent: title underline + gradient-art tint. */
+    accentToken?: AccentToken;
+    /** The footer action — a package <Button variant="secondary" size="sm">. */
+    action?: ContentCardAction;
+    /** Passthrough classes for grid placement. */
+    className?: string;
+}
+/**
+ * `<ContentCard>` — the universal content card (2.6.0).
+ *
+ * ONE `<section class="sig-content-card" [data-accent]>`: the 16/9
+ * visual header (`__visual` — the image URL or the accent-tinted
+ * gradient art; css owns `aspect-ratio: 16 / 9`), the meta row
+ * (`__meta` — the category PartyBadge + the mono `__pill` chips), the
+ * accent-underlined title, the muted description, and the action
+ * footer (`margin-top: auto` parks it at the card's floor). The
+ * Button is the PACKAGE's — the archetype composes, never re-invents.
+ *
+ * @example
+ * ```tsx
+ * <ContentCard
+ *   category="Catering" categoryToken="--party-peach"
+ *   meta={["25 MIN", "SPICY", "$14"]} accentToken="--party-yellow"
+ *   title="Birria & Street Taco Catering"
+ *   description="Slow-braised birria, consomé on the side."
+ *   action={{ label: "Book the taco cart" }}
+ * />
+ * ```
+ */
+export declare function ContentCard({ title, description, image, category, categoryToken, meta, accentToken, action, className, }: ContentCardProps): import("react").JSX.Element;
+/**
+ * Props for `<ReferenceCard>` — the copy-to-clipboard reference card.
+ * THE TOAST CONTRACT (decoupled by design): the card never renders a
+ * toast itself — wrap it in a `ToastProvider` and pass
+ * `onCopied={() => toast("success", "Copied")}` to fire one. The card
+ * only owns the copied flash ("Copied!" for 2s) and the clipboard call.
+ */
+export interface ReferenceCardProps {
+    /** The mono tag chip above the title (e.g. "JSX" — uppercased by css). */
+    tag: string;
+    /** The card title (accent-underlined when accentToken is set). */
+    title: string;
+    /** The code snippet — rendered verbatim inside <pre><code>. */
+    code: string;
+    /** The chromatic accent: title underline + tag chip ink. */
+    accentToken?: AccentToken;
+    /** A reference URL: renders the top-right icon link + footer anchor. */
+    link?: string;
+    /** Fires AFTER a successful copy (wire it to your toast). */
+    onCopied?: () => void;
+    /** Passthrough classes for grid placement. */
+    className?: string;
+}
+/**
+ * `<ReferenceCard>` — the copy-to-clipboard reference card (2.6.0).
+ *
+ * ONE `<section class="sig-reference-card" [data-accent]>`: the tag row
+ * (mono chip on --bg-inset, uppercased + the optional ArrowUpRight link
+ * top-right), the accent-underlined title, the `<pre><code>` snippet
+ * (inset well, mono 0.8125rem, overflow-x auto), and the footer (the
+ * ghost Copy button + the optional "Reference ↗" anchor). COPY: the
+ * async clipboard API in a try/catch — failure is silent (the label
+ * never flashes a lie); success flips the label to "Copied!", fires
+ * `onCopied?.()`, and resets after 2s (timer cleaned up on unmount).
+ *
+ * @example
+ * ```tsx
+ * const toast = useToast();
+ * <ReferenceCard
+ *   tag="JSX" title="The Signature Surface" accentToken="--party-sky"
+ *   code="<SurfaceCard eyebrow=\"Hi\" title=\"Hello\" />"
+ *   onCopied={() => toast("success", "Snippet copied")}
+ * />
+ * ```
+ */
+export declare function ReferenceCard({ tag, title, code, accentToken, link, onCopied, className, }: ReferenceCardProps): import("react").JSX.Element;
+/**
+ * Props for `<TierCard>` — the pricing tier. `featured` is the whole
+ * hierarchy system: floating elevation (the shared data-elevation
+ * ladder), a 2px accent border, and the primary CTA variant.
+ */
+export interface TierCardProps {
+    /** The plan name — the eyebrow voice (uppercase, tracked). */
+    name: string;
+    /** The price line (e.g. "$49") — 2rem tabular-nums weight 600. */
+    price: string;
+    /** The feature list — each a Check bullet (party-green). */
+    features: string[];
+    /** The chromatic accent: featured border + eyebrow ink. */
+    accentToken?: AccentToken;
+    /** Featured: floating elevation + 2px accent border + primary CTA. */
+    featured?: boolean;
+    /** The CTA label (default "Choose"). */
+    cta?: string;
+    /** The CTA handler. */
+    onCta?: () => void;
+    /** Passthrough classes for grid placement. */
+    className?: string;
+}
+/**
+ * `<TierCard>` — the pricing tier (2.6.0).
+ *
+ * ONE `<section class="sig-tier-card [--featured]" data-elevation>`:
+ * the plan name (eyebrow voice), the 2rem tabular-nums price, the
+ * feature `<ul>` (each `<li>` a party-green Check bullet), and the CTA
+ * (the package Button — primary when featured, secondary otherwise).
+ * FEATURED: `data-elevation="floating"` (the shared ladder in
+ * css/surface.css paints the deep shadow — cards.css stays flat) + the
+ * 2px accent border. NO scale — border + elevation only, per spec.
+ *
+ * @example
+ * ```tsx
+ * <TierCard
+ *   name="Arena Pass" price="$49" featured accentToken="--party-mauve-soft"
+ *   features={["All 40 game modules", "1v1 & 2v2 brackets"]}
+ *   cta="Claim the pass"
+ * />
+ * ```
+ */
+export declare function TierCard({ name, price, features, accentToken, featured, cta, onCta, className, }: TierCardProps): import("react").JSX.Element;
+/** One stat in a `<ProfileCard>`: the big value + the muted label. */
+export interface ProfileStat {
+    /** The muted caption under the value (e.g. "Events"). */
+    label: string;
+    /** The value (tabular-nums, weight 600 — e.g. "412" or "4.9"). */
+    value: string;
+}
+/** One skill badge in a `<ProfileCard>` (a PartyBadge). */
+export interface ProfileSkill {
+    /** The `--party-*` token for the badge. */
+    colorToken: PartyColorToken;
+    /** The badge label (e.g. "Catering"). */
+    label: string;
+}
+/**
+ * Props for `<ProfileCard>` — the person card. `stats` carries TWO to
+ * THREE entries (fewer reads empty, more breaks the row) — a dev-time
+ * warn fires outside that band, the render never lies.
+ */
+export interface ProfileCardProps {
+    /** The person's name — the Avatar's initials AND the headline. */
+    name: string;
+    /** The muted role line (0.8125rem). */
+    role: string;
+    /** Two to three {label, value} stats (tabular values, muted labels). */
+    stats?: ProfileStat[];
+    /** Skill badges (PartyBadges) on the last row. */
+    skills?: ProfileSkill[];
+    /** The `--party-*` token for the avatar ring (content-only rule). */
+    accentToken?: PartyColorToken;
+    /** Avatar diameter (32 | 40, default 40 — the grid-perfect pair). */
+    avatarSize?: 32 | 40;
+    /** Passthrough classes for grid placement. */
+    className?: string;
+}
+/**
+ * `<ProfileCard>` — the person card (2.6.0).
+ *
+ * ONE `<section class="sig-profile-card">`: the 40px `<Avatar>` (party
+ * ring via `accentToken` — the Rule of Engagement as typed), the name
+ * (weight 600) over the muted role, the stats row (value tabular-nums
+ * weight 600 text-main, label muted 0.6875rem; min 2 / max 3 entries,
+ * dev-warned outside), and the skills row (PartyBadges).
+ *
+ * @example
+ * ```tsx
+ * <ProfileCard
+ *   name="Ana Souza" role="Head of Catering" accentToken="--party-peach"
+ *   stats={[{ label: "Events", value: "24" }, { label: "Guests", value: "412" }]}
+ *   skills={[{ colorToken: "--party-peach", label: "Catering" }]}
+ * />
+ * ```
+ */
+export declare function ProfileCard({ name, role, stats, skills, accentToken, avatarSize, className, }: ProfileCardProps): import("react").JSX.Element;
+/** One release in a `<ChronicleTimeline>`: tag, title, story, stat, accent. */
+export interface ChronicleRelease {
+    /** The version tag (e.g. "v2.6.0") — the mono chip + the key. */
+    tag: string;
+    /** The release name — the bold headline of the entry. */
+    title: string;
+    /** The one-line story under the title. */
+    story?: string;
+    /** The mono stat footnote (e.g. "5 archetypes · 3 tiers"). */
+    stat?: string;
+    /** The `--party-*` accent for this milestone's node + tag. */
+    accentToken?: PartyColorToken;
+}
+/**
+ * Props for `<ChronicleTimeline>` — the release chronicle.
+ */
+export interface ChronicleTimelineProps {
+    /** The releases, oldest first (the spine reads downward). */
+    releases: ChronicleRelease[];
+    /** The accessible name (default "Version chronicle"). */
+    label?: string;
+    /** Passthrough classes for placement. */
+    className?: string;
+}
+/**
+ * `<ChronicleTimeline>` — the release chronicle (2.6.0).
+ *
+ * ONE `<ol class="ptp-chronicle" aria-label>`: per release an `<li>`
+ * carrying the inline `--accent` variable → the milestone node (a 12px
+ * circle, 2px solid var(--accent), surface-filled, absolutely parked
+ * OVER the ::before hairline spine), the mono tag in the accent, and
+ * the body (bold title + optional story + optional mono stat). FLAT:
+ * zero shadows — the spine is a 2px color-mix hairline (css/cards.css).
+ *
+ * MEMORIAL CREDIT: this primitive officializes the "Night of Versions"
+ * chronicle the owner read aloud at the memorial release review — every
+ * tag, name and stat of the engine's life, one accent per milestone.
+ * Port your release history; the timeline keeps it honest.
+ *
+ * @example
+ * ```tsx
+ * <ChronicleTimeline
+ *   releases={[
+ *     { tag: "v2.5.0", title: "The 12-Column Bento", stat: "whitelist 34" },
+ *     { tag: "v2.6.0", title: "Universal Developer Card Suite", accentToken: "--party-peach" },
+ *   ]}
+ * />
+ * ```
+ */
+export declare function ChronicleTimeline({ releases, label, className, }: ChronicleTimelineProps): import("react").JSX.Element;

@@ -1,9 +1,10 @@
 /* ==========================================================================
-   CARDS — the archetype cards (2.5.0 "Button & Card Archetypes").
+   CARDS — the archetype cards (2.5.0 "Button & Card Archetypes"; 2.6.0
+   "Universal Developer Card Suite" grows the five universal archetypes).
    Layered into `cascade` by signature-style.css (imported after
    primitives.css, before editorial.css).
 
-   FOUR ARCHETYPES (react/cards.tsx):
+   FOUR HAND-ROLLED ARCHETYPES (2.5.0, react/cards.tsx):
     - .ptp-action-tile (+ __well / __body / __kbd) — the ONE-button
       action row. ZERO divs: spans only. The well is a 40px rounded
       --bg-inset disc for the icon; the kbd chip is the standalone
@@ -22,9 +23,33 @@
       grid: 1fr auto 1fr, centered sides, mono VS pill, stakes footer
       spanning the grid.
 
+   FIVE UNIVERSAL ARCHETYPES (2.6.0):
+    - .sig-content-card (+ __visual / __meta / __pill / __title /
+      __desc / __footer) — image-or-gradient 16/9 header, category
+      badge + mono meta pills, accent-underlined title, action footer
+      pinned to the floor with margin-top: auto.
+    - .sig-reference-card (+ __top / __tag / __link / __title / __code /
+      __footer / __anchor) — mono tag chip, code well (mono 0.8125rem,
+      overflow-x auto), ghost Copy footer.
+    - .sig-tier-card (+ --featured / __name / __price / __features) —
+      plan / 2rem tabular price / Check bullets (party-green). FEATURED:
+      2px accent border + data-elevation="floating" — the deep shadow
+      arrives through the SHARED ladder in css/surface.css (this file
+      stays ZERO box-shadow; the (cd1)/(elev) gates pin it).
+    - .sig-profile-card (+ __id / __name / __role / __stats / __stat /
+      __stat-value / __stat-label / __skills) — avatar + role + tabular
+      stats + PartyBadge skills.
+    - .ptp-chronicle (+ __item / __node / __tag / __body / __story /
+      __stat) — the release chronicle: a 2px hairline spine (::before),
+      12px accent-ringed nodes parked over it, mono accent tags. The
+      "Night of Versions" memorial, official.
+
    DOCTRINE: cards are structure — separation is hairlines, NEVER
-   shadows (the e1 scope: zero box-shadow here); hover is the Teal
-   border (structural), focus the Flamingo ring; zero hex.
+   shadows (the e1 scope: ZERO box-shadow in this file, featured tier
+   included — its shadow is the shared [data-elevation] ladder in
+   css/surface.css); hover is the Teal border (structural), focus the
+   Flamingo ring; the accent chrome arrives through [data-accent] +
+   --sig-accent (borders and color only, never shadow); zero hex.
    ========================================================================== */
 
 @layer cascade {
@@ -234,13 +259,367 @@
     color: var(--text-muted);
   }
 
+  /* -- ContentCard (2.6.0) ----------------------------------------------------- */
+  .sig-content-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tight);
+    min-width: 0;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+  }
+  /* The 16/9 visual header — css owns the RATIO; the background (image
+     URL or the accent-tinted gradient art) arrives inline from the
+     component. Overflow-hidden clips the cover fill to the radius. */
+  .sig-content-card__visual {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-ui);
+    overflow: hidden;
+    flex: none;
+  }
+  .sig-content-card__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-tight);
+    margin-top: var(--space-tight);
+  }
+  /* The mono meta pill — "25 MIN · SPICY · $14" chips: mono, muted,
+     0.6875rem (11px, the half-step above 10px metadata). */
+  .sig-content-card__pill {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-ui);
+    padding: 0.125rem 0.375rem;
+  }
+  .sig-content-card__title {
+    margin: var(--space-tight) 0 0;
+    padding-bottom: var(--space-tight);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+  }
+  /* The accent contract (2.6.0): the underline grows to 2px solid in the
+     accent — the same title treatment the surface cards and the
+     GlobalNav/Tabs active state speak. Border only, never shadow. */
+  [data-accent] .sig-content-card__title {
+    border-bottom: 2px solid var(--sig-accent);
+  }
+  .sig-content-card__desc {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .sig-content-card__footer {
+    margin-top: auto;
+    padding-top: var(--space-tight);
+  }
+
+  /* -- ReferenceCard (2.6.0) ---------------------------------------------------- */
+  .sig-reference-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tight);
+    min-width: 0;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+  }
+  .sig-reference-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-tight);
+  }
+  /* The mono tag chip — inset, hairline, uppercase (the VS-pill cousin). */
+  .sig-reference-card__tag {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    padding: 0.125rem 0.5rem;
+  }
+  [data-accent] .sig-reference-card__tag {
+    color: var(--sig-accent);
+    border-color: color-mix(in srgb, var(--sig-accent) 35%, transparent);
+  }
+  .sig-reference-card__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: var(--radius-ui);
+    color: var(--text-muted);
+    transition: var(--transition-standard);
+  }
+  .sig-reference-card__link:hover {
+    color: var(--color-cake-secondary);
+  }
+  .sig-reference-card__link:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+  .sig-reference-card__title {
+    margin: 0;
+    padding-bottom: var(--space-tight);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+  }
+  [data-accent] .sig-reference-card__title {
+    border-bottom: 2px solid var(--sig-accent);
+  }
+  /* The code well: inset ground, mono 0.8125rem, horizontal pan, radius. */
+  .sig-reference-card__code {
+    margin: 0;
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+    overflow-x: auto;
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-bright);
+  }
+  .sig-reference-card__code code {
+    font-family: inherit;
+  }
+  .sig-reference-card__footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-tight);
+  }
+  .sig-reference-card__anchor {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: var(--transition-standard);
+  }
+  .sig-reference-card__anchor:hover {
+    color: var(--color-cake-secondary);
+  }
+  .sig-reference-card__anchor:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
+  }
+
+  /* -- TierCard (2.6.0) ----------------------------------------------------------- */
+  .sig-tier-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-standard);
+    min-width: 0;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-section);
+  }
+  /* FEATURED: the 2px accent border + floating elevation. The SHADOW is
+     NOT here — data-elevation="floating" rides the shared ladder in
+     css/surface.css (this file stays zero box-shadow, the e1 scope). */
+  .sig-tier-card--featured {
+    border: 2px solid var(--sig-accent, var(--color-cake-primary));
+  }
+  .sig-tier-card__name {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  [data-accent] .sig-tier-card__name {
+    color: var(--sig-accent);
+  }
+  .sig-tier-card__price {
+    font-size: 2rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-main);
+    line-height: 1.1;
+  }
+  .sig-tier-card__features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-tight);
+  }
+  .sig-tier-card__features li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-tight);
+    font-size: 0.875rem;
+    color: var(--text-main);
+  }
+  /* The Check bullets wear the party green — content outcomes, the Rule
+     of Engagement (a confirmed feature is a success state). */
+  .sig-tier-card__features li svg {
+    color: var(--party-green);
+    flex: none;
+  }
+
+  /* -- ProfileCard (2.6.0) --------------------------------------------------------- */
+  .sig-profile-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-tight);
+    min-width: 0;
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    border-radius: var(--radius-ui);
+    padding: var(--space-standard);
+  }
+  .sig-profile-card__id {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  .sig-profile-card__name {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--text-main);
+  }
+  .sig-profile-card__role {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+  .sig-profile-card__stats {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-section);
+    margin-top: var(--space-tight);
+    padding-top: var(--space-tight);
+    border-top: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+    width: 100%;
+  }
+  .sig-profile-card__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  /* The big tabular value + the tiny muted caption (digits never jitter). */
+  .sig-profile-card__stat-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-main);
+  }
+  .sig-profile-card__stat-label {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+  }
+  .sig-profile-card__skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-tight);
+    margin-top: var(--space-tight);
+  }
+
+  /* -- ChronicleTimeline (2.6.0) — the Night of Versions memorial ------------- */
+  /* The spine: a relative <ol> with a 2px color-mix hairline running down
+     its left rail. Items pad off the rail; nodes park absolutely OVER it.
+     FLAT: hairlines only, zero shadows. */
+  .ptp-chronicle {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--space-standard);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-standard);
+  }
+  .ptp-chronicle::before {
+    content: "";
+    position: absolute;
+    top: 0.375rem;
+    bottom: 0.375rem;
+    left: 0.375rem;
+    width: 2px;
+    background: color-mix(in srgb, var(--text-muted) 20%, transparent);
+  }
+  .ptp-chronicle__item {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--space-tight);
+    padding-left: var(--space-standard);
+    min-width: 0;
+  }
+  /* The milestone dot: 12px circle, 2px accent ring, surface fill — it
+     paints OVER the spine (the timeline-node precedent). */
+  .ptp-chronicle__node {
+    position: absolute;
+    left: calc(-0.375rem - 5px);
+    top: 0.3em;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg-surface);
+  }
+  .ptp-chronicle__tag {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    flex: none;
+  }
+  .ptp-chronicle__body {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--space-tight);
+    min-width: 0;
+  }
+  .ptp-chronicle__body strong {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text-main);
+  }
+  .ptp-chronicle__story {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+  }
+  .ptp-chronicle__stat {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+  }
+
   /* Motion is a gift, not a requirement. The flip stands down to an
      opacity swap (no transform): back hidden → both visible-stacked is
      avoided by keeping the faces absolute and swapping opacity. */
   @media (prefers-reduced-motion: reduce) {
     .ptp-action-tile,
     .ptp-flip-card__inner,
-    .ptp-accordion__chevron {
+    .ptp-accordion__chevron,
+    .sig-reference-card__link,
+    .sig-reference-card__anchor {
       transition: none;
     }
     .ptp-flip-card__inner {
