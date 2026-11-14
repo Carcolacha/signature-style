@@ -161,7 +161,7 @@ Before you write a line of code, ask what line you can delete instead. The owner
 - **DOM Flattening:** Never use a wrapper `<div>` if CSS Flexbox/Grid on the parent can achieve the same layout. If an element looks visually identical without a wrapper, delete the wrapper.
 - **Minimalist Code:** Do not add "extra stuff" or decorative wrappers. If the UI looks clean and functions correctly with 3 lines of HTML instead of 10, use 3.
 
-When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<PartyBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
+When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<SigBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
 
 ## The 6-Set Taxonomy — every component, copy-paste
 
@@ -393,21 +393,21 @@ export interface AvatarProps {
      * a structural token slipped past the types (JS consumers) warns and
      * renders WITHOUT the ring — an avatar without its ring is still an
      * avatar, so this guard drops the decoration, not the component
-     * (the PartyBadge/ProgressBar guards render null because there is
+     * (the SigBadge/ProgressBar guards render null because there is
      * nothing left to show; here there is — the initials).
      */
-    ringToken?: PartyTokenName;
+    ringToken?: SigTokenName;
 }
 ```
 
-#### PartyBadge (PartyBadge)
+#### SigBadge (SigBadge)
 
 Copy-paste JSX:
 
 ```tsx
-import { PartyBadge } from "@edwyn/signature-style/react";
+import { SigBadge } from "@edwyn/signature-style/react";
 
-<PartyBadge colorToken="--sig-peach" label="Birthday" />
+<SigBadge colorToken="--sig-peach" label="Birthday" />
 ```
 
 HTML variant (no React — real package classes/inline styles):
@@ -422,12 +422,12 @@ HTML variant (no React — real package classes/inline styles):
 >Birthday</span>
 ```
 
-Props surface — react/primitives.d.ts (`PartyBadgeProps`):
+Props surface — react/primitives.d.ts (`SigBadgeProps`):
 
 ```ts
-export interface PartyBadgeProps {
+export interface SigBadgeProps {
     /** A `--sig-*` content token — the ONLY tokens allowed here. */
-    colorToken: PartyTokenName;
+    colorToken: SigTokenName;
     /** The badge label text. */
     label: string;
 }
@@ -460,10 +460,10 @@ export interface ContentCardProps {
     description?: string;
     /** An image URL for the 16/9 visual header (rendered cover). */
     image?: string;
-    /** The category badge label (rendered as a <PartyBadge>). */
+    /** The category badge label (rendered as a <SigBadge>). */
     category?: string;
     /** The `--sig-*` token for the category badge (required with it). */
-    categoryToken?: PartyColorToken;
+    categoryToken?: SigColorToken;
     /** Mono meta pills, e.g. ["25 MIN", "SPICY", "$14"]. */
     meta?: string[];
     /** The chromatic accent: title underline + gradient-art tint. */
@@ -579,10 +579,10 @@ export interface ProfileCardProps {
     role: string;
     /** Two to three {label, value} stats (tabular values, muted labels). */
     stats?: ProfileStat[];
-    /** Skill badges (PartyBadges) on the last row. */
+    /** Skill badges (SigBadges) on the last row. */
     skills?: ProfileSkill[];
     /** The `--sig-*` token for the avatar ring (content-only rule). */
-    accentToken?: PartyColorToken;
+    accentToken?: SigColorToken;
     /** Avatar diameter (32 | 40, default 40 — the grid-perfect pair). */
     avatarSize?: 32 | 40;
     /** Passthrough classes for grid placement. */
@@ -637,7 +637,7 @@ Props surface — react/cards.d.ts (`FlipCardProps`):
 
 ```ts
 export interface FlipCardProps {
-    /** The face content (any nodes — text, prose, a PartyBadge). */
+    /** The face content (any nodes — text, prose, a SigBadge). */
     front: ReactNode;
     /** The hidden face revealed by the flip. */
     back: ReactNode;
@@ -1098,7 +1098,7 @@ export interface ProgressBarProps {
     /** The filled percentage — clamped to 0–100 before rendering. */
     value: number;
     /** A `--sig-*` content token — the ONLY tokens allowed here. */
-    colorToken: PartyTokenName;
+    colorToken: SigTokenName;
     /** The accessible name for the progressbar (e.g. "Budget remaining"). */
     label?: string;
     /** 2.2.0: limit caption rendered after the track (e.g. "$1,325 / $2,000"). */
@@ -1123,7 +1123,7 @@ export interface StatRingProps {
     /** The filled percentage — clamped to 0–100 before rendering. */
     value: number;
     /** A `--sig-*` content token — the ONLY tokens allowed here. */
-    colorToken: PartyTokenName;
+    colorToken: SigTokenName;
     /** Outer diameter in px. Default 120 — the 3.0.0 zoom default. */
     size?: number;
     /** Track/fill weight in px — grid-perfect: 4 (half unit) or 8 (one unit). Default 8. */
@@ -1178,7 +1178,7 @@ export interface StatCardProps {
     /** The optional inline trend — renders a <Sparkline> labeled "<label> trend". */
     sparklineData?: number[];
     /** A `--sig-*` content token for the sparkline (passed through). */
-    colorToken?: PartyTokenName;
+    colorToken?: SigTokenName;
 }
 ```
 
@@ -1199,7 +1199,7 @@ export interface SparklineProps {
     /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
     data: number[];
     /** A `--sig-*` content token — the ONLY tokens allowed here. Default --sig-sky. */
-    colorToken?: PartyTokenName;
+    colorToken?: SigTokenName;
     /** Width in px (also the viewBox width). Default 120. */
     width?: number;
     /** Height in px (also the viewBox height). Default 36. */
@@ -1265,7 +1265,7 @@ export interface AreaChartProps {
     /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
     points: AreaPoint[];
     /** A `--sig-*` content token. Default --sig-sky. */
-    colorToken?: PartyTokenName;
+    colorToken?: SigTokenName;
     /** The svg's rendered height in px. Default 200. */
     height?: number;
     /** The accessible name (role="img"); defaults to "Area chart of N points". */
@@ -1428,14 +1428,14 @@ export interface EventTimelineProps {
      * exactly as given. An empty array renders the Pillar 4 EmptyState and
      * no timeline chrome at all.
      */
-    events: PtpEvent[];
+    events: TimelineEvent[];
     /**
      * Optional selection callback — fired with the clicked event. When
      * provided, every node becomes an interactive `<button>` (it always is
      * one, since 0.7.0); without it the buttons simply do nothing. Pass
      * `modal.open` from `useModal()` to compose <EventModal>.
      */
-    onEventSelect?: (event: PtpEvent) => void;
+    onEventSelect?: (event: TimelineEvent) => void;
 }
 ```
 
@@ -1447,7 +1447,7 @@ Copy-paste JSX:
 import { useModal } from "@edwyn/signature-style/react";
 
 // The hook owns selection state; the component owns the overlay.
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 modal.open(event);   // select + open
 modal.close();       // close + clear
 ```
@@ -1457,9 +1457,9 @@ modal.close();       // close + clear
 Copy-paste JSX:
 
 ```tsx
-import { EventModal, useModal, type PtpEvent } from "@edwyn/signature-style/react";
+import { EventModal, useModal, type TimelineEvent } from "@edwyn/signature-style/react";
 
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 {modal.selectedEvent !== null && (
   <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
 )}
@@ -1470,7 +1470,7 @@ Props surface — react/modal.d.ts (`EventModalProps`):
 ```ts
 export interface EventModalProps {
     /** The event to render; typically `modal.selectedEvent`. */
-    event: PtpEvent;
+    event: TimelineEvent;
     /** Visibility flag; typically `modal.isOpen`. False renders nothing. */
     open: boolean;
     /** Called on Escape, backdrop click, and close-button click. */
@@ -1576,7 +1576,7 @@ export interface DataTableProps {
     /**
      * The records — one row per entry, keyed by `columns[].key`. Values
      * are ReactNode, so a cell may be plain text or a composed primitive
-     * (e.g. a <PartyBadge> status).
+     * (e.g. a <SigBadge> status).
      */
     rows: Array<Record<string, ReactNode>>;
     /** Optional provenance caption — renders BELOW the table (mono, muted). */
@@ -1621,8 +1621,8 @@ Copy-paste JSX:
 import { Carousel } from "@edwyn/signature-style/react";
 
 <Carousel label="Palette clippings">
-  <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
-  <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
+  <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+  <CarouselItem><SigBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
 </Carousel>
 ```
 

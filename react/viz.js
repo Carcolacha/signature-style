@@ -71,7 +71,7 @@ function sparkPoints(data, width, height) {
  * the viewBox (0 0 w h) via the pure `sparkPoints` helper;
  * `preserveAspectRatio="none"` lets the svg stretch to any box while
  * the geometry stays exact. Guards: a series shorter than 2 points has
- * no trend to draw (warn + null, the PartyBadge philosophy); a
+ * no trend to draw (warn + null, the SigBadge philosophy); a
  * structural `colorToken` is refused (Rule of Engagement). No CSS at
  * all — pure SVG attributes, like StatRing.
  *

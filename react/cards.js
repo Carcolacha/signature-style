@@ -19,7 +19,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *
  * 2.6.0 — the UNIVERSAL DEVELOPER CARD SUITE, five archetypes that make
  * "a card about anything" a one-line import (token-driven, flat DOM,
- * `PartyColorToken`/`AccentToken` typed):
+ * `SigColorToken`/`AccentToken` typed):
  *
  *   <ContentCard>       — image/gradient header + category badge +
  *                         meta pills + accent-underlined title + action.
@@ -45,7 +45,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useEffect, useRef, useState } from "react";
 import { Button, Icon, } from "./primitives.js";
 import { Avatar } from "./forms.js";
-import { PartyBadge } from "./primitives.js";
+import { SigBadge } from "./primitives.js";
 /**
  * `<ActionTile>` — the action-row card (2.5.0).
  *
@@ -164,7 +164,7 @@ function accentProps(accentToken) {
  * ONE `<section class="sig-content-card" [data-accent]>`: the 16/9
  * visual header (`__visual` — the image URL or the accent-tinted
  * gradient art; css owns `aspect-ratio: 16 / 9`), the meta row
- * (`__meta` — the category PartyBadge + the mono `__pill` chips), the
+ * (`__meta` — the category SigBadge + the mono `__pill` chips), the
  * accent-underlined title, the muted description, and the action
  * footer (`margin-top: auto` parks it at the card's floor). The
  * Button is the PACKAGE's — the archetype composes, never re-invents.
@@ -188,7 +188,7 @@ export function ContentCard({ title, description, image, category, categoryToken
     const art = image
         ? `url("${image}") center / cover no-repeat`
         : `linear-gradient(135deg, color-mix(in srgb, var(--sig-accent, var(--color-cake-primary)) 30%, var(--bg-inset)), var(--bg-inset))`;
-    return (_jsxs("section", { className: classes, ...accentProps(accentToken), children: [_jsx("div", { className: "sig-content-card__visual", style: { background: art } }), (category !== undefined || meta !== undefined) && (_jsxs("div", { className: "sig-content-card__meta", children: [category !== undefined && categoryToken !== undefined && (_jsx(PartyBadge, { colorToken: categoryToken, label: category })), meta?.map((pill) => (_jsx("span", { className: "sig-content-card__pill", children: pill }, pill)))] })), _jsx("h3", { className: "sig-content-card__title", children: title }), description !== undefined && (_jsx("p", { className: "sig-content-card__desc", children: description })), action !== undefined && (_jsx("footer", { className: "sig-content-card__footer", children: _jsx(Button, { variant: "secondary", size: "sm", onClick: action.onClick, children: action.label }) }))] }));
+    return (_jsxs("section", { className: classes, ...accentProps(accentToken), children: [_jsx("div", { className: "sig-content-card__visual", style: { background: art } }), (category !== undefined || meta !== undefined) && (_jsxs("div", { className: "sig-content-card__meta", children: [category !== undefined && categoryToken !== undefined && (_jsx(SigBadge, { colorToken: categoryToken, label: category })), meta?.map((pill) => (_jsx("span", { className: "sig-content-card__pill", children: pill }, pill)))] })), _jsx("h3", { className: "sig-content-card__title", children: title }), description !== undefined && (_jsx("p", { className: "sig-content-card__desc", children: description })), action !== undefined && (_jsx("footer", { className: "sig-content-card__footer", children: _jsx(Button, { variant: "secondary", size: "sm", onClick: action.onClick, children: action.label }) }))] }));
 }
 /**
  * `<ReferenceCard>` — the copy-to-clipboard reference card (2.6.0).
@@ -278,7 +278,7 @@ export function TierCard({ name, price, features, accentToken, featured = false,
  * ring via `accentToken` — the Rule of Engagement as typed), the name
  * (weight 600) over the muted role, the stats row (value tabular-nums
  * weight 600 text-main, label muted 0.6875rem; min 2 / max 3 entries,
- * dev-warned outside), and the skills row (PartyBadges).
+ * dev-warned outside), and the skills row (SigBadges).
  *
  * @example
  * ```tsx
@@ -294,7 +294,7 @@ export function ProfileCard({ name, role, stats, skills, accentToken, avatarSize
         console.warn(`[signature-style] ProfileCard "${name}" carries ${stats.length} stats — the row reads best with 2–3 (fewer is empty, more wraps).`);
     }
     const classes = className !== undefined ? `sig-profile-card ${className}` : "sig-profile-card";
-    return (_jsxs("section", { className: classes, children: [_jsx(Avatar, { name: name, size: avatarSize, ringToken: accentToken }), _jsxs("div", { className: "sig-profile-card__id", children: [_jsx("strong", { className: "sig-profile-card__name", children: name }), _jsx("span", { className: "sig-profile-card__role", children: role })] }), stats !== undefined && (_jsx("div", { className: "sig-profile-card__stats", children: stats.map((stat) => (_jsxs("div", { className: "sig-profile-card__stat", children: [_jsx("span", { className: "sig-profile-card__stat-value", children: stat.value }), _jsx("span", { className: "sig-profile-card__stat-label", children: stat.label })] }, stat.label))) })), skills !== undefined && (_jsx("div", { className: "sig-profile-card__skills", children: skills.map((skill) => (_jsx(PartyBadge, { colorToken: skill.colorToken, label: skill.label }, skill.label))) }))] }));
+    return (_jsxs("section", { className: classes, children: [_jsx(Avatar, { name: name, size: avatarSize, ringToken: accentToken }), _jsxs("div", { className: "sig-profile-card__id", children: [_jsx("strong", { className: "sig-profile-card__name", children: name }), _jsx("span", { className: "sig-profile-card__role", children: role })] }), stats !== undefined && (_jsx("div", { className: "sig-profile-card__stats", children: stats.map((stat) => (_jsxs("div", { className: "sig-profile-card__stat", children: [_jsx("span", { className: "sig-profile-card__stat-value", children: stat.value }), _jsx("span", { className: "sig-profile-card__stat-label", children: stat.label })] }, stat.label))) })), skills !== undefined && (_jsx("div", { className: "sig-profile-card__skills", children: skills.map((skill) => (_jsx(SigBadge, { colorToken: skill.colorToken, label: skill.label }, skill.label))) }))] }));
 }
 /**
  * `<ChronicleTimeline>` — the release chronicle (2.6.0).

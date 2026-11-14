@@ -252,7 +252,7 @@
  *   (dd5) THE TABS SHOWCASE — App.tsx: the Tabs module switcher
  *         (label "Dashboard modules", the three module ids), the Data
  *         branch (DataTable ledger with the five crew rows + the
- *         composed PartyBadge, the three Callout moods, five Avatars,
+ *         composed SigBadge, the three Callout moods, five Avatars,
  *         two party rings), the Forms branch (Select with three
  *         options, Checkbox, the v2.1.0 matrix).
  *   (dd6) CORTEX SWEEP — tools/mcp-viz/server.ts DEFAULT_SELECTORS
@@ -483,7 +483,7 @@
  *   (acc1) THE ACCENT CONTRACT — css/surface.css carries the
  *         [data-accent] + --sig-accent rules (eyebrow color, 2px
  *         title underline, chromatic glow), react/surface.tsx exports
- *         the PartyColorToken alias (the 11 --sig-* tokens) and the
+ *         the SigColorToken alias (the 11 --sig-* tokens) and the
  *         AccentToken union (party + the two structural signatures);
  *         <SurfaceCard> renders data-accent/data-elevation + the
  *         inline --sig-accent variable.
@@ -497,7 +497,7 @@
  *         through the shared ladder) — both files' shadow policies
  *         asserted explicitly.
  *   (pt11) THE 11-TOKEN SWEEP — the ThemeProvider whitelist covers
- *         EXACTLY the 11 --sig-* names, and the PartyColorToken
+ *         EXACTLY the 11 --sig-* names, and the SigColorToken
  *         alias exists in the compiled react/surface.d.ts (the union
  *         resolves through Extract<KnownToken, `--sig-${string}`> —
  *         the whitelist IS the union).
@@ -879,7 +879,7 @@ const APP_REQUIREMENTS = [
   ['title="1v1 Game Matchup & Editorial"', "the matchup card's ruled title (2.5.0)"],
   ['title="The Party Palette"', "the palette card's ruled title"],
   ['title="The Input Matrix"', "the forms-module matrix card's ruled title"],
-  ["PartyBadge", "the palette + ledger render party badges"],
+  ["SigBadge", "the palette + ledger render party badges"],
   ["StatRing", "the telemetry card renders the live ring"],
   ["onEventSelect={modal.open}", "timeline nodes open the modal"],
   ["SEED_GUESTS", "the live ledger's typed seed (2.5.0 live state)"],
@@ -1272,7 +1272,7 @@ if (oldTimeline !== null) {
 const B7_LOCKED_310 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/"];
 // The v3.1.0 authorized delta set: exactly the files the PURGE touches
 // (class prefix .ptp-→.sig-, tokens --sig-→--sig-, identifiers
-// PtpEvent/PartyBadge/PartyColorToken/PartyTokenName, standalone copy,
+// TimelineEvent/SigBadge/SigColorToken/SigTokenName, standalone copy,
 // storage keys, the purity gate itself).
 const AUTHORIZED_310 = new Set([
   "css/tokens.css",
@@ -1365,7 +1365,7 @@ try {
 for (const file of b7Changed) {
   if (!AUTHORIZED_310.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.0.0 — outside the owner-authorized 3.1.0 purge set (the domain decoupling: .ptp-→.sig- classes, --sig-→--sig- tokens, PtpEvent/PartyBadge renames, standalone copy, storage keys, the purity gate)`,
+      `(b7) SAFETY: ${file} changed since v3.0.0 — outside the owner-authorized 3.1.0 purge set (the domain decoupling: the class prefix, the token names, the identifier renames, the standalone copy, the storage keys, the purity gate)`,
     );
   }
 }
@@ -2122,7 +2122,7 @@ const TABS_REQUIREMENTS = [
   ['guest: "Priya Nair"', "ledger row 3"],
   ['guest: "Tom Weller"', "ledger row 4"],
   ['guest: "Ana + 1"', "ledger row 5"],
-  ['colorToken="--sig-green" label="Confirmed"', "the composed PartyBadge status cell"],
+  ['colorToken="--sig-green" label="Confirmed"', "the composed SigBadge status cell"],
   ['<Callout status="info">', "the info callout"],
   ['<Callout status="success">', "the success callout"],
   ['<Callout status="warning">', "the warning callout"],
@@ -3272,7 +3272,7 @@ if (!appSrc.includes("rows={derived.ledgerRows}")) {
 // ---- (acc1) THE ACCENT CONTRACT (2.6.0) --------------------------------------------
 // The chromatic mechanism: [data-accent] + the inline --sig-accent variable,
 // painted entirely in css (eyebrow color, 2px title underline, glow). The
-// types: PartyColorToken (the 11 --sig-* tokens) + AccentToken (party +
+// types: SigColorToken (the 11 --sig-* tokens) + AccentToken (party +
 // the two structural signatures) exported from the surface module; the
 // compiled .d.ts is the consumer-facing contract.
 const surfaceSrc26 = readFileSync(resolve(root, "react/surface.tsx"), "utf8");
@@ -3289,9 +3289,9 @@ for (const [needle, label] of [
   }
 }
 for (const [needle, label] of [
-  ["export type PartyColorToken = PartyTokenName", "the 11-token content accent alias"],
+  ["export type SigColorToken = SigTokenName", "the 11-token content accent alias"],
   ['export type StructuralAccentToken = "--color-cake-primary" | "--color-cake-secondary"', "the two structural accents"],
-  ["export type AccentToken = PartyColorToken | StructuralAccentToken", "the full accent union"],
+  ["export type AccentToken = SigColorToken | StructuralAccentToken", "the full accent union"],
   ['accentToken?: AccentToken', "the SurfaceCard chromatic prop"],
   ['elevation?: SurfaceElevation', "the SurfaceCard elevation prop"],
   ['elevation = "raised"', "the raised default"],
@@ -3302,7 +3302,7 @@ for (const [needle, label] of [
     failures.push(`react/surface.tsx must contain ${JSON.stringify(needle)} — (acc1) ${label}`);
   }
 }
-for (const typeName of ["PartyColorToken", "StructuralAccentToken", "AccentToken", "SurfaceElevation"]) {
+for (const typeName of ["SigColorToken", "StructuralAccentToken", "AccentToken", "SurfaceElevation"]) {
   if (!new RegExp(`\\b${typeName}\\b`).test(surfaceDts26)) {
     failures.push(`react/surface.d.ts must export ${typeName} — (acc1) the compiled contract`);
   }
@@ -3310,8 +3310,8 @@ for (const typeName of ["PartyColorToken", "StructuralAccentToken", "AccentToken
     failures.push(`react/index.d.ts must re-export ${typeName} — (acc1)`);
   }
 }
-if (!/PartyColorToken/.test(cardsDtsPath ? readFileSync(cardsDtsPath, "utf8") : "")) {
-  failures.push("(acc1) react/cards.d.ts must consume PartyColorToken — the archetypes are accent-typed");
+if (!/SigColorToken/.test(cardsDtsPath ? readFileSync(cardsDtsPath, "utf8") : "")) {
+  failures.push("(acc1) react/cards.d.ts must consume SigColorToken — the archetypes are accent-typed");
 }
 
 // ---- (elev) THE ELEVATION LADDER (2.6.0) -------------------------------------------
@@ -3356,7 +3356,7 @@ if (cardsShadows26 !== null) {
 }
 
 // ---- (pt11) THE 11-TOKEN SWEEP (2.6.0) ----------------------------------------------
-// PartyColorToken's union resolves through Extract<KnownToken,
+// SigColorToken's union resolves through Extract<KnownToken,
 // `--sig-${string}`> — the ThemeProvider whitelist IS the union, so the
 // sweep pins the whitelist to EXACTLY the 11 names and checks the alias
 // exists in the compiled surface.d.ts. (verify-playground has no running
@@ -3403,7 +3403,7 @@ if (tokenKeysMatch26 === null) {
   const partyNames = whitelist26.filter((name) => name.startsWith("--sig-"));
   if (partyNames.length !== 26) {
     failures.push(
-      `(pt11) the whitelist carries ${partyNames.length} --sig-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the PartyColorToken union is the whitelist`,
+      `(pt11) the whitelist carries ${partyNames.length} --sig-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the SigColorToken union is the whitelist`,
     );
   }
   for (const name of EXPECTED_PARTY_26) {
@@ -3420,9 +3420,9 @@ if (tokenKeysMatch26 === null) {
     );
   }
 }
-if (!/export type PartyColorToken = PartyTokenName/.test(surfaceDts26)) {
+if (!/export type SigColorToken = SigTokenName/.test(surfaceDts26)) {
   failures.push(
-    "(pt11) react/surface.d.ts must carry `export type PartyColorToken = PartyTokenName` — the alias resolves through Extract<KnownToken, `--sig-${string}`>",
+    "(pt11) react/surface.d.ts must carry `export type SigColorToken = SigTokenName` — the alias resolves through Extract<KnownToken, `--sig-${string}`>",
   );
 }
 
@@ -3447,7 +3447,7 @@ if (!contentFooterRule.test(cardsCss26)) {
 for (const [needle, label] of [
   ["export interface ContentCardProps", "the props contract"],
   ["image?: string", "the optional cover image URL"],
-  ["categoryToken?: PartyColorToken", "the party-typed category badge"],
+  ["categoryToken?: SigColorToken", "the party-typed category badge"],
   ["meta?: string[]", "the mono meta pills"],
   ['className="sig-content-card__visual"', "the 16/9 visual element"],
   ['className="sig-content-card__pill"', "the meta pill render"],
@@ -3527,8 +3527,8 @@ if (!tierPriceRule.test(cardsCss26)) {
 
 // ---- (cc4) PROFILECARD (2.6.0) -------------------------------------------------------------
 for (const [needle, label] of [
-  ["<Avatar name={name} size={avatarSize} ringToken={accentToken} />", "the avatar wears the party ring (typed PartyColorToken)"],
-  ["accentToken?: PartyColorToken", "the profile accent is party-only (the avatar-ring rule)"],
+  ["<Avatar name={name} size={avatarSize} ringToken={accentToken} />", "the avatar wears the party ring (typed SigColorToken)"],
+  ["accentToken?: SigColorToken", "the profile accent is party-only (the avatar-ring rule)"],
   ["avatarSize?: 32 | 40", "the grid-perfect diameters"],
   ["stats.length < 2 || stats.length > 3", "the 2–3 stats band (dev-warned outside)"],
   ["font-variant-numeric: tabular-nums", "css-side: the stat digits"],
@@ -3787,7 +3787,7 @@ if (!existsSync(graphSrcPath)) {
     ["export function layoutGraph(", "the exported PURE layout helper (gate-testable determinism)"],
     ["export function cubicBezierEdge(", "the exported PURE edge helper (control points 60% along the radial)"],
     ["export interface GraphNode", "the node contract"],
-    ["categoryToken: PartyColorToken", "party-typed node category (Rule of Engagement)"],
+    ["categoryToken: SigColorToken", "party-typed node category (Rule of Engagement)"],
     ["parentId?: string", "parentId undefined = root"],
     ['role="application"', "the svg's application role"],
     ["sig-graph sig-graph--focused", "the focused class driven by selection state"],
@@ -3998,7 +3998,7 @@ if (!existsSync(tmSrcPath)) {
 } else {
   const tmSrc = readFileSync(tmSrcPath, "utf8");
   const TM_REQUIREMENTS = [
-    ["export interface TimelineItem extends PtpEvent", "the EXTENSION contract (EventTimeline untouched)"],
+    ["export interface TimelineItem extends TimelineEvent", "the EXTENSION contract (EventTimeline untouched)"],
     ["settled?: boolean", "the settle state"],
     ["export interface TimelineManagerProps", "the props contract"],
     ["items: TimelineItem[]", "CONTROLLED — the items come in"],
@@ -4024,7 +4024,7 @@ if (!existsSync(tmSrcPath)) {
     ['name="Check"', "the toggle's icon (live-map-probed key)"],
     ['className="sig-tmanager__body"', "the row body button"],
     ["onInspect?.(item)", "the inspect fires with the item"],
-    ["PartyBadge", "the category chip (the official primitive)"],
+    ["SigBadge", "the category chip (the official primitive)"],
     ['className="sig-tmanager__done"', "the settled chip"],
     ["Settled", "the settled chip text"],
     ['className="sig-tmanager__delete"', "the delete button"],

@@ -18,7 +18,7 @@
  *
  * 2.6.0 — the UNIVERSAL DEVELOPER CARD SUITE, five archetypes that make
  * "a card about anything" a one-line import (token-driven, flat DOM,
- * `PartyColorToken`/`AccentToken` typed):
+ * `SigColorToken`/`AccentToken` typed):
  *
  *   <ContentCard>       — image/gradient header + category badge +
  *                         meta pills + accent-underlined title + action.
@@ -42,8 +42,8 @@
  * element carries content or a justified composition job.
  */
 import type { ReactNode } from "react";
-import { type IconName, type PartyTokenName } from "./primitives.js";
-import type { AccentToken, PartyColorToken } from "./surface.js";
+import { type IconName, type SigTokenName } from "./primitives.js";
+import type { AccentToken, SigColorToken } from "./surface.js";
 /**
  * Props for `<ActionTile>` — the action-row card. `onClick` optional:
  * a tile without a handler is a static affordance (still a button —
@@ -87,7 +87,7 @@ export declare function ActionTile({ title, subtitle, icon, kbdShortcut, onClick
  * mode can be added later without breaking this surface.
  */
 export interface FlipCardProps {
-    /** The face content (any nodes — text, prose, a PartyBadge). */
+    /** The face content (any nodes — text, prose, a SigBadge). */
     front: ReactNode;
     /** The hidden face revealed by the flip. */
     back: ReactNode;
@@ -151,7 +151,7 @@ export interface MatchupSide {
     /** The competitor's name — also the Avatar's accessible name. */
     name: string;
     /** A `--sig-*` content token for the 2px avatar ring (typed). */
-    ringToken?: PartyTokenName;
+    ringToken?: SigTokenName;
 }
 /**
  * Props for `<MatchupCard>` — the 1v1 card. `title` is the optional
@@ -209,10 +209,10 @@ export interface ContentCardProps {
     description?: string;
     /** An image URL for the 16/9 visual header (rendered cover). */
     image?: string;
-    /** The category badge label (rendered as a <PartyBadge>). */
+    /** The category badge label (rendered as a <SigBadge>). */
     category?: string;
     /** The `--sig-*` token for the category badge (required with it). */
-    categoryToken?: PartyColorToken;
+    categoryToken?: SigColorToken;
     /** Mono meta pills, e.g. ["25 MIN", "SPICY", "$14"]. */
     meta?: string[];
     /** The chromatic accent: title underline + gradient-art tint. */
@@ -228,7 +228,7 @@ export interface ContentCardProps {
  * ONE `<section class="sig-content-card" [data-accent]>`: the 16/9
  * visual header (`__visual` — the image URL or the accent-tinted
  * gradient art; css owns `aspect-ratio: 16 / 9`), the meta row
- * (`__meta` — the category PartyBadge + the mono `__pill` chips), the
+ * (`__meta` — the category SigBadge + the mono `__pill` chips), the
  * accent-underlined title, the muted description, and the action
  * footer (`margin-top: auto` parks it at the card's floor). The
  * Button is the PACKAGE's — the archetype composes, never re-invents.
@@ -342,10 +342,10 @@ export interface ProfileStat {
     /** The value (tabular-nums, weight 600 — e.g. "412" or "4.9"). */
     value: string;
 }
-/** One skill badge in a `<ProfileCard>` (a PartyBadge). */
+/** One skill badge in a `<ProfileCard>` (a SigBadge). */
 export interface ProfileSkill {
     /** The `--sig-*` token for the badge. */
-    colorToken: PartyColorToken;
+    colorToken: SigColorToken;
     /** The badge label (e.g. "Catering"). */
     label: string;
 }
@@ -361,10 +361,10 @@ export interface ProfileCardProps {
     role: string;
     /** Two to three {label, value} stats (tabular values, muted labels). */
     stats?: ProfileStat[];
-    /** Skill badges (PartyBadges) on the last row. */
+    /** Skill badges (SigBadges) on the last row. */
     skills?: ProfileSkill[];
     /** The `--sig-*` token for the avatar ring (content-only rule). */
-    accentToken?: PartyColorToken;
+    accentToken?: SigColorToken;
     /** Avatar diameter (32 | 40, default 40 — the grid-perfect pair). */
     avatarSize?: 32 | 40;
     /** Passthrough classes for grid placement. */
@@ -377,7 +377,7 @@ export interface ProfileCardProps {
  * ring via `accentToken` — the Rule of Engagement as typed), the name
  * (weight 600) over the muted role, the stats row (value tabular-nums
  * weight 600 text-main, label muted 0.6875rem; min 2 / max 3 entries,
- * dev-warned outside), and the skills row (PartyBadges).
+ * dev-warned outside), and the skills row (SigBadges).
  *
  * @example
  * ```tsx
@@ -400,7 +400,7 @@ export interface ChronicleRelease {
     /** The mono stat footnote (e.g. "5 archetypes · 3 tiers"). */
     stat?: string;
     /** The `--sig-*` accent for this milestone's node + tag. */
-    accentToken?: PartyColorToken;
+    accentToken?: SigColorToken;
 }
 /**
  * Props for `<ChronicleTimeline>` — the release chronicle.

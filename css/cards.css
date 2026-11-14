@@ -38,7 +38,7 @@
       stays ZERO box-shadow; the (cd1)/(elev) gates pin it).
     - .sig-profile-card (+ __id / __name / __role / __stats / __stat /
       __stat-value / __stat-label / __skills) — avatar + role + tabular
-      stats + PartyBadge skills.
+      stats + SigBadge skills.
     - .sig-chronicle (+ __item / __node / __tag / __body / __story /
       __stat) — the release chronicle: a 2px hairline spine (::before),
       12px accent-ringed nodes parked over it, mono accent tags. The

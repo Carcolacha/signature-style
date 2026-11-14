@@ -54,7 +54,7 @@
  *       declaration — i.e. hardening survives every edit.
  *   (r1) REACT PRIMITIVES (0.5.0) + EVENT TIMELINE (0.6.0) + EVENT MODAL
  *       (0.7.0): react/index.js exists and the umbrella re-exports Icon,
- *       EmptyState, PartyBadge, EventTimeline, EventModal and useModal
+ *       EmptyState, SigBadge, EventTimeline, EventModal and useModal
  *       (checked in index.d.ts);
  *   (r2) lucide-react is declared in package.json peerDependenciesMeta as
  *       optional — CSS-only consumers never need it;
@@ -667,7 +667,7 @@ const indexDts = readFileSync(resolve(root, "react/index.d.ts"), "utf8");
 for (const primitive of [
   "Icon",
   "EmptyState",
-  "PartyBadge",
+  "SigBadge",
   "EventTimeline",
   "EventModal",
   "useModal",
@@ -865,9 +865,9 @@ if (!/<button[^>]*className=\{`sig-timeline__node/.test(timelineSrc)) {
     "react/timeline.tsx must render timeline nodes as <button className={`sig-timeline__node…`}> (0.7.0 interactive nodes; was span)",
   );
 }
-if (!/onEventSelect\?\s*:\s*\(event:\s*PtpEvent\)\s*=>\s*void/.test(timelineSrc)) {
+if (!/onEventSelect\?\s*:\s*\(event:\s*TimelineEvent\)\s*=>\s*void/.test(timelineSrc)) {
   failures.push(
-    "EventTimelineProps must declare the optional onEventSelect?: (event: PtpEvent) => void callback",
+    "EventTimelineProps must declare the optional onEventSelect?: (event: TimelineEvent) => void callback",
   );
 }
 if (!/=>\s*onEventSelect\(event\)/.test(timelineSrc)) {

@@ -102,7 +102,7 @@
  * package's <Tabs> (attribute-driven: aria-selected, ZERO .is-active
  * classes — the nav contract) switching three modules: "core" (the
  * live bento), "data" (the Guest & Budget Ledger —
- * <DataTable> with a composed <PartyBadge> status cell, the three
+ * <DataTable> with a composed <SigBadge> status cell, the three
  * persistent <Callout> moods, five <Avatar> discs, two wearing party
  * rings), and "forms" (the Input Matrix — Input/TextArea/Select/
  * Checkbox/ToggleSwitch stacked in the v2.1.0 spacing pattern). The
@@ -161,12 +161,12 @@
  * TIMELINE HYDRATION (1.5.1, still load-bearing): the dashboard mirrors
  * the owner's real integration — source data lives in HIS shape
  * (`mockEvents`: id, month, title, time, colorToken, iconName) and is
- * mapped to the package contract (`PtpEvent`: date, category, icon) in
+ * mapped to the package contract (`TimelineEvent`: date, category, icon) in
  * ONE explicit layer at the render boundary. ROOT CAUSE (SSR-probe
  * verified against the package): owner-shaped records passed straight
- * as PtpEvent[] render an empty timeline (undefined `date` buckets
+ * as TimelineEvent[] render an empty timeline (undefined `date` buckets
  * everything under one key with a textless header; undefined
- * `category` throws in PartyBadge's token guard and unmounts the
+ * `category` throws in SigBadge's token guard and unmounts the
  * timeline). The mapping layer below is why the nodes are alive.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -191,7 +191,7 @@ import {
   useModal,
   ProgressBar,
   StatRing,
-  PartyBadge,
+  SigBadge,
   SurfaceCard,
   PageHero,
   Tabs,
@@ -223,9 +223,9 @@ import {
   SkeletonCard,
   SkeletonTableRow,
   type NavItem,
-  type PtpEvent,
+  type TimelineEvent,
   type DataTableColumn,
-  type PartyTokenName,
+  type SigTokenName,
   type AccentToken,
   type ChronicleRelease,
   type GraphNode,
@@ -467,7 +467,7 @@ function ShortcutsDialog({ onClose }: { onClose: () => void }) {
 /**
  * The OWNER's source-data contract — the shape his records actually
  * arrive in (month/colorToken/iconName), kept byte-honest: mockEvents is
- * NOT a PtpEvent array. Every entry carries all six required fields;
+ * NOT a TimelineEvent array. Every entry carries all six required fields;
  * optional `description` feeds the <EventModal> About row. Icon names are
  * strict lucide keys (gate-verified against the live icons map — a typo
  * fails `verify:playground` (h3), not a blank node at runtime).
@@ -477,8 +477,8 @@ interface MockEvent {
   month: string;
   title: string;
   time: string;
-  colorToken: PtpEvent["category"];
-  iconName: NonNullable<PtpEvent["icon"]>;
+  colorToken: TimelineEvent["category"];
+  iconName: NonNullable<TimelineEvent["icon"]>;
   description?: string;
 }
 
@@ -548,7 +548,7 @@ export const mockEvents: MockEvent[] = [
  * Short category words for the badge, derived from the owner's
  * colorToken so his records stay untouched by presentation concerns.
  */
-const CATEGORY_LABELS: Record<PtpEvent["category"], string> = {
+const CATEGORY_LABELS: Record<TimelineEvent["category"], string> = {
   "--sig-pink-bright": "Invites",
   "--sig-pink-soft": "Guests",
   "--sig-pink-alt": "Decor",
@@ -569,7 +569,7 @@ const CATEGORY_LABELS: Record<PtpEvent["category"], string> = {
  * `date`/`category`/`icon` came through undefined and the timeline
  * rendered empty headers with no events.
  */
-export const events: PtpEvent[] = mockEvents.map((e) => ({
+export const events: TimelineEvent[] = mockEvents.map((e) => ({
   id: e.id,
   date: e.month,
   time: e.time,
@@ -782,7 +782,7 @@ function SimSlot({
  * wells, never body-text ink). The 3.0.0 newcomers carry isNew.
  */
 const PALETTE: ReadonlyArray<{
-  token: PtpEvent["category"];
+  token: TimelineEvent["category"];
   label: string;
   role: "ink" | "fill";
   isNew?: boolean;
@@ -1207,7 +1207,7 @@ function BentoCore({
   registerSimRunner: (runner: (() => void) | null) => void;
 }) {
   const toast = useToast();
-  const modal = useModal<PtpEvent>();
+  const modal = useModal<TimelineEvent>();
   const [bannerVisible, setBannerVisible] = useState(true);
 
   // DERIVED — the single useMemo every live read consumes. Causal by
@@ -1222,7 +1222,7 @@ function BentoCore({
       guest: guest.name,
       rsvp:
         guest.rsvp === "confirmed" ? (
-          <PartyBadge colorToken="--sig-green" label="Confirmed" />
+          <SigBadge colorToken="--sig-green" label="Confirmed" />
         ) : (
           RSVP_LABELS[guest.rsvp]
         ),
@@ -1499,7 +1499,7 @@ function BentoCore({
                   .catch(() => toast("error", "Clipboard unavailable"));
               }}
             >
-              <PartyBadge colorToken={token} label={label} />
+              <SigBadge colorToken={token} label={label} />
               <span className="hub__palette-swatch-meta">
                 <span className="hub__palette-role">{role}</span>
                 {isNew === true && <span className="hub__palette-new">new 3.0</span>}
@@ -1807,7 +1807,7 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
   {
     tag: "v0.5.0",
     title: "Pruning Protocol + React Primitives",
-    story: "Icon, EmptyState, PartyBadge — flat DOM, typed tokens, zero wrappers.",
+    story: "Icon, EmptyState, SigBadge — flat DOM, typed tokens, zero wrappers.",
     stat: "3 primitives",
     accentToken: "--sig-green",
   },
@@ -2241,7 +2241,7 @@ const SURFACE_SNIPPET = `<SurfaceCard
 
 /**
  * THE LEDGER — the data module's table contract (2.3.0). Status cells
- * are ReactNode: one row composes a <PartyBadge> to show a badge living
+ * are ReactNode: one row composes a <SigBadge> to show a badge living
  * inside the table, the rest stay plain text (keep td text simple —
  * composition is demonstrated once, not everywhere).
  */
@@ -2256,7 +2256,7 @@ const LEDGER_COLUMNS: DataTableColumn[] = [
 const LEDGER_ROWS: Array<Record<string, ReactNode>> = [
   {
     guest: "Ana Souza",
-    status: <PartyBadge colorToken="--sig-green" label="Confirmed" />,
+    status: <SigBadge colorToken="--sig-green" label="Confirmed" />,
     share: "$120",
   },
   { guest: "Leo Martins", status: "Pending", share: "$0" },
@@ -2269,7 +2269,7 @@ const LEDGER_ROWS: Array<Record<string, ReactNode>> = [
 const AVATAR_CREW: Array<{
   name: string;
   size?: 32 | 40;
-  ringToken?: PartyTokenName;
+  ringToken?: SigTokenName;
 }> = [
   { name: "Ana Souza", ringToken: "--sig-mauve-soft" },
   { name: "Leo Martins" },
@@ -2281,7 +2281,7 @@ const AVATAR_CREW: Array<{
 /**
  * THE DATA & TABLES MODULE (2.3.0, grown 2.4.0) — the package's
  * <DataTable>, <Callout> and <Avatar> dogfooded in one card: the ledger
- * (with the composed PartyBadge), the three persistent callout moods,
+ * (with the composed SigBadge), the three persistent callout moods,
  * and the crew discs. 2.4.0 grows the view around the card: the
  * release <AnnouncementBanner> at the top, the <StatCard> KPI trio,
  * and the Field Notes editorial card (<ProseBlock> + a <Carousel> of
@@ -2405,7 +2405,7 @@ function DataModule() {
           <Carousel label="Palette clippings">
             {PALETTE.slice(0, 5).map(({ token, label }) => (
               <CarouselItem key={token} className="hub__clipping">
-                <PartyBadge colorToken={token} label={label} />
+                <SigBadge colorToken={token} label={label} />
               </CarouselItem>
             ))}
           </Carousel>

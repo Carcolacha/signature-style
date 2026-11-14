@@ -44,7 +44,7 @@ export interface User {
 
 /**
  * One planned event (a party). Traces to:
- *   - `mockEvents` / `PtpEvent` (playground/App.tsx: id, month, title,
+ *   - `mockEvents` / `TimelineEvent` (playground/App.tsx: id, month, title,
  *     time, colorToken, iconName, description?) — the owner's real
  *     source-data contract;
  *   - `SEED_TIMELINE` month buckets (playground/App.tsx) — the
@@ -65,7 +65,7 @@ export interface Event {
   time?: string;
   /**
    * The event's theme token — a `--sig-*` content token (Rule of
-   * Engagement). Traces to `MockEvent.colorToken` → `PtpEvent.category`
+   * Engagement). Traces to `MockEvent.colorToken` → `TimelineEvent.category`
    * (playground/App.tsx CATEGORY_LABELS).
    */
   colorToken: string;
@@ -117,7 +117,7 @@ export interface LedgerEntry {
 }
 
 /**
- * One planner milestone. Traces to `TimelineItem extends PtpEvent`
+ * One planner milestone. Traces to `TimelineItem extends TimelineEvent`
  * (react/timeline-manager.d.ts: date, title, category, categoryLabel?,
  * settled?) — the Milestone Manager's controlled array
  * (sig.v27.timeline, playground/App.tsx SEED_TIMELINE).
@@ -129,7 +129,7 @@ export interface Milestone {
   title: string;
   /** The group bucket month ("November 2026"). */
   month: string;
-  /** A `--sig-*` token — the PartyBadge chip color. Traces to `category`. */
+  /** A `--sig-*` token — the SigBadge chip color. Traces to `category`. */
   categoryToken: string;
   /** The badge's short word ("Venue", "Catering"). Traces to `categoryLabel`. */
   categoryLabel?: string;

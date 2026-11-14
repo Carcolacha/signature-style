@@ -8,7 +8,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * content blocks (`div`). No row wrappers, and the vertical line is a
  * `::before` pseudo-element on the container, never a div (Pruning
  * Protocol). Structure (nodes, line) stays Flamingo/Teal; content
- * categories wear Party Palette tokens via <PartyBadge> (Rule of
+ * categories wear Party Palette tokens via <SigBadge> (Rule of
  * Engagement).
  *
  * 0.7.0: nodes are `<button>` elements (interactive — an optional
@@ -32,7 +32,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * `--z-sticky` header — the Pillar 3 z-index contract.
  */
 import { memo } from "react";
-import { EmptyState, Icon, PartyBadge, } from "./primitives.js";
+import { EmptyState, Icon, SigBadge, } from "./primitives.js";
 /** Bucket events by `dateKey ?? date`, preserving first-occurrence order. */
 function groupEvents(events) {
     const groups = new Map();
@@ -59,7 +59,7 @@ function renderNode(event, row, index, onEventSelect) {
 function renderItem(event, row, index) {
     const side = index % 2 === 0 ? "left" : "right";
     const groupFirst = index === 0 ? " sig-timeline__item--group-first" : "";
-    return (_jsxs("div", { className: `sig-timeline__item sig-timeline__item--${side}${groupFirst}`, style: { gridRow: row }, children: [_jsx(PartyBadge, { colorToken: event.category, label: event.categoryLabel }), _jsx("h3", { className: "sig-timeline__title", children: event.title }), event.time !== undefined && (_jsx("time", { className: "sig-timeline__time", children: event.time }))] }, `event-${event.id}`));
+    return (_jsxs("div", { className: `sig-timeline__item sig-timeline__item--${side}${groupFirst}`, style: { gridRow: row }, children: [_jsx(SigBadge, { colorToken: event.category, label: event.categoryLabel }), _jsx("h3", { className: "sig-timeline__title", children: event.title }), event.time !== undefined && (_jsx("time", { className: "sig-timeline__time", children: event.time }))] }, `event-${event.id}`));
 }
 /**
  * `<EventTimeline>` — a chronological, alternating party timeline.

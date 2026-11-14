@@ -7,7 +7,7 @@
  * content blocks (`div`). No row wrappers, and the vertical line is a
  * `::before` pseudo-element on the container, never a div (Pruning
  * Protocol). Structure (nodes, line) stays Flamingo/Teal; content
- * categories wear Party Palette tokens via <PartyBadge> (Rule of
+ * categories wear Party Palette tokens via <SigBadge> (Rule of
  * Engagement).
  *
  * 0.7.0: nodes are `<button>` elements (interactive — an optional
@@ -30,7 +30,7 @@
  * never covers it. Afterwards content scrolls BENEATH the opaque,
  * `--z-sticky` header — the Pillar 3 z-index contract.
  */
-import { type IconName, type PartyTokenName } from "./primitives.js";
+import { type IconName, type SigTokenName } from "./primitives.js";
 /**
  * One event on the timeline.
  *
@@ -40,7 +40,7 @@ import { type IconName, type PartyTokenName } from "./primitives.js";
  * string is not itself a stable grouping key (localized strings,
  * duplicate display names) — provide `dateKey` (e.g. "2026-10").
  */
-export interface PtpEvent {
+export interface TimelineEvent {
     /** Stable unique identifier. */
     id: string;
     /** Display string shown in the sticky date header (e.g. "October 2026"). */
@@ -52,7 +52,7 @@ export interface PtpEvent {
     /** Event title. */
     title: string;
     /** Content category — a `--sig-*` token (Rule of Engagement). */
-    category: PartyTokenName;
+    category: SigTokenName;
     /** Human label shown on the category badge. */
     categoryLabel: string;
     /** Node icon; defaults to "Circle". */
@@ -66,14 +66,14 @@ export interface EventTimelineProps {
      * exactly as given. An empty array renders the Pillar 4 EmptyState and
      * no timeline chrome at all.
      */
-    events: PtpEvent[];
+    events: TimelineEvent[];
     /**
      * Optional selection callback — fired with the clicked event. When
      * provided, every node becomes an interactive `<button>` (it always is
      * one, since 0.7.0); without it the buttons simply do nothing. Pass
      * `modal.open` from `useModal()` to compose <EventModal>.
      */
-    onEventSelect?: (event: PtpEvent) => void;
+    onEventSelect?: (event: TimelineEvent) => void;
 }
 /**
  * `<EventTimeline>` — a chronological, alternating party timeline.

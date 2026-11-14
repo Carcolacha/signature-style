@@ -18,15 +18,15 @@
  *
  * DOM shape (Pruning Protocol): backdrop (div) → card (div, the grid)
  * whose DIRECT children are the title (h2), the close button, the
- * PartyBadge (span), and flat label/value pairs (span + span/time/p).
+ * SigBadge (span), and flat label/value pairs (span + span/time/p).
  * Zero wrapper divs — rows are grid lines, not divs.
  *
  * Aesthetics: every color comes from tokens (Flamingo structure, Teal
  * hover accent — the Rule of Engagement untouched; content categories
- * wear <PartyBadge>). The single documented exception is the neutral
+ * wear <SigBadge>). The single documented exception is the neutral
  * rgba scrim in css/modal.css, which must dim regardless of theme.
  */
-import type { PtpEvent } from "./timeline.js";
+import type { TimelineEvent } from "./timeline.js";
 /** The state + stable callbacks returned by {@link useModal}. */
 export interface UseModalReturn<T> {
     /** True between `open(event)` and `close()`. */
@@ -48,7 +48,7 @@ export interface UseModalReturn<T> {
  *
  * @example
  * ```tsx
- * const modal = useModal<PtpEvent>();
+ * const modal = useModal<TimelineEvent>();
  * <EventTimeline events={events} onEventSelect={modal.open} />
  * {modal.selectedEvent !== null && (
  *   <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
@@ -58,7 +58,7 @@ export interface UseModalReturn<T> {
 export declare function useModal<T>(): UseModalReturn<T>;
 export interface EventModalProps {
     /** The event to render; typically `modal.selectedEvent`. */
-    event: PtpEvent;
+    event: TimelineEvent;
     /** Visibility flag; typically `modal.isOpen`. False renders nothing. */
     open: boolean;
     /** Called on Escape, backdrop click, and close-button click. */

@@ -6,7 +6,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *
  * Backward compatibility is a hard line: <EventTimeline>
  * (react/timeline.tsx) is UNTOUCHED — this module EXTENDS its contract
- * (`TimelineItem extends PtpEvent`) and adds the working half: a
+ * (`TimelineItem extends TimelineEvent`) and adds the working half: a
  * composer, filter pills, settle toggles, deletes and an inspect
  * callback. The styles APPEND to css/timeline.css under the
  * .sig-tmanager namespace — zero rules above were edited.
@@ -31,7 +31,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *
  * Settled styling: the body fades to 0.6 and the title strikes
  * through; the settle toggle fills --sig-green and a mono "Settled"
- * chip rides the body. NOT a PartyBadge — settled is a STATE, not a
+ * chip rides the body. NOT a SigBadge — settled is a STATE, not a
  * content category.
  *
  * @example
@@ -47,7 +47,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * ```
  */
 import { useState } from "react";
-import { Button, EmptyState, Icon, PartyBadge, } from "./primitives.js";
+import { Button, EmptyState, Icon, SigBadge, } from "./primitives.js";
 import { Input, Select } from "./forms.js";
 /** The composer's twelve month options. */
 const MONTH_OPTIONS = [
@@ -109,5 +109,5 @@ export function TimelineManager({ items, onAdd, onToggleSettled, onDelete, onIns
         });
         setDraftTitle("");
     };
-    return (_jsxs("section", { className: "sig-tmanager", "aria-label": label ?? "Milestone manager", children: [_jsxs("div", { className: "sig-tmanager__composer", children: [_jsx(Input, { placeholder: "Milestone title", "aria-label": "Milestone title", value: draftTitle, onChange: (event) => setDraftTitle(event.target.value) }), _jsx(Select, { label: "Month", value: draftMonth, onChange: (event) => setDraftMonth(event.target.value), children: MONTH_OPTIONS.map((month) => (_jsx("option", { value: month, children: month }, month))) }), _jsx(Select, { label: "Category", value: draftCategory, onChange: (event) => setDraftCategory(event.target.value), children: CATEGORY_OPTIONS.map((option) => (_jsx("option", { value: option.token, children: option.label }, option.token))) }), _jsx(Button, { variant: "primary", size: "sm", onClick: handleAdd, children: "Settle Item" })] }), _jsxs("div", { className: "sig-tmanager__filters", children: [FILTERS.map((entry) => (_jsx("button", { type: "button", className: "sig-tmanager__pill", "aria-pressed": filter === entry.id, onClick: () => setFilter(entry.id), children: entry.label }, entry.id))), _jsxs("span", { className: "sig-tmanager__count", children: [settledCount, " / ", items.length, " Settled"] })] }), visible.length === 0 ? (_jsx(EmptyState, { icon: "Funnel", title: "Nothing here", message: "No milestones match this filter." })) : (_jsx("ul", { className: "sig-tmanager__list", children: visible.map((item) => (_jsxs("li", { className: `sig-tmanager__row${item.settled === true ? " sig-tmanager__row--settled" : ""}`, children: [_jsx("button", { type: "button", className: "sig-tmanager__settle", "aria-pressed": item.settled === true, "aria-label": "Toggle settled", onClick: () => onToggleSettled(item.id), children: _jsx(Icon, { name: "Check", "aria-hidden": true }) }), _jsxs("button", { type: "button", className: "sig-tmanager__body", onClick: () => onInspect?.(item), children: [_jsx("span", { className: "sig-tmanager__meta", children: item.date }), _jsx("span", { className: "sig-tmanager__title", children: item.title }), _jsx(PartyBadge, { colorToken: item.category, label: item.categoryLabel }), item.settled === true && (_jsx("span", { className: "sig-tmanager__done", children: "Settled" }))] }), _jsx("button", { type: "button", className: "sig-tmanager__delete", "aria-label": `Delete ${item.title}`, onClick: () => onDelete(item.id), children: _jsx(Icon, { name: "Trash", "aria-hidden": true }) })] }, item.id))) }))] }));
+    return (_jsxs("section", { className: "sig-tmanager", "aria-label": label ?? "Milestone manager", children: [_jsxs("div", { className: "sig-tmanager__composer", children: [_jsx(Input, { placeholder: "Milestone title", "aria-label": "Milestone title", value: draftTitle, onChange: (event) => setDraftTitle(event.target.value) }), _jsx(Select, { label: "Month", value: draftMonth, onChange: (event) => setDraftMonth(event.target.value), children: MONTH_OPTIONS.map((month) => (_jsx("option", { value: month, children: month }, month))) }), _jsx(Select, { label: "Category", value: draftCategory, onChange: (event) => setDraftCategory(event.target.value), children: CATEGORY_OPTIONS.map((option) => (_jsx("option", { value: option.token, children: option.label }, option.token))) }), _jsx(Button, { variant: "primary", size: "sm", onClick: handleAdd, children: "Settle Item" })] }), _jsxs("div", { className: "sig-tmanager__filters", children: [FILTERS.map((entry) => (_jsx("button", { type: "button", className: "sig-tmanager__pill", "aria-pressed": filter === entry.id, onClick: () => setFilter(entry.id), children: entry.label }, entry.id))), _jsxs("span", { className: "sig-tmanager__count", children: [settledCount, " / ", items.length, " Settled"] })] }), visible.length === 0 ? (_jsx(EmptyState, { icon: "Funnel", title: "Nothing here", message: "No milestones match this filter." })) : (_jsx("ul", { className: "sig-tmanager__list", children: visible.map((item) => (_jsxs("li", { className: `sig-tmanager__row${item.settled === true ? " sig-tmanager__row--settled" : ""}`, children: [_jsx("button", { type: "button", className: "sig-tmanager__settle", "aria-pressed": item.settled === true, "aria-label": "Toggle settled", onClick: () => onToggleSettled(item.id), children: _jsx(Icon, { name: "Check", "aria-hidden": true }) }), _jsxs("button", { type: "button", className: "sig-tmanager__body", onClick: () => onInspect?.(item), children: [_jsx("span", { className: "sig-tmanager__meta", children: item.date }), _jsx("span", { className: "sig-tmanager__title", children: item.title }), _jsx(SigBadge, { colorToken: item.category, label: item.categoryLabel }), item.settled === true && (_jsx("span", { className: "sig-tmanager__done", children: "Settled" }))] }), _jsx("button", { type: "button", className: "sig-tmanager__delete", "aria-label": `Delete ${item.title}`, onClick: () => onDelete(item.id), children: _jsx(Icon, { name: "Trash", "aria-hidden": true }) })] }, item.id))) }))] }));
 }

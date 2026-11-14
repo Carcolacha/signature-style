@@ -5,7 +5,7 @@
  *
  * Backward compatibility is a hard line: <EventTimeline>
  * (react/timeline.tsx) is UNTOUCHED — this module EXTENDS its contract
- * (`TimelineItem extends PtpEvent`) and adds the working half: a
+ * (`TimelineItem extends TimelineEvent`) and adds the working half: a
  * composer, filter pills, settle toggles, deletes and an inspect
  * callback. The styles APPEND to css/timeline.css under the
  * .sig-tmanager namespace — zero rules above were edited.
@@ -30,7 +30,7 @@
  *
  * Settled styling: the body fades to 0.6 and the title strikes
  * through; the settle toggle fills --sig-green and a mono "Settled"
- * chip rides the body. NOT a PartyBadge — settled is a STATE, not a
+ * chip rides the body. NOT a SigBadge — settled is a STATE, not a
  * content category.
  *
  * @example
@@ -51,14 +51,14 @@ import {
   Button,
   EmptyState,
   Icon,
-  PartyBadge,
-  type PartyTokenName,
+  SigBadge,
+  type SigTokenName,
 } from "./primitives.js";
 import { Input, Select } from "./forms.js";
-import type { PtpEvent } from "./timeline.js";
+import type { TimelineEvent } from "./timeline.js";
 
-/** One managed milestone — a PtpEvent plus its settle state. */
-export interface TimelineItem extends PtpEvent {
+/** One managed milestone — a TimelineEvent plus its settle state. */
+export interface TimelineItem extends TimelineEvent {
   /** Settled milestones fade + strike through and flip the toggle green. */
   settled?: boolean;
 }
@@ -85,7 +85,7 @@ const MONTH_OPTIONS: readonly string[] = [
 ];
 
 /** The composer's category options — the party tokens with human labels. */
-const CATEGORY_OPTIONS: ReadonlyArray<{ token: PartyTokenName; label: string }> = [
+const CATEGORY_OPTIONS: ReadonlyArray<{ token: SigTokenName; label: string }> = [
   { token: "--sig-pink-bright", label: "Invites" },
   { token: "--sig-pink-soft", label: "Guests" },
   { token: "--sig-pink-alt", label: "Decor" },
@@ -129,7 +129,7 @@ export function TimelineManager({
 }: TimelineManagerProps) {
   const [draftTitle, setDraftTitle] = useState("");
   const [draftMonth, setDraftMonth] = useState<string>("January");
-  const [draftCategory, setDraftCategory] = useState<PartyTokenName>("--sig-sky");
+  const [draftCategory, setDraftCategory] = useState<SigTokenName>("--sig-sky");
   const [filter, setFilter] = useState<FilterId>("all");
 
   const settledCount = items.filter((item) => item.settled === true).length;
@@ -177,7 +177,7 @@ export function TimelineManager({
         <Select
           label="Category"
           value={draftCategory}
-          onChange={(event) => setDraftCategory(event.target.value as PartyTokenName)}
+          onChange={(event) => setDraftCategory(event.target.value as SigTokenName)}
         >
           {CATEGORY_OPTIONS.map((option) => (
             <option key={option.token} value={option.token}>{option.label}</option>
@@ -232,7 +232,7 @@ export function TimelineManager({
               >
                 <span className="sig-tmanager__meta">{item.date}</span>
                 <span className="sig-tmanager__title">{item.title}</span>
-                <PartyBadge colorToken={item.category} label={item.categoryLabel} />
+                <SigBadge colorToken={item.category} label={item.categoryLabel} />
                 {item.settled === true && (
                   <span className="sig-tmanager__done">Settled</span>
                 )}

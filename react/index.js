@@ -6,7 +6,7 @@
  * ```
  */
 export { default, ThemeProvider, } from "./ThemeProvider.js";
-export { Icon, EmptyState, PartyBadge, Button, } from "./primitives.js";
+export { Icon, EmptyState, SigBadge, Button, } from "./primitives.js";
 export { EventTimeline, } from "./timeline.js";
 export { TimelineManager, } from "./timeline-manager.js";
 export { EventModal, useModal, } from "./modal.js";

@@ -7,7 +7,7 @@
  * content blocks (`div`). No row wrappers, and the vertical line is a
  * `::before` pseudo-element on the container, never a div (Pruning
  * Protocol). Structure (nodes, line) stays Flamingo/Teal; content
- * categories wear Party Palette tokens via <PartyBadge> (Rule of
+ * categories wear Party Palette tokens via <SigBadge> (Rule of
  * Engagement).
  *
  * 0.7.0: nodes are `<button>` elements (interactive — an optional
@@ -36,9 +36,9 @@ import type { ReactNode } from "react";
 import {
   EmptyState,
   Icon,
-  PartyBadge,
+  SigBadge,
   type IconName,
-  type PartyTokenName,
+  type SigTokenName,
 } from "./primitives.js";
 
 /**
@@ -50,7 +50,7 @@ import {
  * string is not itself a stable grouping key (localized strings,
  * duplicate display names) — provide `dateKey` (e.g. "2026-10").
  */
-export interface PtpEvent {
+export interface TimelineEvent {
   /** Stable unique identifier. */
   id: string;
   /** Display string shown in the sticky date header (e.g. "October 2026"). */
@@ -62,7 +62,7 @@ export interface PtpEvent {
   /** Event title. */
   title: string;
   /** Content category — a `--sig-*` token (Rule of Engagement). */
-  category: PartyTokenName;
+  category: SigTokenName;
   /** Human label shown on the category badge. */
   categoryLabel: string;
   /** Node icon; defaults to "Circle". */
@@ -77,25 +77,25 @@ export interface EventTimelineProps {
    * exactly as given. An empty array renders the Pillar 4 EmptyState and
    * no timeline chrome at all.
    */
-  events: PtpEvent[];
+  events: TimelineEvent[];
   /**
    * Optional selection callback — fired with the clicked event. When
    * provided, every node becomes an interactive `<button>` (it always is
    * one, since 0.7.0); without it the buttons simply do nothing. Pass
    * `modal.open` from `useModal()` to compose <EventModal>.
    */
-  onEventSelect?: (event: PtpEvent) => void;
+  onEventSelect?: (event: TimelineEvent) => void;
 }
 
 /** A date bucket: the grouping key, its display date, and its events. */
 interface EventGroup {
   key: string;
   displayDate: string;
-  events: PtpEvent[];
+  events: TimelineEvent[];
 }
 
 /** Bucket events by `dateKey ?? date`, preserving first-occurrence order. */
-function groupEvents(events: readonly PtpEvent[]): EventGroup[] {
+function groupEvents(events: readonly TimelineEvent[]): EventGroup[] {
   const groups = new Map<string, EventGroup>();
   for (const event of events) {
     const key = event.dateKey ?? event.date;
@@ -124,10 +124,10 @@ function renderHeader(group: EventGroup, headerRow: number): ReactNode {
 }
 
 function renderNode(
-  event: PtpEvent,
+  event: TimelineEvent,
   row: number,
   index: number,
-  onEventSelect?: (event: PtpEvent) => void,
+  onEventSelect?: (event: TimelineEvent) => void,
 ): ReactNode {
   const groupFirst = index === 0 ? " sig-timeline__node--group-first" : "";
   return (
@@ -144,7 +144,7 @@ function renderNode(
   );
 }
 
-function renderItem(event: PtpEvent, row: number, index: number): ReactNode {
+function renderItem(event: TimelineEvent, row: number, index: number): ReactNode {
   const side = index % 2 === 0 ? "left" : "right";
   const groupFirst = index === 0 ? " sig-timeline__item--group-first" : "";
   return (
@@ -153,7 +153,7 @@ function renderItem(event: PtpEvent, row: number, index: number): ReactNode {
       className={`sig-timeline__item sig-timeline__item--${side}${groupFirst}`}
       style={{ gridRow: row }}
     >
-      <PartyBadge colorToken={event.category} label={event.categoryLabel} />
+      <SigBadge colorToken={event.category} label={event.categoryLabel} />
       <h3 className="sig-timeline__title">{event.title}</h3>
       {event.time !== undefined && (
         <time className="sig-timeline__time">{event.time}</time>

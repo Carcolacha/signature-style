@@ -21,7 +21,7 @@
  *
  * Coverage contract: every VALUE export (components, hooks, pure
  * helpers) of react/index.d.ts owns exactly one key. Type-only exports
- * (KnownToken, ThemeOverrides, PtpEvent, …) ride their component's
+ * (KnownToken, ThemeOverrides, TimelineEvent, …) ride their component's
  * entry. `set` places the entry in the 6-Set Taxonomy; the two
  * non-export layout notes (sig-shell) ride Set 01 as documentation.
  */
@@ -153,12 +153,12 @@ const [moduleId, setModuleId] = useState("core");
 <Avatar name="Ana Souza" />
 <Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />`,
   },
-  PartyBadge: {
+  SigBadge: {
     set: "02",
-    componentName: "PartyBadge",
-    jsx: `import { PartyBadge } from "@edwyn/signature-style/react";
+    componentName: "SigBadge",
+    jsx: `import { SigBadge } from "@edwyn/signature-style/react";
 
-<PartyBadge colorToken="--sig-peach" label="Birthday" />`,
+<SigBadge colorToken="--sig-peach" label="Birthday" />`,
     html: `<span
   style="background: color-mix(in srgb, var(--sig-peach) 18%, transparent);
          border: 1px solid color-mix(in srgb, var(--sig-peach) 45%, transparent);
@@ -518,16 +518,16 @@ const d = cubicBezierEdge(
     jsx: `import { useModal } from "@edwyn/signature-style/react";
 
 // The hook owns selection state; the component owns the overlay.
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 modal.open(event);   // select + open
 modal.close();       // close + clear`,
   },
   EventModal: {
     set: "05",
     componentName: "EventModal + useModal()",
-    jsx: `import { EventModal, useModal, type PtpEvent } from "@edwyn/signature-style/react";
+    jsx: `import { EventModal, useModal, type TimelineEvent } from "@edwyn/signature-style/react";
 
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 {modal.selectedEvent !== null && (
   <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
 )}`,
@@ -594,8 +594,8 @@ const modal = useModal<PtpEvent>();
     jsx: `import { Carousel } from "@edwyn/signature-style/react";
 
 <Carousel label="Palette clippings">
-  <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
-  <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
+  <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+  <CarouselItem><SigBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
 </Carousel>`,
   },
   CarouselItem: {

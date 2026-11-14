@@ -66,7 +66,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
-import { Icon, type PartyTokenName } from "./primitives.js";
+import { Icon, type SigTokenName } from "./primitives.js";
 
 /**
  * Props for `<Input>` — every native input attribute flows through,
@@ -324,7 +324,7 @@ export function Checkbox({ checked, onToggle, label }: CheckboxProps) {
  * Props for `<Avatar>` — initials are DERIVED, never stored.
  *
  * `size` is a `32 | 40` union (grid-perfect diameters only) and
- * `ringToken` accepts `--sig-*` tokens exclusively (PartyTokenName —
+ * `ringToken` accepts `--sig-*` tokens exclusively (SigTokenName —
  * avatar rings are CONTENT decoration, the Rule of Engagement).
  */
 export interface AvatarProps {
@@ -337,10 +337,10 @@ export interface AvatarProps {
    * a structural token slipped past the types (JS consumers) warns and
    * renders WITHOUT the ring — an avatar without its ring is still an
    * avatar, so this guard drops the decoration, not the component
-   * (the PartyBadge/ProgressBar guards render null because there is
+   * (the SigBadge/ProgressBar guards render null because there is
    * nothing left to show; here there is — the initials).
    */
-  ringToken?: PartyTokenName;
+  ringToken?: SigTokenName;
 }
 
 /**

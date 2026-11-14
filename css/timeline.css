@@ -379,7 +379,7 @@
 }
 
 /* The settled chip — mono party-green text (a state marker, NOT a
-   PartyBadge: settled is not a content category). */
+   SigBadge: settled is not a content category). */
 .sig-tmanager__done {
   color: var(--sig-green);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);

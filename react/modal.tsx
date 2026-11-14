@@ -18,19 +18,19 @@
  *
  * DOM shape (Pruning Protocol): backdrop (div) → card (div, the grid)
  * whose DIRECT children are the title (h2), the close button, the
- * PartyBadge (span), and flat label/value pairs (span + span/time/p).
+ * SigBadge (span), and flat label/value pairs (span + span/time/p).
  * Zero wrapper divs — rows are grid lines, not divs.
  *
  * Aesthetics: every color comes from tokens (Flamingo structure, Teal
  * hover accent — the Rule of Engagement untouched; content categories
- * wear <PartyBadge>). The single documented exception is the neutral
+ * wear <SigBadge>). The single documented exception is the neutral
  * rgba scrim in css/modal.css, which must dim regardless of theme.
  */
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Icon, PartyBadge } from "./primitives.js";
-import type { PtpEvent } from "./timeline.js";
+import { Icon, SigBadge } from "./primitives.js";
+import type { TimelineEvent } from "./timeline.js";
 
 /** The state + stable callbacks returned by {@link useModal}. */
 export interface UseModalReturn<T> {
@@ -54,7 +54,7 @@ export interface UseModalReturn<T> {
  *
  * @example
  * ```tsx
- * const modal = useModal<PtpEvent>();
+ * const modal = useModal<TimelineEvent>();
  * <EventTimeline events={events} onEventSelect={modal.open} />
  * {modal.selectedEvent !== null && (
  *   <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
@@ -76,7 +76,7 @@ export function useModal<T>(): UseModalReturn<T> {
 
 export interface EventModalProps {
   /** The event to render; typically `modal.selectedEvent`. */
-  event: PtpEvent;
+  event: TimelineEvent;
   /** Visibility flag; typically `modal.isOpen`. False renders nothing. */
   open: boolean;
   /** Called on Escape, backdrop click, and close-button click. */
@@ -98,7 +98,7 @@ function renderClose(onClose: () => void): ReactNode {
 }
 
 /** Flat label/value grid rows for the detail fields that exist. */
-function detailRows(event: PtpEvent): ReactNode[] {
+function detailRows(event: TimelineEvent): ReactNode[] {
   const rows: ReactNode[] = [
     <span key="date-label" className="sig-modal-label">Date</span>,
     <span key="date-value" className="sig-modal-value">{event.date}</span>,
@@ -119,7 +119,7 @@ function detailRows(event: PtpEvent): ReactNode[] {
 }
 
 /** Backdrop + card: one portal subtree, flat grid children, zero wrappers. */
-function renderOverlay(event: PtpEvent, onClose: () => void): ReactNode {
+function renderOverlay(event: TimelineEvent, onClose: () => void): ReactNode {
   return (
     <div className="sig-modal-backdrop" onClick={onClose}>
       <div
@@ -131,7 +131,7 @@ function renderOverlay(event: PtpEvent, onClose: () => void): ReactNode {
       >
         <h2 className="sig-modal-title">{event.title}</h2>
         {renderClose(onClose)}
-        <PartyBadge colorToken={event.category} label={event.categoryLabel} />
+        <SigBadge colorToken={event.category} label={event.categoryLabel} />
         {detailRows(event)}
       </div>
     </div>

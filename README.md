@@ -24,7 +24,7 @@ npm i @edwyn/signature-style
 |---|---|---|
 | `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest (AI tooling core) | never |
 | `@edwyn/signature-style/css` | `css/signature-style.css` — the compiled bundle: tokens, base, cascade (timeline + modal + nav included), overrides | never |
-| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal`, `GlobalNav`, `ProgressBar`, `StatRing` | `react` + `react-dom`; `lucide-react` optional |
+| `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `SigBadge`, `EventTimeline`, `EventModal`, `useModal`, `GlobalNav`, `ProgressBar`, `StatRing` | `react` + `react-dom`; `lucide-react` optional |
 
 ## CSS usage — one import
 
@@ -418,7 +418,7 @@ human explanation and one **`<PatternFrame>`** per component:
 | Set | Components | Count |
 |---|---|---|
 | 01 · Shell & Navigation | ThemeProvider, GlobalNav, Tabs, the sig-shell layout note | 4 |
-| 02 · Surface & Card Archetypes | SurfaceCard, PageHero, Icon, Avatar, PartyBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard | 13 |
+| 02 · Surface & Card Archetypes | SurfaceCard, PageHero, Icon, Avatar, SigBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard | 13 |
 | 03 · Ergonomic Forms & Inputs | FormField, Input, TextArea, Select, Checkbox, RadioCardGroup, ToggleSwitch, PasswordInput, Button | 9 |
 | 04 · Analytical Telemetry & Graphs | ProgressBar, StatRing, StatCard, Sparkline, BarChart, AreaChart, KnowledgeGraph, smoothPath, layoutGraph, cubicBezierEdge | 10 |
 | 05 · Chronology & Planners | EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline | 5 |
@@ -426,7 +426,7 @@ human explanation and one **`<PatternFrame>`** per component:
 
 **PatternFrame** (`playground/components/PatternFrame.tsx`) — one
 `<article data-sig-set data-sig-component>` per pattern: a header bar
-(component name weight 600 + the set PartyBadge + the Preview | JSX |
+(component name weight 600 + the set SigBadge + the Preview | JSX |
 HTML segmented mini-tabs, `aria-pressed`-driven + the **Copy Card**
 button) over a body that renders the LIVE interactive preview (check the
 checkbox, flip the card, add a graph node, type a password, open the
@@ -536,7 +536,7 @@ circles (r 4 → 6) and tabular readouts.
 
 **TimelineManager** (react/timeline-manager.tsx; styles appended to
 css/timeline.css) — the CONTROLLED working half of the EventTimeline
-contract: `TimelineItem extends PtpEvent { settled?: boolean }`. The
+contract: `TimelineItem extends TimelineEvent { settled?: boolean }`. The
 composer (package Input + month/category Selects + the primary sm
 "Settle Item" Button; empty titles warn and are ignored), the filter
 pills (All/Pending/Settled, attribute-driven `aria-pressed` answering
@@ -596,7 +596,7 @@ EventTimeline untouched; zero token changes).
 Zero new files — every delta grows an existing one, so `npm pack` still
 packs EXACTLY 47 files. `tokens.json` stays 1.4.0 (whitelist 34 — no new
 tokens; the 11 party tokens already exist and are now TYPED as
-`PartyColorToken`). The e1 shadow treaty is AMENDED: box-shadow is
+`SigColorToken`). The e1 shadow treaty is AMENDED: box-shadow is
 sanctioned in css/surface.css under `.sig-surface-card` rules, the three
 `[data-elevation="…"]` tier blocks, and the `[data-accent]` glow rules;
 css/cards.css stays absolute zero.
@@ -615,7 +615,7 @@ shadow (interactive+floating lifts −4px on hover; interactive alone
 stays −2px — the reconciliation is documented in css/surface.css).
 
 **The universal card suite** — five archetypes in react/cards.tsx:
-`ContentCard` (16/9 image-or-gradient header, category PartyBadge, mono
+`ContentCard` (16/9 image-or-gradient header, category SigBadge, mono
 meta pills, accent title, package-Button footer),
 `ReferenceCard` (uppercase tag chip, inset code well, ghost Copy button
 — `navigator.clipboard.writeText` in a silent-catch try, `onCopied`
@@ -623,10 +623,10 @@ fires after success for YOUR toast, the "Copied!" flash resets after
 2s), `TierCard` (eyebrow plan, 2rem tabular price, party-green Check
 bullets; featured → floating elevation + 2px accent border, no scale),
 `ProfileCard` (party-ringed avatar, role, 2–3 tabular stats — dev-warned
-outside the band — PartyBadge skills), and `ChronicleTimeline` (the
+outside the band — SigBadge skills), and `ChronicleTimeline` (the
 "Night of Versions" memorial as an official primitive: a flat `<ol>` of
 tagged releases down a 2px hairline spine, accent-ringed 12px nodes).
-All five are token-driven, flat-DOM, `PartyColorToken`/`AccentToken`
+All five are token-driven, flat-DOM, `SigColorToken`/`AccentToken`
 typed, and shadow-free (css/cards.css zero box-shadow).
 
 **Carousel polish** — the track's native scrollbar is gone
@@ -667,7 +667,7 @@ is untouched.
 
 **Signature changes** — ADDITIVE: `SurfaceCard.accentToken`,
 `SurfaceCard.elevation`, `ContentCard`/`ReferenceCard`/`TierCard`/
-`ProfileCard`/`ChronicleTimeline` (+ props types), `PartyColorToken`,
+`ProfileCard`/`ChronicleTimeline` (+ props types), `SigColorToken`,
 `StructuralAccentToken`, `AccentToken`, `SurfaceElevation`,
 `Carousel` dot indicators. BEHAVIORAL (backwards compatible): the
 raised elevation default re-tunes the base card shadow by one step
@@ -966,7 +966,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   (`color-mix(in srgb, var(--color-cake-primary) 8%, transparent)`),
   and `.sig-data-table__num` (right-aligned tabular-nums) on both
   the th and td of `numeric: true` columns. Cell values are
-  ReactNode — a `<PartyBadge>` composes straight into a status
+  ReactNode — a `<SigBadge>` composes straight into a status
   column. No sorting, no pagination: a static table IS the feature.
 - **`<Tabs>` — the module switcher, attribute-driven like the nav.**
   `<div role="tablist" aria-label class="sig-tabs">` of
@@ -998,10 +998,10 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   ink on bright cake, the on-cake doctrine. `<Avatar>` derives
   initials (word-initials, ≤2, uppercase; empty name → empty span)
   into ONE `<span class="sig-avatar">` (32|40 px, INLINE width/
-  height); `ringToken` is PartyTokenName-typed AND runtime-guarded —
+  height); `ringToken` is SigTokenName-typed AND runtime-guarded —
   a structural token warns and renders WITHOUT the ring (documented
   choice: an avatar without its ring is still an avatar, unlike
-  PartyBadge/ProgressBar where the token IS the content); the ring
+  SigBadge/ProgressBar where the token IS the content); the ring
   is an inline `border: 2px solid var(--sig-token)` — BORDER,
   never box-shadow (probe-proven: computed box-shadow "none").
 - **The playground grows module tabs.** The dashboard gains `<Tabs
@@ -1010,7 +1010,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   4-SurfaceCard board — the tab bar lives in .hub__module ABOVE the
   grid so the nth-child stagger is untouched), **data** (the Guest &
   Budget Ledger: DataTable with the five crew rows — Ana Souza
-  Confirmed $120 as the composed `<PartyBadge>`, Leo Martins Pending
+  Confirmed $120 as the composed `<SigBadge>`, Leo Martins Pending
   $0, Priya Nair Confirmed $200, Tom Weller Declined $0, Ana + 1
   Pending $120, tabular contribution column, provenance caption;
   the three callout moods; five Avatars, 32px ×3 / 40px ×2, mauve-
@@ -1024,7 +1024,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   GlobalNav + the as={NavLink}/activeHref note, Tabs, EventTimeline,
   useModal+EventModal, ProgressBar + limitText, StatRing, DataTable,
   Callout, Avatar, Input, TextArea, Select, Checkbox, ToggleSwitch,
-  ToastProvider+useToast, PartyBadge, Icon, EmptyState), each
+  ToastProvider+useToast, SigBadge, Icon, EmptyState), each
   one-line-preambled and FACTUAL against the shipped .d.ts (no
   invented props), ending on the three doctrines one-liner +
   "never invent tokens; never hardcode hex".
@@ -1624,12 +1624,12 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 - **Root cause of the "empty headers without events" report** — the
   owner's source records arrive in HIS shape (`id`, `month`, `title`,
   `time`, `colorToken`, `iconName`) and were passed to `<EventTimeline>`
-  without a mapping layer. Field-by-field against `PtpEvent`, two
+  without a mapping layer. Field-by-field against `TimelineEvent`, two
   required fields never arrive: with `date` `undefined`,
   `groupEvents` buckets every record under the single key `undefined`
   (`react/timeline.js`: `const key = event.dateKey ?? event.date`) and
   the sticky header prints no text — the **empty header**; with
-  `category` `undefined`, `PartyBadge`'s
+  `category` `undefined`, `SigBadge`'s
   `!colorToken.startsWith("--sig-")` guard
   (`react/primitives.js:25`) throws on the `undefined` dereference and
   React unmounts the timeline — **without events**. Both halves were
@@ -1639,7 +1639,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   mapping pattern, which the playground never demonstrated.
 - **The hydration fix** — `playground/App.tsx` now mirrors the real
   integration: `mockEvents` in the owner's shape (6 complete entries,
-  3 month buckets, 4 modal descriptions), mapped to `PtpEvent` in ONE
+  3 month buckets, 4 modal descriptions), mapped to `TimelineEvent` in ONE
   explicit layer at the render boundary (`month → date`,
   `colorToken → category`, `iconName → icon`, badge labels derived from
   a token-exhaustive `CATEGORY_LABELS` table). `Music` looked like a
@@ -1694,7 +1694,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   - **Telemetry** — `<ProgressBar>` (party-green / party-peach) and
     `<StatRing>` (party-sky) with consumer-rendered label rows — the
     Rule of Engagement (party tokens = content only) in practice.
-  - **Party Palette** — all ten `--sig-*` tokens as `<PartyBadge>`s
+  - **Party Palette** — all ten `--sig-*` tokens as `<SigBadge>`s
     ("Pink" through "Green"), wrapped at `var(--space-tight)`.
 - **The grid itself** — `.bento` (3 columns, `var(--space-section)`
   gaps, 75rem max) with placements for the tall timeline card; collapses
@@ -1837,10 +1837,10 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
     size. No center text, no third element — consumers place their
     numbers beside the ring. Needs NO CSS at all: pure SVG attributes.
   - **Rule of Engagement, enforced twice** — `colorToken` is typed
-    `PartyTokenName`, so a structural token like `--color-cake-primary`
+    `SigTokenName`, so a structural token like `--color-cake-primary`
     is a compile error; a runtime guard (`startsWith("--sig-")`)
     warns and renders null for anything JS slips past the types (same
-    warn-and-drop pattern as `<PartyBadge>`).
+    warn-and-drop pattern as `<SigBadge>`).
 - **The data-ink doctrine** — high data-to-ink ratio, zero decoration:
   no grid lines, no drop shadows, no 3D. Tracks are structural chrome
   (`var(--bg-surface)`); data fills are ALWAYS `--sig-*` content
@@ -1962,7 +1962,7 @@ Packaging, CI and docs only.
   ```tsx
   import { EventTimeline, EventModal, useModal } from "@edwyn/signature-style/react";
 
-  const modal = useModal(); // or useModal<PtpEvent>() for explicit typing
+  const modal = useModal(); // or useModal<TimelineEvent>() for explicit typing
 
   <EventTimeline events={events} onEventSelect={modal.open} />
   {modal.selectedEvent && (
@@ -1986,7 +1986,7 @@ Packaging, CI and docs only.
     `onEventSelect`). No context, no portals inside the hook — the hook
     owns state, the component owns the DOM.
   - **Flat grid card** — the card is ONE CSS Grid whose direct children
-    are the title (`h2`), the close button, the `<PartyBadge>` row, and
+    are the title (`h2`), the close button, the `<SigBadge>` row, and
     flat label/value rows (Date / Time / About) — zero wrapper divs, even
     the header row is pure grid placement. The close button is muted
     `--text-muted` by default and hovers to `--color-cake-secondary`
@@ -2000,11 +2000,11 @@ Packaging, CI and docs only.
     `cascade.css` and `overrides.css` remain untouched — the structural
     freeze holds.
 - **`<EventTimeline onEventSelect?>`** — new optional prop
-  `(event: PtpEvent) => void`. Timeline nodes are now real `<button>`
+  `(event: TimelineEvent) => void`. Timeline nodes are now real `<button>`
   elements (was `span`) with pointer cursor and the shared Flamingo
   focus ring; without the prop they render identically and simply do
   nothing on click. Nodes expose `aria-label` = the event title.
-- **`PtpEvent.description?`** — new optional field rendered as the
+- **`TimelineEvent.description?`** — new optional field rendered as the
   modal's "About" row (additive; 0.6.0 call sites are unaffected).
 - **Release gates** — verify now asserts the modal stylesheet's z-pillars
   (`var(--z-overlay` / `var(--z-modal`), the documented-scrim-only hex
@@ -2064,7 +2064,7 @@ Packaging, CI and docs only.
   - **Primitives, composed** — nodes are STRUCTURE (Flamingo): `<Icon>`
     in a small circle with a 2px `--color-cake-primary` ring and
     `--bg-surface` fill. Categories are CONTENT (party tokens):
-    `<PartyBadge colorToken label>`. Titles wear `--text-main` weight
+    `<SigBadge colorToken label>`. Titles wear `--text-main` weight
     500; times wear `--text-muted` mono at 0.875rem.
   - New stylesheet **`css/timeline.css`** (`.sig-timeline*` classes,
     token-driven, zero hex, zero box-shadow, `prefers-reduced-motion`
@@ -2087,10 +2087,10 @@ Packaging, CI and docs only.
   components in the `./react` umbrella (no new tokens, zero CSS changes):
 
   ```jsx
-  import { ThemeProvider, Icon, EmptyState, PartyBadge } from "@edwyn/signature-style/react";
+  import { ThemeProvider, Icon, EmptyState, SigBadge } from "@edwyn/signature-style/react";
   <Icon name="PartyPopper" />
   <EmptyState icon="PackageOpen" title="Nothing here" message="Add your first event." />
-  <PartyBadge colorToken="--sig-peach" label="Birthday" />
+  <SigBadge colorToken="--sig-peach" label="Birthday" />
   ```
 
   - `<Icon name />` — strict lucide-react wrapper: `name` must be a real
@@ -2099,7 +2099,7 @@ Packaging, CI and docs only.
   - `<EmptyState icon title message />` — the Pillar 4 empty state as one
     `div.empty-state` (centered flex column, surface bg, hairline border);
     nothing else in the DOM.
-  - `<PartyBadge colorToken label />` — the Rule of Engagement at compile
+  - `<SigBadge colorToken label />` — the Rule of Engagement at compile
     time: `colorToken` only accepts `--sig-*` tokens
     (`Extract<KnownToken, \`--sig-${string}\`>`); a structural token like
     `--color-cake-primary` is a type error, and a runtime guard

@@ -132,19 +132,19 @@ interface EmptyStateProps {
 
 **Renders:** `div.empty-state` → `svg[aria-hidden]` + `strong` + `p` — one div, nothing else.
 
-### `<PartyBadge>` — the Rule of Engagement, enforced by the compiler
+### `<SigBadge>` — the Rule of Engagement, enforced by the compiler
 
 A party-colored content badge: a subtle tinted background of the chosen `--sig-*` token with a guaranteed high-contrast label on both themes. `colorToken` **only** accepts `--sig-*` tokens — handing it a structural token like `--color-cake-primary` fails at compile time, and a runtime guard warn-and-drops anything plain JavaScript slips past the types (rendering `null`).
 
 ```ts
-interface PartyBadgeProps {
-  colorToken: PartyTokenName; // Extract<KnownToken, `--sig-${string}`> — party tokens ONLY
+interface SigBadgeProps {
+  colorToken: SigTokenName; // Extract<KnownToken, `--sig-${string}`> — party tokens ONLY
   label: string;
 }
 ```
 
 ```tsx
-<PartyBadge colorToken="--sig-peach" label="Birthday" />
+<SigBadge colorToken="--sig-peach" label="Birthday" />
 ```
 
 **Renders:** exactly one `<span>`.
@@ -158,21 +158,21 @@ Two bigger pieces build on the primitives — they are components, not primitive
 A flat CSS Grid: one container (`.sig-timeline`) whose **direct children** are date headers (`h2`), node circles, and event content blocks — no row wrappers, and the vertical line is the container's `::before` pseudo-element, never a div. Desktop events alternate left/right around a center line; at **max-width 768px** the line moves to the far left and everything stacks right (pure CSS, no JS breakpoint). Sticky date headers pin at `z-index: var(--z-sticky)` (10) with opaque backgrounds, and content scrolls beneath them. An empty `events` array renders `<EmptyState icon="CalendarX">` immediately — no line, no chrome.
 
 ```ts
-interface PtpEvent {
+interface TimelineEvent {
   id: string;
   date: string;            // display string, e.g. "October 2026"
   dateKey?: string;        // explicit grouping bucket, e.g. "2026-10"
   time?: string;
   title: string;
-  category: PartyTokenName; // --sig-* tokens only (Rule of Engagement)
+  category: SigTokenName; // --sig-* tokens only (Rule of Engagement)
   categoryLabel: string;
   icon?: IconName;          // defaults to "Circle"
   description?: string;     // becomes the modal's "About" row
 }
 
 interface EventTimelineProps {
-  events: PtpEvent[];       // chronological; group & event order preserved
-  onEventSelect?: (event: PtpEvent) => void; // nodes are <button>s
+  events: TimelineEvent[];       // chronological; group & event order preserved
+  onEventSelect?: (event: TimelineEvent) => void; // nodes are <button>s
 }
 ```
 
@@ -193,7 +193,7 @@ function useModal<T>(): {
 };
 
 interface EventModalProps {
-  event: PtpEvent;
+  event: TimelineEvent;
   open: boolean;   // typically modal.isOpen — false renders nothing
   onClose: () => void;
 }
@@ -204,7 +204,7 @@ The full composition, straight from the README:
 ```tsx
 import { EventTimeline, EventModal, useModal } from "@edwyn/signature-style/react";
 
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 
 <EventTimeline events={events} onEventSelect={modal.open} />
 {modal.selectedEvent !== null && (
@@ -241,7 +241,7 @@ Before writing a line of code, ask what line you can *delete* instead. Three man
 2. **DOM Flattening** — never use a wrapper `<div>` if Flexbox or Grid on the parent can do the same job. If an element looks identical without a wrapper, the wrapper dies.
 3. **Minimalist code** — no "extra stuff", no decorative chrome. If 3 lines of HTML look as clean as 10, ship 3.
 
-This is why `<EmptyState>` is one div, `<PartyBadge>` is one span, and the timeline's line is a pseudo-element: the flattest DOM that can hold the design is the only DOM.
+This is why `<EmptyState>` is one div, `<SigBadge>` is one span, and the timeline's line is a pseudo-element: the flattest DOM that can hold the design is the only DOM.
 
 ### (b) Structural vs Content — never crossed
 
@@ -250,7 +250,7 @@ Two color families, two jobs, one iron rule:
 - **Flamingo & Teal** (`--color-cake-primary`, `--color-cake-secondary`) own **structure**: buttons, inputs, focus rings, node rings, close-button hover — all interactive chrome.
 - **Party tokens** (`--sig-*`) own **content categories**: badges, tags, avatars, calendar blocks, data-viz.
 
-The families never cross — and `<PartyBadge>` enforces this **at compile time**. Pass it `--color-cake-primary` and TypeScript answers with `TS2322: … not assignable to type 'PartyTokenName'` before your code ever runs; the runtime guard catches whatever JS sneaks past.
+The families never cross — and `<SigBadge>` enforces this **at compile time**. Pass it `--color-cake-primary` and TypeScript answers with `TS2322: … not assignable to type 'SigTokenName'` before your code ever runs; the runtime guard catches whatever JS sneaks past.
 
 One line on the layer doctrine that keeps it all honest: **tokens < base < cascade < overrides** — that exact order is declared once and injected first, and the override layer *never* touches `:root`. A scoped override breaks a rule for one component; `:root` is canonical and untouchable.
 
@@ -264,7 +264,7 @@ Three import paths, no more:
 |---|---|---|
 | `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest | never |
 | `@edwyn/signature-style/css` | the compiled bundle — tokens, base, cascade (timeline + modal included), overrides | never |
-| `@edwyn/signature-style/react` | `ThemeProvider`, `Icon`, `EmptyState`, `PartyBadge`, `EventTimeline`, `EventModal`, `useModal` | `react` + `react-dom` (strict peers); `lucide-react` optional |
+| `@edwyn/signature-style/react` | `ThemeProvider`, `Icon`, `EmptyState`, `SigBadge`, `EventTimeline`, `EventModal`, `useModal` | `react` + `react-dom` (strict peers); `lucide-react` optional |
 
 **CSS-only** — one line and the theme breathes:
 
@@ -277,7 +277,7 @@ Three import paths, no more:
 ```tsx
 import { ThemeProvider, EventTimeline, EventModal, useModal } from "@edwyn/signature-style/react";
 
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 
 <ThemeProvider>
   <EventTimeline events={events} onEventSelect={modal.open} />

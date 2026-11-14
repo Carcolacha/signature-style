@@ -21,7 +21,7 @@
    zero hex, zero box-shadow, prefers-reduced-motion respected.
 
    DOM SHAPE (Pruning Protocol): the card is a CSS Grid whose DIRECT
-   children are the title (h2), the close button, the PartyBadge (span),
+   children are the title (h2), the close button, the SigBadge (span),
    and label/value pairs (span + span/time/p). Grid placement:
 
      desktop (default):   grid-template-columns: max-content 1fr auto
@@ -101,7 +101,7 @@
   outline-offset: 2px;
 }
 
-/* Badge row: the PartyBadge is the card's only bare <span> child — every
+/* Badge row: the SigBadge is the card's only bare <span> child — every
    other span wears a sig-modal class — so this selector is exact. */
 .sig-modal-card > span:not([class]) {
   grid-column: 1 / -1;

@@ -75,7 +75,7 @@ Before you write a line of code, ask what line you can delete instead. The owner
 - **DOM Flattening:** Never use a wrapper `<div>` if CSS Flexbox/Grid on the parent can achieve the same layout. If an element looks visually identical without a wrapper, delete the wrapper.
 - **Minimalist Code:** Do not add "extra stuff" or decorative wrappers. If the UI looks clean and functions correctly with 3 lines of HTML instead of 10, use 3.
 
-When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<PartyBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
+When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<SigBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
 
 ## Universal AI Replication Contract:
 
@@ -191,7 +191,7 @@ Chronological alternating timeline; events group by `date`. `category` is strict
 The hook owns selection state, the component owns the overlay (portal, Escape, backdrop click):
 
 ```tsx
-const modal = useModal<PtpEvent>();
+const modal = useModal<TimelineEvent>();
 {modal.selectedEvent !== null && (
   <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
 )}
@@ -216,7 +216,7 @@ The ratio dial — SVG, three circles, centered readout on by default; `strokeWi
 
 ### <DataTable>
 
-The ledger table inside a scroll-containment wrapper; `numeric: true` pins tabular-nums digits and `align: "right"` (2.4.1) right-aligns BOTH the header and its cells — state them together on money columns (`numeric` owns digits, `align` owns geometry); cell values are ReactNode, so a `<PartyBadge>` composes right in:
+The ledger table inside a scroll-containment wrapper; `numeric: true` pins tabular-nums digits and `align: "right"` (2.4.1) right-aligns BOTH the header and its cells — state them together on money columns (`numeric` owns digits, `align` owns geometry); cell values are ReactNode, so a `<SigBadge>` composes right in:
 
 ```tsx
 <DataTable
@@ -372,12 +372,12 @@ const toast = useToast();
 toast("success", "RSVP sent — see you there 🎉");
 ```
 
-### <PartyBadge>
+### <SigBadge>
 
 Party-colored content badge — `colorToken` accepts ONLY `--sig-*` tokens (compile error otherwise; runtime guard drops structural tokens):
 
 ```tsx
-<PartyBadge colorToken="--sig-peach" label="Birthday" />
+<SigBadge colorToken="--sig-peach" label="Birthday" />
 ```
 
 ### <Icon>
@@ -402,8 +402,8 @@ The horizontal scroll strip — TWO MODES (3.0.0, default `"free-scroll"`). free
 
 ```tsx
 <Carousel label="Palette clippings">
-  <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
-  <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
+  <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+  <CarouselItem><SigBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
 </Carousel>
 <Carousel label="Clippings" mode="paged-3">
   {/* 3-6+ items chunk into pages of three */}
@@ -501,7 +501,7 @@ The 1v1 grid (2.5.0) — `1fr auto 1fr`: two centered sides over 40px avatars (p
 
 ### <ContentCard>
 
-The universal content card (2.6.0) — a 16/9 visual header (pass `image` as a URL for a cover photo; omit it for the accent-tinted token gradient art), the category PartyBadge + mono meta pills, the accent-underlined title, the muted description, and the footer action (a package `Button variant="secondary" size="sm"`, pinned to the card floor):
+The universal content card (2.6.0) — a 16/9 visual header (pass `image` as a URL for a cover photo; omit it for the accent-tinted token gradient art), the category SigBadge + mono meta pills, the accent-underlined title, the muted description, and the footer action (a package `Button variant="secondary" size="sm"`, pinned to the card floor):
 
 ```tsx
 <ContentCard
@@ -541,7 +541,7 @@ The pricing tier (2.6.0) — eyebrow plan name, 2rem tabular-nums price, the fea
 
 ### <ProfileCard>
 
-The person card (2.6.0) — the 40px Avatar (party ring via `accentToken`, typed `PartyColorToken`), the name over the muted role, the stats row (2–3 entries: tabular-nums weight-600 values, muted 0.6875rem labels), and the skills row (PartyBadges):
+The person card (2.6.0) — the 40px Avatar (party ring via `accentToken`, typed `SigColorToken`), the name over the muted role, the stats row (2–3 entries: tabular-nums weight-600 values, muted 0.6875rem labels), and the skills row (SigBadges):
 
 ```tsx
 <ProfileCard
@@ -638,7 +638,7 @@ The gradient area (2.7.0) — pure SVG: a `useId`-keyed linearGradient (30% toke
 
 ### <TimelineManager>
 
-The CONTROLLED milestone manager (2.7.0) — `TimelineItem extends PtpEvent { settled?: boolean }`; the component owns NO items. Composer (package Input + month Select + category Select + the primary sm "Settle Item" Button; empty titles warn and are ignored), filter pills (All/Pending/Settled, attribute-driven `aria-pressed`, the Flamingo active underline) + the tabular `{settled} / {total} Settled` counter, per-item rows (settle toggle with `aria-pressed` → party-green Check · body button → `onInspect` (pass `modal.open` to compose `<EventModal>`) · delete button → `onDelete`), and the EmptyState edge when the CURRENT filter matches nothing. Icon note (live-map-probed): lucide 1.72.0 has NO "Trash2"/"Filter" keys — the manager renders "Trash"/"Funnel" (the AudioLines/Music precedent):
+The CONTROLLED milestone manager (2.7.0) — `TimelineItem extends TimelineEvent { settled?: boolean }`; the component owns NO items. Composer (package Input + month Select + category Select + the primary sm "Settle Item" Button; empty titles warn and are ignored), filter pills (All/Pending/Settled, attribute-driven `aria-pressed`, the Flamingo active underline) + the tabular `{settled} / {total} Settled` counter, per-item rows (settle toggle with `aria-pressed` → party-green Check · body button → `onInspect` (pass `modal.open` to compose `<EventModal>`) · delete button → `onDelete`), and the EmptyState edge when the CURRENT filter matches nothing. Icon note (live-map-probed): lucide 1.72.0 has NO "Trash2"/"Filter" keys — the manager renders "Trash"/"Funnel" (the AudioLines/Music precedent):
 
 ```tsx
 import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react";

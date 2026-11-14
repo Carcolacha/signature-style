@@ -58,7 +58,7 @@ export interface EmptyStateProps {
 }
 export declare function EmptyState({ icon, title, message }: EmptyStateProps): import("react").JSX.Element;
 /**
- * `<PartyBadge>` — the Rule of Engagement, enforced in the type system.
+ * `<SigBadge>` — the Rule of Engagement, enforced in the type system.
  *
  * A party-colored content badge: subtle tinted background + guaranteed
  * high-contrast text on both themes. `colorToken` only accepts `--sig-*`
@@ -68,18 +68,18 @@ export declare function EmptyState({ icon, title, message }: EmptyStateProps): i
  *
  * @example
  * ```tsx
- * <PartyBadge colorToken="--sig-peach" label="Birthday" />
+ * <SigBadge colorToken="--sig-peach" label="Birthday" />
  * ```
  */
-export interface PartyBadgeProps {
+export interface SigBadgeProps {
     /** A `--sig-*` content token — the ONLY tokens allowed here. */
-    colorToken: PartyTokenName;
+    colorToken: SigTokenName;
     /** The badge label text. */
     label: string;
 }
 /** The content-only subset of KnownToken: `--sig-*` tokens exclusively. */
-export type PartyTokenName = Extract<KnownToken, `--sig-${string}`>;
-export declare function PartyBadge({ colorToken, label }: PartyBadgeProps): import("react").JSX.Element | null;
+export type SigTokenName = Extract<KnownToken, `--sig-${string}`>;
+export declare function SigBadge({ colorToken, label }: SigBadgeProps): import("react").JSX.Element | null;
 /**
  * Props for `<Button>` — the ONE button of the package (2.5.0 "Button &
  * Card Archetypes"). Every native button attribute flows through

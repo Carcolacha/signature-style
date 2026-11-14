@@ -21,7 +21,7 @@ The official machine-readable index for AI agents. Full self-contained version: 
 The 6-Set Taxonomy — 50 documented exports, one copy-paste snippet each:
 
 - [Set 01 — Shell & Navigation](llms-full.txt): ThemeProvider, GlobalNav, Tabs, SigShell (live demos + copy-paste in the playground's Pattern Studio)
-- [Set 02 — Surface & Card Archetypes](llms-full.txt): SurfaceCard, PageHero, Icon, Avatar, PartyBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 02 — Surface & Card Archetypes](llms-full.txt): SurfaceCard, PageHero, Icon, Avatar, SigBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 03 — Ergonomic Forms & Inputs](llms-full.txt): FormField, Input, TextArea, Select, Checkbox, RadioCardGroup, ToggleSwitch, PasswordInput, Button (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 04 — Analytical Telemetry & Graphs](llms-full.txt): ProgressBar, StatRing, StatCard, Sparkline, BarChart, AreaChart, KnowledgeGraph, smoothPath, layoutGraph, cubicBezierEdge (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 05 — Chronology & Planners](llms-full.txt): EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline (live demos + copy-paste in the playground's Pattern Studio)

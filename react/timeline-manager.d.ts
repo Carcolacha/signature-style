@@ -5,7 +5,7 @@
  *
  * Backward compatibility is a hard line: <EventTimeline>
  * (react/timeline.tsx) is UNTOUCHED — this module EXTENDS its contract
- * (`TimelineItem extends PtpEvent`) and adds the working half: a
+ * (`TimelineItem extends TimelineEvent`) and adds the working half: a
  * composer, filter pills, settle toggles, deletes and an inspect
  * callback. The styles APPEND to css/timeline.css under the
  * .sig-tmanager namespace — zero rules above were edited.
@@ -30,7 +30,7 @@
  *
  * Settled styling: the body fades to 0.6 and the title strikes
  * through; the settle toggle fills --sig-green and a mono "Settled"
- * chip rides the body. NOT a PartyBadge — settled is a STATE, not a
+ * chip rides the body. NOT a SigBadge — settled is a STATE, not a
  * content category.
  *
  * @example
@@ -45,9 +45,9 @@
  * />
  * ```
  */
-import type { PtpEvent } from "./timeline.js";
-/** One managed milestone — a PtpEvent plus its settle state. */
-export interface TimelineItem extends PtpEvent {
+import type { TimelineEvent } from "./timeline.js";
+/** One managed milestone — a TimelineEvent plus its settle state. */
+export interface TimelineItem extends TimelineEvent {
     /** Settled milestones fade + strike through and flip the toggle green. */
     settled?: boolean;
 }

@@ -24,7 +24,7 @@ import {
   PageHero,
   Icon,
   Avatar,
-  PartyBadge,
+  SigBadge,
   ContentCard,
   ReferenceCard,
   TierCard,
@@ -68,7 +68,7 @@ import {
   useToast,
 } from "@edwyn/signature-style/react";
 import type {
-  PtpEvent,
+  TimelineEvent,
   TimelineItem,
   GraphNode,
 } from "@edwyn/signature-style/react";
@@ -184,12 +184,12 @@ function AvatarPreview() {
   );
 }
 
-function PartyBadgePreview() {
+function SigBadgePreview() {
   return (
     <div className="studio__inline-row">
-      <PartyBadge colorToken="--sig-peach" label="Birthday" />
-      <PartyBadge colorToken="--sig-sky" label="Info" />
-      <PartyBadge colorToken="--sig-green" label="Confirmed" />
+      <SigBadge colorToken="--sig-peach" label="Birthday" />
+      <SigBadge colorToken="--sig-sky" label="Info" />
+      <SigBadge colorToken="--sig-green" label="Confirmed" />
     </div>
   );
 }
@@ -566,7 +566,7 @@ function CubicBezierEdgePreview() {
 /* Set 05 previews — Chronology & Planners                             */
 /* ------------------------------------------------------------------ */
 
-const STUDIO_EVENTS: PtpEvent[] = [
+const STUDIO_EVENTS: TimelineEvent[] = [
   {
     id: "studio-cake",
     date: "October 2026",
@@ -598,7 +598,7 @@ const STUDIO_EVENTS: PtpEvent[] = [
 
 /** Click a node — the modal opens (the full composition, live). */
 function EventTimelinePreview() {
-  const modal = useModal<PtpEvent>();
+  const modal = useModal<TimelineEvent>();
   return (
     <div className="studio__stack">
       <EventTimeline events={STUDIO_EVENTS} onEventSelect={modal.open} />
@@ -609,7 +609,7 @@ function EventTimelinePreview() {
   );
 }
 
-const STUDIO_SAMPLE_EVENT: PtpEvent = {
+const STUDIO_SAMPLE_EVENT: TimelineEvent = {
   id: "studio-sample",
   date: "October 2026",
   time: "15:00",
@@ -620,7 +620,7 @@ const STUDIO_SAMPLE_EVENT: PtpEvent = {
 };
 
 function UseModalPreview() {
-  const modal = useModal<PtpEvent>();
+  const modal = useModal<TimelineEvent>();
   return (
     <div className="studio__stack">
       <Button size="sm" variant="secondary" onClick={() => modal.open(STUDIO_SAMPLE_EVENT)}>
@@ -634,7 +634,7 @@ function UseModalPreview() {
 }
 
 function EventModalPreview() {
-  const modal = useModal<PtpEvent>();
+  const modal = useModal<TimelineEvent>();
   return (
     <div className="studio__stack">
       <Button size="sm" variant="secondary" onClick={() => modal.open(STUDIO_SAMPLE_EVENT)}>
@@ -729,9 +729,9 @@ function CalloutPreview() {
 function CarouselPreview() {
   return (
     <Carousel label="Studio clippings">
-      <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
-      <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
-      <CarouselItem><PartyBadge colorToken="--sig-green" label="Green" /></CarouselItem>
+      <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+      <CarouselItem><SigBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
+      <CarouselItem><SigBadge colorToken="--sig-green" label="Green" /></CarouselItem>
     </Carousel>
   );
 }
@@ -845,7 +845,7 @@ const PREVIEWS: Record<string, ReactNode> = {
   PageHero: <PageHeroPreview />,
   Icon: <IconPreview />,
   Avatar: <AvatarPreview />,
-  PartyBadge: <PartyBadgePreview />,
+  SigBadge: <SigBadgePreview />,
   ContentCard: <ContentCardPreview />,
   ReferenceCard: <ReferenceCardPreview />,
   TierCard: <TierCardPreview />,
@@ -897,7 +897,7 @@ const PREVIEWS: Record<string, ReactNode> = {
 const SET_FRAMES: Record<SetId, ReadonlyArray<string>> = {
   "01": ["ThemeProvider", "GlobalNav", "Tabs", "SigShell"],
   "02": [
-    "SurfaceCard", "PageHero", "Icon", "Avatar", "PartyBadge", "ContentCard",
+    "SurfaceCard", "PageHero", "Icon", "Avatar", "SigBadge", "ContentCard",
     "ReferenceCard", "TierCard", "ProfileCard", "ActionTile", "FlipCard",
     "AccordionCard", "MatchupCard",
   ],

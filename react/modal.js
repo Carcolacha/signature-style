@@ -19,17 +19,17 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  *
  * DOM shape (Pruning Protocol): backdrop (div) → card (div, the grid)
  * whose DIRECT children are the title (h2), the close button, the
- * PartyBadge (span), and flat label/value pairs (span + span/time/p).
+ * SigBadge (span), and flat label/value pairs (span + span/time/p).
  * Zero wrapper divs — rows are grid lines, not divs.
  *
  * Aesthetics: every color comes from tokens (Flamingo structure, Teal
  * hover accent — the Rule of Engagement untouched; content categories
- * wear <PartyBadge>). The single documented exception is the neutral
+ * wear <SigBadge>). The single documented exception is the neutral
  * rgba scrim in css/modal.css, which must dim regardless of theme.
  */
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Icon, PartyBadge } from "./primitives.js";
+import { Icon, SigBadge } from "./primitives.js";
 /**
  * `useModal<T>()` — the minimal selection state behind <EventModal>.
  *
@@ -40,7 +40,7 @@ import { Icon, PartyBadge } from "./primitives.js";
  *
  * @example
  * ```tsx
- * const modal = useModal<PtpEvent>();
+ * const modal = useModal<TimelineEvent>();
  * <EventTimeline events={events} onEventSelect={modal.open} />
  * {modal.selectedEvent !== null && (
  *   <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
@@ -79,7 +79,7 @@ function detailRows(event) {
 }
 /** Backdrop + card: one portal subtree, flat grid children, zero wrappers. */
 function renderOverlay(event, onClose) {
-    return (_jsx("div", { className: "sig-modal-backdrop", onClick: onClose, children: _jsxs("div", { className: "sig-modal-card", role: "dialog", "aria-modal": "true", "aria-label": event.title, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("h2", { className: "sig-modal-title", children: event.title }), renderClose(onClose), _jsx(PartyBadge, { colorToken: event.category, label: event.categoryLabel }), detailRows(event)] }) }));
+    return (_jsx("div", { className: "sig-modal-backdrop", onClick: onClose, children: _jsxs("div", { className: "sig-modal-card", role: "dialog", "aria-modal": "true", "aria-label": event.title, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("h2", { className: "sig-modal-title", children: event.title }), renderClose(onClose), _jsx(SigBadge, { colorToken: event.category, label: event.categoryLabel }), detailRows(event)] }) }));
 }
 /**
  * `<EventModal>` — the interactive Event Detail overlay.

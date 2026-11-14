@@ -489,11 +489,11 @@ position collision), everything else falls through the generic
 
 | Field | Frontend caller |
 |-------|-----------------|
-| `Event.month` / `Event.time` / `Event.title` / `Event.description` | `MockEvent` fields → `PtpEvent` (`playground/App.tsx` mockEvents, mapped at the ONE mapping layer; rendered by `react/timeline.tsx` + the EventModal About row) |
-| `Event.colorToken` / `Event.iconName` | `MockEvent.colorToken` → `PtpEvent.category` (PartyBadge chip), `MockEvent.iconName` → `PtpEvent.icon` (lucide key, gate-probed) |
+| `Event.month` / `Event.time` / `Event.title` / `Event.description` | `MockEvent` fields → `TimelineEvent` (`playground/App.tsx` mockEvents, mapped at the ONE mapping layer; rendered by `react/timeline.tsx` + the EventModal About row) |
+| `Event.colorToken` / `Event.iconName` | `MockEvent.colorToken` → `TimelineEvent.category` (SigBadge chip), `MockEvent.iconName` → `TimelineEvent.icon` (lucide key, gate-probed) |
 | `Guest.name` / `Guest.rsvp` / `Guest.contribution` | `playground/App.tsx` `Guest` + `SEED_GUESTS` + `derived.ledgerRows` (the live bento's one reactive array) |
 | `LedgerEntry.amountCents` | the ledger's `Contribution` column (`numeric: true, align: "right"`, `playground/App.tsx` BENTO_LEDGER_COLUMNS) — persisted in cents per the Money-in-Cents rule |
-| `Milestone.title/month/categoryToken/categoryLabel/settled` | `TimelineItem extends PtpEvent` (`react/timeline-manager.d.ts`) + `SEED_TIMELINE` (`playground/App.tsx`, persisted as `sig.v27.timeline`) |
+| `Milestone.title/month/categoryToken/categoryLabel/settled` | `TimelineItem extends TimelineEvent` (`react/timeline-manager.d.ts`) + `SEED_TIMELINE` (`playground/App.tsx`, persisted as `sig.v27.timeline`) |
 | `GraphNodeRecord.label/categoryToken/note/parentId` | `GraphNode` (`react/graph.d.ts`), persisted as `sig.v27.graph` (`playground/App.tsx` `usePersistentState`) — `parentId: undefined` renders a root |
 | `Flashcard.front/back` | `FlipCardProps.front/back` (`react/cards.d.ts`) — `playground/App.tsx` renders `<FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />` |
 | `GameMatchup.playerAId/playerBId/stakes/mode` | `MatchupCardProps` (`react/cards.d.ts`: `left`/`right` names, `stakes` mono footer) — the bento's 1v1 card; `mode` extends it to the Arena's 2v2 |

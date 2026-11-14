@@ -59,8 +59,8 @@ export interface CarouselItemProps {
  * @example
  * ```tsx
  * <Carousel label="Clippings">
- *   <CarouselItem><PartyBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
- *   <CarouselItem><PartyBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
+ *   <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
+ *   <CarouselItem><SigBadge colorToken="--sig-peach" label="Peach" /></CarouselItem>
  * </Carousel>
  * ```
  */

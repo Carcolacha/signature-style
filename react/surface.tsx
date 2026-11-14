@@ -36,7 +36,7 @@
  */
 
 import type { CSSProperties, ReactNode } from "react";
-import type { PartyTokenName } from "./primitives.js";
+import type { SigTokenName } from "./primitives.js";
 
 /**
  * The content-accent alias: the ELEVEN `--sig-*` tokens, typed. The
@@ -53,7 +53,7 @@ import type { PartyTokenName } from "./primitives.js";
  * so the ThemeProvider whitelist IS the union — the 11-token sweep gate
  * pins the count against that whitelist.)
  */
-export type PartyColorToken = PartyTokenName;
+export type SigColorToken = SigTokenName;
 
 /**
  * The STRUCTURAL accents — the two signature tokens (Flamingo primary /
@@ -68,7 +68,7 @@ export type StructuralAccentToken = "--color-cake-primary" | "--color-cake-secon
  * tokens PLUS the two structural signatures — gateways like the Event
  * Planner door wear Flamingo, content cards wear the party palette.
  */
-export type AccentToken = PartyColorToken | StructuralAccentToken;
+export type AccentToken = SigColorToken | StructuralAccentToken;
 
 /** The three-tier elevation ladder (2.6.0). */
 export type SurfaceElevation = "flat" | "raised" | "floating";

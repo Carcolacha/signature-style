@@ -19,16 +19,16 @@ export {
   type IconName,
   EmptyState,
   type EmptyStateProps,
-  PartyBadge,
-  type PartyBadgeProps,
-  type PartyTokenName,
+  SigBadge,
+  type SigBadgeProps,
+  type SigTokenName,
   Button,
   type ButtonProps,
 } from "./primitives.js";
 export {
   EventTimeline,
   type EventTimelineProps,
-  type PtpEvent,
+  type TimelineEvent,
 } from "./timeline.js";
 export {
   TimelineManager,
@@ -99,7 +99,7 @@ export {
   type SurfaceCardProps,
   PageHero,
   type PageHeroProps,
-  type PartyColorToken,
+  type SigColorToken,
   type StructuralAccentToken,
   type AccentToken,
   type SurfaceElevation,

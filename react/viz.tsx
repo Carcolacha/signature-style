@@ -16,10 +16,10 @@
  * normalized viewBox, geometry computed in a pure helper.
  *
  * Rule of Engagement, enforced per component: `colorToken` is
- * typed as `PartyTokenName` (an `Extract` on `KnownToken`), so passing
+ * typed as `SigTokenName` (an `Extract` on `KnownToken`), so passing
  * a structural token like `--color-cake-primary` is a compile error —
  * and a runtime guard (`startsWith("--sig-")`) warns and renders
- * null for JS consumers, same warn-and-drop philosophy as PartyBadge.
+ * null for JS consumers, same warn-and-drop philosophy as SigBadge.
  *
  * 2.2.0 TELEMETRY LIMITS (owner-authorized): ProgressBar grew the
  * optional `limitText` caption (rendered as a THIRD element AFTER the
@@ -49,7 +49,7 @@
  * shadow (the e1 doctrine).
  */
 
-import type { PartyTokenName } from "./primitives.js";
+import type { SigTokenName } from "./primitives.js";
 import { memo, useId, useState } from "react";
 
 /**
@@ -85,7 +85,7 @@ export interface ProgressBarProps {
   /** The filled percentage — clamped to 0–100 before rendering. */
   value: number;
   /** A `--sig-*` content token — the ONLY tokens allowed here. */
-  colorToken: PartyTokenName;
+  colorToken: SigTokenName;
   /** The accessible name for the progressbar (e.g. "Budget remaining"). */
   label?: string;
   /** 2.2.0: limit caption rendered after the track (e.g. "$1,325 / $2,000"). */
@@ -166,7 +166,7 @@ export interface StatRingProps {
   /** The filled percentage — clamped to 0–100 before rendering. */
   value: number;
   /** A `--sig-*` content token — the ONLY tokens allowed here. */
-  colorToken: PartyTokenName;
+  colorToken: SigTokenName;
   /** Outer diameter in px. Default 120 — the 3.0.0 zoom default. */
   size?: number;
   /** Track/fill weight in px — grid-perfect: 4 (half unit) or 8 (one unit). Default 8. */
@@ -300,7 +300,7 @@ export interface SparklineProps {
   /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
   data: number[];
   /** A `--sig-*` content token — the ONLY tokens allowed here. Default --sig-sky. */
-  colorToken?: PartyTokenName;
+  colorToken?: SigTokenName;
   /** Width in px (also the viewBox width). Default 120. */
   width?: number;
   /** Height in px (also the viewBox height). Default 36. */
@@ -349,7 +349,7 @@ function sparkPoints(
  * the viewBox (0 0 w h) via the pure `sparkPoints` helper;
  * `preserveAspectRatio="none"` lets the svg stretch to any box while
  * the geometry stays exact. Guards: a series shorter than 2 points has
- * no trend to draw (warn + null, the PartyBadge philosophy); a
+ * no trend to draw (warn + null, the SigBadge philosophy); a
  * structural `colorToken` is refused (Rule of Engagement). No CSS at
  * all — pure SVG attributes, like StatRing.
  *
@@ -415,7 +415,7 @@ export interface StatCardProps {
   /** The optional inline trend — renders a <Sparkline> labeled "<label> trend". */
   sparklineData?: number[];
   /** A `--sig-*` content token for the sparkline (passed through). */
-  colorToken?: PartyTokenName;
+  colorToken?: SigTokenName;
 }
 
 /**
@@ -489,7 +489,7 @@ export interface BarDatum {
   /** The capacity ceiling for THIS bar's track; defaults to the chart scale. */
   max?: number;
   /** A `--sig-*` content token — this bar's ink. Default --sig-sky. */
-  colorToken?: PartyTokenName;
+  colorToken?: SigTokenName;
 }
 
 export interface BarChartProps {
@@ -698,7 +698,7 @@ export interface AreaChartProps {
   /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
   points: AreaPoint[];
   /** A `--sig-*` content token. Default --sig-sky. */
-  colorToken?: PartyTokenName;
+  colorToken?: SigTokenName;
   /** The svg's rendered height in px. Default 200. */
   height?: number;
   /** The accessible name (role="img"); defaults to "Area chart of N points". */

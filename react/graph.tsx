@@ -66,7 +66,7 @@ import type {
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
 } from "react";
-import type { PartyColorToken } from "./surface.js";
+import type { SigColorToken } from "./surface.js";
 import { Button } from "./primitives.js";
 import { Input } from "./forms.js";
 
@@ -77,7 +77,7 @@ export interface GraphNode {
   /** The node's display label — truncated to 12 characters on the canvas. */
   label: string;
   /** A `--sig-*` content token — the node's ring color (Rule of Engagement). */
-  categoryToken: PartyColorToken;
+  categoryToken: SigColorToken;
   /** Optional longer copy shown in the footer strip when selected. */
   note?: string;
   /** The parent node's id; undefined renders this node as a root. */

@@ -78,7 +78,7 @@ export function EmptyState({ icon, title, message }: EmptyStateProps) {
 }
 
 /**
- * `<PartyBadge>` — the Rule of Engagement, enforced in the type system.
+ * `<SigBadge>` — the Rule of Engagement, enforced in the type system.
  *
  * A party-colored content badge: subtle tinted background + guaranteed
  * high-contrast text on both themes. `colorToken` only accepts `--sig-*`
@@ -88,23 +88,23 @@ export function EmptyState({ icon, title, message }: EmptyStateProps) {
  *
  * @example
  * ```tsx
- * <PartyBadge colorToken="--sig-peach" label="Birthday" />
+ * <SigBadge colorToken="--sig-peach" label="Birthday" />
  * ```
  */
-export interface PartyBadgeProps {
+export interface SigBadgeProps {
   /** A `--sig-*` content token — the ONLY tokens allowed here. */
-  colorToken: PartyTokenName;
+  colorToken: SigTokenName;
   /** The badge label text. */
   label: string;
 }
 
 /** The content-only subset of KnownToken: `--sig-*` tokens exclusively. */
-export type PartyTokenName = Extract<KnownToken, `--sig-${string}`>;
+export type SigTokenName = Extract<KnownToken, `--sig-${string}`>;
 
-export function PartyBadge({ colorToken, label }: PartyBadgeProps) {
+export function SigBadge({ colorToken, label }: SigBadgeProps) {
   if (!colorToken.startsWith("--sig-")) {
     console.warn(
-      `[signature-style] dropped "${colorToken}" — PartyBadge accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+      `[signature-style] dropped "${colorToken}" — SigBadge accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
     );
     return null;
   }

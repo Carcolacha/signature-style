@@ -3,7 +3,7 @@
  * Website, 6-Set Taxonomy & One-Click Copy Studio").
  *
  * ONE <article data-sig-set data-sig-component> per pattern: a header
- * bar (component name weight 600 + the Set PartyBadge + the Preview |
+ * bar (component name weight 600 + the Set SigBadge + the Preview |
  * JSX | HTML segmented mini-tabs + the Copy Card button) over a body
  * that renders the LIVE interactive preview, the formatted JSX snippet,
  * or the documented HTML variant.
@@ -23,7 +23,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Button, PartyBadge, Breadcrumbs, useToast } from "@edwyn/signature-style/react";
+import { Button, SigBadge, Breadcrumbs, useToast } from "@edwyn/signature-style/react";
 import type { SnippetEntry, SetId } from "../snippets.js";
 
 /** The three body views. */
@@ -41,7 +41,7 @@ const COPIED_RESET_MS = 2000;
 interface PatternFrameProps {
   /** Taxonomy set id — stamped on data-sig-set (zero-padded, "01".."06"). */
   setId: SetId;
-  /** The set's display name — the PartyBadge label. */
+  /** The set's display name — the SigBadge label. */
   setName: string;
   /** The component name — data-sig-component + the header title. */
   componentName: string;
@@ -135,7 +135,7 @@ export function PatternFrame({
           />
           <div className="pattern-frame__title">
             <h3>{componentName}</h3>
-            <PartyBadge
+            <SigBadge
               colorToken={SET_ACCENTS[setId]}
               label={setName}
             />
@@ -185,10 +185,10 @@ export function PatternFrame({
 }
 
 /** The set accent riding the header badge — party tokens only (RoE:
-    the PartyBadge runtime guard DROPS structural tokens, so every set
+    the SigBadge runtime guard DROPS structural tokens, so every set
     wears a content color; Set 01 takes lavender, the calm structural-
     adjacent). */
-const SET_ACCENTS: Record<SetId, Parameters<typeof PartyBadge>[0]["colorToken"]> = {
+const SET_ACCENTS: Record<SetId, Parameters<typeof SigBadge>[0]["colorToken"]> = {
   "01": "--sig-lavender",
   "02": "--sig-pink-bright",
   "03": "--sig-green",

@@ -1213,7 +1213,7 @@
 }
 
 /* ---- 3.0.0 THE PALETTE SWATCH GRID (the bento Party Palette card) ---------
-   The 26-token family as a compact grid: each swatch is the PartyBadge
+   The 26-token family as a compact grid: each swatch is the SigBadge
    plus its ink/fill role tag; the chromatic sixteen wear the "new" badge. */
 .hub__palette-grid {
   display: grid;

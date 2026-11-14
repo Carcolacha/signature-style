@@ -80,7 +80,7 @@ export interface DataTableProps {
   /**
    * The records — one row per entry, keyed by `columns[].key`. Values
    * are ReactNode, so a cell may be plain text or a composed primitive
-   * (e.g. a <PartyBadge> status).
+   * (e.g. a <SigBadge> status).
    */
   rows: Array<Record<string, ReactNode>>;
   /** Optional provenance caption — renders BELOW the table (mono, muted). */
