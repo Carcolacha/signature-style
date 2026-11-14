@@ -74,21 +74,25 @@ export interface CarouselProps {
 /**
  * `<Carousel>` — the horizontal scroll strip.
  *
- * FOUR justified elements (the mechanics + the position readout, none
- * decorative): `<div class="ptp-carousel">` → the previous button
- * (ghost, ChevronLeft) → `<div class="ptp-carousel__track"
- * tabIndex={0} role="region" aria-label={label}>` (the scroll
- * container; keyboard focusable so arrow-key/scroll scrolling needs no
- * button) → `<span class="ptp-carousel__indicator" aria-live="polite">`
- * (2.4.1: "n / count", mono tabular-nums — the scroll position made
- * legible; aria-live polite so scroll users hear the page turn without
- * a focus grab) → the next button (ChevronRight). Buttons scroll by
- * ONE ITEM WIDTH via ref (`scrollBy({ left: ±itemWidth, behavior })`);
- * css scroll-snap-type: x mandatory re-snaps to the nearest item start,
- * so the stride is exact. Reduced motion → `behavior: "auto"`
- * (matchMedia read once). The indicator tracks the native scroll event,
+ * The mechanics row (2.4.1) + the DOT INDICATORS (2.6.0): a fragment of
+ * TWO siblings — `<div class="ptp-carousel">` (the previous button →
+ * the `<div class="ptp-carousel__track" tabIndex={0} role="region"
+ * aria-label={label}>` scroll container → the `<span
+ * class="ptp-carousel__indicator" aria-live="polite">` "n / count"
+ * readout → the next button) and, when children exist, `<div
+ * class="ptp-carousel__dots">` below the row: one button per child,
+ * the active dot tracking the SAME rAF-throttled scroll index as the
+ * indicator, `[data-active="true"]` painting the Flamingo pill.
+ * Dots are clickable — `scrollTo({ left: index * itemWidth })` — with
+ * per-dot aria-labels ("Go to item n"). Buttons scroll by ONE ITEM
+ * WIDTH via ref (`scrollBy({ left: ±itemWidth, behavior })`); css
+ * scroll-snap-type: x mandatory re-snaps to the nearest item start, so
+ * the stride is exact. Reduced motion → `behavior: "auto"` (matchMedia
+ * read once). The indicator + dots track the native scroll event,
  * rAF-throttled (one state write per frame), with the owner-spec'd
- * index formula `Math.round(scrollLeft / itemWidth) + 1`.
+ * index formula `Math.round(scrollLeft / itemWidth) + 1`. The track's
+ * scrollbar is hidden (css: scrollbar-width none + webkit display
+ * none) — the dots ARE the position affordance.
  *
  * @example
  * ```tsx

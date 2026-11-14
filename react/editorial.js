@@ -1,4 +1,4 @@
-import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 /**
  * editorial — editorial primitives (2.4.0 "Form Wrappers & Editorial
  * Primitives"; 2.4.1 grows the banner variant/action API, the prose
@@ -59,21 +59,25 @@ export function CarouselItem({ className, children }) {
 /**
  * `<Carousel>` — the horizontal scroll strip.
  *
- * FOUR justified elements (the mechanics + the position readout, none
- * decorative): `<div class="ptp-carousel">` → the previous button
- * (ghost, ChevronLeft) → `<div class="ptp-carousel__track"
- * tabIndex={0} role="region" aria-label={label}>` (the scroll
- * container; keyboard focusable so arrow-key/scroll scrolling needs no
- * button) → `<span class="ptp-carousel__indicator" aria-live="polite">`
- * (2.4.1: "n / count", mono tabular-nums — the scroll position made
- * legible; aria-live polite so scroll users hear the page turn without
- * a focus grab) → the next button (ChevronRight). Buttons scroll by
- * ONE ITEM WIDTH via ref (`scrollBy({ left: ±itemWidth, behavior })`);
- * css scroll-snap-type: x mandatory re-snaps to the nearest item start,
- * so the stride is exact. Reduced motion → `behavior: "auto"`
- * (matchMedia read once). The indicator tracks the native scroll event,
+ * The mechanics row (2.4.1) + the DOT INDICATORS (2.6.0): a fragment of
+ * TWO siblings — `<div class="ptp-carousel">` (the previous button →
+ * the `<div class="ptp-carousel__track" tabIndex={0} role="region"
+ * aria-label={label}>` scroll container → the `<span
+ * class="ptp-carousel__indicator" aria-live="polite">` "n / count"
+ * readout → the next button) and, when children exist, `<div
+ * class="ptp-carousel__dots">` below the row: one button per child,
+ * the active dot tracking the SAME rAF-throttled scroll index as the
+ * indicator, `[data-active="true"]` painting the Flamingo pill.
+ * Dots are clickable — `scrollTo({ left: index * itemWidth })` — with
+ * per-dot aria-labels ("Go to item n"). Buttons scroll by ONE ITEM
+ * WIDTH via ref (`scrollBy({ left: ±itemWidth, behavior })`); css
+ * scroll-snap-type: x mandatory re-snaps to the nearest item start, so
+ * the stride is exact. Reduced motion → `behavior: "auto"` (matchMedia
+ * read once). The indicator + dots track the native scroll event,
  * rAF-throttled (one state write per frame), with the owner-spec'd
- * index formula `Math.round(scrollLeft / itemWidth) + 1`.
+ * index formula `Math.round(scrollLeft / itemWidth) + 1`. The track's
+ * scrollbar is hidden (css: scrollbar-width none + webkit display
+ * none) — the dots ARE the position affordance.
  *
  * @example
  * ```tsx
@@ -110,9 +114,21 @@ export function Carousel({ label, children }) {
             behavior: reduceMotion.current ? "auto" : "smooth",
         });
     };
+    // DOT CLICK (2.6.0): scroll straight to the item's snap offset — the
+    // same reduced-motion fallback as the chevrons.
+    const scrollToIndex = (index) => {
+        const track = trackRef.current;
+        if (track === null)
+            return;
+        track.scrollTo({
+            left: index * itemWidthOf(track),
+            behavior: reduceMotion.current ? "auto" : "smooth",
+        });
+    };
     // THE INDICATOR TRACKER (2.4.1) — rAF-throttled: coalesce the
     // per-pixel scroll events into one state write per frame. The index
     // formula is the owner spec: Math.round(scrollLeft / itemWidth) + 1.
+    // 2.6.0: the dot indicators read the SAME page state (1-based).
     const handleScroll = () => {
         if (frameRef.current !== null)
             return;
@@ -124,7 +140,7 @@ export function Carousel({ label, children }) {
             setPage(Math.round(track.scrollLeft / itemWidthOf(track)) + 1);
         });
     };
-    return (_jsxs("div", { className: "ptp-carousel", children: [_jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Previous", onClick: () => scrollByItem(-1), children: _jsx(Icon, { name: "ChevronLeft", "aria-hidden": true }) }), _jsx("div", { className: "ptp-carousel__track", ref: trackRef, tabIndex: 0, role: "region", "aria-label": label, onScroll: handleScroll, children: children }), _jsxs("span", { className: "ptp-carousel__indicator", "aria-live": "polite", children: [page, " / ", count] }), _jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Next", onClick: () => scrollByItem(1), children: _jsx(Icon, { name: "ChevronRight", "aria-hidden": true }) })] }));
+    return (_jsxs(_Fragment, { children: [_jsxs("div", { className: "ptp-carousel", children: [_jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Previous", onClick: () => scrollByItem(-1), children: _jsx(Icon, { name: "ChevronLeft", "aria-hidden": true }) }), _jsx("div", { className: "ptp-carousel__track", ref: trackRef, tabIndex: 0, role: "region", "aria-label": label, onScroll: handleScroll, children: children }), _jsxs("span", { className: "ptp-carousel__indicator", "aria-live": "polite", children: [page, " / ", count] }), _jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Next", onClick: () => scrollByItem(1), children: _jsx(Icon, { name: "ChevronRight", "aria-hidden": true }) })] }), count > 0 && (_jsx("div", { className: "ptp-carousel__dots", children: Array.from({ length: count }, (_, index) => (_jsx("button", { type: "button", className: "ptp-carousel__dot", "data-active": index === page - 1 ? "true" : "false", "aria-label": `Go to item ${index + 1}`, onClick: () => scrollToIndex(index) }, index))) }))] }));
 }
 /**
  * `<ProseBlock>` — the editorial slot (2.4.0).

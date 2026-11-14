@@ -55,9 +55,15 @@
   gap: var(--space-standard);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
-  /* The focusable scroll region rings with the doctrine outline. */
+  /* 2.6.0 — SCROLLBAR-FREE: the dot indicators below the row are the
+     position affordance now; the native bar is visual noise (owner
+     mandate). Both spellings, for every engine. */
+  scrollbar-width: none;
 }
+.ptp-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+/* The focusable scroll region rings with the doctrine outline. */
 .ptp-carousel__track:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
@@ -104,6 +110,41 @@
   font-size: 0.75rem;
   flex: none;
   white-space: nowrap;
+}
+
+/* 2.6.0 — the dot indicators: a tight flex row under the mechanics,
+   one button per child. Rest: a 0.375rem muted circle; ACTIVE
+   ([data-active="true"] — the attribute IS the state, the nav/tabs
+   contract): the Flamingo 1.5rem pill. Clickable (the component
+   scrolls to the index); per-dot aria-labels; the doctrine focus ring. */
+.ptp-carousel__dots {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  margin-top: var(--space-tight);
+}
+.ptp-carousel__dot {
+  appearance: none;
+  background: color-mix(in srgb, var(--text-muted) 50%, transparent);
+  border: none;
+  border-radius: 999px;
+  width: 0.375rem;
+  height: 0.375rem;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+  transition: var(--transition-standard);
+}
+.ptp-carousel__dot:hover {
+  background: var(--color-cake-secondary);
+}
+.ptp-carousel__dot:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+.ptp-carousel__dot[data-active="true"] {
+  background: var(--color-cake-primary);
+  width: 1.5rem;
 }
 
 /* -- the prose block: the editorial slot (styled descendants) ---------------- */
@@ -245,6 +286,7 @@
    JS-side; this kills the css half). */
 @media (prefers-reduced-motion: reduce) {
   .ptp-carousel__btn,
+  .ptp-carousel__dot,
   .ptp-announcement__action,
   .ptp-announcement__close {
     transition: none;

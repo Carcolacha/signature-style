@@ -919,7 +919,16 @@ function CheckInForm({
 
   return (
     <form className="hub__checkin" data-testid="guest-form" onSubmit={handleSubmit}>
-      <FormField label="Name" htmlFor="checkin-name" required>
+      {/* 2.6.0 form audit: the Name field carries its format rule as a
+          description — rendered ABOVE the input (the defect-#2 anatomy;
+          every FormField description in this playground greps desc-
+          before-well). */}
+      <FormField
+        label="Name"
+        htmlFor="checkin-name"
+        required
+        description="The guest's full name — as it reads on the invite"
+      >
         <Input
           id="checkin-name"
           required
@@ -1249,9 +1258,19 @@ function FormsModule() {
   const [password, setPassword] = useState("");
   const [rsvp, setRsvp] = useState("attending");
 
-  // Live validation rules (2.5.0): the value passes → validMessage; the
-  // value is non-empty and fails → error. Empty stays quiet — an empty
-  // field is not yet wrong.
+  // Live validation rules (2.5.0, audited 2.6.0): the value passes →
+  // validMessage; the value is non-empty and fails → error. Empty (or
+  // a pristine pre-filled value like the placeholder's example "120")
+  // stays quiet — a field the visitor never touched is not yet wrong.
+  // THE 2.6.0 AUDIT: the matrix Contribution field used to boot in the
+  // ERROR state (empty → "enter an amount" on first paint); it now
+  // skips pristine exactly like the Postal field and the check-in form.
+  const contributionTrimmed = contribution.trim();
+  const contributionValid = /^\d+$/.test(contributionTrimmed);
+  const contributionError =
+    contributionTrimmed !== "" && !contributionValid
+      ? "Contributions are numbers only"
+      : undefined;
   const postalValid = /^\d{5}$/.test(postal);
   const postalError = postal !== "" && !postalValid ? "Postal codes are 5 digits" : undefined;
 
@@ -1279,23 +1298,22 @@ function FormsModule() {
             composition demo (the dollar sign moved OUT of the label and
             INTO the mono chip, flush with the cursor in the well).
             2.5.0: the field rides the well — the Input is bare, the
-            well owns the border. */}
+            well owns the border. 2.6.0 audit: the field no longer BOOTS
+            in the error state — empty stays pristine-quiet, valid values
+            earn the validMessage, only non-empty invalid input shakes. */}
         <FormField
           label="Contribution"
           htmlFor="matrix-share"
           prefix="$"
           description="Numbers only · e.g., 120"
-          error={
-            contribution.trim() === ""
-              ? "Every share keeps the pot honest — enter an amount"
-              : undefined
-          }
+          validMessage={contributionValid ? "Valid amount" : undefined}
+          error={contributionError}
         >
           <Input
             id="matrix-share"
             placeholder="120"
             inputMode="numeric"
-            aria-invalid={contribution.trim() === "" || undefined}
+            aria-invalid={!!contributionError || undefined}
             value={contribution}
             onChange={(event) => setContribution(event.target.value)}
           />

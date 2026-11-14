@@ -155,6 +155,9 @@
     font-size: 0.875rem; /* 14px — an 8px-grid half-step */
     font-weight: 400;
     width: 100%;
+    /* OWNER MANDATE (2.6.0): vertical resize only — the corner grip
+       never drags the well off the layout's horizontal rhythm. */
+    resize: vertical;
     transition: var(--transition-standard);
   }
   .ptp-textarea:focus {
