@@ -1,7 +1,7 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "3.4.0",
-  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.4.0 Zero-React Native Web Components: SIX framework-free custom elements — sig-surface-card, sig-badge, sig-progress-bar, sig-stat-ring, sig-callout, sig-carousel — driven entirely by the --sig-* tokens via import \"@edwyn/signature-style/wc\"; 3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init`).",
+  "version": "3.5.0",
+  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.5.0 The Visual Cortex as a Product: packages/signature-mcp — the standalone 4-tool MCP server inspect_layout · audit_contrast · audit_e1_shadows · capture_viewport_matrix, attach configs in packages/signature-mcp/README.md; 3.4.0 Zero-React Native Web Components: SIX framework-free custom elements — sig-surface-card, sig-badge, sig-progress-bar, sig-stat-ring, sig-callout, sig-carousel — driven entirely by the --sig-* tokens via import \"@edwyn/signature-style/wc\"; 3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init`).",
   "type": "module",
   "license": "MIT",
   "author": "edwyn",

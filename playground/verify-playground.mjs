@@ -1324,8 +1324,9 @@ if (oldTimeline !== null) {
 //                              quartet ships)
 //   scripts/verify-wc.mjs    — NEW: the verify:wc gate (zero-react greps
 //                              + the Playwright render proof)
-//   SYSTEM_PROMPT.md         — title → v3.6 + the "Web Components
-//                              (Zero-React Surface)" subsection
+//   SYSTEM_PROMPT.md         — title → v3.7 + the "The Visual Cortex as
+//                              a Product" subsection (the four MCP tools,
+//                              the attach configs, the CI certifications)
 //   tools/mcp-viz/server.ts  — version string → 3.4.0 + the six sig-*
 //                              element selectors join the sweep
 //   tools/mcp-viz/smoke.mjs  — the (s2b) studio wc hits proof
@@ -2192,9 +2193,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.6")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.7")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.6 (3.4.0: the title steps to v3.6 with the Web Components (Zero-React Surface) subsection — the codex grows the six sig-* elements, the attribute tables, and the tokens-prerequisite note)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.7 (3.5.0: the title steps to v3.7 with the The Visual Cortex as a Product subsection — the codex grows the four MCP tools' param table, the attach-configs pointer, and the CI certification story)",
   );
 }
 

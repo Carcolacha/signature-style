@@ -292,6 +292,106 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 3.5.0 — Standalone Visual Cortex MCP Server & CI Pixel-Diff Certification
+
+Milestone 4 of 4 — **the ecosystem closer**. Zero component changes
+(`css/`, `react/`, `wc/`, `dist/wc/`, `demo/`, `scripts/verify.mjs`,
+`shared/`, `docs/` byte-frozen; the token VALUES + the 50-token whitelist
+byte-frozen). The MCP package is NEW, the certifications are NEW scripts,
+`ci.yml` is NEW, and the repo-local inspector is retired upstream into its
+own product.
+
+#### The ecosystem, shipped across v3.2.0 → v3.5.0
+
+| Milestone | Version | What shipped | The proof it stays true |
+|---|---|---|---|
+| Multi-Theme Surface Engine | v3.2.0 | The canonical surface triad — Mocha (default) / OLED true-black / Daylight high-contrast — via `data-sig-theme`, with computed daylight ink variants and the `data-sig-radius` geometry presets | `verify:contrast` (ct1–ct7, all 26 tokens × 3 themes) |
+| Pure npx Scaffolder | v3.3.0 | `npx @edwyn/signature-style init` — resolved `signature-tokens.css`, zero dependencies, `--template bento` starter | `verify:cli` (cli1–cli3, drift-gated theme map) |
+| Zero-React Web Components | v3.4.0 | Six framework-free custom elements (`import "@edwyn/signature-style/wc"`) — shadow DOM, token-driven, attribute-reactive | `verify:wc` (zero-react greps + a real Chromium render proof) |
+| Visual Cortex as a Product | v3.5.0 | `packages/signature-mcp` — the standalone 4-tool MCP server (inspect_layout · audit_contrast · audit_e1_shadows · capture_viewport_matrix) + the CI certification battery | `verify:mcp` (raw JSON-RPC smoke) · `verify:a11y` · `verify:visual-diff` |
+
+#### What shipped in 3.5.0
+
+- **`packages/signature-mcp` (NEW, private `@edwyn/signature-mcp` v1.0.0)** —
+  the Visual Cortex as a product: a standalone MCP stdio server giving AI
+  sessions spatial awareness of the rendered app. FOUR tools —
+  `inspect_layout` (the verbatim port of the proven bounding-rect mapper),
+  `audit_contrast` (runtime WCAG ratios: effective background walked from
+  the first painted ancestor → body/html → the documented `#1E1E2E`
+  assumption; effective text color alpha-blended; worst-first failure
+  summary at the 3.0 floor), `audit_e1_shadows` (the e1 treaty
+  operationalized at runtime: every computed box-shadow with an
+  `allowed` verdict against the sanctioned surface hooks), and
+  `capture_viewport_matrix` (the doctrine 4-viewport screenshot sweep).
+  Playwright pinned EXACTLY `1.65.0` — the repo's installed Chromium, no
+  second download. Attach configs for **VS Code** (`.vscode/mcp.json`),
+  **Claude Code** (`claude mcp add` + the `mcpServers` JSON), and
+  **OpenCode** (`opencode.json` `mcp.servers`, per
+  <https://opencode.ai/docs/mcp-servers>) in
+  [`packages/signature-mcp/README.md`](./packages/signature-mcp/README.md) —
+  all pointing at `node <abs>/packages/signature-mcp/dist/server.js`.
+  First-run evidence: 61 layout hits · contrast **49 pass / 0 fail** ·
+  e1 **14 sanctioned / 0 violations** (545 elements swept) · 4 viewport
+  PNGs (33–116 KB).
+- **`tools/mcp-viz/` DELETED** — the inspector's logic lives on in the
+  package (the sweep ported verbatim, server version 3.5.0). The six
+  playground probes retarget their playwright `createRequire` to the
+  package manifest. `npm run inspect` now points at the package.
+- **`verify:mcp` rewired** — `scripts/verify-mcp.mjs` (NEW) is the proven
+  v2.7.0 JSON-RPC harness grown to the four tools: exactly-4 tools/list,
+  ≥20 layout hits, the studio zero-react proof carried, contrast
+  pass/fail summary, e1 sanctioned/violations, exactly-4 matrix paths
+  with bytes on disk.
+- **`verify:visual-diff` (NEW)** — golden-master pixel certification:
+  5 committed baselines (`scripts/goldens/*.png`, the 5 real views at
+  1440×900 full-page), pixelmatch at 0.1% tolerance. Determinism:
+  `reducedMotion: "reduce"` + `animations: "disabled"` + 800ms settle —
+  measured ZERO diff pixels run-to-run. **Negative proof
+  (restore-verified):** nudging `--bg-surface` flipped ALL 5 views to
+  FAIL (35–66% diff) → restore → PASS, `css/` byte-identical. The
+  negative test ALSO caught pixelmatch's default `threshold: 0.1` YIQ
+  dead-zone swallowing the uniform ~10%-luminance theme shift (0 flagged
+  pixels at 0.1 vs 66% at 0.05) — the gate pins `threshold: 0.05`.
+  Font-risk honesty: goldens are machine-dependent; `update:snapshots`
+  regenerates; CI runs this suite `continue-on-error` while LOCAL runs
+  are the strict gate.
+- **`verify:a11y` (NEW)** — keyboard certification across the 5 views:
+  60-stop tab walks (every stop interactive, no focus traps, DOM-order
+  advance with ≤1 clean wrap), the doctrine focus halo (≥2px) at every
+  stop with the ring ink asserted as `var(--color-cake-primary)` —
+  measured **100% cake** (58/58 · 60/60 · 9/9 · 46/46) — the toast live
+  region (`role="status" aria-live="polite"`) firing and updating, the
+  role census (progressbar+valuenow ×4, tablist/tab+aria-selected,
+  radiogroup), and injected axe-core (offline-safe, bundled devDep) at
+  **zero critical**. Two serious findings REPORTED, owner-deferred:
+  `aria-hidden-focus` (1 node) and axe's `color-contrast` at its 4.5:1
+  AA bar (73 nodes — the package doctrine pins 3.0/3.1 for the token
+  inks, enforced at runtime by `audit_contrast`). One real css finding:
+  the master-index gateway buttons (`.hub__card--gateway`) still carry
+  the UA-default 1px ring — enumerated as the gate's single exception
+  (`css/` is frozen this release).
+- **CI (NEW `.github/workflows/ci.yml`)** — push(main) + pull_request;
+  two parallel jobs: `gates` (typecheck · verify · verify:standalone ·
+  verify:contrast · verify:cli · build · build:wc · verify:wc ·
+  verify:playground · verify:mcp — with Chromium installed and the dev
+  server started detached + curl-retry wait-for-200 for the browser
+  suites) and `a11y-visual` (verify:a11y strict · verify:visual-diff
+  `continue-on-error` per the font risk). `publish.yml` untouched.
+  Badge: *placeholder — add after the first remote push* (no remote
+  exists yet; nothing has run on GitHub CI).
+- **Gates** — `verify:playground` evolves: (m1)/(m2)/(dd6) retargeted to
+  the package; (b7)/(n-hub4) rebased with the enumerated 3.5.0
+  authorization (six `tools/mcp-viz` deletions + the certification
+  scripts + `goldens/`); NEW (v35) certification gate (the 4-tool
+  source, private manifest, the exact playwright pin, zero extra deps,
+  the CI workflow needles, exactly-5 goldens); the codex title steps to
+  v3.7. `tokens.json` gains ONLY `meta.version → 3.5.0`.
+- **npm pack stays EXACTLY 64 files** — `packages/`, `scripts/goldens/`,
+  `.github/` are outside the files allowlist (the (b3) proof runs on
+  every `verify:playground`).
+- **`space/`** — the memorial exhibit is Oscar's; untouched, outside
+  this repo's scope.
+
 ### 3.4.0 — Zero-React Native Web Components (`@edwyn/signature-style/wc`)
 
 Milestone 3 of the ecosystem roadmap. The Signature Style escapes React:

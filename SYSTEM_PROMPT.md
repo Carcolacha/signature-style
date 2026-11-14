@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v3.6 — Multi-Theme Surface Engine (Standalone Identity)
+# System Instruction: The Dynamic Signature Engine v3.7 — Multi-Theme Surface Engine (Standalone Identity)
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -80,6 +80,19 @@ The same Signature Style as **six framework-free custom elements** for Vue/Svelt
   ```
   Attributes only — no props, no events, no framework runtime. `setAttribute("value", "40")` is the whole reactive story.
 - **The RoE holds inside the shadows:** every shadow style string is 100% `var()`/`color-mix` (zero hex); `--sig-*` accents paint content only (badge variants, ring arcs, callout strips, card underlines) — never structural chrome. The e1 zero-shadow law is mirrored: the sanctioned ambient elevation shadows exist ONLY on the surface-card's inner `.card` element.
+
+## The Visual Cortex as a Product (3.5.0):
+The engine now SHIPS ITS OWN EYES: `packages/signature-mcp` — a standalone MCP stdio server (private `@edwyn/signature-mcp`, `bin: signature-mcp`) that gives any AI session spatial awareness of the RENDERED app — the AI can measure what it styles. Build: `npm --prefix packages/signature-mcp run build`; prerequisite: `npx playwright install chromium` once + the dev server (`npm run playground`, default `http://localhost:5173` — every tool degrades into a graceful error naming that command). Playwright is pinned EXACTLY to the repo's installed version (no second browser download). The four tools:
+
+| Tool | Params | Returns |
+|---|---|---|
+| `inspect_layout` | `url?` · `selectors?` (default the 28-selector anatomy sweep) | per-element `{selector, tag, classes, rect, text, visible}` + per-class coverage |
+| `audit_contrast` | `url?` · `selectors?` · `minRatio?` (default 3.0) | per-element `{selector, fg, bg, ratio, pass}` — effective background = first painted ancestor → body/html → the documented `#1E1E2E` assumption; worst-first failure summary |
+| `audit_e1_shadows` | `url?` | every computed box-shadow with an `allowed` verdict (the e1 sanction: `.sig-surface-card` / `.sig-card` / `[data-elevation]`) + violations list + sanctioned count — the e1 treaty OPERATIONALIZED at runtime |
+| `capture_viewport_matrix` | `url?` · `viewports?` (default 375×812 · 768×1024 · 1440×900 · 1920×1080) · `fullPage?` · `path?` | flat matrix `[{viewport, path, bytes}]` — one PNG per viewport |
+
+- **Attach configs** (full copies in `packages/signature-mcp/README.md`): VS Code `.vscode/mcp.json` (`servers` shape), Claude Code (`claude mcp add signature-mcp -- node <abs>/packages/signature-mcp/dist/server.js` + the `mcpServers` JSON), OpenCode V2 `opencode.json` (`mcp.servers`, <https://opencode.ai/docs/mcp-servers>). All point at `node <abs>/packages/signature-mcp/dist/server.js`.
+- **The certifications** (the CI story): `verify:mcp` (the raw JSON-RPC smoke — exactly the four tools, layout hits, contrast summary, e1 verdicts, 4 viewport paths), `verify:a11y` (keyboard tab-order + the doctrine focus halo ≥2px in `var(--color-cake-primary)` + the toast live region + the role census + axe zero-critical), `verify:visual-diff` (pixelmatch golden masters of the 5 views at 1440×900, 0.1% tolerance — `update:snapshots` regenerates; font-dependent by nature, so CI runs it `continue-on-error` while LOCAL runs are the strict gate). `.github/workflows/ci.yml` wires both suites in parallel jobs on every push/PR. The retired `tools/mcp-viz/` inspector lives on INSIDE the package verbatim.
 
 ## The Chromatic Palette (Content-Only Tokens):
 Twenty-six theme-independent CONTENT colors (v2.4 origin; 2.5.0 adds --sig-yellow, the strength meter's Fair stage; 2.9.1 re-inks mauve-bright for zero contrast debt; 3.0.0 the 16-color expansion — --sig-blue RETIRES, its value surviving as --sig-cobalt; 3.1.0 the --sig-* rename; 3.2.0 adds the daylight ink variants), defined ONCE in `:root` and inherited by every surface theme untouched (daylight re-inks 20 of them — see the Multi-Theme Surface Engine above):
