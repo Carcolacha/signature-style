@@ -14,7 +14,7 @@
  * state survives any DOM shape and any consumer CSS.
  *
  * WRAPPER JUSTIFICATION (the one sanctioned wrapper in this file):
- * `<DataTable>` renders `<div class="ptp-table-scroll">` around the bare
+ * `<DataTable>` renders `<div class="sig-table-scroll">` around the bare
  * `<table>`. This wrapper is STRUCTURAL, not decorative — a table
  * element ignores `overflow` in table layout, so scroll containment on
  * narrow viewports is impossible without a block ancestor; the wrapper
@@ -31,7 +31,7 @@ import type { ReactNode } from "react";
 /**
  * One column of a `<DataTable>`: the row key it reads, the header text,
  * and whether the cells carry numbers (right-aligned tabular-nums via
- * the .ptp-data-table__num class).
+ * the .sig-data-table__num class).
  */
 export interface DataTableColumn {
     /** The `rows` record key this column renders. */
@@ -42,10 +42,10 @@ export interface DataTableColumn {
     numeric?: boolean;
     /**
      * Explicit column alignment, applied to BOTH the th and the td of
-     * this column via the .ptp-data-table__align-* utility classes
+     * this column via the .sig-data-table__align-* utility classes
      * (css/data.css). 2.4.1 — the intuitive-anatomy fix: `numeric` alone
      * right-aligned the CELLS but left the HEADER left-aligned (the
-     * `.ptp-data-table thead th` rule outranks the bare `__num` class in
+     * `.sig-data-table thead th` rule outranks the bare `__num` class in
      * the cascade — 0,1,2 beats 0,1,0), so a numeric column read as two
      * disconnected halves. `align` is the owner-spec'd repair: state it
      * explicitly and the header sits flush over its values. COMPOSES with
@@ -69,12 +69,12 @@ export interface DataTableProps {
 /**
  * `<DataTable>` — the ledger table.
  *
- * `<div class="ptp-table-scroll">` (the justified scroll-containment
+ * `<div class="sig-table-scroll">` (the justified scroll-containment
  * wrapper — the mobile strategy, see the module docstring) →
- * `<table class="ptp-data-table">` → optional `<caption>`,
+ * `<table class="sig-data-table">` → optional `<caption>`,
  * `<thead>><tr><th scope="col">`, `<tbody>><tr><td>`. Numeric columns
- * wear .ptp-data-table__num on BOTH the th and the td (right-aligned,
- * tabular-nums); an explicit `align` wears the .ptp-data-table__align-*
+ * wear .sig-data-table__num on BOTH the th and the td (right-aligned,
+ * tabular-nums); an explicit `align` wears the .sig-data-table__align-*
  * utility on both too (2.4.1 — the header finally sits flush over its
  * values). No sorting, no pagination, no virtualization —
  * the pruning protocol: a static table is the feature.
@@ -116,7 +116,7 @@ export interface TabsProps {
 /**
  * `<Tabs>` — the controlled module switcher.
  *
- * `<div role="tablist" aria-label={label} class="ptp-tabs">` with one
+ * `<div role="tablist" aria-label={label} class="sig-tabs">` with one
  * `<button type="button" role="tab" aria-selected>` per tab. ZERO
  * .is-active classes — attribute-driven, the same contract as the nav's
  * [aria-current="page"]: css/data.css styles [aria-selected="true"]
@@ -151,7 +151,7 @@ export interface CalloutProps {
 /**
  * `<Callout>` — the persistent note (Toast's sibling, never dismissing).
  *
- * ONE `<div class="ptp-callout" role="note">` with `--status` set INLINE
+ * ONE `<div class="sig-callout" role="note">` with `--status` set INLINE
  * from the status → token map (info → --party-sky, success →
  * --party-green, warning → --party-peach); css/data.css paints the 4px
  * left strip from it. PERSISTENT by contract: no auto-dismiss, no timer,

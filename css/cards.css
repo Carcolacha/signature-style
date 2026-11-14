@@ -5,21 +5,21 @@
    primitives.css, before editorial.css).
 
    FOUR HAND-ROLLED ARCHETYPES (2.5.0, react/cards.tsx):
-    - .ptp-action-tile (+ __well / __body / __kbd) — the ONE-button
+    - .sig-action-tile (+ __well / __body / __kbd) — the ONE-button
       action row. ZERO divs: spans only. The well is a 40px rounded
       --bg-inset disc for the icon; the kbd chip is the standalone
       cousin of the prose kbd (editorial.css scopes its kbd under
-      .ptp-prose — cards own theirs here).
-    - .ptp-flip-card (+ __inner / __face / __front / __back / __tag) —
+      .sig-prose — cards own theirs here).
+    - .sig-flip-card (+ __inner / __face / __front / __back / __tag) —
       the 3d reveal. ONE button[aria-pressed]; __inner is the stage
       (preserve-3d, the owner mechanical bezier on the rotateY); faces
       are absolutely positioned (the button's min-height owns the box)
       and backface-hidden; the back pre-rotates 180°.
-    - .ptp-accordion (+ __summary / __chevron / __body) — ZERO
+    - .sig-accordion (+ __summary / __chevron / __body) — ZERO
       JavaScript: details/summary. The marker is stripped both ways
       (list-style + ::-webkit-details-marker); details[open] rotates
       the chevron — the attribute IS the state.
-    - .ptp-matchup (+ __title / __side / __vs / __stakes) — the 1v1
+    - .sig-matchup (+ __title / __side / __vs / __stakes) — the 1v1
       grid: 1fr auto 1fr, centered sides, mono VS pill, stakes footer
       spanning the grid.
 
@@ -39,7 +39,7 @@
     - .sig-profile-card (+ __id / __name / __role / __stats / __stat /
       __stat-value / __stat-label / __skills) — avatar + role + tabular
       stats + PartyBadge skills.
-    - .ptp-chronicle (+ __item / __node / __tag / __body / __story /
+    - .sig-chronicle (+ __item / __node / __tag / __body / __story /
       __stat) — the release chronicle: a 2px hairline spine (::before),
       12px accent-ringed nodes parked over it, mono accent tags. The
       "Night of Versions" memorial, official.
@@ -52,7 +52,7 @@
    The wrapper is the playground's `.sig-cell { container-type:
    inline-size; }` class — containment NEVER goes on the queried
    element itself (circular sizing). Reflow table:
-     - .ptp-matchup        @container (max-width: 380px)  → sides stack
+     - .sig-matchup        @container (max-width: 380px)  → sides stack
                            vertically (1fr), the VS pill becomes a
                            horizontal hairline divider; ≥ 380px → the
                            historical 1fr auto 1fr side-by-side (base).
@@ -66,8 +66,8 @@
    Media queries are NOT used here — the card answers its CONTAINER,
    not the viewport (two cards in one row can reflow differently).
 
-   3.0.0 CARD PARITY — the three hand-rolled archetypes (.ptp-flip-card,
-   .ptp-accordion, .ptp-matchup) become SELF-CONTAINED surfaces: the card
+   3.0.0 CARD PARITY — the three hand-rolled archetypes (.sig-flip-card,
+   .sig-accordion, .sig-matchup) become SELF-CONTAINED surfaces: the card
    owns var(--bg-surface) + the 1px glass-inset border (15% token mix —
    the surface-card derivation) + var(--radius-card) (3.0.0: cards earn
    rounder corners than the 6px controls) + min-height 220px, so a grid
@@ -77,12 +77,12 @@
 
    3.0.0 CHROMATIC ENRICHMENT — icon wells tint and cards gain a top
    accent:
-     - .ptp-action-tile__well (the icon disc) tints from the accent:
+     - .sig-action-tile__well (the icon disc) tints from the accent:
        color-mix(in srgb, var(--sig-accent, <teal fallback>) 12%,
        transparent) — a 12% tinted well. Cards under a [data-accent]
        ancestor (which defines --sig-accent inline) get the category
        color; bare consumers get the structural Teal fallback.
-     - [data-accent] .ptp-flip-card / .ptp-accordion / .ptp-matchup
+     - [data-accent] .sig-flip-card / .sig-accordion / .sig-matchup
        gain a chromatic TOP accent: border-top 2px solid color-mix(
        in srgb, var(--sig-accent) 45%, transparent). DISTINCT FROM THE
        TITLE UNDERLINE: the underline is the ruled-title treatment on
@@ -101,7 +101,7 @@
 @layer cascade {
 
   /* -- ActionTile ------------------------------------------------------------ */
-  .ptp-action-tile {
+  .sig-action-tile {
     display: flex;
     align-items: center;
     gap: var(--space-standard);
@@ -117,17 +117,17 @@
     color: var(--text-main);
     transition: var(--transition-standard), var(--transition-transform);
   }
-  .ptp-action-tile:hover {
+  .sig-action-tile:hover {
     border-color: var(--color-cake-secondary); /* teal hover — structural */
   }
-  .ptp-action-tile:active {
+  .sig-action-tile:active {
     transform: scale(0.98);
   }
-  .ptp-action-tile:focus-visible {
+  .sig-action-tile:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-action-tile__well {
+  .sig-action-tile__well {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -142,23 +142,23 @@
     color: var(--color-cake-secondary); /* the icon wears the Teal (structural) */
     flex: none;
   }
-  .ptp-action-tile__body {
+  .sig-action-tile__body {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
     min-width: 0;
   }
-  .ptp-action-tile__body strong {
+  .sig-action-tile__body strong {
     font-weight: 600;
     color: var(--text-main);
   }
-  .ptp-action-tile__body span {
+  .sig-action-tile__body span {
     color: var(--text-muted);
     font-size: 0.75rem;
   }
   /* The standalone shortcut chip — mono, inset, glyph-geometry padding
-     (the prose kbd contract, unscoped from .ptp-prose). */
-  .ptp-action-tile__kbd {
+     (the prose kbd contract, unscoped from .sig-prose). */
+  .sig-action-tile__kbd {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.625rem;
     color: var(--text-muted);
@@ -174,7 +174,7 @@
   /* 3.0.0 CARD PARITY: the card IS the surface now — bg-surface + the
      15% glass-inset border + var(--radius-card) + the 220px floor. The
      button owns the box; the faces ride INSIDE it (absolute, inset). */
-  .ptp-flip-card {
+  .sig-flip-card {
     position: relative;
     width: 100%;
     min-height: 220px; /* the parity floor — never a collapsed sliver */
@@ -187,11 +187,11 @@
     font-family: inherit;
     perspective: 800px;
   }
-  .ptp-flip-card:focus-visible {
+  .sig-flip-card:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-flip-card__inner {
+  .sig-flip-card__inner {
     display: block;
     position: relative;
     width: 100%;
@@ -199,10 +199,10 @@
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-style: preserve-3d;
   }
-  .ptp-flip-card[aria-pressed="true"] .ptp-flip-card__inner {
+  .sig-flip-card[aria-pressed="true"] .sig-flip-card__inner {
     transform: rotateY(180deg);
   }
-  .ptp-flip-card__face {
+  .sig-flip-card__face {
     position: absolute;
     inset: 0;
     display: flex;
@@ -215,10 +215,10 @@
     backface-visibility: hidden;
     overflow: hidden;
   }
-  .ptp-flip-card__back {
+  .sig-flip-card__back {
     transform: rotateY(180deg);
   }
-  .ptp-flip-card__tag {
+  .sig-flip-card__tag {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.625rem;
     letter-spacing: 0.2em;
@@ -229,13 +229,13 @@
   /* -- AccordionCard ------------------------------------------------------------ */
   /* 3.0.0 CARD PARITY: surface + glass hairline + radius-card + the
      220px floor (the details body grows the box from there). */
-  .ptp-accordion {
+  .sig-accordion {
     background: var(--bg-surface);
     border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
     border-radius: var(--radius-card);
     min-height: 220px;
   }
-  .ptp-accordion__summary {
+  .sig-accordion__summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -247,30 +247,30 @@
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .ptp-accordion__summary::-webkit-details-marker {
+  .sig-accordion__summary::-webkit-details-marker {
     display: none;
   }
-  .ptp-accordion__summary:focus-visible {
+  .sig-accordion__summary:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-accordion__chevron {
+  .sig-accordion__chevron {
     color: var(--text-muted);
     flex: none;
     transition: transform var(--transition-transform);
   }
-  .ptp-accordion[open] .ptp-accordion__chevron {
+  .sig-accordion[open] .sig-accordion__chevron {
     transform: rotate(180deg);
   }
-  .ptp-accordion__body {
+  .sig-accordion__body {
     padding: var(--space-tight) var(--space-standard) var(--space-standard);
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .ptp-accordion__body > :first-child {
+  .sig-accordion__body > :first-child {
     margin-top: 0;
   }
-  .ptp-accordion__body > :last-child {
+  .sig-accordion__body > :last-child {
     margin-bottom: 0;
   }
 
@@ -279,7 +279,7 @@
      read as a collapsed sliver in lone grid rows) — now it is the
      self-contained surface: bg-surface + the 15% glass hairline +
      radius-card + the 220px floor + its own padding. */
-  .ptp-matchup {
+  .sig-matchup {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     gap: var(--space-standard);
@@ -291,13 +291,13 @@
     min-height: 220px;
     padding: var(--space-standard);
   }
-  .ptp-matchup__title {
+  .sig-matchup__title {
     grid-column: 1 / -1;
     font-weight: 600;
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .ptp-matchup__side {
+  .sig-matchup__side {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -306,7 +306,7 @@
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .ptp-matchup__vs {
+  .sig-matchup__vs {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.75rem;
     font-weight: 600;
@@ -315,7 +315,7 @@
     border-radius: 999px;
     padding: var(--space-tight) var(--space-standard);
   }
-  .ptp-matchup__stakes {
+  .sig-matchup__stakes {
     grid-column: 1 / -1;
     background: var(--bg-inset);
     border-radius: var(--radius-ui);
@@ -330,9 +330,9 @@
      border-top. This is the CARD's identity mark, deliberately distinct
      from the ruled-title underline (the h2 treatment): a translucent
      2px wash at the top edge, not a solid rule under a title. */
-  [data-accent] .ptp-flip-card,
-  [data-accent] .ptp-accordion,
-  [data-accent] .ptp-matchup {
+  [data-accent] .sig-flip-card,
+  [data-accent] .sig-accordion,
+  [data-accent] .sig-matchup {
     border-top: 2px solid color-mix(in srgb, var(--sig-accent) 45%, transparent);
   }
 
@@ -342,11 +342,11 @@
      the query never matches → the historical side-by-side grid above
      keeps rendering (zero regression for non-container consumers). */
   @container (max-width: 380px) {
-    .ptp-matchup {
+    .sig-matchup {
       grid-template-columns: 1fr;
       gap: var(--space-tight);
     }
-    .ptp-matchup__vs {
+    .sig-matchup__vs {
       justify-self: stretch;
       display: flex;
       align-items: center;
@@ -354,8 +354,8 @@
       background: transparent;
       padding: 0;
     }
-    .ptp-matchup__vs::before,
-    .ptp-matchup__vs::after {
+    .sig-matchup__vs::before,
+    .sig-matchup__vs::after {
       content: "";
       flex: 1;
       height: 1px;
@@ -682,7 +682,7 @@
       column-gap: var(--space-standard);
       align-items: center;
     }
-    .sig-profile-card > .ptp-avatar {
+    .sig-profile-card > .sig-avatar {
       grid-column: 1;
       grid-row: 1 / span 3;
     }
@@ -700,7 +700,7 @@
   /* The spine: a relative <ol> with a 2px color-mix hairline running down
      its left rail. Items pad off the rail; nodes park absolutely OVER it.
      FLAT: hairlines only, zero shadows. */
-  .ptp-chronicle {
+  .sig-chronicle {
     position: relative;
     list-style: none;
     margin: 0;
@@ -709,7 +709,7 @@
     flex-direction: column;
     gap: var(--space-standard);
   }
-  .ptp-chronicle::before {
+  .sig-chronicle::before {
     content: "";
     position: absolute;
     top: 0.375rem;
@@ -718,7 +718,7 @@
     width: 2px;
     background: color-mix(in srgb, var(--text-muted) 20%, transparent);
   }
-  .ptp-chronicle__item {
+  .sig-chronicle__item {
     position: relative;
     display: flex;
     align-items: baseline;
@@ -729,7 +729,7 @@
   }
   /* The milestone dot: 12px circle, 2px accent ring, surface fill — it
      paints OVER the spine (the timeline-node precedent). */
-  .ptp-chronicle__node {
+  .sig-chronicle__node {
     position: absolute;
     left: calc(-0.375rem - 5px);
     top: 0.3em;
@@ -739,30 +739,30 @@
     border: 2px solid var(--accent);
     background: var(--bg-surface);
   }
-  .ptp-chronicle__tag {
+  .sig-chronicle__tag {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--accent);
     flex: none;
   }
-  .ptp-chronicle__body {
+  .sig-chronicle__body {
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
     gap: var(--space-tight);
     min-width: 0;
   }
-  .ptp-chronicle__body strong {
+  .sig-chronicle__body strong {
     font-weight: 600;
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .ptp-chronicle__story {
+  .sig-chronicle__story {
     font-size: 0.8125rem;
     color: var(--text-muted);
   }
-  .ptp-chronicle__stat {
+  .sig-chronicle__stat {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.6875rem;
     color: var(--text-muted);
@@ -772,27 +772,27 @@
      opacity swap (no transform): back hidden → both visible-stacked is
      avoided by keeping the faces absolute and swapping opacity. */
   @media (prefers-reduced-motion: reduce) {
-    .ptp-action-tile,
-    .ptp-flip-card__inner,
-    .ptp-accordion__chevron,
+    .sig-action-tile,
+    .sig-flip-card__inner,
+    .sig-accordion__chevron,
     .sig-reference-card__link,
     .sig-reference-card__anchor {
       transition: none;
     }
-    .ptp-flip-card__inner {
+    .sig-flip-card__inner {
       transform: none;
     }
-    .ptp-flip-card__face {
+    .sig-flip-card__face {
       backface-visibility: visible;
     }
-    .ptp-flip-card__back {
+    .sig-flip-card__back {
       transform: none;
       opacity: 0;
     }
-    .ptp-flip-card[aria-pressed="true"] .ptp-flip-card__back {
+    .sig-flip-card[aria-pressed="true"] .sig-flip-card__back {
       opacity: 1;
     }
-    .ptp-flip-card[aria-pressed="true"] .ptp-flip-card__front {
+    .sig-flip-card[aria-pressed="true"] .sig-flip-card__front {
       opacity: 0;
     }
   }

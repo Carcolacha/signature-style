@@ -55,8 +55,8 @@ import { memo, useId, useState } from "react";
 /**
  * `<ProgressBar>` — the party-colored budget bar.
  *
- * ONE `div.ptp-progress` (role="progressbar", full aria value
- * contract) containing ONE `div.ptp-progress__fill` whose width is
+ * ONE `div.sig-progress` (role="progressbar", full aria value
+ * contract) containing ONE `div.sig-progress__fill` whose width is
  * the clamped value. The fill animates `width 0.3s ease-out`
  * (owner-mandated physics; `prefers-reduced-motion` disables it).
  * The track is `var(--bg-inset)` with the 20% hairline boundary
@@ -65,7 +65,7 @@ import { memo, useId, useState } from "react";
  * to render.
  *
  * `limitText` (2.2.0): when present, the value's LIMIT is rendered as
- * a THIRD element — `div.ptp-progress__caption`, a mono tabular-nums
+ * a THIRD element — `div.sig-progress__caption`, a mono tabular-nums
  * caption AFTER the track inside a fragment (no wrapper around the
  * track itself; the ARIA contract is unchanged — the caption is
  * sibling metadata, not part of the progressbar). The budget use
@@ -103,7 +103,7 @@ export function ProgressBar({ value, colorToken, label, limitText }: ProgressBar
   return (
     <>
       <div
-        className="ptp-progress"
+        className="sig-progress"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={100}
@@ -111,12 +111,12 @@ export function ProgressBar({ value, colorToken, label, limitText }: ProgressBar
         aria-label={label}
       >
         <div
-          className="ptp-progress__fill"
+          className="sig-progress__fill"
           style={{ width: `${clamped}%`, background: `var(${colorToken})` }}
         />
       </div>
       {limitText !== undefined && (
-        <div className="ptp-progress__caption">{limitText}</div>
+        <div className="sig-progress__caption">{limitText}</div>
       )}
     </>
   );
@@ -178,7 +178,7 @@ export interface StatRingProps {
   /**
    * 3.0.0 — the denominator for the expandable detail strip (e.g. 200).
    * When present, the ring renders zoomable: hover/press scale(1.07),
-   * and a click toggles the `.ptp-ring__detail` strip below the ring —
+   * and a click toggles the `.sig-ring__detail` strip below the ring —
    * "{value}% · {numerator}/{denominator} {unit}" with the numerator
    * derived from the value (85% of 200 → "170 / 200 Guests"). The core
    * dash geometry + the ARIA contract are untouched.
@@ -279,16 +279,16 @@ export function StatRing({
     return ring;
   }
   return (
-    <div className="ptp-ring" data-expanded={detail || undefined}>
+    <div className="sig-ring" data-expanded={detail || undefined}>
       <div
-        className="ptp-ring__dial"
+        className="sig-ring__dial"
         style={{ width: size, height: size }}
         onClick={() => setDetail((current) => !current)}
       >
         {ring}
       </div>
-      <div className="ptp-ring__detail" data-open={detail || undefined}>
-        <div className="ptp-ring__detail-inner">
+      <div className="sig-ring__detail" data-open={detail || undefined}>
+        <div className="sig-ring__detail-inner">
           {clamped}% · {numerator} / {total} {unit ?? ""}
         </div>
       </div>
@@ -421,7 +421,7 @@ export interface StatCardProps {
 /**
  * `<StatCard>` — the KPI card (2.4.0).
  *
- * `<div class="ptp-stat-card">` → the label span (muted, uppercase,
+ * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
  * → optional delta span (`--up` → var(--party-green), `--down` →
  * var(--party-peach) — content outcomes, party tokens) → optional
@@ -452,14 +452,14 @@ export function StatCard({
 }: StatCardProps) {
   const deltaClass =
     deltaDirection !== undefined
-      ? ` ptp-stat-card__delta--${deltaDirection}`
+      ? ` sig-stat-card__delta--${deltaDirection}`
       : "";
   return (
-    <div className="ptp-stat-card">
-      <span className="ptp-stat-card__label">{label}</span>
-      <span className="ptp-stat-card__value">{value}</span>
+    <div className="sig-stat-card">
+      <span className="sig-stat-card__label">{label}</span>
+      <span className="sig-stat-card__value">{value}</span>
       {delta !== undefined && (
-        <span className={`ptp-stat-card__delta${deltaClass}`}>{delta}</span>
+        <span className={`sig-stat-card__delta${deltaClass}`}>{delta}</span>
       )}
       {sparklineData !== undefined && (
         <Sparkline
@@ -546,9 +546,9 @@ function verticalBar(datum: BarDatum, index: number, count: number, scaleMax: nu
   const trackHeight = (trackMax / scaleMax) * plotHeight;
   const barHeight = (datum.value / scaleMax) * plotHeight;
   return (
-    <g className="ptp-bars__group" key={`${datum.label}-${index}`}>
+    <g className="sig-bars__group" key={`${datum.label}-${index}`}>
       <rect
-        className="ptp-bars__track"
+        className="sig-bars__track"
         x={center - barWidth / 2}
         y={BAR_BASELINE - trackHeight}
         width={barWidth}
@@ -556,7 +556,7 @@ function verticalBar(datum: BarDatum, index: number, count: number, scaleMax: nu
         rx={3}
       />
       <rect
-        className="ptp-bars__bar"
+        className="sig-bars__bar"
         x={center - barWidth / 2}
         y={BAR_BASELINE - barHeight}
         width={barWidth}
@@ -564,10 +564,10 @@ function verticalBar(datum: BarDatum, index: number, count: number, scaleMax: nu
         rx={3}
         style={{ fill: `var(${token})` }}
       />
-      <text className="ptp-bars__value" x={center} y={BAR_BASELINE - barHeight - 6} textAnchor="middle">
+      <text className="sig-bars__value" x={center} y={BAR_BASELINE - barHeight - 6} textAnchor="middle">
         {datum.value}
       </text>
-      <text className="ptp-bars__label" x={center} y={BAR_LABEL_Y} textAnchor="middle">
+      <text className="sig-bars__label" x={center} y={BAR_LABEL_Y} textAnchor="middle">
         {datum.label}
       </text>
     </g>
@@ -586,9 +586,9 @@ function horizontalBar(datum: BarDatum, index: number, count: number, scaleMax: 
   const trackWidth = (trackMax / scaleMax) * plotWidth;
   const barWidth = (datum.value / scaleMax) * plotWidth;
   return (
-    <g className="ptp-bars__group" key={`${datum.label}-${index}`}>
+    <g className="sig-bars__group" key={`${datum.label}-${index}`}>
       <rect
-        className="ptp-bars__track"
+        className="sig-bars__track"
         x={HORIZONTAL_PLOT_X}
         y={center - barHeight / 2}
         width={trackWidth}
@@ -596,7 +596,7 @@ function horizontalBar(datum: BarDatum, index: number, count: number, scaleMax: 
         rx={3}
       />
       <rect
-        className="ptp-bars__bar"
+        className="sig-bars__bar"
         x={HORIZONTAL_PLOT_X}
         y={center - barHeight / 2}
         width={barWidth}
@@ -604,10 +604,10 @@ function horizontalBar(datum: BarDatum, index: number, count: number, scaleMax: 
         rx={3}
         style={{ fill: `var(${token})` }}
       />
-      <text className="ptp-bars__value" x={HORIZONTAL_PLOT_X + barWidth + 6} y={center + 4}>
+      <text className="sig-bars__value" x={HORIZONTAL_PLOT_X + barWidth + 6} y={center + 4}>
         {datum.value}
       </text>
-      <text className="ptp-bars__label" x={HORIZONTAL_LABEL_X} y={center + 4} textAnchor="end">
+      <text className="sig-bars__label" x={HORIZONTAL_LABEL_X} y={center + 4} textAnchor="end">
         {datum.label}
       </text>
     </g>
@@ -662,7 +662,7 @@ export const BarChart = memo(function BarChart({ data, orientation = "vertical",
     return (
       <line
         key={quota}
-        className="ptp-bars__refline"
+        className="sig-bars__refline"
         strokeDasharray="4 4"
         strokeWidth={1}
         {...geometry}
@@ -673,7 +673,7 @@ export const BarChart = memo(function BarChart({ data, orientation = "vertical",
     <svg
       role="img"
       aria-label={label ?? `Bar chart of ${data.length} categories`}
-      className="ptp-bars"
+      className="sig-bars"
       viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
     >
       {refLines}
@@ -790,7 +790,7 @@ export const AreaChart = memo(function AreaChart({
     return null;
   }
   // React ids carry colons — strip them so url(#id) parses everywhere.
-  const gradientId = `ptp-area${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const gradientId = `sig-area${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   const coords = areaCoords(points);
   const line = smoothPath(coords);
   const first = coords[0] as { x: number; y: number };
@@ -800,7 +800,7 @@ export const AreaChart = memo(function AreaChart({
     <svg
       role="img"
       aria-label={label ?? `Area chart of ${points.length} points`}
-      className="ptp-area"
+      className="sig-area"
       viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
       style={{ height }}
     >
@@ -810,9 +810,9 @@ export const AreaChart = memo(function AreaChart({
           <stop offset="100%" stopColor="transparent" />
         </linearGradient>
       </defs>
-      <path className="ptp-area__fill" d={area} fill={`url(#${gradientId})`} />
+      <path className="sig-area__fill" d={area} fill={`url(#${gradientId})`} />
       <path
-        className="ptp-area__line"
+        className="sig-area__line"
         d={line}
         style={{ stroke: `var(${colorToken})` }}
         strokeWidth={2}
@@ -823,19 +823,19 @@ export const AreaChart = memo(function AreaChart({
         const coord = coords[index];
         if (coord === undefined) return null;
         return (
-          <g className="ptp-area__spot" key={`${point.label}-${index}`}>
+          <g className="sig-area__spot" key={`${point.label}-${index}`}>
             <circle
-              className="ptp-area__point"
+              className="sig-area__point"
               cx={coord.x}
               cy={coord.y}
               r={4}
               strokeWidth={2}
               style={{ stroke: `var(${colorToken})` }}
             />
-            <text className="ptp-area__readout" x={coord.x} y={coord.y - 10} textAnchor="middle">
+            <text className="sig-area__readout" x={coord.x} y={coord.y - 10} textAnchor="middle">
               {point.value}
             </text>
-            <text className="ptp-area__xlabel" x={coord.x} y={AREA_LABEL_Y} textAnchor="middle">
+            <text className="sig-area__xlabel" x={coord.x} y={AREA_LABEL_Y} textAnchor="middle">
               {point.label}
             </text>
           </g>

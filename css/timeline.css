@@ -5,7 +5,7 @@
    1.8.0: glass header (color-mix translucency + backdrop-filter) and
    axis-aligned text (left/right items flow toward the center line).
    STILL ZERO box-shadow in this file — node elevation lives in the
-   PLAYGROUND composition layer (`.bento__card .ptp-timeline__node`),
+   PLAYGROUND composition layer (`.bento__card .sig-timeline__node`),
    per the owner doctrine; gate (e1) scans css/ and must stay green.
 
    DOM SHAPE (Pruning Protocol): the component renders ONE grid container
@@ -28,7 +28,7 @@
      var(--tl-content-right-col) right-side content column
    ========================================================================== */
 
-.ptp-timeline {
+.sig-timeline {
   --tl-node-size: 2.75rem;
   --tl-node-col: 2;
   --tl-content-left-col: 1;
@@ -44,7 +44,7 @@
 }
 
 /* The vertical line — a pseudo-element, NOT a div (Pruning Protocol). */
-.ptp-timeline::before {
+.sig-timeline::before {
   content: "";
   position: absolute;
   top: 0;
@@ -77,7 +77,7 @@
    sticky travel room; the group-first --tl-header-clearance (68px >
    62px) then does its designed job of keeping the stuck header off the
    first event. */
-.ptp-timeline__header {
+.sig-timeline__header {
   position: sticky;
   top: 0;
   /* 1.6.0: start, NOT stretch — a spanning item must not size its box to
@@ -101,7 +101,7 @@
 }
 
 /* Event content block — direct grid child, placed via inline gridColumn. */
-.ptp-timeline__item {
+.sig-timeline__item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -114,18 +114,18 @@
    right-side content reads left-edge-first. The 768px collapse below
    resets BOTH to text-align: left (everything stacks on the right
    there). */
-.ptp-timeline__item--left {
+.sig-timeline__item--left {
   grid-column: var(--tl-content-left-col);
   align-items: flex-end;
   text-align: right;
 }
 
-.ptp-timeline__item--right {
+.sig-timeline__item--right {
   grid-column: var(--tl-content-right-col);
   text-align: left;
 }
 
-.ptp-timeline__item--group-first {
+.sig-timeline__item--group-first {
   padding-top: var(--tl-header-clearance);
 }
 
@@ -147,7 +147,7 @@
    as unstyled stretched buttons with no circle, no ring, no size.
    Never put a comment-terminator sequence inside a CSS comment; this
    rule is the reason why. */
-.ptp-timeline__node {
+.sig-timeline__node {
   grid-column: var(--tl-node-col);
   align-self: start;
   /* 1.6.0: position: relative — the ::before center line is absolutely
@@ -171,28 +171,28 @@
   cursor: pointer;
 }
 
-.ptp-timeline__node:focus-visible {
+.sig-timeline__node:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
-.ptp-timeline__node--group-first {
+.sig-timeline__node--group-first {
   margin-top: var(--tl-header-clearance);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .ptp-timeline__node {
+  .sig-timeline__node {
     transition: var(--transition-standard);
   }
 }
 
-.ptp-timeline__title {
+.sig-timeline__title {
   margin: 0;
   color: var(--text-main);
   font-weight: 500;
 }
 
-.ptp-timeline__time {
+.sig-timeline__time {
   color: var(--text-muted);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.875rem;
@@ -200,18 +200,18 @@
 
 /* Mobile collapse: line to the far left, all events stack on the right. */
 @media (max-width: 768px) {
-  .ptp-timeline {
+  .sig-timeline {
     grid-template-columns: auto 1fr;
     --tl-node-col: 1;
     --tl-content-left-col: 2;
     --tl-content-right-col: 2;
   }
 
-  .ptp-timeline::before {
+  .sig-timeline::before {
     left: calc(var(--tl-node-size) / 2);
   }
 
-  .ptp-timeline__item {
+  .sig-timeline__item {
     align-items: flex-start;
     text-align: left;
   }
@@ -220,14 +220,14 @@
      single right-hand stack there is no axis to hug, so both modifiers
      go back to text-align: left (later in source order than the desktop
      rules, same specificity → the reset wins). */
-  .ptp-timeline__item--left,
-  .ptp-timeline__item--right {
+  .sig-timeline__item--left,
+  .sig-timeline__item--right {
     text-align: left;
   }
 }
 
 /* ==========================================================================
-   2.7.0 APPEND-ONLY BLOCK — <TimelineManager> (.ptp-tmanager namespace).
+   2.7.0 APPEND-ONLY BLOCK — <TimelineManager> (.sig-tmanager namespace).
    Everything ABOVE this block belongs to <EventTimeline> and is
    untouched (backward compatibility is the release's hard line); this
    block only APPENDS the manager's anatomy. Same doctrine as the rest
@@ -236,36 +236,36 @@
    ========================================================================== */
 
 /* The section root — one column, standard rhythm. */
-.ptp-tmanager {
+.sig-tmanager {
   display: flex;
   flex-direction: column;
   gap: var(--space-standard);
 }
 
 /* The composer — one flex row, 8px gaps; the title field breathes. */
-.ptp-tmanager__composer {
+.sig-tmanager__composer {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-tight);
 }
-.ptp-tmanager__composer .ptp-input {
+.sig-tmanager__composer .sig-input {
   flex: 1 1 12rem;
   width: auto;
 }
-.ptp-tmanager__composer .ptp-select {
+.sig-tmanager__composer .sig-select {
   width: auto;
 }
 
 /* The filter strip — attribute-driven pills (aria-pressed IS the state,
    the Tabs/GlobalNav lesson) + the tabular live counter. The active
    pill answers with the Flamingo underline — the nav visual contract. */
-.ptp-tmanager__filters {
+.sig-tmanager__filters {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
 }
-.ptp-tmanager__pill {
+.sig-tmanager__pill {
   padding: var(--space-tight) 0;
   border: none;
   border-bottom: 2px solid transparent;
@@ -277,18 +277,18 @@
   cursor: pointer;
   transition: var(--transition-standard);
 }
-.ptp-tmanager__pill:hover {
+.sig-tmanager__pill:hover {
   color: var(--text-main);
 }
-.ptp-tmanager__pill[aria-pressed="true"] {
+.sig-tmanager__pill[aria-pressed="true"] {
   border-bottom-color: var(--color-cake-primary);
   color: var(--text-main);
 }
-.ptp-tmanager__pill:focus-visible {
+.sig-tmanager__pill:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
-.ptp-tmanager__count {
+.sig-tmanager__count {
   margin-left: auto;
   color: var(--text-muted);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
@@ -297,14 +297,14 @@
 }
 
 /* The rows — settle toggle · body · delete; hairline-divided. */
-.ptp-tmanager__list {
+.sig-tmanager__list {
   margin: 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
 }
-.ptp-tmanager__row {
+.sig-tmanager__row {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
@@ -314,7 +314,7 @@
 
 /* The settle toggle — hairline circle; aria-pressed fills party green
    (settled is a STATE; the toggle is the only place it turns content-green). */
-.ptp-tmanager__settle {
+.sig-tmanager__settle {
   display: grid;
   place-items: center;
   width: 2rem;
@@ -328,18 +328,18 @@
   cursor: pointer;
   transition: var(--transition-standard);
 }
-.ptp-tmanager__settle[aria-pressed="true"] {
+.sig-tmanager__settle[aria-pressed="true"] {
   border-color: var(--party-green);
   background: color-mix(in srgb, var(--party-green) 20%, transparent);
   color: var(--party-green);
 }
-.ptp-tmanager__settle:focus-visible {
+.sig-tmanager__settle:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
 /* The body — the row's inspector button: date, title, category badge. */
-.ptp-tmanager__body {
+.sig-tmanager__body {
   display: flex;
   flex: 1 1 auto;
   flex-wrap: wrap;
@@ -354,33 +354,33 @@
   cursor: pointer;
   transition: var(--transition-standard);
 }
-.ptp-tmanager__body:hover {
+.sig-tmanager__body:hover {
   color: var(--color-cake-primary);
 }
-.ptp-tmanager__body:focus-visible {
+.sig-tmanager__body:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
-.ptp-tmanager__meta {
+.sig-tmanager__meta {
   color: var(--text-muted);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.75rem;
 }
-.ptp-tmanager__title {
+.sig-tmanager__title {
   font-weight: 500;
 }
 
 /* Settled rows fade and strike through — the work is done. */
-.ptp-tmanager__row--settled .ptp-tmanager__body {
+.sig-tmanager__row--settled .sig-tmanager__body {
   opacity: 0.6;
 }
-.ptp-tmanager__row--settled .ptp-tmanager__title {
+.sig-tmanager__row--settled .sig-tmanager__title {
   text-decoration: line-through;
 }
 
 /* The settled chip — mono party-green text (a state marker, NOT a
    PartyBadge: settled is not a content category). */
-.ptp-tmanager__done {
+.sig-tmanager__done {
   color: var(--party-green);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.6875rem;
@@ -389,7 +389,7 @@
 }
 
 /* The delete button — quiet until hovered, peach on attention. */
-.ptp-tmanager__delete {
+.sig-tmanager__delete {
   display: grid;
   place-items: center;
   width: 2rem;
@@ -402,20 +402,20 @@
   cursor: pointer;
   transition: var(--transition-standard);
 }
-.ptp-tmanager__delete:hover {
+.sig-tmanager__delete:hover {
   color: var(--party-peach);
 }
-.ptp-tmanager__delete:focus-visible {
+.sig-tmanager__delete:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
 /* Motion is a gift, not a requirement. */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-tmanager__pill,
-  .ptp-tmanager__settle,
-  .ptp-tmanager__body,
-  .ptp-tmanager__delete {
+  .sig-tmanager__pill,
+  .sig-tmanager__settle,
+  .sig-tmanager__body,
+  .sig-tmanager__delete {
     transition: none;
   }
 }

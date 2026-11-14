@@ -6,7 +6,7 @@
    `cascade` by signature-style.css (imported after data.css).
 
    THREE PATTERNS, THREE CLASS FAMILIES:
-   - .ptp-carousel (+ __track / __item / __page / __controls / __btn /
+   - .sig-carousel (+ __track / __item / __page / __controls / __btn /
      __dots / __dot / __indicator) — the horizontal scroll strip, TWO
      MODES (3.0.0): free-scroll (default — the historical item-snap
      strip, its active dot synced by an IntersectionObserver: the
@@ -16,13 +16,13 @@
      indicator reads "p / P"). The DOCKED CONTROL BAR is the 3.0.0
      anatomy: prev · dots · indicator · next in one flex row UNDER the
      full-width track — the readout never overlaps card content.
-   - .ptp-prose — the editorial slot: ONE container, styled
+   - .sig-prose — the editorial slot: ONE container, styled
      DESCENDANTS. p (0.875rem, 1.6 line-height), h3 (0.9375rem/600),
      blockquote (inset well + 4px MAUVE left rule — owner override,
      content voice — + italic bright ink), code/kbd (mono, inset,
      hairline chip), footer/cite (mono muted attribution). No variant
      knobs — a typography container, not a rich-text component.
-   - .ptp-announcement (+ __icon / __text / __action / __close) — the
+   - .sig-announcement (+ __icon / __text / __action / __close) — the
      full-width announcement strip: 4px var(--status) left rule (the
      toast/callout mechanism — react maps variant info/warning/
      announcement to sky/peach/Flamingo INLINE), inset-well body, the
@@ -47,16 +47,16 @@
 /* -- the carousel: track + docked control bar (3.0.0 anatomy) ---------------- */
 /* 3.0.0 RESTRUCTURE: the track rides on top FULL WIDTH (it used to be
    squeezed between the two chevrons); the mechanics move into the
-   docked BOTTOM CONTROL BAR (.ptp-carousel__controls): prev · dots ·
+   docked BOTTOM CONTROL BAR (.sig-carousel__controls): prev · dots ·
    indicator · next — the "1 / N" readout is bar-docked metadata and
    never overlaps card content. */
-.ptp-carousel {
+.sig-carousel {
   display: flex;
   flex-direction: column;
   gap: var(--space-tight);
 }
 
-.ptp-carousel__track {
+.sig-carousel__track {
   display: flex;
   gap: var(--space-standard);
   overflow-x: auto;
@@ -66,11 +66,11 @@
      mandate). Both spellings, for every engine. */
   scrollbar-width: none;
 }
-.ptp-carousel__track::-webkit-scrollbar {
+.sig-carousel__track::-webkit-scrollbar {
   display: none;
 }
 /* The focusable scroll region rings with the doctrine outline. */
-.ptp-carousel__track:focus-visible {
+.sig-carousel__track:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
@@ -78,11 +78,11 @@
 /* paged-3: the PAGES are the snap units (width 100% each), so the
    track's own inter-page gap must be ZERO — every page carries its own
    internal 16px grid gap (the 8px standard step, per the owner spec). */
-.ptp-carousel--paged .ptp-carousel__track {
+.sig-carousel--paged .sig-carousel__track {
   gap: 0;
 }
 
-.ptp-carousel__item {
+.sig-carousel__item {
   flex: 0 0 auto;
   scroll-snap-align: start;
 }
@@ -91,7 +91,7 @@
    track width; inside it, the chunked children sit in a repeat(3, 1fr)
    grid with the 16px gap (gap: var(--space-standard)). Pure math on
    the component side: pages = ceil(items / 3). */
-.ptp-carousel__page {
+.sig-carousel__page {
   flex: 0 0 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -104,7 +104,7 @@
    2.9.0 container-query pattern — containment rides the OUTER .sig-cell
    in the composition; no container ancestor → the 3-up grid stands). */
 @container (max-width: 640px) {
-  .ptp-carousel__page {
+  .sig-carousel__page {
     grid-template-columns: 1fr;
   }
 }
@@ -112,7 +112,7 @@
 /* THE DOCKED CONTROL BAR — one flex row: prev · dots · indicator ·
    next. The dots live IN the bar now (they used to hang below as a
    sibling row); the bar is the single mechanics dock. */
-.ptp-carousel__controls {
+.sig-carousel__controls {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
@@ -120,7 +120,7 @@
 
 /* Ghost buttons — token-driven: transparent body, hairline border,
    muted chevron; hover answers with the Teal (structural accent). */
-.ptp-carousel__btn {
+.sig-carousel__btn {
   appearance: none;
   background: transparent;
   border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
@@ -135,11 +135,11 @@
   flex: none;
   transition: var(--transition-standard);
 }
-.ptp-carousel__btn:hover {
+.sig-carousel__btn:hover {
   color: var(--color-cake-secondary);
   border-color: var(--color-cake-secondary);
 }
-.ptp-carousel__btn:focus-visible {
+.sig-carousel__btn:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
@@ -147,7 +147,7 @@
 /* 3.0.0 — the page indicator: "p / P" docked in the control bar,
    mono tabular-nums muted (digits never jitter; the position readout
    is metadata, not a headline). */
-.ptp-carousel__indicator {
+.sig-carousel__indicator {
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
@@ -163,14 +163,14 @@
    attribute IS the state, the nav/tabs contract): the Flamingo 1.5rem
    pill. Clickable (the component scrolls to the index/page); per-dot
    aria-labels; the doctrine focus ring. */
-.ptp-carousel__dots {
+.sig-carousel__dots {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
   min-width: 0;
   overflow: hidden;
 }
-.ptp-carousel__dot {
+.sig-carousel__dot {
   appearance: none;
   background: color-mix(in srgb, var(--text-muted) 50%, transparent);
   border: none;
@@ -182,30 +182,30 @@
   flex: none;
   transition: var(--transition-standard);
 }
-.ptp-carousel__dot:hover {
+.sig-carousel__dot:hover {
   background: var(--color-cake-secondary);
 }
-.ptp-carousel__dot:focus-visible {
+.sig-carousel__dot:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
-.ptp-carousel__dot[data-active="true"] {
+.sig-carousel__dot[data-active="true"] {
   background: var(--color-cake-primary);
   width: 1.5rem;
 }
 
 /* -- the prose block: the editorial slot (styled descendants) ---------------- */
-.ptp-prose p {
+.sig-prose p {
   margin: 0 0 var(--space-standard);
   color: var(--text-main);
   font-size: 0.875rem; /* 14px — an 8px-grid half-step */
   line-height: 1.6;
 }
 /* The last paragraph stands down — the container owns the bottom air. */
-.ptp-prose p:last-child {
+.sig-prose p:last-child {
   margin-bottom: 0;
 }
-.ptp-prose blockquote {
+.sig-prose blockquote {
   margin: var(--space-standard) 0;
   padding: var(--space-standard);
   /* OWNER OVERRIDE (2.4.1): the quote rule moves Flamingo →
@@ -219,13 +219,13 @@
   color: var(--text-bright);
   font-style: italic;
 }
-.ptp-prose blockquote p:last-child {
+.sig-prose blockquote p:last-child {
   margin-bottom: 0;
 }
 /* The attribution line(s) — mono, muted, their own row. cite sheds the UA
    (and inherited blockquote) italics so the mono voice reads clean. */
-.ptp-prose footer,
-.ptp-prose cite {
+.sig-prose footer,
+.sig-prose cite {
   display: block;
   margin-top: var(--space-tight);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
@@ -236,7 +236,7 @@
 
 /* 2.4.1 — h3 joins the styled descendants: a sub-section voice between
    the ruled card titles (0.9375rem = 15px, the half-step above the p). */
-.ptp-prose h3 {
+.sig-prose h3 {
   margin: var(--space-standard) 0 var(--space-tight);
   color: var(--text-main);
   font-size: 0.9375rem;
@@ -247,8 +247,8 @@
    well body + 15% hairline (the card-border derivation at the banner's
    ratio), 0.25rem radius, tight glyph padding (0.125rem × 0.375rem —
    glyph geometry, not layout spacing), bright ink. */
-.ptp-prose code,
-.ptp-prose kbd {
+.sig-prose code,
+.sig-prose kbd {
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   background: var(--bg-inset);
   border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
@@ -259,7 +259,7 @@
 }
 
 /* -- the announcement strip --------------------------------------------------- */
-.ptp-announcement {
+.sig-announcement {
   width: 100%;
   display: flex;
   align-items: center;
@@ -272,19 +272,19 @@
   color: var(--text-main);
   font-size: 0.875rem;
 }
-.ptp-announcement__icon {
+.sig-announcement__icon {
   display: inline-flex;
   flex: none;
   color: var(--status);
 }
-.ptp-announcement__text {
+.sig-announcement__text {
   flex: 1;
 }
 /* 2.4.1 — the action slot: a small ghost button after the text,
    token-driven (transparent body, 20% hairline, 0.75rem label); hover
    answers with the Teal border+ink (structural accent, the ghost-btn
    signature). Focus rides the doctrine ring. */
-.ptp-announcement__action {
+.sig-announcement__action {
   appearance: none;
   background: transparent;
   border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
@@ -298,16 +298,16 @@
   flex: none;
   transition: var(--transition-standard);
 }
-.ptp-announcement__action:hover {
+.sig-announcement__action:hover {
   color: var(--color-cake-secondary);
   border-color: var(--color-cake-secondary);
 }
-.ptp-announcement__action:focus-visible {
+.sig-announcement__action:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 /* The close: the modal-close signature — icon-only, muted, Teal hover. */
-.ptp-announcement__close {
+.sig-announcement__close {
   appearance: none;
   background: none;
   border: none;
@@ -321,10 +321,10 @@
   flex: none;
   transition: var(--transition-standard);
 }
-.ptp-announcement__close:hover {
+.sig-announcement__close:hover {
   color: var(--color-cake-secondary);
 }
-.ptp-announcement__close:focus-visible {
+.sig-announcement__close:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
@@ -332,10 +332,10 @@
 /* Motion is a gift, not a requirement (the smooth-scroll fallback is
    JS-side; this kills the css half). */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-carousel__btn,
-  .ptp-carousel__dot,
-  .ptp-announcement__action,
-  .ptp-announcement__close {
+  .sig-carousel__btn,
+  .sig-carousel__dot,
+  .sig-announcement__action,
+  .sig-announcement__close {
     transition: none;
   }
 }

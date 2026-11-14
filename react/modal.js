@@ -61,25 +61,25 @@ export function useModal() {
 }
 /** The icon-only close button — muted by default, Teal on hover. */
 function renderClose(onClose) {
-    return (_jsx("button", { className: "ptp-modal-close", type: "button", "aria-label": "Close", onClick: onClose, children: _jsx(Icon, { name: "X", "aria-hidden": true }) }));
+    return (_jsx("button", { className: "sig-modal-close", type: "button", "aria-label": "Close", onClick: onClose, children: _jsx(Icon, { name: "X", "aria-hidden": true }) }));
 }
 /** Flat label/value grid rows for the detail fields that exist. */
 function detailRows(event) {
     const rows = [
-        _jsx("span", { className: "ptp-modal-label", children: "Date" }, "date-label"),
-        _jsx("span", { className: "ptp-modal-value", children: event.date }, "date-value"),
+        _jsx("span", { className: "sig-modal-label", children: "Date" }, "date-label"),
+        _jsx("span", { className: "sig-modal-value", children: event.date }, "date-value"),
     ];
     if (event.time !== undefined) {
-        rows.push(_jsx("span", { className: "ptp-modal-label", children: "Time" }, "time-label"), _jsx("time", { className: "ptp-modal-value", children: event.time }, "time-value"));
+        rows.push(_jsx("span", { className: "sig-modal-label", children: "Time" }, "time-label"), _jsx("time", { className: "sig-modal-value", children: event.time }, "time-value"));
     }
     if (event.description !== undefined) {
-        rows.push(_jsx("span", { className: "ptp-modal-label", children: "About" }, "about-label"), _jsx("p", { className: "ptp-modal-value", children: event.description }, "about-value"));
+        rows.push(_jsx("span", { className: "sig-modal-label", children: "About" }, "about-label"), _jsx("p", { className: "sig-modal-value", children: event.description }, "about-value"));
     }
     return rows;
 }
 /** Backdrop + card: one portal subtree, flat grid children, zero wrappers. */
 function renderOverlay(event, onClose) {
-    return (_jsx("div", { className: "ptp-modal-backdrop", onClick: onClose, children: _jsxs("div", { className: "ptp-modal-card", role: "dialog", "aria-modal": "true", "aria-label": event.title, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("h2", { className: "ptp-modal-title", children: event.title }), renderClose(onClose), _jsx(PartyBadge, { colorToken: event.category, label: event.categoryLabel }), detailRows(event)] }) }));
+    return (_jsx("div", { className: "sig-modal-backdrop", onClick: onClose, children: _jsxs("div", { className: "sig-modal-card", role: "dialog", "aria-modal": "true", "aria-label": event.title, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("h2", { className: "sig-modal-title", children: event.title }), renderClose(onClose), _jsx(PartyBadge, { colorToken: event.category, label: event.categoryLabel }), detailRows(event)] }) }));
 }
 /**
  * `<EventModal>` — the interactive Event Detail overlay.

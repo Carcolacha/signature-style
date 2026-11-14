@@ -17,7 +17,7 @@
  *   3. fire the trigger through the COMMAND PALETTE (Ctrl+K → type
  *      "skeleton" → Enter) and at ~400ms into the 800ms window measure
  *      again — DURING, asserting the skeletons are actually live (6
- *      .ptp-skeleton-card + 5 .ptp-skeleton-tr rows);
+ *      .sig-skeleton-card + 5 .sig-skeleton-tr rows);
  *   4. wait for the restore, measure a third time — AFTER, asserting
  *      the real content is back (the DataTable re-rendered);
  *   5. assert all three rect sets are identical ±1px (x/y/width/height
@@ -63,7 +63,7 @@ await page.waitForTimeout(450); // hover-transform settle after parking
 
 const before = await page.evaluate(COLLECT);
 if (before.length !== 11) failures.push(`expected 11 bento children (banner + 3 KPIs + 7 cards), found ${before.length}`);
-const idleSkeletons = await page.locator(".bento12 .ptp-skeleton, .bento12 .ptp-skeleton-tr").count();
+const idleSkeletons = await page.locator(".bento12 .sig-skeleton, .bento12 .sig-skeleton-tr").count();
 if (idleSkeletons !== 0) failures.push(`bento should hold zero skeletons at rest, found ${idleSkeletons}`);
 
 // Fire through the palette (keyboard path — the pointer stays parked).
@@ -81,16 +81,16 @@ await page.locator('[data-testid="command-input"]').waitFor({ state: "detached" 
 // DURING — ~400ms into the 800ms window the skeletons must be live.
 await page.waitForTimeout(400);
 const during = await page.evaluate(COLLECT);
-const cardSkeletons = await page.locator(".bento12 .ptp-skeleton-card").count();
-const rowSkeletons = await page.locator(".bento12 .ptp-skeleton-tr").count();
-if (cardSkeletons !== 6) failures.push(`expected 6 live .ptp-skeleton-card in the bento mid-window, found ${cardSkeletons}`);
-if (rowSkeletons !== 5) failures.push(`expected 5 live .ptp-skeleton-tr ledger rows (the SEED_GUESTS count), found ${rowSkeletons}`);
+const cardSkeletons = await page.locator(".bento12 .sig-skeleton-card").count();
+const rowSkeletons = await page.locator(".bento12 .sig-skeleton-tr").count();
+if (cardSkeletons !== 6) failures.push(`expected 6 live .sig-skeleton-card in the bento mid-window, found ${cardSkeletons}`);
+if (rowSkeletons !== 5) failures.push(`expected 5 live .sig-skeleton-tr ledger rows (the SEED_GUESTS count), found ${rowSkeletons}`);
 
 // AFTER — the window closes and the real content returns.
-await page.waitForFunction(() => document.querySelectorAll(".bento12 .ptp-skeleton, .bento12 .ptp-skeleton-tr").length === 0, { timeout: 3000 });
+await page.waitForFunction(() => document.querySelectorAll(".bento12 .sig-skeleton, .bento12 .sig-skeleton-tr").length === 0, { timeout: 3000 });
 await page.mouse.move(0, 0);
 await page.waitForTimeout(450);
-const ledgerTable = await page.locator('[data-testid="ledger-table"] .ptp-data-table').count();
+const ledgerTable = await page.locator('[data-testid="ledger-table"] .sig-data-table').count();
 if (ledgerTable !== 1) failures.push(`the ledger DataTable must render again after the window, found ${ledgerTable}`);
 const after = await page.evaluate(COLLECT);
 

@@ -44,7 +44,7 @@ import { Icon, type IconName } from "./primitives.js";
 /**
  * Props for `<CarouselItem>` — the required child wrapper of a
  * `<Carousel>`. Children of `<Carousel>` must ALREADY be
- * `.ptp-carousel__item` elements (the track styles snap/flex them);
+ * `.sig-carousel__item` elements (the track styles snap/flex them);
  * this helper is the one-line way to produce them.
  */
 export interface CarouselItemProps {
@@ -55,7 +55,7 @@ export interface CarouselItemProps {
 }
 
 /**
- * `<CarouselItem>` — ONE `<div class="ptp-carousel__item">`. The snap
+ * `<CarouselItem>` — ONE `<div class="sig-carousel__item">`. The snap
  * slot: `flex: 0 0 auto` + `scroll-snap-align: start` come from
  * css/editorial.css; width is content-driven (compose a min-width to
  * control the scroll rhythm).
@@ -70,7 +70,7 @@ export interface CarouselItemProps {
  */
 export function CarouselItem({ className, children }: CarouselItemProps) {
   return (
-    <div className={className !== undefined ? `ptp-carousel__item ${className}` : "ptp-carousel__item"}>
+    <div className={className !== undefined ? `sig-carousel__item ${className}` : "sig-carousel__item"}>
       {children}
     </div>
   );
@@ -87,7 +87,7 @@ export interface CarouselProps {
    * 3.0.0 replaces the old scrollLeft/itemWidth scroll math). "paged-3"
    * chunks the children into pages of THREE (pure math: ceil(n / 3))
    * and renders each page as ONE snap unit — a `repeat(3, 1fr)` grid
-   * with the 16px gap (css: .ptp-carousel__page); Prev/Next advance
+   * with the 16px gap (css: .sig-carousel__page); Prev/Next advance
    * ±1 PAGE, dots are one per PAGE, the indicator reads "p / P".
    */
   mode?: "paged-3" | "free-scroll";
@@ -100,7 +100,7 @@ export interface CarouselProps {
  *
  * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
  * track rides on top (full width, never squeezed between buttons), and
- * BELOW it one `.ptp-carousel__controls` flex row: prev · dots ·
+ * BELOW it one `.sig-carousel__controls` flex row: prev · dots ·
  * indicator ("1 / N", aria-live polite) · next. The readout never
  * overlaps card content — it lives in its own bar.
  *
@@ -115,7 +115,7 @@ export interface CarouselProps {
  *
  * paged-3: the children are chunked into PAGES OF THREE (pure math:
  * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
- * — a `.ptp-carousel__page` slide wearing the 100% width and the
+ * — a `.sig-carousel__page` slide wearing the 100% width and the
  * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
  * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
  * dots are one per page, and the indicator reads "p / P" (pages). The
@@ -167,7 +167,7 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
     const track = trackRef.current;
     if (track === null) return;
     const ratios = new Map<number, number>();
-    const itemElements = Array.from(track.querySelectorAll(":scope > .ptp-carousel__item"));
+    const itemElements = Array.from(track.querySelectorAll(":scope > .sig-carousel__item"));
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -227,9 +227,9 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
   };
 
   return (
-    <div className={paged ? "ptp-carousel ptp-carousel--paged" : "ptp-carousel"}>
+    <div className={paged ? "sig-carousel sig-carousel--paged" : "sig-carousel"}>
       <div
-        className="ptp-carousel__track"
+        className="sig-carousel__track"
         ref={trackRef}
         tabIndex={0}
         role="region"
@@ -242,7 +242,7 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
             Array.from({ length: pageCount }, (_, pageIdx) => (
               <div
                 key={pageIdx}
-                className="ptp-carousel__page"
+                className="sig-carousel__page"
                 style={{ flex: "0 0 100%" }}
               >
                 {items.slice(pageIdx * 3, pageIdx * 3 + 3)}
@@ -253,22 +253,22 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
       {/* THE DOCKED CONTROL BAR (3.0.0): prev · dots · indicator · next.
           The "1 / N" readout is bar-docked metadata — never overlapping
           card content. */}
-      <div className="ptp-carousel__controls">
+      <div className="sig-carousel__controls">
         <button
           type="button"
-          className="ptp-carousel__btn"
+          className="sig-carousel__btn"
           aria-label="Previous"
           onClick={() => scrollByItem(-1)}
         >
           <Icon name="ChevronLeft" aria-hidden />
         </button>
         {items.length > 0 && (
-          <div className="ptp-carousel__dots">
+          <div className="sig-carousel__dots">
             {Array.from({ length: pageCount }, (_, index) => (
               <button
                 key={index}
                 type="button"
-                className="ptp-carousel__dot"
+                className="sig-carousel__dot"
                 data-active={index === page - 1 ? "true" : "false"}
                 aria-label={paged ? `Go to page ${index + 1}` : `Go to item ${index + 1}`}
                 onClick={() => scrollToIndex(index)}
@@ -276,12 +276,12 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
             ))}
           </div>
         )}
-        <span className="ptp-carousel__indicator" aria-live="polite">
+        <span className="sig-carousel__indicator" aria-live="polite">
           {page} / {pageCount}
         </span>
         <button
           type="button"
-          className="ptp-carousel__btn"
+          className="sig-carousel__btn"
           aria-label="Next"
           onClick={() => scrollByItem(1)}
         >
@@ -302,7 +302,7 @@ export interface ProseBlockProps {
 /**
  * `<ProseBlock>` — the editorial slot (2.4.0).
  *
- * ONE `<div class="ptp-prose">`, NO props beyond className passthrough —
+ * ONE `<div class="sig-prose">`, NO props beyond className passthrough —
  * a pure typography container. css/editorial.css styles its
  * DESCENDANTS: `p` (0.875rem / 1.6 line-height), `blockquote` (inset
  * well, 4px Flamingo left rule, italic bright ink), `footer`/`cite`
@@ -321,7 +321,7 @@ export interface ProseBlockProps {
  */
 export function ProseBlock({ className, children }: ProseBlockProps) {
   return (
-    <div className={className !== undefined ? `ptp-prose ${className}` : "ptp-prose"}>
+    <div className={className !== undefined ? `sig-prose ${className}` : "sig-prose"}>
       {children}
     </div>
   );
@@ -402,12 +402,12 @@ const ANNOUNCEMENT_ICONS: Record<AnnouncementVariant, IconName> = {
  * `<AnnouncementBanner>` — the full-width announcement strip (2.4.0,
  * API evolved 2.4.1).
  *
- * `<div class="ptp-announcement" role="status">` (the live-region
+ * `<div class="sig-announcement" role="status">` (the live-region
  * contract: a banner that announces itself politely on mount — unlike
  * `<Callout>`'s static role="note") with `--status` set INLINE from
- * the variant map → `<span class="ptp-announcement__icon">` (the
+ * the variant map → `<span class="sig-announcement__icon">` (the
  * variant's icon, tinted `var(--status)`) → `<span
- * class="ptp-announcement__text">` → the optional `action` ghost
+ * class="sig-announcement__text">` → the optional `action` ghost
  * button → the optional ghost close (the modal-close signature:
  * muted, Teal hover). Dismissal is YOUR state — the component never
  * unmounts itself.
@@ -435,18 +435,18 @@ export function AnnouncementBanner({
   const resolvedIcon: IconName = icon ?? ANNOUNCEMENT_ICONS[variant];
   return (
     <div
-      className="ptp-announcement"
+      className="sig-announcement"
       role="status"
       style={{ "--status": ANNOUNCEMENT_VARIABLE[variant] } as CSSProperties}
     >
-      <span className="ptp-announcement__icon">
+      <span className="sig-announcement__icon">
         <Icon name={resolvedIcon} aria-hidden />
       </span>
-      <span className="ptp-announcement__text">{children}</span>
+      <span className="sig-announcement__text">{children}</span>
       {action !== undefined && (
         <button
           type="button"
-          className="ptp-announcement__action"
+          className="sig-announcement__action"
           onClick={() => action.onClick()}
         >
           {action.label}
@@ -456,7 +456,7 @@ export function AnnouncementBanner({
         <button
           type="button"
           aria-label="Dismiss"
-          className="ptp-announcement__close"
+          className="sig-announcement__close"
           onClick={() => onDismiss?.()}
         >
           <Icon name="X" aria-hidden />

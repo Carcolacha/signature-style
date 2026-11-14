@@ -40,7 +40,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { Children, useEffect, useRef, useState } from "react";
 import { Icon } from "./primitives.js";
 /**
- * `<CarouselItem>` — ONE `<div class="ptp-carousel__item">`. The snap
+ * `<CarouselItem>` — ONE `<div class="sig-carousel__item">`. The snap
  * slot: `flex: 0 0 auto` + `scroll-snap-align: start` come from
  * css/editorial.css; width is content-driven (compose a min-width to
  * control the scroll rhythm).
@@ -54,14 +54,14 @@ import { Icon } from "./primitives.js";
  * ```
  */
 export function CarouselItem({ className, children }) {
-    return (_jsx("div", { className: className !== undefined ? `ptp-carousel__item ${className}` : "ptp-carousel__item", children: children }));
+    return (_jsx("div", { className: className !== undefined ? `sig-carousel__item ${className}` : "sig-carousel__item", children: children }));
 }
 /**
  * `<Carousel>` — the horizontal scroll strip (3.0.0: TWO MODES).
  *
  * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
  * track rides on top (full width, never squeezed between buttons), and
- * BELOW it one `.ptp-carousel__controls` flex row: prev · dots ·
+ * BELOW it one `.sig-carousel__controls` flex row: prev · dots ·
  * indicator ("1 / N", aria-live polite) · next. The readout never
  * overlaps card content — it lives in its own bar.
  *
@@ -76,7 +76,7 @@ export function CarouselItem({ className, children }) {
  *
  * paged-3: the children are chunked into PAGES OF THREE (pure math:
  * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
- * — a `.ptp-carousel__page` slide wearing the 100% width and the
+ * — a `.sig-carousel__page` slide wearing the 100% width and the
  * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
  * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
  * dots are one per page, and the indicator reads "p / P" (pages). The
@@ -127,7 +127,7 @@ export function Carousel({ label, mode = "free-scroll", children }) {
         if (track === null)
             return;
         const ratios = new Map();
-        const itemElements = Array.from(track.querySelectorAll(":scope > .ptp-carousel__item"));
+        const itemElements = Array.from(track.querySelectorAll(":scope > .sig-carousel__item"));
         const observer = new IntersectionObserver((entries) => {
             for (const entry of entries) {
                 const index = itemElements.indexOf(entry.target);
@@ -182,16 +182,16 @@ export function Carousel({ label, mode = "free-scroll", children }) {
             setPage(Math.min(pageCount, Math.round(track.scrollLeft / track.clientWidth) + 1));
         });
     };
-    return (_jsxs("div", { className: paged ? "ptp-carousel ptp-carousel--paged" : "ptp-carousel", children: [_jsx("div", { className: "ptp-carousel__track", ref: trackRef, tabIndex: 0, role: "region", "aria-label": label, onScroll: handleScroll, children: paged
+    return (_jsxs("div", { className: paged ? "sig-carousel sig-carousel--paged" : "sig-carousel", children: [_jsx("div", { className: "sig-carousel__track", ref: trackRef, tabIndex: 0, role: "region", "aria-label": label, onScroll: handleScroll, children: paged
                     ? // Pages of three: chunk ONCE, render each page as ONE snap
                         // slide (width 100%); the page owns the 3-up grid + gap.
-                        Array.from({ length: pageCount }, (_, pageIdx) => (_jsx("div", { className: "ptp-carousel__page", style: { flex: "0 0 100%" }, children: items.slice(pageIdx * 3, pageIdx * 3 + 3) }, pageIdx)))
-                    : children }), _jsxs("div", { className: "ptp-carousel__controls", children: [_jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Previous", onClick: () => scrollByItem(-1), children: _jsx(Icon, { name: "ChevronLeft", "aria-hidden": true }) }), items.length > 0 && (_jsx("div", { className: "ptp-carousel__dots", children: Array.from({ length: pageCount }, (_, index) => (_jsx("button", { type: "button", className: "ptp-carousel__dot", "data-active": index === page - 1 ? "true" : "false", "aria-label": paged ? `Go to page ${index + 1}` : `Go to item ${index + 1}`, onClick: () => scrollToIndex(index) }, index))) })), _jsxs("span", { className: "ptp-carousel__indicator", "aria-live": "polite", children: [page, " / ", pageCount] }), _jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Next", onClick: () => scrollByItem(1), children: _jsx(Icon, { name: "ChevronRight", "aria-hidden": true }) })] })] }));
+                        Array.from({ length: pageCount }, (_, pageIdx) => (_jsx("div", { className: "sig-carousel__page", style: { flex: "0 0 100%" }, children: items.slice(pageIdx * 3, pageIdx * 3 + 3) }, pageIdx)))
+                    : children }), _jsxs("div", { className: "sig-carousel__controls", children: [_jsx("button", { type: "button", className: "sig-carousel__btn", "aria-label": "Previous", onClick: () => scrollByItem(-1), children: _jsx(Icon, { name: "ChevronLeft", "aria-hidden": true }) }), items.length > 0 && (_jsx("div", { className: "sig-carousel__dots", children: Array.from({ length: pageCount }, (_, index) => (_jsx("button", { type: "button", className: "sig-carousel__dot", "data-active": index === page - 1 ? "true" : "false", "aria-label": paged ? `Go to page ${index + 1}` : `Go to item ${index + 1}`, onClick: () => scrollToIndex(index) }, index))) })), _jsxs("span", { className: "sig-carousel__indicator", "aria-live": "polite", children: [page, " / ", pageCount] }), _jsx("button", { type: "button", className: "sig-carousel__btn", "aria-label": "Next", onClick: () => scrollByItem(1), children: _jsx(Icon, { name: "ChevronRight", "aria-hidden": true }) })] })] }));
 }
 /**
  * `<ProseBlock>` — the editorial slot (2.4.0).
  *
- * ONE `<div class="ptp-prose">`, NO props beyond className passthrough —
+ * ONE `<div class="sig-prose">`, NO props beyond className passthrough —
  * a pure typography container. css/editorial.css styles its
  * DESCENDANTS: `p` (0.875rem / 1.6 line-height), `blockquote` (inset
  * well, 4px Flamingo left rule, italic bright ink), `footer`/`cite`
@@ -209,7 +209,7 @@ export function Carousel({ label, mode = "free-scroll", children }) {
  * ```
  */
 export function ProseBlock({ className, children }) {
-    return (_jsx("div", { className: className !== undefined ? `ptp-prose ${className}` : "ptp-prose", children: children }));
+    return (_jsx("div", { className: className !== undefined ? `sig-prose ${className}` : "sig-prose", children: children }));
 }
 /**
  * Variant → strip token, INLINE as `--status` for css/editorial.css's
@@ -238,12 +238,12 @@ const ANNOUNCEMENT_ICONS = {
  * `<AnnouncementBanner>` — the full-width announcement strip (2.4.0,
  * API evolved 2.4.1).
  *
- * `<div class="ptp-announcement" role="status">` (the live-region
+ * `<div class="sig-announcement" role="status">` (the live-region
  * contract: a banner that announces itself politely on mount — unlike
  * `<Callout>`'s static role="note") with `--status` set INLINE from
- * the variant map → `<span class="ptp-announcement__icon">` (the
+ * the variant map → `<span class="sig-announcement__icon">` (the
  * variant's icon, tinted `var(--status)`) → `<span
- * class="ptp-announcement__text">` → the optional `action` ghost
+ * class="sig-announcement__text">` → the optional `action` ghost
  * button → the optional ghost close (the modal-close signature:
  * muted, Teal hover). Dismissal is YOUR state — the component never
  * unmounts itself.
@@ -262,5 +262,5 @@ const ANNOUNCEMENT_ICONS = {
  */
 export function AnnouncementBanner({ variant = "announcement", icon, action, dismissible = false, onDismiss, children, }) {
     const resolvedIcon = icon ?? ANNOUNCEMENT_ICONS[variant];
-    return (_jsxs("div", { className: "ptp-announcement", role: "status", style: { "--status": ANNOUNCEMENT_VARIABLE[variant] }, children: [_jsx("span", { className: "ptp-announcement__icon", children: _jsx(Icon, { name: resolvedIcon, "aria-hidden": true }) }), _jsx("span", { className: "ptp-announcement__text", children: children }), action !== undefined && (_jsx("button", { type: "button", className: "ptp-announcement__action", onClick: () => action.onClick(), children: action.label })), dismissible && (_jsx("button", { type: "button", "aria-label": "Dismiss", className: "ptp-announcement__close", onClick: () => onDismiss?.(), children: _jsx(Icon, { name: "X", "aria-hidden": true }) }))] }));
+    return (_jsxs("div", { className: "sig-announcement", role: "status", style: { "--status": ANNOUNCEMENT_VARIABLE[variant] }, children: [_jsx("span", { className: "sig-announcement__icon", children: _jsx(Icon, { name: resolvedIcon, "aria-hidden": true }) }), _jsx("span", { className: "sig-announcement__text", children: children }), action !== undefined && (_jsx("button", { type: "button", className: "sig-announcement__action", onClick: () => action.onClick(), children: action.label })), dismissible && (_jsx("button", { type: "button", "aria-label": "Dismiss", className: "sig-announcement__close", onClick: () => onDismiss?.(), children: _jsx(Icon, { name: "X", "aria-hidden": true }) }))] }));
 }

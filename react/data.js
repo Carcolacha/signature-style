@@ -15,7 +15,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * state survives any DOM shape and any consumer CSS.
  *
  * WRAPPER JUSTIFICATION (the one sanctioned wrapper in this file):
- * `<DataTable>` renders `<div class="ptp-table-scroll">` around the bare
+ * `<DataTable>` renders `<div class="sig-table-scroll">` around the bare
  * `<table>`. This wrapper is STRUCTURAL, not decorative — a table
  * element ignores `overflow` in table layout, so scroll containment on
  * narrow viewports is impossible without a block ancestor; the wrapper
@@ -37,9 +37,9 @@ import { memo } from "react";
  */
 function dataTableCellClass(column) {
     const classes = [
-        column.numeric === true ? "ptp-data-table__num" : undefined,
+        column.numeric === true ? "sig-data-table__num" : undefined,
         column.align !== undefined
-            ? `ptp-data-table__align-${column.align}`
+            ? `sig-data-table__align-${column.align}`
             : undefined,
     ].filter((name) => name !== undefined);
     return classes.length > 0 ? classes.join(" ") : undefined;
@@ -47,12 +47,12 @@ function dataTableCellClass(column) {
 /**
  * `<DataTable>` — the ledger table.
  *
- * `<div class="ptp-table-scroll">` (the justified scroll-containment
+ * `<div class="sig-table-scroll">` (the justified scroll-containment
  * wrapper — the mobile strategy, see the module docstring) →
- * `<table class="ptp-data-table">` → optional `<caption>`,
+ * `<table class="sig-data-table">` → optional `<caption>`,
  * `<thead>><tr><th scope="col">`, `<tbody>><tr><td>`. Numeric columns
- * wear .ptp-data-table__num on BOTH the th and the td (right-aligned,
- * tabular-nums); an explicit `align` wears the .ptp-data-table__align-*
+ * wear .sig-data-table__num on BOTH the th and the td (right-aligned,
+ * tabular-nums); an explicit `align` wears the .sig-data-table__align-*
  * utility on both too (2.4.1 — the header finally sits flush over its
  * values). No sorting, no pagination, no virtualization —
  * the pruning protocol: a static table is the feature.
@@ -74,12 +74,12 @@ function dataTableCellClass(column) {
  * ```
  */
 export const DataTable = memo(function DataTable({ columns, rows, caption }) {
-    return (_jsx("div", { className: "ptp-table-scroll", children: _jsxs("table", { className: "ptp-data-table", children: [caption !== undefined && _jsx("caption", { children: caption }), _jsx("thead", { children: _jsx("tr", { children: columns.map((column) => (_jsx("th", { scope: "col", className: dataTableCellClass(column), children: column.header }, column.key))) }) }), _jsx("tbody", { children: rows.map((row, index) => (_jsx("tr", { children: columns.map((column) => (_jsx("td", { className: dataTableCellClass(column), children: row[column.key] }, column.key))) }, index))) })] }) }));
+    return (_jsx("div", { className: "sig-table-scroll", children: _jsxs("table", { className: "sig-data-table", children: [caption !== undefined && _jsx("caption", { children: caption }), _jsx("thead", { children: _jsx("tr", { children: columns.map((column) => (_jsx("th", { scope: "col", className: dataTableCellClass(column), children: column.header }, column.key))) }) }), _jsx("tbody", { children: rows.map((row, index) => (_jsx("tr", { children: columns.map((column) => (_jsx("td", { className: dataTableCellClass(column), children: row[column.key] }, column.key))) }, index))) })] }) }));
 });
 /**
  * `<Tabs>` — the controlled module switcher.
  *
- * `<div role="tablist" aria-label={label} class="ptp-tabs">` with one
+ * `<div role="tablist" aria-label={label} class="sig-tabs">` with one
  * `<button type="button" role="tab" aria-selected>` per tab. ZERO
  * .is-active classes — attribute-driven, the same contract as the nav's
  * [aria-current="page"]: css/data.css styles [aria-selected="true"]
@@ -103,7 +103,7 @@ export const DataTable = memo(function DataTable({ columns, rows, caption }) {
  * ```
  */
 export function Tabs({ tabs, activeId, onChange, label }) {
-    return (_jsx("div", { role: "tablist", "aria-label": label, className: "ptp-tabs", children: tabs.map((tab) => (_jsx("button", { type: "button", role: "tab", "aria-selected": activeId === tab.id, className: "ptp-tabs__tab", onClick: () => onChange(tab.id), children: tab.label }, tab.id))) }));
+    return (_jsx("div", { role: "tablist", "aria-label": label, className: "sig-tabs", children: tabs.map((tab) => (_jsx("button", { type: "button", role: "tab", "aria-selected": activeId === tab.id, className: "sig-tabs__tab", onClick: () => onChange(tab.id), children: tab.label }, tab.id))) }));
 }
 /**
  * Status → strip token, INLINE as `--status` for css/data.css's
@@ -118,7 +118,7 @@ const CALLOUT_VARIABLE = {
 /**
  * `<Callout>` — the persistent note (Toast's sibling, never dismissing).
  *
- * ONE `<div class="ptp-callout" role="note">` with `--status` set INLINE
+ * ONE `<div class="sig-callout" role="note">` with `--status` set INLINE
  * from the status → token map (info → --party-sky, success →
  * --party-green, warning → --party-peach); css/data.css paints the 4px
  * left strip from it. PERSISTENT by contract: no auto-dismiss, no timer,
@@ -131,5 +131,5 @@ const CALLOUT_VARIABLE = {
  * ```
  */
 export function Callout({ status, children }) {
-    return (_jsx("div", { className: "ptp-callout", role: "note", style: { "--status": CALLOUT_VARIABLE[status] }, children: children }));
+    return (_jsx("div", { className: "sig-callout", role: "note", style: { "--status": CALLOUT_VARIABLE[status] }, children: children }));
 }

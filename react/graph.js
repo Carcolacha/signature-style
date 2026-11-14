@@ -29,7 +29,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * fill none.
  *
  * FOCUS DIMMING is class-driven, not style-driven: selecting a node
- * adds `.ptp-graph--focused` to the svg and `data-dim="true"` to every
+ * adds `.sig-graph--focused` to the svg and `data-dim="true"` to every
  * node/edge NOT adjacent to the selection; css/graph.css answers with
  * opacity 0.25. The selected circle's stroke flips to the structural
  * Flamingo at width 3 (selection is STRUCTURE, not content — Rule of
@@ -401,7 +401,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
             return;
         // THE HIT TEST: elementFromPoint → the nearest node under the cursor.
         const target = document.elementFromPoint(event.clientX, event.clientY);
-        const nodeG = target?.closest?.("g.ptp-graph__node");
+        const nodeG = target?.closest?.("g.sig-graph__node");
         const targetId = nodeG?.dataset?.id;
         const sourceId = tether.fromId;
         setTether(null);
@@ -419,7 +419,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
         if (event.button !== 0)
             return;
         const target = event.target;
-        if (target.closest("g.ptp-graph__node") !== null)
+        if (target.closest("g.sig-graph__node") !== null)
             return; // nodes drag, not pan
         const svg = svgRef.current;
         if (svg === null)
@@ -507,7 +507,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
         if (onAddNodeAt === undefined)
             return;
         const target = event.target;
-        if (target.closest("g.ptp-graph__node") !== null)
+        if (target.closest("g.sig-graph__node") !== null)
             return;
         const svg = svgRef.current;
         if (svg === null)
@@ -556,13 +556,13 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
         });
     };
     const tetherSource = tether !== null ? positions[tether.fromId] : undefined;
-    return (_jsxs(_Fragment, { children: [addOn && (_jsxs("div", { className: "ptp-graph__toolbar", children: [_jsx(Input, { placeholder: "New node label", "aria-label": "New node label", value: draftLabel, onChange: (event) => setDraftLabel(event.target.value) }), _jsx(Button, { variant: "secondary", size: "sm", onClick: handleAdd, disabled: selectedId === null && rootId !== undefined, children: "Add & Link" })] })), _jsxs("svg", { ref: svgRef, role: "application", "aria-label": label ?? "Knowledge graph", className: selected !== null
+    return (_jsxs(_Fragment, { children: [addOn && (_jsxs("div", { className: "sig-graph__toolbar", children: [_jsx(Input, { placeholder: "New node label", "aria-label": "New node label", value: draftLabel, onChange: (event) => setDraftLabel(event.target.value) }), _jsx(Button, { variant: "secondary", size: "sm", onClick: handleAdd, disabled: selectedId === null && rootId !== undefined, children: "Add & Link" })] })), _jsxs("svg", { ref: svgRef, role: "application", "aria-label": label ?? "Knowledge graph", className: selected !== null
                     ? tether !== null
-                        ? "ptp-graph ptp-graph--focused ptp-graph--tethering"
-                        : "ptp-graph ptp-graph--focused"
+                        ? "sig-graph sig-graph--focused sig-graph--tethering"
+                        : "sig-graph sig-graph--focused"
                     : tether !== null
-                        ? "ptp-graph ptp-graph--tethering"
-                        : "ptp-graph", viewBox: `${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`, style: { height, touchAction: "none" }, onPointerDown: handleCanvasPointerDown, onPointerMove: handleCanvasPointerMove, onPointerUp: handleCanvasPointerUp, onDoubleClick: handleDoubleClick, children: [nodes
+                        ? "sig-graph sig-graph--tethering"
+                        : "sig-graph", viewBox: `${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`, style: { height, touchAction: "none" }, onPointerDown: handleCanvasPointerDown, onPointerMove: handleCanvasPointerMove, onPointerUp: handleCanvasPointerUp, onDoubleClick: handleDoubleClick, children: [nodes
                         .filter((node) => node.parentId !== undefined && positions[node.parentId] !== undefined)
                         .map((node) => {
                         const parentPos = positions[node.parentId];
@@ -571,14 +571,14 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
                             return null;
                         const dim = connectedIds !== null &&
                             !(connectedIds.has(node.parentId) && connectedIds.has(node.id));
-                        return (_jsx("path", { className: "ptp-graph__edge", "data-parent": node.parentId, "data-child": node.id, "data-dim": dim || undefined, d: cubicBezierEdge(parentPos, childPos) }, `edge-${node.id}`));
+                        return (_jsx("path", { className: "sig-graph__edge", "data-parent": node.parentId, "data-child": node.id, "data-dim": dim || undefined, d: cubicBezierEdge(parentPos, childPos) }, `edge-${node.id}`));
                     }), links.map((link, index) => {
                         const fromPos = positions[link.from];
                         const toPos = positions[link.to];
                         if (fromPos === undefined || toPos === undefined)
                             return null;
-                        return (_jsx("path", { className: "ptp-graph__edge", "data-link": "true", "data-parent": link.from, "data-child": link.to, d: cubicBezierEdge(fromPos, toPos) }, `link-${link.from}-${link.to}-${index}`));
-                    }), tether !== null && tetherSource !== undefined && (_jsx("path", { ref: tetherPathRef, className: "ptp-graph__tether", d: `M ${tetherSource.x} ${tetherSource.y} L ${tether.to.x} ${tether.to.y}` })), nodes.map((node) => {
+                        return (_jsx("path", { className: "sig-graph__edge", "data-link": "true", "data-parent": link.from, "data-child": link.to, d: cubicBezierEdge(fromPos, toPos) }, `link-${link.from}-${link.to}-${index}`));
+                    }), tether !== null && tetherSource !== undefined && (_jsx("path", { ref: tetherPathRef, className: "sig-graph__tether", d: `M ${tetherSource.x} ${tetherSource.y} L ${tether.to.x} ${tether.to.y}` })), nodes.map((node) => {
                         const position = positions[node.id];
                         if (position === undefined)
                             return null;
@@ -589,8 +589,8 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
                                     nodeRefs.current.delete(node.id);
                                 else
                                     nodeRefs.current.set(node.id, el);
-                            }, className: "ptp-graph__node", "data-id": node.id, "data-dim": dim || undefined, transform: `translate(${position.x} ${position.y})`, onClick: () => handleSelect(node), onPointerDown: (event) => handleNodePointerDown(node, event), onPointerMove: handleNodePointerMove, onPointerUp: (event) => handleNodePointerUp(node, event), onContextMenu: (event) => handleNodeContextMenu(node, event), onKeyDown: (event) => handleNodeKeyDown(node, event), tabIndex: 0, role: "button", "aria-label": node.label, children: [_jsx("title", { children: node.label }), _jsx("circle", { r: NODE_RADIUS, fill: "var(--bg-surface)", stroke: isSelected ? "var(--color-cake-primary)" : strokeFor(node), strokeWidth: isSelected ? 3 : 2 }), _jsx("text", { textAnchor: "middle", y: 4, fontSize: 13, fill: "var(--text-main)", style: { fontVariantNumeric: "tabular-nums" }, children: canvasLabel(node.label) })] }, node.id));
-                    })] }), _jsx("div", { className: "ptp-graph__footer", children: selected === null
+                            }, className: "sig-graph__node", "data-id": node.id, "data-dim": dim || undefined, transform: `translate(${position.x} ${position.y})`, onClick: () => handleSelect(node), onPointerDown: (event) => handleNodePointerDown(node, event), onPointerMove: handleNodePointerMove, onPointerUp: (event) => handleNodePointerUp(node, event), onContextMenu: (event) => handleNodeContextMenu(node, event), onKeyDown: (event) => handleNodeKeyDown(node, event), tabIndex: 0, role: "button", "aria-label": node.label, children: [_jsx("title", { children: node.label }), _jsx("circle", { r: NODE_RADIUS, fill: "var(--bg-surface)", stroke: isSelected ? "var(--color-cake-primary)" : strokeFor(node), strokeWidth: isSelected ? 3 : 2 }), _jsx("text", { textAnchor: "middle", y: 4, fontSize: 13, fill: "var(--text-main)", style: { fontVariantNumeric: "tabular-nums" }, children: canvasLabel(node.label) })] }, node.id));
+                    })] }), _jsx("div", { className: "sig-graph__footer", children: selected === null
                     ? "Select a node to inspect its note."
                     : `${selected.label}${selected.note !== undefined ? ` — ${selected.note}` : ""}` })] }));
 });

@@ -93,7 +93,7 @@ function Toast({ toast, onExpire }: { toast: ToastItem; onExpire: (id: number) =
   const style = { "--status": STATUS_VARIABLE[toast.status] } as CSSProperties;
   return (
     <div
-      className="ptp-toast"
+      className="sig-toast"
       style={style}
       onAnimationEnd={() => onExpire(toast.id)}
     >
@@ -142,7 +142,7 @@ export function ToastProvider({ children }: { children?: ReactNode }) {
   const value = useMemo(() => toast, [toast]);
 
   const region = (
-    <div className="ptp-toast-region" role="status" aria-live="polite">
+    <div className="sig-toast-region" role="status" aria-live="polite">
       {toasts.map((t) => (
         <Toast key={t.id} toast={t} onExpire={expire} />
       ))}

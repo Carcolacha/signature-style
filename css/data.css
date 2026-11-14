@@ -4,23 +4,23 @@
    (imported after surface.css).
 
    THREE PATTERNS, THREE CLASS FAMILIES:
-   - .ptp-data-table — the ledger table: uppercase letter-spaced headers,
+   - .sig-data-table — the ledger table: uppercase letter-spaced headers,
      hairline row rules, a subtle Flamingo hover wash, and numeric cells
      pinned to tabular-nums so digits never jitter between rows. 2.4.1
-     adds the .ptp-data-table__align-{left,center,right} utilities —
+     adds the .sig-data-table__align-{left,center,right} utilities —
      explicit per-column alignment on BOTH th and td (the ancestor-
      scoped specificity fix; see the rule comment below).
-   - .ptp-tabs — THE module switcher. Same contract as the nav: there is
+   - .sig-tabs — THE module switcher. Same contract as the nav: there is
      NO .is-active class anywhere — [aria-selected="true"] IS the active
      state and css answers it directly (the attribute is the state
      machine). The selected underline is var(--color-cake-primary) —
      THE nav visual contract, attribute-driven.
-   - .ptp-callout — the persistent note: a 4px var(--status) left strip
+   - .sig-callout — the persistent note: a 4px var(--status) left strip
      (the toast strip's persistent sibling — a callout never auto-
      dismisses), inset-well body, --radius-ui corners.
 
    MOBILE STRATEGY — NO 768px MEDIA QUERY HERE, DELIBERATELY: the table's
-   mobile answer is scroll containment — .ptp-table-scroll wraps the bare
+   mobile answer is scroll containment — .sig-table-scroll wraps the bare
    <table> in overflow-x: auto, so wide ledgers pan inside their card on
    a phone instead of blowing the grid. A bare table cannot scroll itself
    (table layout ignores overflow on the table element; the scroll must
@@ -41,17 +41,17 @@
 @layer cascade {
 
   /* -- scroll containment: the table's mobile strategy (see header) -------- */
-  .ptp-table-scroll {
+  .sig-table-scroll {
     overflow-x: auto;
   }
 
   /* -- the ledger table ------------------------------------------------------ */
-  .ptp-data-table {
+  .sig-data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem; /* 14px — an 8px-grid half-step */
   }
-  .ptp-data-table thead th {
+  .sig-data-table thead th {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-muted);
@@ -61,42 +61,42 @@
     padding: var(--space-tight) var(--space-standard);
     border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
   }
-  .ptp-data-table td {
+  .sig-data-table td {
     padding: var(--space-tight) var(--space-standard);
     border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
     color: var(--text-main);
   }
   /* The subtle hover wash — Flamingo at 8%, barely-there row tracking. */
-  .ptp-data-table tbody tr:hover {
+  .sig-data-table tbody tr:hover {
     background: color-mix(in srgb, var(--color-cake-primary) 8%, transparent);
   }
   /* Numeric columns: right-aligned, digits pinned to the same grid. */
-  .ptp-data-table__num {
+  .sig-data-table__num {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
   /* Column alignment utilities (2.4.1 "Intuitive Form Anatomy &
      Alignment Fix") — class-based (gate-able), applied per column by
      react/data.tsx to BOTH the th and the td. THE ANCESTOR PREFIX IS
-     LOAD-BEARING: `.ptp-data-table thead th` is specificity (0,1,2) and
+     LOAD-BEARING: `.sig-data-table thead th` is specificity (0,1,2) and
      outranks a bare `.__align-*` class (0,1,0) — that cascade loss is
      exactly why the v2.4.0 numeric HEADER stayed left while its cells
-     went right (the reported bug). Scoping under `.ptp-data-table`
+     went right (the reported bug). Scoping under `.sig-data-table`
      (0,2,0) puts the utility back on top. `__num` stays the
      tabular-nums numeric convenience and COMPOSES with these (align
      owns geometry, numeric owns digits). */
-  .ptp-data-table .ptp-data-table__align-left {
+  .sig-data-table .sig-data-table__align-left {
     text-align: left;
   }
-  .ptp-data-table .ptp-data-table__align-center {
+  .sig-data-table .sig-data-table__align-center {
     text-align: center;
   }
-  .ptp-data-table .ptp-data-table__align-right {
+  .sig-data-table .sig-data-table__align-right {
     text-align: right;
   }
   /* The caption sits UNDER the table (data provenance, not a title),
      muted mono — the viz caption's sibling (css/viz.css). */
-  .ptp-data-table caption {
+  .sig-data-table caption {
     caption-side: bottom;
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     color: var(--text-muted);
@@ -106,12 +106,12 @@
   }
 
   /* -- the module switcher: attribute-driven, exactly like the nav ----------- */
-  .ptp-tabs {
+  .sig-tabs {
     display: flex;
     gap: var(--space-tight);
     border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
   }
-  .ptp-tabs__tab {
+  .sig-tabs__tab {
     appearance: none; /* the button reset */
     background: transparent;
     color: var(--text-muted);
@@ -124,24 +124,24 @@
     cursor: pointer;
     transition: var(--transition-standard), var(--transition-transform);
   }
-  .ptp-tabs__tab:hover {
+  .sig-tabs__tab:hover {
     color: var(--text-main);
   }
-  .ptp-tabs__tab:active {
+  .sig-tabs__tab:active {
     transform: scale(0.97); /* the press physics */
   }
   /* THE active mechanism — no .is-active class exists in the system. */
-  .ptp-tabs__tab[aria-selected="true"] {
+  .sig-tabs__tab[aria-selected="true"] {
     color: var(--text-main);
     border-bottom-color: var(--color-cake-primary);
   }
-  .ptp-tabs__tab:focus-visible {
+  .sig-tabs__tab:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
 
   /* -- the persistent note: the toast strip's never-dismissing sibling ------- */
-  .ptp-callout {
+  .sig-callout {
     border-left: 4px solid var(--status);
     background: var(--bg-inset);
     border-radius: var(--radius-ui);
@@ -152,7 +152,7 @@
 
   /* Motion is a gift, not a requirement. */
   @media (prefers-reduced-motion: reduce) {
-    .ptp-tabs__tab {
+    .sig-tabs__tab {
       transition: none;
     }
   }

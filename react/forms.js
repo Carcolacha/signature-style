@@ -9,7 +9,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * the input, prefix/suffix chips in the owning well, validMessage slot,
  * the error shake) and grows PasswordInput; 3.0.0 "Symmetrical Forms"
  * REVERSES the owner's own 2.5.0 call — helpers (description + hint)
- * move BELOW the control into the .ptp-form-field__helpers slot, the
+ * move BELOW the control into the .sig-form-field__helpers slot, the
  * label row gets the fixed 20px alignment rail, and infoTooltip adds
  * the pure-CSS ⓘ bubble. THE A11Y PRESERVATION makes the reversal safe:
  * the description id rides aria-describedby onto the control
@@ -46,11 +46,11 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * label contract: `label` used to be aria-label ONLY (orphaned
  * switches — a mute decoration floating in the card with no visible
  * name). Now a present `label` ALSO renders as visible text: the
- * pill (`.ptp-switch__pill`, every selector migrated off the old
- * `.ptp-switch` name) + a `.ptp-switch__text` span inside the
- * `.ptp-switch` wrapper. THE WRAPPER IS JUSTIFIED — it is the
+ * pill (`.sig-switch__pill`, every selector migrated off the old
+ * `.sig-switch` name) + a `.sig-switch__text` span inside the
+ * `.sig-switch` wrapper. THE WRAPPER IS JUSTIFIED — it is the
  * pill + visible-text composition (the same sanction as
- * `.ptp-select`'s chevron anchor), NOT decoration: without it the
+ * `.sig-select`'s chevron anchor), NOT decoration: without it the
  * flex pairing of control and caption is impossible. Only the pill
  * is interactive; the text is visual (the button keeps aria-label so
  * the accessible name survives regardless of the text span).
@@ -62,7 +62,7 @@ import { Icon } from "./primitives.js";
 /**
  * `<Input>` — the inset-well text field.
  *
- * ONE `<input className="ptp-input">` — props spread onto it verbatim.
+ * ONE `<input className="sig-input">` — props spread onto it verbatim.
  * Styling (inset well, hairline border, Flamingo focus ring, peach
  * error border) lives entirely in css/forms.css.
  *
@@ -77,12 +77,12 @@ import { Icon } from "./primitives.js";
  * ```
  */
 export function Input({ error, ...rest }) {
-    return (_jsx("input", { className: "ptp-input", ...rest, "aria-invalid": !!error || undefined }));
+    return (_jsx("input", { className: "sig-input", ...rest, "aria-invalid": !!error || undefined }));
 }
 /**
  * `<TextArea>` — the inset-well multi-line field.
  *
- * ONE `<textarea className="ptp-textarea">` — props spread onto it
+ * ONE `<textarea className="sig-textarea">` — props spread onto it
  * verbatim. Same doctrine as `<Input>`: the error flag is a state, the
  * message is yours.
  *
@@ -92,18 +92,18 @@ export function Input({ error, ...rest }) {
  * ```
  */
 export function TextArea({ error, ...rest }) {
-    return (_jsx("textarea", { className: "ptp-textarea", ...rest, "aria-invalid": !!error || undefined }));
+    return (_jsx("textarea", { className: "sig-textarea", ...rest, "aria-invalid": !!error || undefined }));
 }
 /**
  * `<ToggleSwitch>` — THE toggle (2.4.1: visible label).
  *
  * The pill is unchanged at heart: `<button type="button" role="switch"
- * class="ptp-switch__pill">` whose knob is the ::before pseudo-element
+ * class="sig-switch__pill">` whose knob is the ::before pseudo-element
  * (css/forms.css: 20px travel on aria-checked, dark knob on the Teal
  * track — the on-cake echo). With a `label`, the pill + text compose
- * inside `<span class="ptp-switch">` — THE JUSTIFIED WRAPPER (the
+ * inside `<span class="sig-switch">` — THE JUSTIFIED WRAPPER (the
  * pill + visible-text composition; the flex pairing of control and
- * caption is impossible without it): `<span class="ptp-switch__text">`
+ * caption is impossible without it): `<span class="sig-switch__text">`
  * carries the visible label, non-interactive. Click fires
  * `onToggle(!checked)`; state stays with you.
  *
@@ -114,18 +114,18 @@ export function TextArea({ error, ...rest }) {
  * ```
  */
 export function ToggleSwitch({ checked, onToggle, label }) {
-    const pill = (_jsx("button", { type: "button", role: "switch", className: "ptp-switch__pill", "aria-checked": checked, "aria-label": label, onClick: () => onToggle?.(!checked) }));
+    const pill = (_jsx("button", { type: "button", role: "switch", className: "sig-switch__pill", "aria-checked": checked, "aria-label": label, onClick: () => onToggle?.(!checked) }));
     if (label === undefined) {
         return pill;
     }
-    return (_jsxs("span", { className: "ptp-switch", children: [pill, _jsx("span", { className: "ptp-switch__text", children: label })] }));
+    return (_jsxs("span", { className: "sig-switch", children: [pill, _jsx("span", { className: "sig-switch__text", children: label })] }));
 }
 /**
  * `<Select>` — the native dropdown with the token chevron.
  *
- * ONE justified wrapper: `<span class="ptp-select">` (positioned anchor)
- * → `<select class="ptp-select__native">` + `<Icon name="ChevronDown"
- * class="ptp-select__chevron">`. THE WRAPPER IS STRUCTURAL, not
+ * ONE justified wrapper: `<span class="sig-select">` (positioned anchor)
+ * → `<select class="sig-select__native">` + `<Icon name="ChevronDown"
+ * class="sig-select__chevron">`. THE WRAPPER IS STRUCTURAL, not
  * decorative: `appearance: none` strips the UA arrow, and the custom
  * chevron needs a positioned ancestor to hang off (`position: absolute`
  * resolves against the nearest positioned ancestor — without the span
@@ -149,16 +149,16 @@ export function ToggleSwitch({ checked, onToggle, label }) {
  * ```
  */
 export function Select({ error, label, children, ...rest }) {
-    return (_jsxs("span", { className: "ptp-select", children: [_jsx("select", { className: "ptp-select__native", ...rest, "aria-invalid": !!error || undefined, "aria-label": label, children: children }), _jsx(Icon, { name: "ChevronDown", className: "ptp-select__chevron", "aria-hidden": true })] }));
+    return (_jsxs("span", { className: "sig-select", children: [_jsx("select", { className: "sig-select__native", ...rest, "aria-invalid": !!error || undefined, "aria-label": label, children: children }), _jsx(Icon, { name: "ChevronDown", className: "sig-select__chevron", "aria-hidden": true })] }));
 }
 /**
  * `<Checkbox>` — the native check with the on-cake checkmark.
  *
- * `<label class="ptp-checkbox">` (THE justified wrapper: a native
+ * `<label class="sig-checkbox">` (THE justified wrapper: a native
  * checkbox's click-to-toggle label association is a semantic necessity
  * — the `<label>` element IS the feature, wiring pointer and screen-
  * reader clicks to the input with zero JS) → `<input type="checkbox"
- * class="ptp-checkbox__input">` + the label text span. `appearance:
+ * class="sig-checkbox__input">` + the label text span. `appearance:
  * none` strips the UA chrome; the checked state paints the Teal
  * (`--color-cake-secondary`) fill and reveals the ::after checkmark —
  * dark `--color-on-cake` ink on the Teal track, the on-cake doctrine.
@@ -172,12 +172,12 @@ export function Select({ error, label, children, ...rest }) {
  * ```
  */
 export function Checkbox({ checked, onToggle, label }) {
-    return (_jsxs("label", { className: "ptp-checkbox", children: [_jsx("input", { type: "checkbox", className: "ptp-checkbox__input", checked: checked, onChange: (event) => onToggle?.(event.target.checked) }), label !== undefined && (_jsx("span", { className: "ptp-checkbox__text", children: label }))] }));
+    return (_jsxs("label", { className: "sig-checkbox", children: [_jsx("input", { type: "checkbox", className: "sig-checkbox__input", checked: checked, onChange: (event) => onToggle?.(event.target.checked) }), label !== undefined && (_jsx("span", { className: "sig-checkbox__text", children: label }))] }));
 }
 /**
  * `<Avatar>` — the initials disc.
  *
- * ONE `<span class="ptp-avatar">` — width/height set INLINE from `size`
+ * ONE `<span class="sig-avatar">` — width/height set INLINE from `size`
  * (the two grid-perfect diameters), `aria-label={name}`, and — when
  * `ringToken` is present — the ring as an INLINE `border: 2px solid
  * var(token)`. BORDER, NOT box-shadow: the e1 doctrine — separation is
@@ -209,19 +209,19 @@ export function Avatar({ name, size = 32, ringToken }) {
             ringStyle.border = `2px solid var(${ringToken})`;
         }
     }
-    return (_jsx("span", { className: "ptp-avatar", style: { width: size, height: size, ...ringStyle }, "aria-label": name, children: initials }));
+    return (_jsx("span", { className: "sig-avatar", style: { width: size, height: size, ...ringStyle }, "aria-label": name, children: initials }));
 }
 /**
  * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, reworked
  * 2.5.0, SYMMETRIZED 3.0.0).
  *
- * `<div class="ptp-form-field">` (flex column, tight gap — the css
+ * `<div class="sig-form-field">` (flex column, tight gap — the css
  * carries the `__field` slot contract ON the root, one class fewer).
  * THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of the 2.5.0
  * top-down: helpers move BELOW the control — top-down labels, bottom-up
  * helpers, every side-by-side field aligning on both rails):
  *
- *   1. The label ROW — `.ptp-form-field__label-row` (fixed 20px
+ *   1. The label ROW — `.sig-form-field__label-row` (fixed 20px
  *      min-height = the 1.25rem grid step, so side-by-side fields'
  *      labels align on the same baseline): the PROMOTED label
  *      (text-main, 0.875rem, weight 500) + the optional aria-hidden
@@ -229,11 +229,11 @@ export function Avatar({ name, size = 32, ringToken }) {
  *      button (infoTooltip; pure-CSS bubble above, hover + focus).
  *   2. The control zone — bare children (old behavior, existing call
  *      sites keep working), or — when `prefix`/`suffix` are present —
- *      the `.ptp-form-field__well` adornment zone: mono `__chip`s
+ *      the `.sig-form-field__well` adornment zone: mono `__chip`s
  *      flanking the bare control. The well OWNS the border/focus ring
  *      (`data-invalid` flips it peach and fires the shake).
  *   3. THE HELPERS SLOT (3.0.0 — below the well):
- *      `.ptp-form-field__helpers` (min-height 20px, flex wrap tight
+ *      `.sig-form-field__helpers` (min-height 20px, flex wrap tight
  *      gap) carries the description (format examples — "120", "5
  *      numbers only · e.g., 79901") and the hint. THE REVERSAL IS
  *      DOCUMENTED IN css/forms.css; THE A11Y PRESERVATION LIVES HERE:
@@ -281,8 +281,8 @@ export function FormField({ label, htmlFor, description, hint, error, validMessa
             "aria-describedby": describedBy,
         })
         : children;
-    const control = hasWell ? (_jsxs("span", { className: "ptp-form-field__well", "data-invalid": !!error || undefined, children: [prefix !== undefined && (_jsx("span", { className: "ptp-form-field__chip", children: prefix })), controlChild, suffix !== undefined && (_jsx("span", { className: "ptp-form-field__chip ptp-form-field__chip--right", children: suffix }))] })) : (controlChild);
-    return (_jsxs("div", { className: "ptp-form-field", children: [_jsxs("div", { className: "ptp-form-field__label-row", children: [_jsxs("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "ptp-form-field__required", "aria-hidden": "true", children: "*" }))] }), infoTooltip !== undefined && (_jsx("button", { type: "button", className: "ptp-form-field__info", title: infoTooltip, "aria-label": `Info: ${infoTooltip}`, "data-tooltip": infoTooltip, children: _jsx(Icon, { name: "Info", "aria-hidden": true }) }))] }), control, (description !== undefined || hint !== undefined) && (_jsxs("div", { className: "ptp-form-field__helpers", children: [description !== undefined && (_jsx("span", { className: "ptp-form-field__desc", id: descId, children: description })), hint !== undefined && (_jsx("span", { className: "ptp-form-field__hint", children: hint }))] })), error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : validMessage !== undefined ? (_jsx("span", { className: "ptp-form-field__valid", children: validMessage })) : null] }));
+    const control = hasWell ? (_jsxs("span", { className: "sig-form-field__well", "data-invalid": !!error || undefined, children: [prefix !== undefined && (_jsx("span", { className: "sig-form-field__chip", children: prefix })), controlChild, suffix !== undefined && (_jsx("span", { className: "sig-form-field__chip sig-form-field__chip--right", children: suffix }))] })) : (controlChild);
+    return (_jsxs("div", { className: "sig-form-field", children: [_jsxs("div", { className: "sig-form-field__label-row", children: [_jsxs("label", { className: "sig-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "sig-form-field__required", "aria-hidden": "true", children: "*" }))] }), infoTooltip !== undefined && (_jsx("button", { type: "button", className: "sig-form-field__info", title: infoTooltip, "aria-label": `Info: ${infoTooltip}`, "data-tooltip": infoTooltip, children: _jsx(Icon, { name: "Info", "aria-hidden": true }) }))] }), control, (description !== undefined || hint !== undefined) && (_jsxs("div", { className: "sig-form-field__helpers", children: [description !== undefined && (_jsx("span", { className: "sig-form-field__desc", id: descId, children: description })), hint !== undefined && (_jsx("span", { className: "sig-form-field__hint", children: hint }))] })), error !== undefined ? (_jsx("span", { className: "sig-form-field__error", role: "alert", children: error })) : validMessage !== undefined ? (_jsx("span", { className: "sig-form-field__valid", children: validMessage })) : null] }));
 }
 /** Single valid element = wireable via cloneElement (the describedby merge). */
 function isValidSingleChild(children) {
@@ -291,11 +291,11 @@ function isValidSingleChild(children) {
 /**
  * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).
  *
- * `<div role="radiogroup" aria-label={label} class="ptp-radio-cards">`
- * → one `<label class="ptp-radio-card [--selected]">` per option — THE
+ * `<div role="radiogroup" aria-label={label} class="sig-radio-cards">`
+ * → one `<label class="sig-radio-card [--selected]">` per option — THE
  * WRAPPER IS A SEMANTIC NECESSITY (same doctrine as `<Checkbox>`: the
  * label element wires pointer and screen-reader clicks to the native
- * input with zero JS) → `<input type="radio" class="ptp-radio-card__input">`
+ * input with zero JS) → `<input type="radio" class="sig-radio-card__input">`
  * (visually hidden — position absolute, opacity 0) + the body span with
  * the label and the optional description. THE NATIVE INPUT KEEPS THE
  * CONTRACT: arrow-key group navigation, form submission, `checked` —
@@ -324,7 +324,7 @@ function isValidSingleChild(children) {
  * ```
  */
 export function RadioCardGroup({ name, options, value, onChange, label }) {
-    return (_jsx("div", { role: "radiogroup", "aria-label": label, className: "ptp-radio-cards", children: options.map((option) => {
+    return (_jsx("div", { role: "radiogroup", "aria-label": label, className: "sig-radio-cards", children: options.map((option) => {
             // 2.5.0 — descriptions ENFORCED at runtime: a description-less
             // card renders as a label-only stub and breaks the balanced
             // grid read. The type stays optional (no semver break in a
@@ -333,8 +333,8 @@ export function RadioCardGroup({ name, options, value, onChange, label }) {
                 console.warn(`[signature-style] RadioCardGroup option "${option.label}" has no description — cards read as stubs without their second line; pass a description for every option.`);
             }
             return (_jsxs("label", { className: value === option.value
-                    ? "ptp-radio-card ptp-radio-card--selected"
-                    : "ptp-radio-card", children: [_jsx("input", { type: "radio", className: "ptp-radio-card__input", name: name, value: option.value, checked: value === option.value, onChange: () => onChange(option.value) }), _jsxs("span", { className: "ptp-radio-card__body", children: [_jsx("span", { className: "ptp-radio-card__label", children: option.label }), option.description !== undefined && (_jsx("span", { className: "ptp-radio-card__desc", children: option.description }))] })] }, option.value));
+                    ? "sig-radio-card sig-radio-card--selected"
+                    : "sig-radio-card", children: [_jsx("input", { type: "radio", className: "sig-radio-card__input", name: name, value: option.value, checked: value === option.value, onChange: () => onChange(option.value) }), _jsxs("span", { className: "sig-radio-card__body", children: [_jsx("span", { className: "sig-radio-card__label", children: option.label }), option.description !== undefined && (_jsx("span", { className: "sig-radio-card__desc", children: option.description }))] })] }, option.value));
         }) }));
 }
 /** The four strength stages, index = score − 1 (score 0 shows none). */
@@ -348,19 +348,19 @@ const PASSWORD_STAGES = ["Weak", "Fair", "Good", "Strong"];
  *   1. The label + the fixed format description ("8+ chars · mix
  *      cases, numbers, symbols") — the 2.5.0 description-above
  *      contract, shipped by `<FormField>`.
- *   2. The `.ptp-form-field__well.ptp-password` — a bare
+ *   2. The `.sig-form-field__well.sig-password` — a bare
  *      `type={show ? "text" : "password"}` input (the well owns the
  *      border; the scoped kill strips the field chrome) + the
- *      `.ptp-password__toggle` eye button (aria-label + aria-pressed;
+ *      `.sig-password__toggle` eye button (aria-label + aria-pressed;
  *      Icon "Eye"/"EyeOff" — both gate-probed against the live lucide
  *      map).
- *   3. The `.ptp-password__meter` — ONE `<div role="progressbar">`
+ *   3. The `.sig-password__meter` — ONE `<div role="progressbar">`
  *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
  *      segments and the `data-score` attribute. The css paints the
  *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
  *      token this release exists for), 3 → sky, 4 → green.
  *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
- *   5. Four `.ptp-password__pill` condition spans ("8+ chars",
+ *   5. Four `.sig-password__pill` condition spans ("8+ chars",
  *      "Uppercase", "Number", "Symbol") — `data-satisfied` flips them
  *      to the 20% party-green wash.
  *
@@ -388,5 +388,5 @@ export function PasswordInput({ label = "Password", value, onChange }) {
     ];
     const score = rules.filter((rule) => rule.satisfied).length;
     const stage = score === 0 ? "" : (PASSWORD_STAGES[score - 1] ?? "");
-    return (_jsxs(FormField, { label: label, htmlFor: id, description: "8+ chars \u00B7 mix cases, numbers, symbols", children: [_jsxs("span", { className: "ptp-form-field__well ptp-password", children: [_jsx("input", { id: id, type: show ? "text" : "password", className: "ptp-password__native", value: value, onChange: (event) => onChange?.(event.target.value) }), _jsx("button", { type: "button", className: "ptp-password__toggle", "aria-label": show ? "Hide password" : "Show password", "aria-pressed": show, onClick: () => setShow((current) => !current), children: _jsx(Icon, { name: show ? "EyeOff" : "Eye", "aria-hidden": true }) })] }), _jsxs("span", { className: "ptp-password__meter-row", children: [_jsxs("span", { className: "ptp-password__meter", role: "progressbar", "aria-label": "Password strength", "aria-valuemin": 0, "aria-valuemax": 4, "aria-valuenow": score, "data-score": score, children: [_jsx("span", {}), _jsx("span", {}), _jsx("span", {}), _jsx("span", {})] }), _jsx("span", { className: "ptp-password__stage", "data-score": score, children: stage })] }), _jsx("span", { className: "ptp-password__pills", children: rules.map((rule) => (_jsx("span", { className: "ptp-password__pill", ...(rule.satisfied ? { "data-satisfied": true } : {}), children: rule.label }, rule.label))) })] }));
+    return (_jsxs(FormField, { label: label, htmlFor: id, description: "8+ chars \u00B7 mix cases, numbers, symbols", children: [_jsxs("span", { className: "sig-form-field__well sig-password", children: [_jsx("input", { id: id, type: show ? "text" : "password", className: "sig-password__native", value: value, onChange: (event) => onChange?.(event.target.value) }), _jsx("button", { type: "button", className: "sig-password__toggle", "aria-label": show ? "Hide password" : "Show password", "aria-pressed": show, onClick: () => setShow((current) => !current), children: _jsx(Icon, { name: show ? "EyeOff" : "Eye", "aria-hidden": true }) })] }), _jsxs("span", { className: "sig-password__meter-row", children: [_jsxs("span", { className: "sig-password__meter", role: "progressbar", "aria-label": "Password strength", "aria-valuemin": 0, "aria-valuemax": 4, "aria-valuenow": score, "data-score": score, children: [_jsx("span", {}), _jsx("span", {}), _jsx("span", {}), _jsx("span", {})] }), _jsx("span", { className: "sig-password__stage", "data-score": score, children: stage })] }), _jsx("span", { className: "sig-password__pills", children: rules.map((rule) => (_jsx("span", { className: "sig-password__pill", ...(rule.satisfied ? { "data-satisfied": true } : {}), children: rule.label }, rule.label))) })] }));
 }

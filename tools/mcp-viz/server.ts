@@ -9,23 +9,23 @@
  * 1.4.0). tools/ is our tooling: owner-editable, noted in the release
  * changelog.
  *
- * 2.3.0: the sweep grows the data-module contract — .ptp-data-table,
- * .ptp-tabs__tab, .ptp-callout — and the server version moves to 2.3.0
+ * 2.3.0: the sweep grows the data-module contract — .sig-data-table,
+ * .sig-tabs__tab, .sig-callout — and the server version moves to 2.3.0
  * (same owner-editable tooling note).
  *
- * 2.5.0: the sweep grows the bento contract — .ptp-btn (the Button
- * family), .ptp-stat-card (the KPI trio), .sig-shell (the view shell,
+ * 2.5.0: the sweep grows the bento contract — .sig-btn (the Button
+ * family), .sig-stat-card (the KPI trio), .sig-shell (the view shell,
  * defect #1's fix) — and the server version moves to 2.5.0.
  *
- * 2.6.0: the sweep grows the master-index contract — .ptp-carousel__dot
- * (the dot indicators) and .ptp-chronicle__item (the release chronicle)
+ * 2.6.0: the sweep grows the master-index contract — .sig-carousel__dot
+ * (the dot indicators) and .sig-chronicle__item (the release chronicle)
  * — and the server version moves to 2.6.0.
  *
- * 2.7.0: the sweep grows the Graphs & Planner contract — .ptp-graph__node
- * (the knowledge-graph nodes), .ptp-bars__bar (the analytical bar ink)
- * and .ptp-tmanager__count (the milestone counter) — and the server
- * version moves to 2.7.0. (The owner spec wrote ".ptp-bars__" as a
- * PREFIX; the concrete `.ptp-bars__bar` class is what querySelector can
+ * 2.7.0: the sweep grows the Graphs & Planner contract — .sig-graph__node
+ * (the knowledge-graph nodes), .sig-bars__bar (the analytical bar ink)
+ * and .sig-tmanager__count (the milestone counter) — and the server
+ * version moves to 2.7.0. (The owner spec wrote ".sig-bars__" as a
+ * PREFIX; the concrete `.sig-bars__bar` class is what querySelector can
  * actually sweep — the documented specialization.)
  *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
@@ -68,25 +68,25 @@ const DEFAULT_URL = "http://localhost:5173";
  */
 const DEFAULT_SELECTORS: readonly string[] = [
   "[data-testid]",
-  ".ptp-timeline__node",
-  ".ptp-timeline__item",
-  ".ptp-timeline__header",
-  ".ptp-progress",
-  ".ptp-progress__fill",
+  ".sig-timeline__node",
+  ".sig-timeline__item",
+  ".sig-timeline__header",
+  ".sig-progress",
+  ".sig-progress__fill",
   ".sig-surface-card",
   ".sig-shell",
-  ".ptp-btn",
-  ".ptp-stat-card",
+  ".sig-btn",
+  ".sig-stat-card",
   ".hub__metric",
   ".hub__btn",
-  ".ptp-data-table",
-  ".ptp-tabs__tab",
-  ".ptp-callout",
-  ".ptp-carousel__dot",
-  ".ptp-chronicle__item",
-  ".ptp-graph__node",
-  ".ptp-bars__bar",
-  ".ptp-tmanager__count",
+  ".sig-data-table",
+  ".sig-tabs__tab",
+  ".sig-callout",
+  ".sig-carousel__dot",
+  ".sig-chronicle__item",
+  ".sig-graph__node",
+  ".sig-bars__bar",
+  ".sig-tmanager__count",
 ];
 
 /** Settle time after networkidle, letting entry animations finish. */

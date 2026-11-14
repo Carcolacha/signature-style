@@ -293,7 +293,7 @@ const [moduleId, setModuleId] = useState("core");
   error={name.length === 0 && "Name is required"}
   aria-describedby="name-error"
 />`,
-    html: `<input class="ptp-input" type="text" placeholder="Guest name" />`,
+    html: `<input class="sig-input" type="text" placeholder="Guest name" />`,
   },
   TextArea: {
     set: "03",
@@ -363,9 +363,9 @@ const [pw, setPw] = useState("");
   Check In
 </Button>
 <Button variant="danger" size="sm" onClick={remove}>Remove guest</Button>`,
-    html: `<button class="ptp-btn ptp-btn--primary" type="submit">Check In</button>
-<button class="ptp-btn ptp-btn--secondary" type="button">Maybe</button>
-<button class="ptp-btn ptp-btn--ghost ptp-btn--sm" type="button">Skip</button>`,
+    html: `<button class="sig-btn sig-btn--primary" type="submit">Check In</button>
+<button class="sig-btn sig-btn--secondary" type="button">Maybe</button>
+<button class="sig-btn sig-btn--ghost sig-btn--sm" type="button">Skip</button>`,
   },
 
   // ---------------------------------------------------------------- Set 04
@@ -584,7 +584,7 @@ const modal = useModal<PtpEvent>();
     jsx: `import { Callout } from "@edwyn/signature-style/react";
 
 <Callout status="warning">3 pending RSVPs close Friday.</Callout>`,
-    html: `<div class="ptp-callout" role="note" style="--status: var(--party-peach);">
+    html: `<div class="sig-callout" role="note" style="--status: var(--party-peach);">
   3 pending RSVPs close Friday.
 </div>`,
   },
@@ -635,9 +635,9 @@ const modal = useModal<PtpEvent>();
 >
   v2.5.0 — live state mode: check in a guest and watch the ledger, ring, and toast react.
 </AnnouncementBanner>`,
-    html: `<div class="ptp-announcement" role="status" style="--status: var(--color-cake-primary);">
-  <span class="ptp-announcement__icon">…</span>
-  <span class="ptp-announcement__text">v2.8.0 — the Pattern Studio ships.</span>
+    html: `<div class="sig-announcement" role="status" style="--status: var(--color-cake-primary);">
+  <span class="sig-announcement__icon">…</span>
+  <span class="sig-announcement__text">v2.8.0 — the Pattern Studio ships.</span>
 </div>`,
   },
   EmptyState: {

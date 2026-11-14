@@ -39,7 +39,7 @@
 
 /* The sticky navbar bar — hairline bottom border, surface background.
    Flex row so the mobile hamburger can park right (see header). */
-.ptp-nav {
+.sig-nav {
   position: sticky;
   top: 0;
   z-index: var(--z-nav, 30);
@@ -51,7 +51,7 @@
 }
 
 /* Flat link row: a ul laid out horizontally, zero list chrome. */
-.ptp-nav__list {
+.sig-nav__list {
   display: flex;
   align-items: stretch;
   gap: var(--space-standard);
@@ -61,7 +61,7 @@
 }
 
 /* Nav links — inline-flex so the press transform has a transformable box. */
-.ptp-nav__link {
+.sig-nav__link {
   display: inline-flex;
   align-items: center;
   color: var(--text-muted);
@@ -71,30 +71,30 @@
   transition: var(--transition-standard), var(--transition-transform);
 }
 
-.ptp-nav__link:hover {
+.sig-nav__link:hover {
   color: var(--text-main);
 }
 
-.ptp-nav__link:active {
+.sig-nav__link:active {
   transform: scale(0.97);
 }
 
 /* THE active mechanism: the aria-current attribute IS the state. */
-.ptp-nav__link[aria-current="page"] {
+.sig-nav__link[aria-current="page"] {
   color: var(--text-main);
   border-bottom-color: var(--color-cake-primary);
 }
 
 /* Doctrine focus ring — identical to cascade.css / timeline.css. */
-.ptp-nav__link:focus-visible,
-.ptp-nav__menu-btn:focus-visible {
+.sig-nav__link:focus-visible,
+.sig-nav__menu-btn:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
 /* Hamburger — muted, hairline-bordered, minimal. Hover goes to main text
    (NOT Teal — that is the modal close signature); press = scale 0.97. */
-.ptp-nav__menu-btn {
+.sig-nav__menu-btn {
   display: none;
   align-items: center;
   margin-left: auto;
@@ -107,28 +107,28 @@
   transition: var(--transition-standard), var(--transition-transform);
 }
 
-.ptp-nav__menu-btn:hover {
+.sig-nav__menu-btn:hover {
   color: var(--text-main);
 }
 
-.ptp-nav__menu-btn:active {
+.sig-nav__menu-btn:active {
   transform: scale(0.97);
 }
 
 /* Pillar 2 mobile shift: the flat list collapses, the hamburger appears. */
 @media (max-width: 768px) {
-  .ptp-nav__list {
+  .sig-nav__list {
     display: none;
   }
 
-  .ptp-nav__menu-btn {
+  .sig-nav__menu-btn {
     display: inline-flex;
   }
 }
 
 /* The mobile menu — full-height side drawer sliding in from the right.
    Sits at --z-modal (50): above the navbar, sibling to the modal card. */
-.ptp-nav-drawer {
+.sig-nav-drawer {
   position: fixed;
   top: 0;
   right: 0;
@@ -141,14 +141,14 @@
   transform: translateX(100%);
 }
 
-.ptp-nav-drawer[data-open="true"] {
+.sig-nav-drawer[data-open="true"] {
   transform: translateX(0);
 }
 
-/* Vertical link stack — drawer links wear the same .ptp-nav__link class
+/* Vertical link stack — drawer links wear the same .sig-nav__link class
    as the flat bar (bottom-border aria-current underline kept on purpose;
    see the header decision), just stacked and full-width. */
-.ptp-nav-drawer__list {
+.sig-nav-drawer__list {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -165,7 +165,7 @@
    state, the nav contract). Separators are aria-hidden "/" spans —
    muted, non-italic, half a tight step off each side (glyph geometry,
    not layout spacing). Zero hex, zero shadows. */
-.ptp-breadcrumbs ol {
+.sig-breadcrumbs ol {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -175,7 +175,7 @@
   list-style: none;
 }
 
-.ptp-breadcrumbs li {
+.sig-breadcrumbs li {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
@@ -183,27 +183,27 @@
   font-size: 0.8125rem;
 }
 
-.ptp-breadcrumbs a {
+.sig-breadcrumbs a {
   color: var(--text-muted);
   text-decoration: none;
   transition: var(--transition-standard);
 }
 
-.ptp-breadcrumbs a:hover {
+.sig-breadcrumbs a:hover {
   color: var(--text-main);
 }
 
-.ptp-breadcrumbs a:focus-visible {
+.sig-breadcrumbs a:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
-.ptp-breadcrumbs [aria-current="page"] {
+.sig-breadcrumbs [aria-current="page"] {
   color: var(--text-main);
   font-weight: 700;
 }
 
-.ptp-breadcrumbs__sep {
+.sig-breadcrumbs__sep {
   color: color-mix(in srgb, var(--text-muted) 60%, transparent);
   user-select: none;
 }
@@ -211,10 +211,10 @@
 /* Motion is a gift, not a requirement: no transitions when the visitor
    asked for reduced motion (the base layer's global guard also runs). */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-nav__link,
-  .ptp-nav__menu-btn,
-  .ptp-nav-drawer,
-  .ptp-breadcrumbs a {
+  .sig-nav__link,
+  .sig-nav__menu-btn,
+  .sig-nav-drawer,
+  .sig-breadcrumbs a {
     transition: none;
   }
 }

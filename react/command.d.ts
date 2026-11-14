@@ -28,7 +28,7 @@
  * Zero hex beyond the documented scrim. Closed renders nothing at all.
  *
  * Pruning Protocol: backdrop (div) → panel (div) → input + list. The
- * kbd chips reuse .ptp-action-tile__kbd (cards.css) instead of growing
+ * kbd chips reuse .sig-action-tile__kbd (cards.css) instead of growing
  * a second chip anatomy.
  */
 import type { IconName } from "./primitives.js";

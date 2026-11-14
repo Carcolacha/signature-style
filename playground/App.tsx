@@ -411,7 +411,7 @@ function downloadJson(text: string, filename: string): void {
 /**
  * ShortcutsDialog (2.9.0) — the palette's "Open Keyboard Shortcuts"
  * dialog: the modal conventions (the package's own
- * .ptp-modal-backdrop scrim + .ptp-modal-close button, reused — the
+ * .sig-modal-backdrop scrim + .sig-modal-close button, reused — the
  * Pruning Protocol forbids growing a second anatomy) around a compact
  * local card. Escape and the backdrop close; focus starts on the card.
  */
@@ -426,7 +426,7 @@ function ShortcutsDialog({ onClose }: { onClose: () => void }) {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
   return createPortal(
-    <div className="ptp-modal-backdrop" onClick={onClose}>
+    <div className="sig-modal-backdrop" onClick={onClose}>
       <div
         ref={cardRef}
         className="hub__shortcuts-card"
@@ -438,24 +438,24 @@ function ShortcutsDialog({ onClose }: { onClose: () => void }) {
       >
         <div className="hub__shortcuts-row">
           <h2>Keyboard shortcuts</h2>
-          <button className="ptp-modal-close" type="button" aria-label="Close" onClick={onClose}>
+          <button className="sig-modal-close" type="button" aria-label="Close" onClick={onClose}>
             <Icon name="X" aria-hidden />
           </button>
         </div>
         <div className="hub__shortcuts-row">
-          <kbd className="ptp-action-tile__kbd">⌘K / Ctrl K</kbd>
+          <kbd className="sig-action-tile__kbd">⌘K / Ctrl K</kbd>
           <span>Open or close the command palette</span>
         </div>
         <div className="hub__shortcuts-row">
-          <kbd className="ptp-action-tile__kbd">↑ ↓</kbd>
+          <kbd className="sig-action-tile__kbd">↑ ↓</kbd>
           <span>Move through the filtered commands</span>
         </div>
         <div className="hub__shortcuts-row">
-          <kbd className="ptp-action-tile__kbd">↵</kbd>
+          <kbd className="sig-action-tile__kbd">↵</kbd>
           <span>Run the selected command</span>
         </div>
         <div className="hub__shortcuts-row">
-          <kbd className="ptp-action-tile__kbd">esc</kbd>
+          <kbd className="sig-action-tile__kbd">esc</kbd>
           <span>Close the palette, a dialog, or the event modal</span>
         </div>
       </div>
@@ -987,7 +987,7 @@ function Shell() {
             onClick={() => setPaletteOpen(true)}
           >
             Commands
-            <kbd className="ptp-action-tile__kbd">⌘K</kbd>
+            <kbd className="sig-action-tile__kbd">⌘K</kbd>
           </button>
         </div>
         <PageHero title={hero.title} subtitle={hero.sub} />
@@ -1526,7 +1526,7 @@ function BentoCore({
         <SimSlot id="ledger" loading={simLoading} height={simLocked.ledger} bindRef={bindSlotRef}>
           <div data-testid="ledger-table">
             {simLoading ? (
-              <table className="ptp-data-table" aria-hidden="true">
+              <table className="sig-data-table" aria-hidden="true">
                 <tbody>
                   {guests.map((guest) => (
                     <SkeletonTableRow key={guest.id} columns={3} />

@@ -8,7 +8,7 @@
  * the input, prefix/suffix chips in the owning well, validMessage slot,
  * the error shake) and grows PasswordInput; 3.0.0 "Symmetrical Forms"
  * REVERSES the owner's own 2.5.0 call — helpers (description + hint)
- * move BELOW the control into the .ptp-form-field__helpers slot, the
+ * move BELOW the control into the .sig-form-field__helpers slot, the
  * label row gets the fixed 20px alignment rail, and infoTooltip adds
  * the pure-CSS ⓘ bubble. THE A11Y PRESERVATION makes the reversal safe:
  * the description id rides aria-describedby onto the control
@@ -45,11 +45,11 @@
  * label contract: `label` used to be aria-label ONLY (orphaned
  * switches — a mute decoration floating in the card with no visible
  * name). Now a present `label` ALSO renders as visible text: the
- * pill (`.ptp-switch__pill`, every selector migrated off the old
- * `.ptp-switch` name) + a `.ptp-switch__text` span inside the
- * `.ptp-switch` wrapper. THE WRAPPER IS JUSTIFIED — it is the
+ * pill (`.sig-switch__pill`, every selector migrated off the old
+ * `.sig-switch` name) + a `.sig-switch__text` span inside the
+ * `.sig-switch` wrapper. THE WRAPPER IS JUSTIFIED — it is the
  * pill + visible-text composition (the same sanction as
- * `.ptp-select`'s chevron anchor), NOT decoration: without it the
+ * `.sig-select`'s chevron anchor), NOT decoration: without it the
  * flex pairing of control and caption is impossible. Only the pill
  * is interactive; the text is visual (the button keeps aria-label so
  * the accessible name survives regardless of the text span).
@@ -75,7 +75,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 /**
  * `<Input>` — the inset-well text field.
  *
- * ONE `<input className="ptp-input">` — props spread onto it verbatim.
+ * ONE `<input className="sig-input">` — props spread onto it verbatim.
  * Styling (inset well, hairline border, Flamingo focus ring, peach
  * error border) lives entirely in css/forms.css.
  *
@@ -105,7 +105,7 @@ export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 /**
  * `<TextArea>` — the inset-well multi-line field.
  *
- * ONE `<textarea className="ptp-textarea">` — props spread onto it
+ * ONE `<textarea className="sig-textarea">` — props spread onto it
  * verbatim. Same doctrine as `<Input>`: the error flag is a state, the
  * message is yours.
  *
@@ -138,12 +138,12 @@ export interface ToggleSwitchProps {
  * `<ToggleSwitch>` — THE toggle (2.4.1: visible label).
  *
  * The pill is unchanged at heart: `<button type="button" role="switch"
- * class="ptp-switch__pill">` whose knob is the ::before pseudo-element
+ * class="sig-switch__pill">` whose knob is the ::before pseudo-element
  * (css/forms.css: 20px travel on aria-checked, dark knob on the Teal
  * track — the on-cake echo). With a `label`, the pill + text compose
- * inside `<span class="ptp-switch">` — THE JUSTIFIED WRAPPER (the
+ * inside `<span class="sig-switch">` — THE JUSTIFIED WRAPPER (the
  * pill + visible-text composition; the flex pairing of control and
- * caption is impossible without it): `<span class="ptp-switch__text">`
+ * caption is impossible without it): `<span class="sig-switch__text">`
  * carries the visible label, non-interactive. Click fires
  * `onToggle(!checked)`; state stays with you.
  *
@@ -176,9 +176,9 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 /**
  * `<Select>` — the native dropdown with the token chevron.
  *
- * ONE justified wrapper: `<span class="ptp-select">` (positioned anchor)
- * → `<select class="ptp-select__native">` + `<Icon name="ChevronDown"
- * class="ptp-select__chevron">`. THE WRAPPER IS STRUCTURAL, not
+ * ONE justified wrapper: `<span class="sig-select">` (positioned anchor)
+ * → `<select class="sig-select__native">` + `<Icon name="ChevronDown"
+ * class="sig-select__chevron">`. THE WRAPPER IS STRUCTURAL, not
  * decorative: `appearance: none` strips the UA arrow, and the custom
  * chevron needs a positioned ancestor to hang off (`position: absolute`
  * resolves against the nearest positioned ancestor — without the span
@@ -217,11 +217,11 @@ export interface CheckboxProps {
 /**
  * `<Checkbox>` — the native check with the on-cake checkmark.
  *
- * `<label class="ptp-checkbox">` (THE justified wrapper: a native
+ * `<label class="sig-checkbox">` (THE justified wrapper: a native
  * checkbox's click-to-toggle label association is a semantic necessity
  * — the `<label>` element IS the feature, wiring pointer and screen-
  * reader clicks to the input with zero JS) → `<input type="checkbox"
- * class="ptp-checkbox__input">` + the label text span. `appearance:
+ * class="sig-checkbox__input">` + the label text span. `appearance:
  * none` strips the UA chrome; the checked state paints the Teal
  * (`--color-cake-secondary`) fill and reveals the ::after checkmark —
  * dark `--color-on-cake` ink on the Teal track, the on-cake doctrine.
@@ -260,7 +260,7 @@ export interface AvatarProps {
 /**
  * `<Avatar>` — the initials disc.
  *
- * ONE `<span class="ptp-avatar">` — width/height set INLINE from `size`
+ * ONE `<span class="sig-avatar">` — width/height set INLINE from `size`
  * (the two grid-perfect diameters), `aria-label={name}`, and — when
  * `ringToken` is present — the ring as an INLINE `border: 2px solid
  * var(token)`. BORDER, NOT box-shadow: the e1 doctrine — separation is
@@ -288,13 +288,13 @@ export declare function Avatar({ name, size, ringToken }: AvatarProps): import("
  * label → description → control → validation. `description` is the
  * ABOVE-the-input spec line (format rules live with the field's title,
  * never below the control); `hint` stays the BELOW-input helper text.
- * `prefix`/`suffix` compose the control into the `.ptp-form-field__well`
+ * `prefix`/`suffix` compose the control into the `.sig-form-field__well`
  * adornment zone (mono chips flanking a bare input); `validMessage` is
  * the live-validation success line that answers `error` in the ONE
  * validation slot at the bottom.
  */
 export interface FormFieldProps {
-    /** The visible label text (rendered in the `.ptp-form-field__label`). */
+    /** The visible label text (rendered in the `.sig-form-field__label`). */
     label: string;
     /**
      * The control's `id` — YOU also pass it to the child control; this
@@ -335,13 +335,13 @@ export interface FormFieldProps {
      * A literal adornment rendered BEFORE the control (2.4.1; 2.5.0
      * re-homed), e.g. `prefix="$"` for money fields. When prefix/suffix
      * are present the children are wrapped in the
-     * `.ptp-form-field__well` adornment zone (THE JUSTIFIED WRAPPER: an
+     * `.sig-form-field__well` adornment zone (THE JUSTIFIED WRAPPER: an
      * adornment composition needs a flex parent that can own the border —
      * the bare control must stay untouched inside it) with the
-     * `.ptp-form-field__chip` mono span ahead of it. THE CONTRACT: the
+     * `.sig-form-field__chip` mono span ahead of it. THE CONTRACT: the
      * children must be BARE inputs — the well owns the background,
      * border and focus ring (css/forms.css scopes
-     * `.ptp-form-field__well > .ptp-input` kills). The adornment is
+     * `.sig-form-field__well > .sig-input` kills). The adornment is
      * DECORATION — the value's currency belongs to the consumer's
      * placeholder/validation, never to the input's value. The chip is
      * separated from the cursor by a hairline, never glued into the label
@@ -381,13 +381,13 @@ export interface FormFieldProps {
  * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, reworked
  * 2.5.0, SYMMETRIZED 3.0.0).
  *
- * `<div class="ptp-form-field">` (flex column, tight gap — the css
+ * `<div class="sig-form-field">` (flex column, tight gap — the css
  * carries the `__field` slot contract ON the root, one class fewer).
  * THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of the 2.5.0
  * top-down: helpers move BELOW the control — top-down labels, bottom-up
  * helpers, every side-by-side field aligning on both rails):
  *
- *   1. The label ROW — `.ptp-form-field__label-row` (fixed 20px
+ *   1. The label ROW — `.sig-form-field__label-row` (fixed 20px
  *      min-height = the 1.25rem grid step, so side-by-side fields'
  *      labels align on the same baseline): the PROMOTED label
  *      (text-main, 0.875rem, weight 500) + the optional aria-hidden
@@ -395,11 +395,11 @@ export interface FormFieldProps {
  *      button (infoTooltip; pure-CSS bubble above, hover + focus).
  *   2. The control zone — bare children (old behavior, existing call
  *      sites keep working), or — when `prefix`/`suffix` are present —
- *      the `.ptp-form-field__well` adornment zone: mono `__chip`s
+ *      the `.sig-form-field__well` adornment zone: mono `__chip`s
  *      flanking the bare control. The well OWNS the border/focus ring
  *      (`data-invalid` flips it peach and fires the shake).
  *   3. THE HELPERS SLOT (3.0.0 — below the well):
- *      `.ptp-form-field__helpers` (min-height 20px, flex wrap tight
+ *      `.sig-form-field__helpers` (min-height 20px, flex wrap tight
  *      gap) carries the description (format examples — "120", "5
  *      numbers only · e.g., 79901") and the hint. THE REVERSAL IS
  *      DOCUMENTED IN css/forms.css; THE A11Y PRESERVATION LIVES HERE:
@@ -452,11 +452,11 @@ export interface RadioCardGroupProps {
 /**
  * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).
  *
- * `<div role="radiogroup" aria-label={label} class="ptp-radio-cards">`
- * → one `<label class="ptp-radio-card [--selected]">` per option — THE
+ * `<div role="radiogroup" aria-label={label} class="sig-radio-cards">`
+ * → one `<label class="sig-radio-card [--selected]">` per option — THE
  * WRAPPER IS A SEMANTIC NECESSITY (same doctrine as `<Checkbox>`: the
  * label element wires pointer and screen-reader clicks to the native
- * input with zero JS) → `<input type="radio" class="ptp-radio-card__input">`
+ * input with zero JS) → `<input type="radio" class="sig-radio-card__input">`
  * (visually hidden — position absolute, opacity 0) + the body span with
  * the label and the optional description. THE NATIVE INPUT KEEPS THE
  * CONTRACT: arrow-key group navigation, form submission, `checked` —
@@ -506,19 +506,19 @@ export interface PasswordInputProps {
  *   1. The label + the fixed format description ("8+ chars · mix
  *      cases, numbers, symbols") — the 2.5.0 description-above
  *      contract, shipped by `<FormField>`.
- *   2. The `.ptp-form-field__well.ptp-password` — a bare
+ *   2. The `.sig-form-field__well.sig-password` — a bare
  *      `type={show ? "text" : "password"}` input (the well owns the
  *      border; the scoped kill strips the field chrome) + the
- *      `.ptp-password__toggle` eye button (aria-label + aria-pressed;
+ *      `.sig-password__toggle` eye button (aria-label + aria-pressed;
  *      Icon "Eye"/"EyeOff" — both gate-probed against the live lucide
  *      map).
- *   3. The `.ptp-password__meter` — ONE `<div role="progressbar">`
+ *   3. The `.sig-password__meter` — ONE `<div role="progressbar">`
  *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
  *      segments and the `data-score` attribute. The css paints the
  *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
  *      token this release exists for), 3 → sky, 4 → green.
  *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
- *   5. Four `.ptp-password__pill` condition spans ("8+ chars",
+ *   5. Four `.sig-password__pill` condition spans ("8+ chars",
  *      "Uppercase", "Number", "Symbol") — `data-satisfied` flips them
  *      to the 20% party-green wash.
  *

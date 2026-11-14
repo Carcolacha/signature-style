@@ -29,7 +29,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * Zero hex beyond the documented scrim. Closed renders nothing at all.
  *
  * Pruning Protocol: backdrop (div) → panel (div) → input + list. The
- * kbd chips reuse .ptp-action-tile__kbd (cards.css) instead of growing
+ * kbd chips reuse .sig-action-tile__kbd (cards.css) instead of growing
  * a second chip anatomy.
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
@@ -151,13 +151,13 @@ export function CommandPalette({ commands, open, onClose, onOpen, }) {
     const activeId = filtered[activeIndex] !== undefined
         ? `${baseId}-opt-${filtered[activeIndex].id}`
         : undefined;
-    const renderRows = () => filtered.map((command, index) => (_jsxs("li", { id: `${baseId}-opt-${command.id}`, role: "option", "aria-selected": index === activeIndex, className: "ptp-command__option", "data-testid": `command-${command.id}`, onMouseEnter: () => setActiveIndex(index), onClick: () => {
+    const renderRows = () => filtered.map((command, index) => (_jsxs("li", { id: `${baseId}-opt-${command.id}`, role: "option", "aria-selected": index === activeIndex, className: "sig-command__option", "data-testid": `command-${command.id}`, onMouseEnter: () => setActiveIndex(index), onClick: () => {
             command.run();
             onClose();
-        }, children: [command.icon !== undefined && (_jsx(Icon, { name: command.icon, size: 16, "aria-hidden": true })), _jsx("span", { className: "ptp-command__label", children: command.label }), command.hint !== undefined && (_jsx("span", { className: "ptp-command__hint", children: command.hint }))] }, command.id)));
-    return createPortal(_jsx("div", { className: "ptp-command-backdrop", "data-testid": "command-backdrop", onClick: onClose, children: _jsxs("div", { className: "ptp-command", role: "dialog", "aria-modal": "true", "aria-label": "Command palette", onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsxs("div", { className: "ptp-command__inputrow", children: [_jsx(Icon, { name: "Search", size: 16, "aria-hidden": true }), _jsx("input", { ref: inputRef, role: "combobox", "aria-expanded": "true", "aria-controls": `${baseId}-list`, "aria-activedescendant": activeId, "aria-label": "Filter commands", autoComplete: "off", spellCheck: false, value: query, onChange: (domEvent) => {
+        }, children: [command.icon !== undefined && (_jsx(Icon, { name: command.icon, size: 16, "aria-hidden": true })), _jsx("span", { className: "sig-command__label", children: command.label }), command.hint !== undefined && (_jsx("span", { className: "sig-command__hint", children: command.hint }))] }, command.id)));
+    return createPortal(_jsx("div", { className: "sig-command-backdrop", "data-testid": "command-backdrop", onClick: onClose, children: _jsxs("div", { className: "sig-command", role: "dialog", "aria-modal": "true", "aria-label": "Command palette", onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsxs("div", { className: "sig-command__inputrow", children: [_jsx(Icon, { name: "Search", size: 16, "aria-hidden": true }), _jsx("input", { ref: inputRef, role: "combobox", "aria-expanded": "true", "aria-controls": `${baseId}-list`, "aria-activedescendant": activeId, "aria-label": "Filter commands", autoComplete: "off", spellCheck: false, value: query, onChange: (domEvent) => {
                                 setQuery(domEvent.target.value);
                                 setActiveIndex(0);
-                            }, placeholder: "Type a command\u2026", "data-testid": "command-input" }), _jsx("kbd", { className: "ptp-action-tile__kbd", children: "esc" })] }), filtered.length === 0 ? (_jsxs("p", { className: "ptp-command__empty", children: ["No command matches \u201C", query, "\u201D."] })) : (_jsx("ul", { ref: listRef, id: `${baseId}-list`, role: "listbox", "aria-label": "Commands", className: "ptp-command__list", "data-testid": "command-list", children: renderRows() })), _jsxs("div", { className: "ptp-command__legend", children: [_jsxs("span", { children: [_jsx("kbd", { className: "ptp-action-tile__kbd", children: "\u2191\u2193" }), " navigate"] }), _jsxs("span", { children: [_jsx("kbd", { className: "ptp-action-tile__kbd", children: "\u21B5" }), " run"] }), _jsxs("span", { children: [_jsx("kbd", { className: "ptp-action-tile__kbd", children: "esc" }), " close"] })] })] }) }), document.body);
+                            }, placeholder: "Type a command\u2026", "data-testid": "command-input" }), _jsx("kbd", { className: "sig-action-tile__kbd", children: "esc" })] }), filtered.length === 0 ? (_jsxs("p", { className: "sig-command__empty", children: ["No command matches \u201C", query, "\u201D."] })) : (_jsx("ul", { ref: listRef, id: `${baseId}-list`, role: "listbox", "aria-label": "Commands", className: "sig-command__list", "data-testid": "command-list", children: renderRows() })), _jsxs("div", { className: "sig-command__legend", children: [_jsxs("span", { children: [_jsx("kbd", { className: "sig-action-tile__kbd", children: "\u2191\u2193" }), " navigate"] }), _jsxs("span", { children: [_jsx("kbd", { className: "sig-action-tile__kbd", children: "\u21B5" }), " run"] }), _jsxs("span", { children: [_jsx("kbd", { className: "sig-action-tile__kbd", children: "esc" }), " close"] })] })] }) }), document.body);
 }
 export default CommandPalette;

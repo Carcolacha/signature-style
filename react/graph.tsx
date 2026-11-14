@@ -28,7 +28,7 @@
  * fill none.
  *
  * FOCUS DIMMING is class-driven, not style-driven: selecting a node
- * adds `.ptp-graph--focused` to the svg and `data-dim="true"` to every
+ * adds `.sig-graph--focused` to the svg and `data-dim="true"` to every
  * node/edge NOT adjacent to the selection; css/graph.css answers with
  * opacity 0.25. The selected circle's stroke flips to the structural
  * Flamingo at width 3 (selection is STRUCTURE, not content — Rule of
@@ -303,7 +303,7 @@ function canvasLabel(label: string): string {
      · DBL-CLICK SPAWN — double-click on empty canvas converts the point
        to graph space and fires onAddNodeAt(point, nearest-or-root).
      · RIGHT-CLICK TETHER — contextmenu on a node captures the pointer
-       and draws the live dashed .ptp-graph__tether (azure, 6 4, 1.5px)
+       and draws the live dashed .sig-graph__tether (azure, 6 4, 1.5px)
        to the cursor; release over another node fires
        onLinkNodes(fromId, toId) — the EXTRA-LINKS MODEL (non-parent
        edges): the playground stores them in its own persisted state and
@@ -581,7 +581,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
     if (svg === null) return;
     // THE HIT TEST: elementFromPoint → the nearest node under the cursor.
     const target = document.elementFromPoint(event.clientX, event.clientY);
-    const nodeG = target?.closest?.("g.ptp-graph__node") as SVGGElement | null;
+    const nodeG = target?.closest?.("g.sig-graph__node") as SVGGElement | null;
     const targetId = nodeG?.dataset?.id;
     const sourceId = tether.fromId;
     setTether(null);
@@ -599,7 +599,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
   const handleCanvasPointerDown = (event: ReactPointerEvent<SVGSVGElement>): void => {
     if (event.button !== 0) return;
     const target = event.target as Element;
-    if (target.closest("g.ptp-graph__node") !== null) return; // nodes drag, not pan
+    if (target.closest("g.sig-graph__node") !== null) return; // nodes drag, not pan
     const svg = svgRef.current;
     if (svg === null) return;
     svg.setPointerCapture(event.pointerId);
@@ -684,7 +684,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
   const handleDoubleClick = (event: ReactMouseEvent<SVGSVGElement>): void => {
     if (onAddNodeAt === undefined) return;
     const target = event.target as Element;
-    if (target.closest("g.ptp-graph__node") !== null) return;
+    if (target.closest("g.sig-graph__node") !== null) return;
     const svg = svgRef.current;
     if (svg === null) return;
     const point = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
@@ -734,7 +734,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
   return (
     <>
       {addOn && (
-        <div className="ptp-graph__toolbar">
+        <div className="sig-graph__toolbar">
           <Input
             placeholder="New node label"
             aria-label="New node label"
@@ -758,11 +758,11 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
         className={
           selected !== null
             ? tether !== null
-              ? "ptp-graph ptp-graph--focused ptp-graph--tethering"
-              : "ptp-graph ptp-graph--focused"
+              ? "sig-graph sig-graph--focused sig-graph--tethering"
+              : "sig-graph sig-graph--focused"
             : tether !== null
-              ? "ptp-graph ptp-graph--tethering"
-              : "ptp-graph"
+              ? "sig-graph sig-graph--tethering"
+              : "sig-graph"
         }
         viewBox={`${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`}
         style={{ height, touchAction: "none" }}
@@ -783,7 +783,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
             return (
               <path
                 key={`edge-${node.id}`}
-                className="ptp-graph__edge"
+                className="sig-graph__edge"
                 data-parent={node.parentId}
                 data-child={node.id}
                 data-dim={dim || undefined}
@@ -800,7 +800,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
           return (
             <path
               key={`link-${link.from}-${link.to}-${index}`}
-              className="ptp-graph__edge"
+              className="sig-graph__edge"
               data-link="true"
               data-parent={link.from}
               data-child={link.to}
@@ -812,7 +812,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
         {tether !== null && tetherSource !== undefined && (
           <path
             ref={tetherPathRef}
-            className="ptp-graph__tether"
+            className="sig-graph__tether"
             d={`M ${tetherSource.x} ${tetherSource.y} L ${tether.to.x} ${tether.to.y}`}
           />
         )}
@@ -828,7 +828,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
                 if (el === null) nodeRefs.current.delete(node.id);
                 else nodeRefs.current.set(node.id, el);
               }}
-              className="ptp-graph__node"
+              className="sig-graph__node"
               data-id={node.id}
               data-dim={dim || undefined}
               transform={`translate(${position.x} ${position.y})`}
@@ -863,7 +863,7 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
           );
         })}
       </svg>
-      <div className="ptp-graph__footer">
+      <div className="sig-graph__footer">
         {selected === null
           ? "Select a node to inspect its note."
           : `${selected.label}${selected.note !== undefined ? ` — ${selected.note}` : ""}`}

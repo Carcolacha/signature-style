@@ -87,7 +87,7 @@ export interface EventModalProps {
 function renderClose(onClose: () => void): ReactNode {
   return (
     <button
-      className="ptp-modal-close"
+      className="sig-modal-close"
       type="button"
       aria-label="Close"
       onClick={onClose}
@@ -100,19 +100,19 @@ function renderClose(onClose: () => void): ReactNode {
 /** Flat label/value grid rows for the detail fields that exist. */
 function detailRows(event: PtpEvent): ReactNode[] {
   const rows: ReactNode[] = [
-    <span key="date-label" className="ptp-modal-label">Date</span>,
-    <span key="date-value" className="ptp-modal-value">{event.date}</span>,
+    <span key="date-label" className="sig-modal-label">Date</span>,
+    <span key="date-value" className="sig-modal-value">{event.date}</span>,
   ];
   if (event.time !== undefined) {
     rows.push(
-      <span key="time-label" className="ptp-modal-label">Time</span>,
-      <time key="time-value" className="ptp-modal-value">{event.time}</time>,
+      <span key="time-label" className="sig-modal-label">Time</span>,
+      <time key="time-value" className="sig-modal-value">{event.time}</time>,
     );
   }
   if (event.description !== undefined) {
     rows.push(
-      <span key="about-label" className="ptp-modal-label">About</span>,
-      <p key="about-value" className="ptp-modal-value">{event.description}</p>,
+      <span key="about-label" className="sig-modal-label">About</span>,
+      <p key="about-value" className="sig-modal-value">{event.description}</p>,
     );
   }
   return rows;
@@ -121,15 +121,15 @@ function detailRows(event: PtpEvent): ReactNode[] {
 /** Backdrop + card: one portal subtree, flat grid children, zero wrappers. */
 function renderOverlay(event: PtpEvent, onClose: () => void): ReactNode {
   return (
-    <div className="ptp-modal-backdrop" onClick={onClose}>
+    <div className="sig-modal-backdrop" onClick={onClose}>
       <div
-        className="ptp-modal-card"
+        className="sig-modal-card"
         role="dialog"
         aria-modal="true"
         aria-label={event.title}
         onClick={(domEvent) => domEvent.stopPropagation()}
       >
-        <h2 className="ptp-modal-title">{event.title}</h2>
+        <h2 className="sig-modal-title">{event.title}</h2>
         {renderClose(onClose)}
         <PartyBadge colorToken={event.category} label={event.categoryLabel} />
         {detailRows(event)}

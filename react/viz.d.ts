@@ -52,8 +52,8 @@ import type { PartyTokenName } from "./primitives.js";
 /**
  * `<ProgressBar>` — the party-colored budget bar.
  *
- * ONE `div.ptp-progress` (role="progressbar", full aria value
- * contract) containing ONE `div.ptp-progress__fill` whose width is
+ * ONE `div.sig-progress` (role="progressbar", full aria value
+ * contract) containing ONE `div.sig-progress__fill` whose width is
  * the clamped value. The fill animates `width 0.3s ease-out`
  * (owner-mandated physics; `prefers-reduced-motion` disables it).
  * The track is `var(--bg-inset)` with the 20% hairline boundary
@@ -62,7 +62,7 @@ import type { PartyTokenName } from "./primitives.js";
  * to render.
  *
  * `limitText` (2.2.0): when present, the value's LIMIT is rendered as
- * a THIRD element — `div.ptp-progress__caption`, a mono tabular-nums
+ * a THIRD element — `div.sig-progress__caption`, a mono tabular-nums
  * caption AFTER the track inside a fragment (no wrapper around the
  * track itself; the ARIA contract is unchanged — the caption is
  * sibling metadata, not part of the progressbar). The budget use
@@ -145,7 +145,7 @@ export interface StatRingProps {
     /**
      * 3.0.0 — the denominator for the expandable detail strip (e.g. 200).
      * When present, the ring renders zoomable: hover/press scale(1.07),
-     * and a click toggles the `.ptp-ring__detail` strip below the ring —
+     * and a click toggles the `.sig-ring__detail` strip below the ring —
      * "{value}% · {numerator}/{denominator} {unit}" with the numerator
      * derived from the value (85% of 200 → "170 / 200 Guests"). The core
      * dash geometry + the ARIA contract are untouched.
@@ -204,7 +204,7 @@ export interface StatCardProps {
 /**
  * `<StatCard>` — the KPI card (2.4.0).
  *
- * `<div class="ptp-stat-card">` → the label span (muted, uppercase,
+ * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
  * → optional delta span (`--up` → var(--party-green), `--down` →
  * var(--party-peach) — content outcomes, party tokens) → optional

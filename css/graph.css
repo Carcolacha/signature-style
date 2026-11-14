@@ -9,12 +9,12 @@
    (shadows live ONLY in css/surface.css's sanctioned blocks).
 
    DOM SHAPE (Pruning Protocol): the component renders a FRAGMENT —
-   the optional toolbar row, ONE svg.ptp-graph (role="application",
+   the optional toolbar row, ONE svg.sig-graph (role="application",
    viewBox 0 0 640 320) whose children are the bezier edges (path) and
    the node groups (g > circle + text), then the footer strip. No
    wrapper div anywhere.
 
-   FOCUS DIMMING is class-driven: a selection adds .ptp-graph--focused
+   FOCUS DIMMING is class-driven: a selection adds .sig-graph--focused
    to the svg and data-dim="true" to every non-adjacent node/edge; the
    rules below answer with opacity 0.25. Nothing inline, nothing
    style-driven — the attribute IS the state (the aria-current lesson).
@@ -23,7 +23,7 @@
    ========================================================================== */
 
 /* The canvas — inset chart interior, 15% hairline frame, flat. */
-.ptp-graph {
+.sig-graph {
   display: block;
   width: 100%;
   height: auto;
@@ -33,7 +33,7 @@
 }
 
 /* Edges — the 40% muted mix hairline (stroke lives here; geometry in SVG). */
-.ptp-graph__edge {
+.sig-graph__edge {
   fill: none;
   stroke: color-mix(in srgb, var(--text-muted) 40%, transparent);
   stroke-width: 1.5;
@@ -41,40 +41,40 @@
 }
 
 /* Nodes — pointer affordance; the g is the interactive element. */
-.ptp-graph__node {
+.sig-graph__node {
   cursor: pointer;
 }
-.ptp-graph__node circle {
+.sig-graph__node circle {
   transition: var(--transition-standard);
 }
 
 /* Keyboard parity: the doctrine ring on the focused node group. */
-.ptp-graph__node:focus-visible {
+.sig-graph__node:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
 /* THE DIM — non-adjacent ink fades to a quarter while a node is focused. */
-.ptp-graph--focused .ptp-graph__edge[data-dim="true"],
-.ptp-graph--focused .ptp-graph__node[data-dim="true"] {
+.sig-graph--focused .sig-graph__edge[data-dim="true"],
+.sig-graph--focused .sig-graph__node[data-dim="true"] {
   opacity: 0.25;
 }
 
 /* The inspect strip — muted 0.8125rem metadata under the canvas. */
-.ptp-graph__footer {
+.sig-graph__footer {
   padding: var(--space-tight) var(--space-standard);
   color: var(--text-muted);
   font-size: 0.8125rem;
 }
 
 /* The add-and-link toolbar — one flex row, 8px-grid gap. */
-.ptp-graph__toolbar {
+.sig-graph__toolbar {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
   margin-bottom: var(--space-tight);
 }
-.ptp-graph__toolbar .ptp-input {
+.sig-graph__toolbar .sig-input {
   flex: 1 1 12rem;
   width: auto;
 }
@@ -82,7 +82,7 @@
 /* ==========================================================================
    3.0.0 OBSIDIAN GRAPH — the interaction css. The geometry (drag/pan/
    zoom/tether math) lives in react/graph.tsx; this block paints it:
-     · .ptp-graph__tether — the LIVE right-click tether: --party-azure
+     · .sig-graph__tether — the LIVE right-click tether: --party-azure
        (the 3.0.0 chromatic token, a FILL/SERIES accent on an svg stroke
        — the Rule of Engagement holds: the tether is content ink), the
        owner-spec'd 6 4 dasharray, 1.5px, fill none.
@@ -92,7 +92,7 @@
        events need it; not a css concern here).
    ========================================================================== */
 
-.ptp-graph__tether {
+.sig-graph__tether {
   fill: none;
   stroke: var(--party-azure);
   stroke-width: 1.5;
@@ -100,32 +100,32 @@
   pointer-events: none;
 }
 
-.ptp-graph {
+.sig-graph {
   cursor: grab;
 }
-.ptp-graph:active {
+.sig-graph:active {
   cursor: grabbing;
 }
-.ptp-graph--tethering {
+.sig-graph--tethering {
   cursor: crosshair;
 }
-.ptp-graph__node {
+.sig-graph__node {
   cursor: pointer;
 }
-.ptp-graph__node:active {
+.sig-graph__node:active {
   cursor: grabbing;
 }
 /* While dragging/tethering, keep every transition OUT of the loop —
    the transform is mutated per frame; a css transition would fight it. */
-.ptp-graph--tethering .ptp-graph__node circle,
-.ptp-graph.is-dragging .ptp-graph__node circle {
+.sig-graph--tethering .sig-graph__node circle,
+.sig-graph.is-dragging .sig-graph__node circle {
   transition: none;
 }
 
 /* Motion is a gift, not a requirement. */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-graph__edge,
-  .ptp-graph__node circle {
+  .sig-graph__edge,
+  .sig-graph__node circle {
     transition: none;
   }
 }

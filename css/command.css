@@ -20,7 +20,7 @@
 
    ANATOMY: backdrop → panel (flex column): the input row (bare input
    between the muted search icon and the esc chip — the chip reuses
-   .ptp-action-tile__kbd from cards.css), the scrollable listbox
+   .sig-action-tile__kbd from cards.css), the scrollable listbox
    (options: icon + label + mono hint; the selected row reads through
    aria-selected → the Flamingo 8% wash + 2px inset rail, the radio-
    card precedent), and the legend footer. Pillar 2: the panel takes
@@ -28,7 +28,7 @@
    ========================================================================== */
 
 /* The scrim + glass blur — the documented rgba exception (see header). */
-.ptp-command-backdrop {
+.sig-command-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -42,7 +42,7 @@
 }
 
 /* The panel — surface, hairline, radius; flex column; FLAT (e1). */
-.ptp-command {
+.sig-command {
   display: flex;
   flex-direction: column;
   width: min(34rem, 100%);
@@ -55,7 +55,7 @@
 }
 
 /* The input row: icon + bare input + the esc chip, hairline floor. */
-.ptp-command__inputrow {
+.sig-command__inputrow {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
@@ -65,7 +65,7 @@
   flex: none;
 }
 
-.ptp-command__inputrow input {
+.sig-command__inputrow input {
   flex: 1;
   min-width: 0;
   background: transparent;
@@ -76,18 +76,18 @@
   font-size: 0.9375rem;
 }
 
-.ptp-command__inputrow input::placeholder {
+.sig-command__inputrow input::placeholder {
   color: var(--text-muted);
 }
 
-.ptp-command__inputrow:focus-within {
+.sig-command__inputrow:focus-within {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: -2px;
 }
 
 /* The rows — listbox options; the selection is the attribute (the
    aria-selected IS the state, the Tabs/GlobalNav contract). */
-.ptp-command__list {
+.sig-command__list {
   list-style: none;
   margin: 0;
   padding: var(--space-tight);
@@ -97,7 +97,7 @@
   overflow-y: auto;
 }
 
-.ptp-command__option {
+.sig-command__option {
   display: flex;
   align-items: center;
   gap: var(--space-tight);
@@ -109,22 +109,22 @@
   cursor: pointer;
 }
 
-.ptp-command__option svg {
+.sig-command__option svg {
   color: var(--text-muted);
   flex: none;
 }
 
-.ptp-command__option[aria-selected="true"] {
+.sig-command__option[aria-selected="true"] {
   background: color-mix(in srgb, var(--color-cake-primary) 8%, transparent);
   border-left-color: var(--color-cake-primary);
 }
 
-.ptp-command__option:focus-visible {
+.sig-command__option:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 1px;
 }
 
-.ptp-command__label {
+.sig-command__label {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -133,7 +133,7 @@
 }
 
 /* The muted mono hint at the row's far edge (metadata, not data). */
-.ptp-command__hint {
+.sig-command__hint {
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.6875rem;
   color: var(--text-muted);
@@ -141,7 +141,7 @@
 }
 
 /* The no-matches note — the honest empty edge. */
-.ptp-command__empty {
+.sig-command__empty {
   margin: 0;
   padding: var(--space-section) var(--space-standard);
   font-size: 0.875rem;
@@ -149,8 +149,8 @@
 }
 
 /* The legend footer — the keyboard map, mono chips (reused from
-   cards.css's .ptp-action-tile__kbd), hairline ceiling. */
-.ptp-command__legend {
+   cards.css's .sig-action-tile__kbd), hairline ceiling. */
+.sig-command__legend {
   display: flex;
   align-items: center;
   gap: var(--space-standard);
@@ -161,7 +161,7 @@
   flex: none;
 }
 
-.ptp-command__legend span {
+.sig-command__legend span {
   display: inline-flex;
   align-items: center;
   gap: var(--space-tight);
@@ -169,7 +169,7 @@
 
 /* Pillar 2: the panel takes the full available width on mobile. */
 @media (max-width: 768px) {
-  .ptp-command-backdrop {
+  .sig-command-backdrop {
     padding: var(--space-standard);
   }
 }
@@ -178,7 +178,7 @@
    so the guard only stills the option hover transition if an engine
    ever grows one. Kept for the doctrine's completeness. */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-command__option {
+  .sig-command__option {
     transition: none;
   }
 }

@@ -161,8 +161,8 @@ graph feel like Obsidian, and writes the data layer's contract down.
   FastAPI Pydantic v2 mirror, and the REST contract table). `shared/`
   is the future backend's half and is deliberately NOT packed
   (the pack stays exactly 58 files).
-- **Card parity + chromatic enrichment** — `.ptp-flip-card`,
-  `.ptp-accordion` and `.ptp-matchup` become self-contained surfaces
+- **Card parity + chromatic enrichment** — `.sig-flip-card`,
+  `.sig-accordion` and `.sig-matchup` become self-contained surfaces
   (var(--bg-surface) + the 15% glass hairline + `var(--radius-card)` +
   a 220px floor — never transparent/collapsed in grid rows); ActionTile
   icon wells tint 12% from the accent; `[data-accent]` cards wear a 45%
@@ -183,7 +183,7 @@ graph feel like Obsidian, and writes the data layer's contract down.
   fields align on the same baseline) and can carry an `infoTooltip` ⓘ
   (pure-CSS bubble above the trigger, shown on hover AND
   :focus-visible); `description` + `hint` move BELOW the control into
-  `.ptp-form-field__helpers` (a 20px bottom rail). **A11y preserved:**
+  `.sig-form-field__helpers` (a 20px bottom rail). **A11y preserved:**
   the description id rides `aria-describedby` onto the control via a
   cloneElement merge — screen readers still announce the format rule
   (the GOV.UK concern survives the visual move; documented in
@@ -315,10 +315,10 @@ every catch is logged in SYSTEM_PROMPT.md ("The v2.9.0 Self-Audit Log").
 **Phase 1 — CSS Container Queries.** The playground ships `.sig-cell {
 container-type: inline-size; }` (containment on OUTER wrappers only — a
 container cannot measure itself) and the package answers with
-`@container` reflows, never media queries: `.ptp-matchup` stacks its
+`@container` reflows, never media queries: `.sig-matchup` stacks its
 sides below a 380px container (the VS pill becomes a horizontal hairline
 divider); `.sig-content-card` + `.sig-profile-card` grow their
-media-object alignment at ≥ 440px; `.ptp-stat-card` docks its sparkline
+media-object alignment at ≥ 440px; `.sig-stat-card` docks its sparkline
 beside the metric at ≥ 360px (the KPI value scales 1.5 → 1.75rem); the
 FormField radio rows collapse below 480px. The authoring doctrine: the
 BASE rule keeps the historical layout, so consumers without a container
@@ -501,7 +501,7 @@ css/graph.css and the viz.css growth declare zero box-shadow and zero
 hex; elevation still lives only in css/surface.css's sanctioned blocks.
 `<EventTimeline>` is byte-identical (backward compatibility is the
 release's hard line — the TimelineManager styles APPEND to
-css/timeline.css under the `.ptp-tmanager` namespace, and the (e2)
+css/timeline.css under the `.sig-tmanager` namespace, and the (e2)
 deletion guard proves the file only grows).
 
 **KnowledgeGraph** (react/graph.tsx + css/graph.css, layered after
@@ -516,7 +516,7 @@ the parent's angle — the same node set always yields the same
 coordinates, in any input order. Edges are one cubic-Bezier
 (`cubicBezierEdge`, control points 60% along the radial) per
 node-with-parent. Selection dims everything non-adjacent to opacity
-0.25 (class-driven `.ptp-graph--focused` + `data-dim`), flips the
+0.25 (class-driven `.sig-graph--focused` + `data-dim`), flips the
 selected ring to structural Flamingo at width 3, and the footer strip
 inspects the node's label + note. `addOn` renders the "Add & Link"
 toolbar: a new lavender node parents to the SELECTION (else the root;
@@ -579,7 +579,7 @@ download; Reset restores the seeds.
 | TimelineManager | composer, filter pills, settle/delete, EmptyState edge | react/timeline-manager.tsx, css/timeline.css |
 | Persistence | usePersistentState + export/import/reset, `sig.v27.*` keys | playground/persistence.ts, playground/App.tsx |
 | Codex | v3.0 — four new recipes + the Local Persistence & JSON Snapshot Pattern | SYSTEM_PROMPT.md |
-| Cortex | sweep + `.ptp-graph__node` / `.ptp-bars__bar` / `.ptp-tmanager__count`; version 2.7.0 | tools/mcp-viz/server.ts |
+| Cortex | sweep + `.sig-graph__node` / `.sig-bars__bar` / `.sig-tmanager__count`; version 2.7.0 | tools/mcp-viz/server.ts |
 
 **Signature changes** — ADDITIVE: `KnowledgeGraph`
 (`GraphNode`, `KnowledgeGraphProps`, `GraphPosition`, `layoutGraph`,
@@ -663,7 +663,7 @@ is untouched.
 | Forms | `resize: vertical` textarea; pristine-skip audit | css/forms.css, playground/App.tsx |
 | Master Index | filter tabs, chromatic balanced gateways, universal catalog, 23-release chronicle | playground/App.tsx, playground/styles.css |
 | Codex | v2.9 — six new recipes, fact-checked vs the compiled .d.ts | SYSTEM_PROMPT.md |
-| Cortex | sweep + `.ptp-carousel__dot` / `.ptp-chronicle__item`; version 2.6.0 | tools/mcp-viz/server.ts |
+| Cortex | sweep + `.sig-carousel__dot` / `.sig-chronicle__item`; version 2.6.0 | tools/mcp-viz/server.ts |
 
 **Signature changes** — ADDITIVE: `SurfaceCard.accentToken`,
 `SurfaceCard.elevation`, `ContentCard`/`ReferenceCard`/`TierCard`/
@@ -688,9 +688,9 @@ stroke-dashoffset transition).
 | # | The defect (owner) | The fix | Where |
 |---|---|---|---|
 | 1 | Data & Tables + Form & Input Matrix tabs render edge-to-edge (0px side margins) | `.sig-shell` wraps EVERY view's content — max-width 1400px, centered, `padding-inline: clamp(20px, 4vw, 48px)`; the tab modules and their cards render inside it. GlobalNav stays outside (it is its own bar). Measured: ≥20px viewport margins on all three tabs | playground/App.tsx (Shell), playground/styles.css (.sig-shell; .hub__module de-constrained) |
-| 2 | FormField rendered format rules BELOW the input; "$" was concatenated into the label | FormField top-down anatomy: label (PROMOTED: text-main 0.875rem/500) → `description` ABOVE the control ("5 numbers only · e.g., 79901") → control → validation zone (error → `validMessage` → hint). `prefix`/`suffix` compose the `.ptp-form-field__well` — mono chips flanking a BARE input, separated from the cursor by a hairline; the well owns border/focus ring/error. The `$` chip is never glued into the label again | react/forms.tsx (FormField), css/forms.css (__label/__desc/__well/__chip/__valid, `ptp-shake`), playground FormsModule + check-in |
-| 3 | ToggleSwitch had no visible label text | Fixed in 2.4.1 (`.ptp-switch__text`), EXERCISED here: the check-in card's "Add to game rotation" switch renders visible text beside the pill | playground/App.tsx (CheckInForm) |
-| 4 | CONTRIBUTION table header left-aligned while values right-align | Fixed in 2.4.1 (`.ptp-data-table__align-right`, ancestor-scoped 0,2,0), EXERCISED here: the LIVE ledger's Contribution column carries `numeric: true, align: "right"`; the probe measures th/td right edges within ±2px | playground/App.tsx (BENTO_LEDGER_COLUMNS), react/data.tsx (unchanged) |
+| 2 | FormField rendered format rules BELOW the input; "$" was concatenated into the label | FormField top-down anatomy: label (PROMOTED: text-main 0.875rem/500) → `description` ABOVE the control ("5 numbers only · e.g., 79901") → control → validation zone (error → `validMessage` → hint). `prefix`/`suffix` compose the `.sig-form-field__well` — mono chips flanking a BARE input, separated from the cursor by a hairline; the well owns border/focus ring/error. The `$` chip is never glued into the label again | react/forms.tsx (FormField), css/forms.css (__label/__desc/__well/__chip/__valid, `sig-shake`), playground FormsModule + check-in |
+| 3 | ToggleSwitch had no visible label text | Fixed in 2.4.1 (`.sig-switch__text`), EXERCISED here: the check-in card's "Add to game rotation" switch renders visible text beside the pill | playground/App.tsx (CheckInForm) |
+| 4 | CONTRIBUTION table header left-aligned while values right-align | Fixed in 2.4.1 (`.sig-data-table__align-right`, ancestor-scoped 0,2,0), EXERCISED here: the LIVE ledger's Contribution column carries `numeric: true, align: "right"`; the probe measures th/td right edges within ±2px | playground/App.tsx (BENTO_LEDGER_COLUMNS), react/data.tsx (unchanged) |
 | 5 | Core Dashboard = old rigid grid, no card archetypes, no button variants, no live validation | The 12-column bento (`.bento12`, explicit spans 12/4/5/4/3/5/3/7/5) with LIVE state (`SEED_GUESTS` → `useMemo` → ledger/ring/bars/KPI react to check-ins), `<Button>` (4 variants, 3 sizes, loading), the archetypes (ActionTile, FlipCard, AccordionCard, MatchupCard), PasswordInput, and per-field live validation (`/^\d+$/`, `/^\d{5}$/`) | playground/App.tsx (BentoCore, CheckInForm), react/primitives.tsx (Button), react/cards.tsx (NEW), css/primitives.css + css/cards.css (NEW), css/forms.css (PasswordInput) |
 
 **The live-state wiring** — one array, everything derives:
@@ -738,18 +738,18 @@ The first patch release: v2.4.0 shipped the primitive SET; the owner's
 canonical spec arrived with DELTAS. `npm pack` still packs EXACTLY 43
 files — every delta grows an existing file (zero new files, zero new
 tokens; `tokens.json` stays 1.4.0). `scripts/verify.mjs` stays
-BYTE-FROZEN; `tools/` fully frozen (all 2.4.1 classes keep the `ptp-`
+BYTE-FROZEN; `tools/` fully frozen (all 2.4.1 classes keep the `sig-`
 prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 
 | # | v2.4.0 shipped | Owner spec refined (2.4.1) | Where |
 |---|---|---|---|
-| 1 | `<DataTable>` with `numeric: true` — cells right-aligned, **header left** (the bug: `.ptp-data-table thead th` at specificity 0,1,2 outranks the bare `__num` class 0,1,0) | `DataTableColumn.align?: "left" \| "right" \| "center"` — ancestor-scoped `.ptp-data-table__align-*` utilities (0,2,0) applied to BOTH th and td, composing with `__num` (align = geometry, numeric = digits). Playground ledger: Contribution `numeric + align: "right"` — the header finally sits flush over the $120 values | react/data.tsx:37-70, css/data.css:75-95, playground/App.tsx:641-647 |
-| 2 | `<FormField>` = label + control + hint XOR error | `required?: boolean` — an aria-hidden peach `*` after the label text (VISUAL only; the CONTROL's `aria-required` stays consumer wiring). `prefix?: string` — a mono muted weight-600 adornment before the control, riding the justified `.ptp-form-field__row` flex wrapper. Playground money field: `label="Contribution" prefix="$"` (the dollar sign left the label) | react/forms.tsx (FormFieldProps + render), css/forms.css (__required/__row/__prefix), playground/App.tsx:827-845 |
+| 1 | `<DataTable>` with `numeric: true` — cells right-aligned, **header left** (the bug: `.sig-data-table thead th` at specificity 0,1,2 outranks the bare `__num` class 0,1,0) | `DataTableColumn.align?: "left" \| "right" \| "center"` — ancestor-scoped `.sig-data-table__align-*` utilities (0,2,0) applied to BOTH th and td, composing with `__num` (align = geometry, numeric = digits). Playground ledger: Contribution `numeric + align: "right"` — the header finally sits flush over the $120 values | react/data.tsx:37-70, css/data.css:75-95, playground/App.tsx:641-647 |
+| 2 | `<FormField>` = label + control + hint XOR error | `required?: boolean` — an aria-hidden peach `*` after the label text (VISUAL only; the CONTROL's `aria-required` stays consumer wiring). `prefix?: string` — a mono muted weight-600 adornment before the control, riding the justified `.sig-form-field__row` flex wrapper. Playground money field: `label="Contribution" prefix="$"` (the dollar sign left the label) | react/forms.tsx (FormFieldProps + render), css/forms.css (__required/__row/__prefix), playground/App.tsx:827-845 |
 | 3 | `<RadioCardGroup>` selected = 2px Flamingo + 10% cake tint (a highlight read) | selected card **lifts** to `var(--bg-surface)` over the inset siblings — the owner override; the 2px Flamingo border stays the state signal | css/forms.css:368-379 |
-| 4 | `<ToggleSwitch>`: ONE element, `label` = aria-label ONLY — orphaned switches | `label` renders as VISIBLE text: every pill selector migrates `.ptp-switch` → `.ptp-switch__pill` (audited: no pill property left on the bare name, no `[aria-checked]` outside the pill, reduced-motion list follows); `.ptp-switch` becomes the justified wrapper (pill + visible-text composition, the `.ptp-select` sanction) around the pill + `.ptp-switch__text` (text-main, 0.875rem, weight 500). ONLY the pill is interactive; the button keeps its aria-label | react/forms.tsx (ToggleSwitch), css/forms.css:136-195, 396-409 |
+| 4 | `<ToggleSwitch>`: ONE element, `label` = aria-label ONLY — orphaned switches | `label` renders as VISIBLE text: every pill selector migrates `.sig-switch` → `.sig-switch__pill` (audited: no pill property left on the bare name, no `[aria-checked]` outside the pill, reduced-motion list follows); `.sig-switch` becomes the justified wrapper (pill + visible-text composition, the `.sig-select` sanction) around the pill + `.sig-switch__text` (text-main, 0.875rem, weight 500). ONLY the pill is interactive; the button keeps its aria-label | react/forms.tsx (ToggleSwitch), css/forms.css:136-195, 396-409 |
 | 5 | `<AnnouncementBanner status?: "info"\|"success"\|"warning">`, fixed Megaphone | API EVOLVED: `variant?: "info" \| "warning" \| "announcement"` (default `announcement` — the Flamingo banner `--color-cake-primary`; info → sky, warning → peach strips; `status`/`"success"` retired). `icon?: IconName` with probed defaults — Info / **TriangleExclamationPoint** / Megaphone (PROBED: the installed lucide-react 1.72.0 map has NO `TriangleAlert` key — the AudioLines/"Music" lesson; the (icons) gate logs the probe). `action?: { label; onClick }` — a small token-driven ghost button (Teal border hover) after the text. Still dismissible. Playground Data-view banner: `variant="announcement"` + `action={{ label: "See what shipped", onClick: toast }}`, v2.4.1 copy | react/editorial.tsx (AnnouncementBanner), css/editorial.css (__action), playground/App.tsx:684-707, react/index.ts (type re-exports) |
 | 6 | ProseBlock blockquote: 4px **Flamingo** rule; styled `p`/`blockquote`/`footer`/`cite` only | quote rule → **`var(--party-mauve)`** (OWNER OVERRIDE: a blockquote IS editorial content, so the Rule of Engagement reads FOR the party token — Flamingo was borrowing the structural action color); `h3` ensured (0.9375rem, weight 600, text-main, margin); inline `code`/`kbd` chips added (mono stack, `--bg-inset` body, 15% muted hairline, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, `--text-bright`) | css/editorial.css:112-156 |
-| 7 | `<Carousel>`: three justified elements (track + 2 buttons), no position readout | page indicator added (a FOURTH justified element — the position made legible): `onScroll` → rAF-throttled → `<span class="ptp-carousel__indicator" aria-live="polite">{n} / {count}</span>` with the owner formula `Math.round(scrollLeft / itemWidth) + 1`, mono tabular-nums muted, placed between the two buttons | react/editorial.tsx (Carousel), css/editorial.css:99-111 |
+| 7 | `<Carousel>`: three justified elements (track + 2 buttons), no position readout | page indicator added (a FOURTH justified element — the position made legible): `onScroll` → rAF-throttled → `<span class="sig-carousel__indicator" aria-live="polite">{n} / {count}</span>` with the owner formula `Math.round(scrollLeft / itemWidth) + 1`, mono tabular-nums muted, placed between the two buttons | react/editorial.tsx (Carousel), css/editorial.css:99-111 |
 | 8 | Codex title v2.6, 21 snippets | Codex → **v2.7**: FormField/RadioCardGroup/Carousel/ProseBlock/AnnouncementBanner recipes ADDED; DataTable (align), ToggleSwitch (visible label) refreshed — every snippet factual against the new `.d.ts`; contract version string → 2.4.1 | SYSTEM_PROMPT.md |
 
 - **Signature changes** — BREAKING: `AnnouncementBannerProps.status` →
@@ -779,14 +779,14 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   lift; (af3) mauve/h3/kbd/indicator/action needles, the variant map,
   the probed icon defaults, the owner index formula, and the v2.7
   codex needles. Negative test (falsifiability, restore-verified):
-  surgically removing the `.ptp-data-table__align-right` rule from
+  surgically removing the `.sig-data-table__align-right` rule from
   css/data.css flips (af1) to FAIL (both needles) — restore → PASS
   (git-verified byte-identical).
 - **Release proof** — `npm run verify` PASS (the frozen floor);
   `npm run verify:playground` PASS (with (af1)–(af3) + the amended
   gates); `npm run verify:mcp` SMOKE ALL PASS; the one-off cortex
   probe (clicks the Forms + Data tabs) measured the deltas live:
-  `.ptp-switch__text` visible ("Make event public"), the ledger
+  `.sig-switch__text` visible ("Make event public"), the ledger
   numeric header computed `text-align: right` (was left — the fix,
   verified computed-style), the banner strip `rgb(242, 205, 205)`
   (Mocha Flamingo — the announcement accent), the `$` prefix +
@@ -812,12 +812,12 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   react/editorial.js/.d.ts; `!react/editorial.tsx` joins the
   files-array negations, the 2.2.0/2.3.0 precedent).
 - **`<FormField>` — the accessible around-the-control scaffold.**
-  `<div class="ptp-form-field">` (flex column, tight gap — the
+  `<div class="sig-form-field">` (flex column, tight gap — the
   `__field` slot contract lives ON the root, one class fewer) →
-  `<label class="ptp-form-field__label" htmlFor={htmlFor}>` (muted
+  `<label class="sig-form-field__label" htmlFor={htmlFor}>` (muted
   0.75rem, weight 500) → children (the bare control, untouched) →
-  hint (`.ptp-form-field__hint`, muted 0.75rem) OR error
-  (`.ptp-form-field__error`, role="alert", --party-peach 0.75rem).
+  hint (`.sig-form-field__hint`, muted 0.75rem) OR error
+  (`.sig-form-field__error`, role="alert", --party-peach 0.75rem).
   ERROR REPLACES HINT — one message slot, two states; a field shows
   one message. THE CONSUMER WIRES id/htmlFor: pass the same `id` to
   the child control and `htmlFor` to the field — the package renders
@@ -825,8 +825,8 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   still holds for the CONTROL (`<Input>` stays ONE element); the
   FIELD wrapper is the sanctioned scaffold around it.
 - **`<RadioCardGroup>` — the card-metaphor radio.**
-  `<div role="radiogroup" aria-label class="ptp-radio-cards">` (grid
-  auto-fit minmax(140px, 1fr)) → one `<label class="ptp-radio-card
+  `<div role="radiogroup" aria-label class="sig-radio-cards">` (grid
+  auto-fit minmax(140px, 1fr)) → one `<label class="sig-radio-card
   [--selected]">` per option — the wrapper is a SEMANTIC necessity
   (native label association, the `<Checkbox>` doctrine) → visually
   hidden `<input type="radio">` (position absolute + opacity 0;
@@ -838,26 +838,26 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   `:has(input:checked)` — the attribute is the state. THE :HAS()
   FOCUS RING + FALLBACK NOTE: keyboard focus lands on the hidden
   input and the CARD rings through
-  `.ptp-radio-card:has(input:focus-visible)` → the doctrine outline.
+  `.sig-radio-card:has(input:focus-visible)` → the doctrine outline.
   :has() needs Chrome 105+ / Safari 15.4+ / Firefox 121+; without it
   the card loses ONLY the visible ring — the selected card still
   reads via the Flamingo border (:checked is universal) and the group
   stays fully keyboard operable. Documented degrade. The 2px border
   is padding-compensated (−1px) so the card never shifts.
 - **`<Carousel>` — the scroll strip with three justified elements.**
-  `<div class="ptp-carousel">` → ghost previous button (ChevronLeft)
-  → `<div class="ptp-carousel__track" ref tabIndex={0} role="region"
+  `<div class="sig-carousel">` → ghost previous button (ChevronLeft)
+  → `<div class="sig-carousel__track" ref tabIndex={0} role="region"
   aria-label>` (flex, gap, overflow-x auto, scroll-snap-type x
   mandatory, scrollbar-width thin) → ghost next button (ChevronRight).
   The buttons ARE the mechanics — keyboard users scroll the track
   itself (it is focusable). Children must already be
-  `.ptp-carousel__item` elements; the tiny `<CarouselItem>` helper
+  `.sig-carousel__item` elements; the tiny `<CarouselItem>` helper
   renders exactly that div (flex 0 0 auto, snap-align start).
   Buttons scroll by one item width via ref (`scrollBy({ left:
   ±itemWidth })`, snap re-snaps to the item start); reduced motion →
   `behavior: "auto"` (matchMedia read ONCE per instance). Ghost
   buttons: transparent body, hairline border, Teal hover.
-- **`<ProseBlock>` — the editorial slot.** ONE `<div class="ptp-prose">`,
+- **`<ProseBlock>` — the editorial slot.** ONE `<div class="sig-prose">`,
   no props beyond className passthrough — a pure typography container
   with styled DESCENDANTS: `p` (0.875rem, 1.6 line-height),
   `blockquote` (inset well, 4px Flamingo left rule, italic
@@ -865,7 +865,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   display block). No variants, no knobs — you bring the markup, the
   block makes it read.
 - **`<AnnouncementBanner>` — the toast strip's announcing sibling.**
-  `<div class="ptp-announcement" role="status">` (live region —
+  `<div class="sig-announcement" role="status">` (live region —
   unlike `<Callout>`'s static role="note", a banner announces itself)
   with `--status` set INLINE from the SAME party map as Callout
   (info → `--party-sky`, success → `--party-green`, warning →
@@ -883,7 +883,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   series rides the midline; ≥2 points enforced — fewer warns and
   renders null; --party-* tokens only, the runtime guard refuses
   structural tokens). No CSS at all — pure SVG attributes, like
-  StatRing. `<StatCard>`: `<div class="ptp-stat-card">` → muted
+  StatRing. `<StatCard>`: `<div class="sig-stat-card">` → muted
   uppercase label (0.1em tracking) → 1.5rem weight-600 tabular-nums
   value → optional delta span (`--up` → --party-green, `--down` →
   --party-peach) → optional Sparkline labeled "<label> trend". FLAT
@@ -909,7 +909,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   v2.3.0 baseline with the authorized 2.4.0 deltas enumerated
   (editorial layer, forms/viz growth, umbrella re-exports) — tools/
   is FULLY frozen this release (the cortex sweep's class targets are
-  unchanged; ptp- prefixes only); scripts/verify.mjs stays
+  unchanged; sig- prefixes only); scripts/verify.mjs stays
   BYTE-FROZEN; (m3) += the three new hooks. NEW gates: (ed1)
   editorial.css anatomy (carousel snap, prose blockquote, banner
   --status strip, layered import after data.css, zero hex AND zero
@@ -929,7 +929,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   `npm run verify:playground` PASS (with (ed1)–(ed4), (icons),
   (showcase)); `npm run verify:mcp` SMOKE ALL PASS; the one-off
   cortex probe (clicks the Data tab) measured the new primitives
-  live: 3/3 `.ptp-stat-card` visible, `.ptp-carousel__track`
+  live: 3/3 `.sig-stat-card` visible, `.sig-carousel__track`
   scrollable (scrollWidth > clientWidth), the banner present with
   role="status"; `vite build` exit 0; `npm pack` exactly 43 files;
   `git diff v2.3.0 -- css/ react/` = EXACTLY css/editorial.css (new),
@@ -955,21 +955,21 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   react/data.js/.d.ts; `!react/data.tsx` joins the files-array
   negations, the 2.2.0 precedent).
 - **`<DataTable>` — the ledger table inside its justified wrapper.**
-  `<div class="ptp-table-scroll">` (STRUCTURAL: a bare `<table>`
+  `<div class="sig-table-scroll">` (STRUCTURAL: a bare `<table>`
   ignores overflow in table layout, so scroll containment — the
   mobile strategy, NO 768px media query in data.css — needs a block
-  ancestor) → `<table class="ptp-data-table">` → optional
+  ancestor) → `<table class="sig-data-table">` → optional
   `<caption>` (caption-side bottom, mono muted 0.75rem), thead th
   (scope="col", uppercase, 0.1em tracking, muted 0.75rem/600,
   20%-mix hairline), tbody td (10%-mix hairline, --text-main),
   `tbody tr:hover` → the subtle 8% Flamingo wash
   (`color-mix(in srgb, var(--color-cake-primary) 8%, transparent)`),
-  and `.ptp-data-table__num` (right-aligned tabular-nums) on both
+  and `.sig-data-table__num` (right-aligned tabular-nums) on both
   the th and td of `numeric: true` columns. Cell values are
   ReactNode — a `<PartyBadge>` composes straight into a status
   column. No sorting, no pagination: a static table IS the feature.
 - **`<Tabs>` — the module switcher, attribute-driven like the nav.**
-  `<div role="tablist" aria-label class="ptp-tabs">` of
+  `<div role="tablist" aria-label class="sig-tabs">` of
   `<button type="button" role="tab" aria-selected>`; ZERO .is-active
   classes — `[aria-selected="true"]` IS the active state and
   css/data.css answers it with the Flamingo underline
@@ -979,14 +979,14 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   focus-visible = the doctrine ring, reduced-motion = none. Panels
   are the consumer's: render the active branch yourself.
 - **`<Callout>` — Toast's persistent sibling.** ONE
-  `<div class="ptp-callout" role="note">` with `--status` set INLINE
+  `<div class="sig-callout" role="note">` with `--status` set INLINE
   from the status map (info → `--party-sky`, success →
   `--party-green`, warning → `--party-peach`) — the css/toast.css
   strip mechanism, but a callout NEVER auto-dismisses: no timer, no
   close button. Inset-well body, --radius-ui corners, 0.875rem.
 - **`<Select>` / `<Checkbox>` / `<Avatar>` — the forms grow.**
   `<Select>` wraps its native select in a justified `<span
-  class="ptp-select">` (STRUCTURAL: `appearance: none` strips the UA
+  class="sig-select">` (STRUCTURAL: `appearance: none` strips the UA
   arrow and the `ChevronDown` icon — live-map-probed, exists in the
   installed lucide-react — needs a positioned ancestor; pointer-
   events none, muted, 16px); aria-invalid → the peach error border
@@ -997,7 +997,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   2px `--color-on-cake` borders rotated 45°, opacity-swapped) — dark
   ink on bright cake, the on-cake doctrine. `<Avatar>` derives
   initials (word-initials, ≤2, uppercase; empty name → empty span)
-  into ONE `<span class="ptp-avatar">` (32|40 px, INLINE width/
+  into ONE `<span class="sig-avatar">` (32|40 px, INLINE width/
   height); `ringToken` is PartyTokenName-typed AND runtime-guarded —
   a structural token warns and renders WITHOUT the ring (documented
   choice: an avatar without its ring is still an avatar, unlike
@@ -1029,8 +1029,8 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   invented props), ending on the three doctrines one-liner +
   "never invent tokens; never hardcode hex".
 - **Cortex sweep grown (tools/ is our tooling — owner-editable).**
-  DEFAULT_SELECTORS add `.ptp-data-table`, `.ptp-tabs__tab`,
-  `.ptp-callout`; server version → 2.3.0. HONEST SWEEP NOTE: the
+  DEFAULT_SELECTORS add `.sig-data-table`, `.sig-tabs__tab`,
+  `.sig-callout`; server version → 2.3.0. HONEST SWEEP NOTE: the
   default view is dashboard/core, so table/tab/callout hits do NOT
   appear in the default sweep — module content mounts on click. The
   shipped smoke is UNCHANGED (it asserts timeline nodes, which the
@@ -1071,7 +1071,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   killed and restarted fresh — the /mnt/c inotify lesson; HTTP 200)
   and the one-off cortex probe (click-path: Data & Tables tab →
   aria-selected=true, underline computed #F2CDCD Mocha Flamingo;
-  .ptp-data-table: 5 tbody rows, thead uppercase/1.2px tracking,
+  .sig-data-table: 5 tbody rows, thead uppercase/1.2px tracking,
   numeric cells tabular-nums right-aligned, caption-side bottom;
   callouts: 4px strips computed #04a5e5 / #a6d189 / #fe640b on the
   #282A36 inset body, role="note" ×3; avatars: AS/LM/PN/TW/A+
@@ -1106,7 +1106,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   circles + the optional value text.
 - **`limitText` + `showValue` — the telemetry grows its readouts.**
   `<ProgressBar limitText="…">` renders a THIRD element after the
-  track — `.ptp-progress__caption`, a mono `tabular-nums` muted
+  track — `.sig-progress__caption`, a mono `tabular-nums` muted
   0.75rem caption inside a fragment (no wrapper around the track;
   the ARIA contract is unchanged). `<StatRing showValue>` (default
   true) renders the centered readout — `<text>` at the exact center
@@ -1230,7 +1230,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   node margin-top = `calc(var(--tl-header-clearance) +
   var(--space-standard) * 2)` = 100px — siblings move together or the
   title drifts off the node). BEFORE → AFTER clearance per group
-  (headerRect.bottom → first `.ptp-timeline__node` rect.top):
+  (headerRect.bottom → first `.sig-timeline__node` rect.top):
 
   | Group | BEFORE | AFTER |
   |---|---|---|
@@ -1243,7 +1243,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   `padding-bottom: var(--space-standard)` would have been a NO-OP (the
   package shorthand already sets 16px there) — the shipped override is
   `calc(var(--space-standard) + var(--space-tight))`, var-based and
-  actually incremental. The first `.ptp-timeline__item` BOX still sits
+  actually incremental. The first `.sig-timeline__item` BOX still sits
   under the slab (−77px) by design: its group-first padding is empty
   space; the node is the visual invariant.
 - **The Master Index — a state-based view switcher.** `type View =
@@ -1298,7 +1298,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   from App.tsx flips (ix1) to FAIL; restore → PASS.
 - **Release proof** — `npm run verify` PASS; `npm run verify:playground`
   PASS; `npm run verify:mcp` SMOKE ALL PASS (the default view stays
-  "dashboard", so the smoke's `.ptp-timeline` assertions still hold);
+  "dashboard", so the smoke's `.sig-timeline` assertions still hold);
   `vite build` exit 0; `npm pack` exactly 34 files; safety diff vs
   v2.0.0 (incl. tools/) EMPTY; `package.json`/lock → 2.1.0,
   `tokens.json` stays 1.4.0. Relaunch proof: dev server killed and
@@ -1386,7 +1386,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 - **Cortex proof** — dev server killed and relaunched fresh (the 1.8.0
   `/mnt/c` inotify lesson), then `inspect_layout` with hub selectors:
   4/4 `.hub__card` visible; timeline card 600px wide (≥400 floor);
-  6/6 `.ptp-timeline__node` visible with area; all three metric rows
+  6/6 `.sig-timeline__node` visible with area; all three metric rows
   no-overlap (value left ≥ label right), flush right within 1px of the
   card's content edge, and 40px/40px/32px of air below the label rows
   (≥16px mandate — the RSVP row's nearest viz is the classless
@@ -1399,7 +1399,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   Proof screenshot: `/tmp/visual-cortex/v200-proof.png`.
 - **Release proof** — `npm run verify` PASS; `npm run verify:playground`
   PASS; `npm run verify:mcp` SMOKE ALL PASS (tools/ byte-frozen — the
-  smoke's `.ptp-timeline__node` assertion still holds); `vite build`
+  smoke's `.sig-timeline__node` assertion still holds); `vite build`
   exit 0; `npm pack` exactly 34 files; safety diff (incl. tools/)
   EMPTY; `package.json`/lock → 2.0.0, `tokens.json` stays 1.4.0.
 
@@ -1423,7 +1423,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   768px single-column collapse, placement resets, slideUpFade stagger
   and reduced-motion escape are untouched.
 - **Glass header (the ONE authorized css/ change)** —
-  `.ptp-timeline__header` swaps its opaque `background: var(--bg-base)`
+  `.sig-timeline__header` swaps its opaque `background: var(--bg-base)`
   slab for `color-mix(in srgb, var(--bg-surface) 80%, transparent)` +
   `backdrop-filter: blur(8px)` (webkit-prefixed): scrolled content
   stays legible THROUGH the sticky date header. The 1.6.0 resurrection
@@ -1432,13 +1432,13 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   spanning grid item must not stretch into a cover slab). Cortex-proven
   post-change: all three headers height 69px, visible, unchanged.
 - **Axis-aligned typography (css/timeline.css)** — text flows TOWARD
-  the axis: `.ptp-timeline__item--left` keeps `text-align: right`,
-  `.ptp-timeline__item--right` gains the explicit
+  the axis: `.sig-timeline__item--left` keeps `text-align: right`,
+  `.sig-timeline__item--right` gains the explicit
   `text-align: left`, and the 768px media query resets BOTH modifiers
   to `text-align: left` explicitly (one right-hand stack, no axis to
   hug).
 - **Node elevation — composition layer ONLY (doctrine boundary)** —
-  the nodes float: `.bento__card .ptp-timeline__node` gets
+  the nodes float: `.bento__card .sig-timeline__node` gets
   `box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2)` in
   `playground/styles.css` (owner-decided). THE PACKAGE KEEPS ITS
   ZERO-BOX-SHADOW LAW: `css/timeline.css` gains backdrop-filter/
@@ -1449,7 +1449,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   `justify-content: space-between` + `align-items: flex-end` (caption
   left, value flush right, shared bottom floor), and the progress bars
   breathe: `margin-top: var(--space-tight)` scoped to the composition
-  via `.bento__metric .ptp-progress, .bento__metric + .ptp-progress`
+  via `.bento__metric .sig-progress, .bento__metric + .sig-progress`
   (the adjacent-sibling arm is the DOM truth — App.tsx renders
   ProgressBar as the metric row's next sibling, which a descendant
   selector could never reach; package `css/viz.css` untouched).
@@ -1492,9 +1492,9 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   look like right now?" before touching another CSS token.
 - **Tool `inspect_layout`** — params `url` (default
   `http://localhost:5173`) and `selectors` (default: the dashboard
-  anatomy — `[data-testid]`, `.ptp-timeline__node`,
-  `.ptp-timeline__item`, `.ptp-timeline__header`, `.ptp-progress`,
-  `.ptp-progress__fill`, `.bento__card`, `.bento__metric`,
+  anatomy — `[data-testid]`, `.sig-timeline__node`,
+  `.sig-timeline__item`, `.sig-timeline__header`, `.sig-progress`,
+  `.sig-progress__fill`, `.bento__card`, `.bento__metric`,
   `.bento__btn`). Headless Playwright Chromium navigates with
   `waitUntil: networkidle` **plus a 600ms settle** (the 1.5.1
   slideUpFade stagger taught us mid-animation rects lie), then returns,
@@ -1522,7 +1522,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   (`tools/mcp-viz/smoke.mjs`) spawns the compiled server and speaks RAW
   newline-delimited JSON-RPC over stdio — initialize → tools/list →
   tools/call × 2 — asserting exactly the two tools, at least one
-  `.ptp-timeline__node` with width>0 && height>0, and non-empty
+  `.sig-timeline__node` with width>0 && height>0, and non-empty
   screenshot base64. Proof run: 27 layout hits, 6/6 timeline nodes with
   area (sample 44×44 at x=618,y=241), 150,676 base64 chars / 113,005
   bytes on disk.
@@ -1559,7 +1559,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 
 - **TIMELINE ROOT CAUSE — two stacked defects, both probe-proven with a
   headless-Chrome harness (puppeteer in a scratch dir, never shipped)**:
-  1. **The cover slab** — `.ptp-timeline__header` is a *spanning* grid
+  1. **The cover slab** — `.sig-timeline__header` is a *spanning* grid
      item (inline `grid-row: "1 / 5"` group spans from
      `react/timeline.tsx:118`) with no explicit block size, so the
      implicit **`align-self: stretch`** stretched its opaque box
@@ -1571,7 +1571,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
      was host-independent, NOT a bento-container bug: the EventTimeline
      grid was never collapsing (probe: all node/item rects were
      non-zero; hit-tests resolved to the header).
-  2. **The dropped node rule** — the `.ptp-timeline__node` rule's own
+  2. **The dropped node rule** — the `.sig-timeline__node` rule's own
      comment contained a stray comment-terminator mid-sentence
      (`.btn-` + `*/` + `[data-cascade]`). That early terminator turned
      the trailing prose into live CSS tokens, malformed the selector
@@ -1663,7 +1663,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   color-mix(in srgb, var(--text-muted) 10%, transparent); }` on
   breathing-room `var(--space-section)` cards. The child combinator is
   deliberate — a descendant selector would also hit the timeline's
-  package-rendered `.ptp-timeline__header` h2s (0,1,1 beats 0,1,0) and
+  package-rendered `.sig-timeline__header` h2s (0,1,1 beats 0,1,0) and
   override their sticky-header geometry. The `bento__btn` press physics
   are untouched: `:active { transform: scale(0.97) }` +
   `transition: var(--transition-standard), var(--transition-transform)`.
@@ -1821,8 +1821,8 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   ```
 
   - **`<ProgressBar value colorToken label? />`** — ONE
-    `div.ptp-progress` (role="progressbar" with the full aria value
-    contract) containing ONE `div.ptp-progress__fill` whose width is
+    `div.sig-progress` (role="progressbar" with the full aria value
+    contract) containing ONE `div.sig-progress__fill` whose width is
     the clamped value. The fill animates `width 0.3s ease-out`
     (owner-mandated physics; `prefers-reduced-motion` disables it).
     Exactly two elements, no wrappers.
@@ -1844,7 +1844,7 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
 - **The data-ink doctrine** — high data-to-ink ratio, zero decoration:
   no grid lines, no drop shadows, no 3D. Tracks are structural chrome
   (`var(--bg-surface)`); data fills are ALWAYS `--party-*` content
-  tokens. New stylesheet **`css/viz.css`** (`.ptp-progress*` classes
+  tokens. New stylesheet **`css/viz.css`** (`.sig-progress*` classes
   only — the ring is attribute-driven), layered into `cascade` after
   `nav.css`: zero hex, zero box-shadow, `prefers-reduced-motion`
   respected. **No charting dependencies were added** — the React peers
@@ -1883,15 +1883,15 @@ prefix — the cortex sweep's DEFAULT_SELECTORS need no change).
   ```
 
   - **Component-agnostic links** — `as?: React.ElementType` receives
-    `{ href, className: "ptp-nav__link", children }`; the drawer links go
+    `{ href, className: "sig-nav__link", children }`; the drawer links go
     through the same renderer.
   - **Mobile drawer** — `createPortal` to `document.body` (the modal.tsx
     architecture): it reuses the existing modal backdrop (z-40) as its
-    scrim and the existing `.ptp-modal-close` class for its close button
+    scrim and the existing `.sig-modal-close` class for its close button
     (the Teal hover stays the close signature). Escape closes with a
     cleaned-up listener, backdrop click closes, drawer links close, and
     focus moves into the drawer on open / back to the hamburger on close.
-  - New stylesheet **`css/nav.css`** (`.ptp-nav*` classes), layered into
+  - New stylesheet **`css/nav.css`** (`.sig-nav*` classes), layered into
     `cascade` after `modal.css`. Token-driven: zero hex, zero box-shadow —
     the rgba scrim still lives ONLY in modal.css. Links press with
     `scale(0.97)`, the current page's underline is Flamingo, and the
@@ -1991,7 +1991,7 @@ Packaging, CI and docs only.
     the header row is pure grid placement. The close button is muted
     `--text-muted` by default and hovers to `--color-cake-secondary`
     (Teal — structural chrome, Rule of Engagement untouched).
-  - New stylesheet **`css/modal.css`** (`.ptp-modal-*` classes,
+  - New stylesheet **`css/modal.css`** (`.sig-modal-*` classes,
     token-driven, zero box-shadow, `prefers-reduced-motion` respected,
     768px collapse), imported into the `cascade` layer after
     `timeline.css`. One documented exception to the token doctrine, by
@@ -2043,7 +2043,7 @@ Packaging, CI and docs only.
     `<EmptyState icon="CalendarX">` immediately. No empty timeline lines
     are ever drawn.
   - **DOM shape (Pruning Protocol)** — perfectly flat: ONE grid container
-    (`.ptp-timeline`) whose DIRECT children are date headers (`h2`),
+    (`.sig-timeline`) whose DIRECT children are date headers (`h2`),
     nodes (`span`) and event content blocks (`div`), each placed with
     inline `gridRow`/`gridColumn` styles against a maintained row
     counter. No row wrappers, no placeholder divs — the empty side of an
@@ -2066,7 +2066,7 @@ Packaging, CI and docs only.
     `--bg-surface` fill. Categories are CONTENT (party tokens):
     `<PartyBadge colorToken label>`. Titles wear `--text-main` weight
     500; times wear `--text-muted` mono at 0.875rem.
-  - New stylesheet **`css/timeline.css`** (`.ptp-timeline*` classes,
+  - New stylesheet **`css/timeline.css`** (`.sig-timeline*` classes,
     token-driven, zero hex, zero box-shadow, `prefers-reduced-motion`
     respected), imported into the `cascade` layer by
     `css/signature-style.css`. `cascade.css` and `overrides.css` are

@@ -65,7 +65,7 @@
  *       only.
  *   (t1) EVENT TIMELINE CSS (0.6.0): css/timeline.css exists, collapses
  *       at `max-width: 768px`, pins headers with `var(--z-sticky`,
- *       draws the line with a `.ptp-timeline::before` pseudo-element,
+ *       draws the line with a `.sig-timeline::before` pseudo-element,
  *       respects prefers-reduced-motion, and contains NO hex literals;
  *   (t2) BUNDLE MEMBERSHIP: css/signature-style.css imports
  *       ./timeline.css into the `cascade` layer, AFTER ./tokens.css —
@@ -85,7 +85,7 @@
  *       with a cleaned-up keydown listener, stops clicks inside the card,
  *       and contains ZERO hex literals;
  *   (m4) TIMELINE INTEGRATION: react/timeline.tsx renders nodes as
- *       `<button … ptp-timeline__node>` (was span) and EventTimelineProps
+ *       `<button … sig-timeline__node>` (was span) and EventTimelineProps
  *       declares the optional onEventSelect callback that fires with the
  *       clicked event;
  *   (m5) the umbrella re-exports EventModal + useModal from react/index.js
@@ -735,7 +735,7 @@ if (!existsSync(timelineCssPath)) {
   const TIMELINE_REQUIREMENTS = [
     ["max-width: 768px", "the 768px mobile collapse"],
     ["var(--z-sticky", "the Pillar 3 sticky z-scale token on date headers"],
-    [".ptp-timeline::before", "the pseudo-element vertical line (never a div)"],
+    [".sig-timeline::before", "the pseudo-element vertical line (never a div)"],
     ["prefers-reduced-motion", "the reduced-motion guard on node transitions"],
   ];
   for (const [needle, label] of TIMELINE_REQUIREMENTS) {
@@ -782,8 +782,8 @@ if (!existsSync(modalCssPath)) {
   const MODAL_REQUIREMENTS = [
     ["var(--z-overlay", "the Pillar 3 backdrop z-scale token"],
     ["var(--z-modal", "the Pillar 3 card z-scale token"],
-    ["ptp-modal-backdrop", "the backdrop class"],
-    ["ptp-modal-card", "the dialog card class"],
+    ["sig-modal-backdrop", "the backdrop class"],
+    ["sig-modal-card", "the dialog card class"],
     [`background: ${SCRIM}`, "the user-mandated neutral scrim on the backdrop"],
     ["prefers-reduced-motion", "the reduced-motion guard on close-button transitions"],
     ["var(--transition-standard)", "the mechanical-physics transition token"],
@@ -860,9 +860,9 @@ if (modalSrcHexes !== null) {
 // (m4) TIMELINE INTEGRATION: nodes are <button>s firing the optional
 // onEventSelect callback with the clicked event (flat DOM preserved).
 const timelineSrc = readFileSync(resolve(root, "react/timeline.tsx"), "utf8");
-if (!/<button[^>]*className=\{`ptp-timeline__node/.test(timelineSrc)) {
+if (!/<button[^>]*className=\{`sig-timeline__node/.test(timelineSrc)) {
   failures.push(
-    "react/timeline.tsx must render timeline nodes as <button className={`ptp-timeline__node…`}> (0.7.0 interactive nodes; was span)",
+    "react/timeline.tsx must render timeline nodes as <button className={`sig-timeline__node…`}> (0.7.0 interactive nodes; was span)",
   );
 }
 if (!/onEventSelect\?\s*:\s*\(event:\s*PtpEvent\)\s*=>\s*void/.test(timelineSrc)) {

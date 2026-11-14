@@ -8,11 +8,11 @@
  * inside a 280px `.sig-cell` and a 900px `.sig-cell`. Asserts the
  * computed layouts genuinely DIFFER between the two containers:
  *
- *   (cq1) .ptp-matchup      — narrow (< 380px): grid-template-columns
+ *   (cq1) .sig-matchup      — narrow (< 380px): grid-template-columns
  *                             collapses to one track + the VS pill
  *                             grows hairline ::before/::after dividers;
  *                             wide: the 1fr auto 1fr side-by-side.
- *   (cq2) .ptp-stat-card    — narrow (< 360px): display flex (stacked);
+ *   (cq2) .sig-stat-card    — narrow (< 360px): display flex (stacked);
  *                             wide (≥ 360px): display grid, sparkline
  *                             docked in the second column.
  *   (cq3) .sig-content-card — narrow: flex-direction column; wide
@@ -44,7 +44,7 @@ function fail(label) {
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.goto(URL_TO_PROBE, { waitUntil: "networkidle" });
-await page.waitForSelector('[data-testid="cq-probe"] .ptp-matchup');
+await page.waitForSelector('[data-testid="cq-probe"] .sig-matchup');
 
 /** Computed style of a selector scoped inside one probe cell. */
 async function style(cell, selector, prop) {
@@ -60,14 +60,14 @@ async function style(cell, selector, prop) {
 const results = [];
 
 /* (cq1) MatchupCard — stacked in 280px, side-by-side in 900px. */
-const matchupNarrowCols = await style(".hub__cq-narrow", ".ptp-matchup", "grid-template-columns");
-const matchupWideCols = await style(".hub__cq-wide", ".ptp-matchup", "grid-template-columns");
+const matchupNarrowCols = await style(".hub__cq-narrow", ".sig-matchup", "grid-template-columns");
+const matchupWideCols = await style(".hub__cq-wide", ".sig-matchup", "grid-template-columns");
 const vsNarrowBefore = await page.evaluate(() => {
-  const el = document.querySelector(".hub__cq-narrow .ptp-matchup__vs");
+  const el = document.querySelector(".hub__cq-narrow .sig-matchup__vs");
   return el === null ? null : getComputedStyle(el, "::before").width;
 });
 const vsWideBefore = await page.evaluate(() => {
-  const el = document.querySelector(".hub__cq-wide .ptp-matchup__vs");
+  const el = document.querySelector(".hub__cq-wide .sig-matchup__vs");
   return el === null ? null : getComputedStyle(el, "::before").width;
 });
 if (matchupNarrowCols === null || matchupWideCols === null) fail("(cq1) matchup not found");
@@ -93,13 +93,13 @@ if (String(vsWideBefore) !== "0px" && String(vsWideBefore) !== "" && String(vsWi
 }
 
 /* (cq2) StatCard — stacked flex in 280px, docked grid in 900px. */
-const statNarrowDisplay = await style(".hub__cq-narrow", ".ptp-stat-card", "display");
-const statWideDisplay = await style(".hub__cq-wide", ".ptp-stat-card", "display");
-const statWideCols = await style(".hub__cq-wide", ".ptp-stat-card", "grid-template-columns");
-const statWideValueSize = await style(".hub__cq-wide", ".ptp-stat-card__value", "font-size");
-const statNarrowValueSize = await style(".hub__cq-narrow", ".ptp-stat-card__value", "font-size");
-const sparkWideCol = await style(".hub__cq-wide", ".ptp-stat-card > svg", "grid-column");
-const sparkNarrowCol = await style(".hub__cq-narrow", ".ptp-stat-card > svg", "grid-column");
+const statNarrowDisplay = await style(".hub__cq-narrow", ".sig-stat-card", "display");
+const statWideDisplay = await style(".hub__cq-wide", ".sig-stat-card", "display");
+const statWideCols = await style(".hub__cq-wide", ".sig-stat-card", "grid-template-columns");
+const statWideValueSize = await style(".hub__cq-wide", ".sig-stat-card__value", "font-size");
+const statNarrowValueSize = await style(".hub__cq-narrow", ".sig-stat-card__value", "font-size");
+const sparkWideCol = await style(".hub__cq-wide", ".sig-stat-card > svg", "grid-column");
+const sparkNarrowCol = await style(".hub__cq-narrow", ".sig-stat-card > svg", "grid-column");
 if (statNarrowDisplay !== "flex") {
   fail(`(cq2) expected the 280px stat-card stacked (display: flex), got "${statNarrowDisplay}"`);
 }

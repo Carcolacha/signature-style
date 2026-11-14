@@ -13,7 +13,7 @@
  *
  * Link-agnostic API: `as` accepts any component-agnostic link renderer
  * (React Router's NavLink). Links receive
- * `{ href, className: "ptp-nav__link", children }`; with plain anchors
+ * `{ href, className: "sig-nav__link", children }`; with plain anchors
  * (`as` undefined) `activeHref` sets `aria-current="page"`, while with a
  * router link the ROUTER owns aria-current — leave `activeHref` unset.
  * The drawer links go through the same renderer.

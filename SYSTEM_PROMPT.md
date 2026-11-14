@@ -251,7 +251,7 @@ Initials disc — word-initials, max two, uppercased, derived from `name`; ring 
 
 ### <FormField>
 
-The accessible around-the-control scaffold — YOU wire id/htmlFor (the package renders no ids it cannot verify). THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of 2.5.0): the label row is a fixed 20px rail (side-by-side fields align on the same baseline) carrying the promoted label + the optional `infoTooltip` ⓘ (pure-CSS bubble above, shown on hover AND focus-visible; title/aria-label carry the text) → control (or the `prefix`/`suffix` `.ptp-form-field__well`: mono chips flanking a BARE input — the well owns the border, focus ring and the `[data-invalid]` shake) → THE HELPERS SLOT BELOW the well (`.ptp-form-field__helpers`, 20px rail, flex wrap): `description` (format examples — "120", "5 numbers only · e.g., 79901") + `hint` → ONE validation line, `error` first (role="alert", peach), then `validMessage` (party-green). THE A11Y PRESERVATION: the description renders with a generated id wired onto the control via aria-describedby — screen readers STILL announce the format rule below the input (the GOV.UK concern survives the visual move). `required` paints a visual peach asterisk only — pass `aria-required`/`required` to the CONTROL yourself:
+The accessible around-the-control scaffold — YOU wire id/htmlFor (the package renders no ids it cannot verify). THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of 2.5.0): the label row is a fixed 20px rail (side-by-side fields align on the same baseline) carrying the promoted label + the optional `infoTooltip` ⓘ (pure-CSS bubble above, shown on hover AND focus-visible; title/aria-label carry the text) → control (or the `prefix`/`suffix` `.sig-form-field__well`: mono chips flanking a BARE input — the well owns the border, focus ring and the `[data-invalid]` shake) → THE HELPERS SLOT BELOW the well (`.sig-form-field__helpers`, 20px rail, flex wrap): `description` (format examples — "120", "5 numbers only · e.g., 79901") + `hint` → ONE validation line, `error` first (role="alert", peach), then `validMessage` (party-green). THE A11Y PRESERVATION: the description renders with a generated id wired onto the control via aria-describedby — screen readers STILL announce the format rule below the input (the GOV.UK concern survives the visual move). `required` paints a visual peach asterisk only — pass `aria-required`/`required` to the CONTROL yourself:
 
 ```tsx
 <FormField
@@ -560,7 +560,7 @@ The person card (2.6.0) — the 40px Avatar (party ring via `accentToken`, typed
 
 ### <ChronicleTimeline>
 
-The release chronicle (2.6.0) — ONE `<ol class="ptp-chronicle">`: a 2px hairline spine, a 12px accent-ringed node per release, the mono tag in the accent, the bold title, the optional story, the optional mono stat. FLAT — zero shadows. MEMORIAL: this primitive officializes the "Night of Versions" chronicle; port your release history and the timeline keeps it honest:
+The release chronicle (2.6.0) — ONE `<ol class="sig-chronicle">`: a 2px hairline spine, a 12px accent-ringed node per release, the mono tag in the accent, the bold title, the optional story, the optional mono stat. FLAT — zero shadows. MEMORIAL: this primitive officializes the "Night of Versions" chronicle; port your release history and the timeline keeps it honest:
 
 ```tsx
 <ChronicleTimeline
@@ -574,7 +574,7 @@ The release chronicle (2.6.0) — ONE `<ol class="ptp-chronicle">`: a 2px hairli
 
 ### <KnowledgeGraph>
 
-The interactive node-link graph (2.7.0) — ONE pure-SVG `<svg role="application">` (viewBox 0 0 640 320), ZERO charting packages. The layout is DETERMINISTIC (`layoutGraph`, an exported pure helper: roots centered, BFS depth rings at radius 90 + depth·110 projected into the box, children fanning around their parent's angle, ties broken by id hash — same node set, same coordinates, always). One cubic-Bezier edge per node-with-parent (`cubicBezierEdge`, control points 60% along the radial); clicking a node selects it — the ring flips to structural Flamingo at width 3 and everything NOT adjacent dims to opacity 0.25 (class-driven: `.ptp-graph--focused` + `data-dim`); the footer strip inspects the selection's label + note; `addOn` renders the toolbar whose "Add & Link" parents a new lavender node to the SELECTION (else the root; with no nodes at all it becomes the root):
+The interactive node-link graph (2.7.0) — ONE pure-SVG `<svg role="application">` (viewBox 0 0 640 320), ZERO charting packages. The layout is DETERMINISTIC (`layoutGraph`, an exported pure helper: roots centered, BFS depth rings at radius 90 + depth·110 projected into the box, children fanning around their parent's angle, ties broken by id hash — same node set, same coordinates, always). One cubic-Bezier edge per node-with-parent (`cubicBezierEdge`, control points 60% along the radial); clicking a node selects it — the ring flips to structural Flamingo at width 3 and everything NOT adjacent dims to opacity 0.25 (class-driven: `.sig-graph--focused` + `data-dim`); the footer strip inspects the selection's label + note; `addOn` renders the toolbar whose "Add & Link" parents a new lavender node to the SELECTION (else the root; with no nodes at all it becomes the root):
 
 ```tsx
 import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
@@ -723,7 +723,7 @@ True portability: a card answers its CONTAINER, not the viewport — two cards i
 
 /* the package answers (css/cards.css) — base keeps the legacy layout */
 @container (max-width: 380px) {
-  .ptp-matchup { grid-template-columns: 1fr; } /* sides stack, VS divider */
+  .sig-matchup { grid-template-columns: 1fr; } /* sides stack, VS divider */
 }
 @container (min-width: 440px) {
   .sig-content-card { display: grid; }          /* media-object dock */
@@ -736,7 +736,7 @@ Reflow table (2.9.0): matchup stacks below a 380px container (the VS pill become
 
 Phase 4 of this release tried to break the release from inside a browser (`playground/probe-audit-v290.mjs` — 4 viewports × 5 views + 3 module tabs, the palette keyboard, emulated reduced-motion, a contrast sweep, a console audit). Every bug it caught, and the fix, in the open:
 
-1. **The tab bars page-broke at 375px** (dashboard module row +12px, the index catalog row +135px): the package's `.ptp-tabs` is a no-wrap flex row, and long labels ("Commerce & Profiles") outgrew the viewport. FIX (playground layer, package untouched): `.sig-shell .ptp-tabs { flex-wrap: wrap; }` — each tab keeps its own border-box, the Flamingo underline survives the wrap.
+1. **The tab bars page-broke at 375px** (dashboard module row +12px, the index catalog row +135px): the package's `.sig-tabs` is a no-wrap flex row, and long labels ("Commerce & Profiles") outgrew the viewport. FIX (playground layer, package untouched): `.sig-shell .sig-tabs { flex-wrap: wrap; }` — each tab keeps its own border-box, the Flamingo underline survives the wrap.
 2. **The Chronicle hero overflowed 18px at 375px**: "CHRONICLE" is ONE unbreakable word wearing the hero's 36px + 0.35em tracking; it cannot wrap and outgrew the 327px shell column. FIX (playground layer): below 480px the shell's hero folds to 28px / 0.22em — the word fits with air, nothing else moves.
 3. **A studio preview bled 2px at 375px**: a nowrap `<code>` chip escaped the preview stage. FIX (playground layer): `.pattern-frame__preview { overflow-x: auto; }` — a stage pans, it never page-breaks.
 4. **CommandPalette's Ctrl+K fired while typing in inputs**: the `isTypingTarget` guard was written but never wired into the launcher branch. FIX: the listener honors it; the palette now ignores the launcher in any input/textarea/select/contentEditable. (Found during the Phase 2 wiring, fixed there; recorded here because it is exactly the class of bug this audit exists for.)

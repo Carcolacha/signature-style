@@ -49,12 +49,12 @@ import { PartyBadge } from "./primitives.js";
 /**
  * `<ActionTile>` — the action-row card (2.5.0).
  *
- * ONE `<button class="ptp-action-tile">` → the icon well (a 40px
- * rounded `.ptp-action-tile__well` on --bg-inset), the body
+ * ONE `<button class="sig-action-tile">` → the icon well (a 40px
+ * rounded `.sig-action-tile__well` on --bg-inset), the body
  * (strong title + muted subtitle), and the optional
- * `.ptp-action-tile__kbd` shortcut chip (mono, inset — the standalone
+ * `.sig-action-tile__kbd` shortcut chip (mono, inset — the standalone
  * cousin of the prose kbd chip; css/cards.css owns it because
- * editorial.css scopes its kbd under .ptp-prose). ZERO divs: spans
+ * editorial.css scopes its kbd under .sig-prose). ZERO divs: spans
  * inside the button, `margin-left: auto` parks the kbd at the far
  * edge. Hover: the Teal border (structural hover, the radio-card
  * precedent); press: `:active scale(0.98)`.
@@ -65,12 +65,12 @@ import { PartyBadge } from "./primitives.js";
  * ```
  */
 export function ActionTile({ title, subtitle, icon, kbdShortcut, onClick }) {
-    return (_jsxs("button", { type: "button", className: "ptp-action-tile", onClick: onClick, children: [_jsx("span", { className: "ptp-action-tile__well", children: _jsx(Icon, { name: icon, "aria-hidden": true }) }), _jsxs("span", { className: "ptp-action-tile__body", children: [_jsx("strong", { children: title }), subtitle !== undefined && _jsx("span", { children: subtitle })] }), kbdShortcut !== undefined && (_jsx("kbd", { className: "ptp-action-tile__kbd", children: kbdShortcut }))] }));
+    return (_jsxs("button", { type: "button", className: "sig-action-tile", onClick: onClick, children: [_jsx("span", { className: "sig-action-tile__well", children: _jsx(Icon, { name: icon, "aria-hidden": true }) }), _jsxs("span", { className: "sig-action-tile__body", children: [_jsx("strong", { children: title }), subtitle !== undefined && _jsx("span", { children: subtitle })] }), kbdShortcut !== undefined && (_jsx("kbd", { className: "sig-action-tile__kbd", children: kbdShortcut }))] }));
 }
 /**
  * `<FlipCard>` — the two-face reveal (2.5.0).
  *
- * ONE `<button class="ptp-flip-card" aria-pressed>` — THE FLAT
+ * ONE `<button class="sig-flip-card" aria-pressed>` — THE FLAT
  * STRUCTURE: button → `__inner` (the 3d stage: `transform-style:
  * preserve-3d`, the owner mechanical bezier on the rotateY) → two
  * `__face` spans (backface-visibility: hidden; the back pre-rotated
@@ -89,21 +89,21 @@ export function ActionTile({ title, subtitle, icon, kbdShortcut, onClick }) {
  */
 export function FlipCard({ front, back, onFlip }) {
     const [flipped, setFlipped] = useState(false);
-    return (_jsx("button", { type: "button", className: "ptp-flip-card", "aria-pressed": flipped, onClick: () => {
+    return (_jsx("button", { type: "button", className: "sig-flip-card", "aria-pressed": flipped, onClick: () => {
             const next = !flipped;
             setFlipped(next);
             onFlip?.(next);
-        }, children: _jsxs("span", { className: "ptp-flip-card__inner", children: [_jsxs("span", { className: "ptp-flip-card__face ptp-flip-card__front", children: [_jsx("span", { className: "ptp-flip-card__tag", children: "FRONT" }), front] }), _jsxs("span", { className: "ptp-flip-card__face ptp-flip-card__back", children: [_jsx("span", { className: "ptp-flip-card__tag", children: "BACK" }), back] })] }) }));
+        }, children: _jsxs("span", { className: "sig-flip-card__inner", children: [_jsxs("span", { className: "sig-flip-card__face sig-flip-card__front", children: [_jsx("span", { className: "sig-flip-card__tag", children: "FRONT" }), front] }), _jsxs("span", { className: "sig-flip-card__face sig-flip-card__back", children: [_jsx("span", { className: "sig-flip-card__tag", children: "BACK" }), back] })] }) }));
 }
 /**
  * `<AccordionCard>` — the zero-JS accordion (2.5.0).
  *
- * `<details class="ptp-accordion">` → `<summary
- * class="ptp-accordion__summary">` (title + the token chevron) → the
+ * `<details class="sig-accordion">` → `<summary
+ * class="sig-accordion__summary">` (title + the token chevron) → the
  * `__body` div. No state, no handler, no aria wiring: `<details>`
  * carries disclosure semantics natively, the marker is stripped in css
  * (list-style: none + ::-webkit-details-marker), and
- * `details[open] .ptp-accordion__chevron` rotates the chevron 180° —
+ * `details[open] .sig-accordion__chevron` rotates the chevron 180° —
  * an attribute selector answering an attribute the USER toggled.
  *
  * @example
@@ -114,12 +114,12 @@ export function FlipCard({ front, back, onFlip }) {
  * ```
  */
 export function AccordionCard({ title, children }) {
-    return (_jsxs("details", { className: "ptp-accordion", children: [_jsxs("summary", { className: "ptp-accordion__summary", children: [title, _jsx(Icon, { name: "ChevronDown", className: "ptp-accordion__chevron", "aria-hidden": true })] }), _jsx("div", { className: "ptp-accordion__body", children: children })] }));
+    return (_jsxs("details", { className: "sig-accordion", children: [_jsxs("summary", { className: "sig-accordion__summary", children: [title, _jsx(Icon, { name: "ChevronDown", className: "sig-accordion__chevron", "aria-hidden": true })] }), _jsx("div", { className: "sig-accordion__body", children: children })] }));
 }
 /**
  * `<MatchupCard>` — the 1v1 grid (2.5.0).
  *
- * `<div class="ptp-matchup">` (grid `1fr auto 1fr`, centered) → side /
+ * `<div class="sig-matchup">` (grid `1fr auto 1fr`, centered) → side /
  * VS pill / side, each side a centered column (the 40px `<Avatar>` +
  * the name), the VS pill a mono inset capsule, and the optional
  * `__stakes` footer on `grid-column: 1 / -1` (inset well, mono muted
@@ -136,7 +136,7 @@ export function AccordionCard({ title, children }) {
  * ```
  */
 export function MatchupCard({ title, left, right, stakes }) {
-    return (_jsxs("div", { className: "ptp-matchup", children: [title !== undefined && (_jsx("strong", { className: "ptp-matchup__title", children: title })), _jsxs("span", { className: "ptp-matchup__side", children: [_jsx(Avatar, { name: left.name, ringToken: left.ringToken, size: 40 }), _jsx("span", { children: left.name })] }), _jsx("span", { className: "ptp-matchup__vs", children: "VS" }), _jsxs("span", { className: "ptp-matchup__side", children: [_jsx(Avatar, { name: right.name, ringToken: right.ringToken, size: 40 }), _jsx("span", { children: right.name })] }), stakes !== undefined && (_jsx("footer", { className: "ptp-matchup__stakes", children: stakes }))] }));
+    return (_jsxs("div", { className: "sig-matchup", children: [title !== undefined && (_jsx("strong", { className: "sig-matchup__title", children: title })), _jsxs("span", { className: "sig-matchup__side", children: [_jsx(Avatar, { name: left.name, ringToken: left.ringToken, size: 40 }), _jsx("span", { children: left.name })] }), _jsx("span", { className: "sig-matchup__vs", children: "VS" }), _jsxs("span", { className: "sig-matchup__side", children: [_jsx(Avatar, { name: right.name, ringToken: right.ringToken, size: 40 }), _jsx("span", { children: right.name })] }), stakes !== undefined && (_jsx("footer", { className: "sig-matchup__stakes", children: stakes }))] }));
 }
 /* ==========================================================================
    THE UNIVERSAL DEVELOPER CARD SUITE (2.6.0) — five archetypes that make
@@ -299,7 +299,7 @@ export function ProfileCard({ name, role, stats, skills, accentToken, avatarSize
 /**
  * `<ChronicleTimeline>` — the release chronicle (2.6.0).
  *
- * ONE `<ol class="ptp-chronicle" aria-label>`: per release an `<li>`
+ * ONE `<ol class="sig-chronicle" aria-label>`: per release an `<li>`
  * carrying the inline `--accent` variable → the milestone node (a 12px
  * circle, 2px solid var(--accent), surface-filled, absolutely parked
  * OVER the ::before hairline spine), the mono tag in the accent, and
@@ -322,8 +322,8 @@ export function ProfileCard({ name, role, stats, skills, accentToken, avatarSize
  * ```
  */
 export function ChronicleTimeline({ releases, label, className, }) {
-    const classes = className !== undefined ? `ptp-chronicle ${className}` : "ptp-chronicle";
-    return (_jsx("ol", { className: classes, "aria-label": label ?? "Version chronicle", children: releases.map((release) => (_jsxs("li", { className: "ptp-chronicle__item", style: {
+    const classes = className !== undefined ? `sig-chronicle ${className}` : "sig-chronicle";
+    return (_jsx("ol", { className: classes, "aria-label": label ?? "Version chronicle", children: releases.map((release) => (_jsxs("li", { className: "sig-chronicle__item", style: {
                 "--accent": `var(${release.accentToken ?? "--party-lavender"})`,
-            }, children: [_jsx("span", { className: "ptp-chronicle__node" }), _jsx("span", { className: "ptp-chronicle__tag", children: release.tag }), _jsxs("div", { className: "ptp-chronicle__body", children: [_jsx("strong", { children: release.title }), release.story !== undefined && (_jsx("span", { className: "ptp-chronicle__story", children: release.story })), release.stat !== undefined && (_jsx("span", { className: "ptp-chronicle__stat", children: release.stat }))] })] }, release.tag))) }));
+            }, children: [_jsx("span", { className: "sig-chronicle__node" }), _jsx("span", { className: "sig-chronicle__tag", children: release.tag }), _jsxs("div", { className: "sig-chronicle__body", children: [_jsx("strong", { children: release.title }), release.story !== undefined && (_jsx("span", { className: "sig-chronicle__story", children: release.story })), release.stat !== undefined && (_jsx("span", { className: "sig-chronicle__stat", children: release.stat }))] })] }, release.tag))) }));
 }

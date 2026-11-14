@@ -14,7 +14,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  *
  * Link-agnostic API: `as` accepts any component-agnostic link renderer
  * (React Router's NavLink). Links receive
- * `{ href, className: "ptp-nav__link", children }`; with plain anchors
+ * `{ href, className: "sig-nav__link", children }`; with plain anchors
  * (`as` undefined) `activeHref` sets `aria-current="page"`, while with a
  * router link the ROUTER owns aria-current — leave `activeHref` unset.
  * The drawer links go through the same renderer.
@@ -49,7 +49,7 @@ import { Icon } from "./primitives.js";
 function linkProps(item, active, plainAnchor, onClick) {
     return {
         href: item.href,
-        className: "ptp-nav__link",
+        className: "sig-nav__link",
         ...(onClick !== undefined ? { onClick } : {}),
         ...(active && plainAnchor ? { "aria-current": "page" } : {}),
     };
@@ -112,8 +112,8 @@ export function GlobalNav({ items, as, activeHref }) {
             menuBtnRef.current?.focus();
         }
     }, [menuOpen]);
-    return (_jsxs(_Fragment, { children: [_jsxs("nav", { className: "ptp-nav", children: [_jsx("ul", { className: "ptp-nav__list", children: renderItems(Link, items, activeHref, plainAnchor) }), _jsx("button", { ref: menuBtnRef, className: "ptp-nav__menu-btn", type: "button", "aria-label": "Open menu", "aria-expanded": menuOpen, "aria-controls": "ptp-nav-drawer", onClick: open, children: _jsx(Icon, { name: "Menu", "aria-hidden": true }) })] }), menuOpen &&
-                createPortal(_jsx("div", { className: "ptp-modal-backdrop", onClick: close, children: _jsxs("aside", { id: "ptp-nav-drawer", ref: drawerRef, className: "ptp-nav-drawer", "data-open": "true", role: "dialog", "aria-modal": "true", "aria-label": "Menu", tabIndex: -1, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("ul", { className: "ptp-nav-drawer__list", children: renderItems(Link, items, activeHref, plainAnchor, close) }), _jsx("button", { className: "ptp-modal-close", type: "button", "aria-label": "Close menu", onClick: close, children: _jsx(Icon, { name: "X", "aria-hidden": true }) })] }) }), document.body)] }));
+    return (_jsxs(_Fragment, { children: [_jsxs("nav", { className: "sig-nav", children: [_jsx("ul", { className: "sig-nav__list", children: renderItems(Link, items, activeHref, plainAnchor) }), _jsx("button", { ref: menuBtnRef, className: "sig-nav__menu-btn", type: "button", "aria-label": "Open menu", "aria-expanded": menuOpen, "aria-controls": "sig-nav-drawer", onClick: open, children: _jsx(Icon, { name: "Menu", "aria-hidden": true }) })] }), menuOpen &&
+                createPortal(_jsx("div", { className: "sig-modal-backdrop", onClick: close, children: _jsxs("aside", { id: "sig-nav-drawer", ref: drawerRef, className: "sig-nav-drawer", "data-open": "true", role: "dialog", "aria-modal": "true", "aria-label": "Menu", tabIndex: -1, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("ul", { className: "sig-nav-drawer__list", children: renderItems(Link, items, activeHref, plainAnchor, close) }), _jsx("button", { className: "sig-modal-close", type: "button", "aria-label": "Close menu", onClick: close, children: _jsx(Icon, { name: "X", "aria-hidden": true }) })] }) }), document.body)] }));
 }
 export default GlobalNav;
 /**
@@ -136,8 +136,8 @@ export function Breadcrumbs({ items, label, children }) {
     if (items.length === 0) {
         return _jsx(_Fragment, { children: children ?? null });
     }
-    return (_jsx("nav", { className: "ptp-breadcrumbs", "aria-label": label ?? "Breadcrumb", children: _jsx("ol", { children: items.map((item, index) => {
+    return (_jsx("nav", { className: "sig-breadcrumbs", "aria-label": label ?? "Breadcrumb", children: _jsx("ol", { children: items.map((item, index) => {
                 const isLast = index === items.length - 1;
-                return (_jsxs("li", { children: [isLast || item.href === undefined ? (_jsx("span", { "aria-current": isLast ? "page" : undefined, children: item.label })) : (_jsx("a", { href: item.href, children: item.label })), !isLast && (_jsx("span", { className: "ptp-breadcrumbs__sep", "aria-hidden": "true", children: "/" }))] }, `${item.label}-${String(index)}`));
+                return (_jsxs("li", { children: [isLast || item.href === undefined ? (_jsx("span", { "aria-current": isLast ? "page" : undefined, children: item.label })) : (_jsx("a", { href: item.href, children: item.label })), !isLast && (_jsx("span", { className: "sig-breadcrumbs__sep", "aria-hidden": "true", children: "/" }))] }, `${item.label}-${String(index)}`));
             }) }) }));
 }

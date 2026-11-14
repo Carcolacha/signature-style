@@ -110,7 +110,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     rightIcon?: IconName;
     /**
      * The busy state: the icons are REPLACED by the
-     * `.ptp-btn__spinner` (aria-hidden), the button gains
+     * `.sig-btn__spinner` (aria-hidden), the button gains
      * `aria-busy="true"` and `disabled` — a loading button cannot be
      * re-submitted.
      */
@@ -119,12 +119,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 /**
  * `<Button>` — the ONE button (2.5.0).
  *
- * Renders ONE `<button class="ptp-btn ptp-btn--{variant} [-sm/-lg]">` —
+ * Renders ONE `<button class="sig-btn sig-btn--{variant} [-sm/-lg]">` —
  * the flat, token-driven action the composition layer has been
  * hand-rolling since 1.6.0, now official. Press physics: `:active
  * scale(0.97)` (the doctrine press), focus-visible: the Flamingo ring,
  * loading: the css spinner (2px currentColor ring with a transparent
- * top arc, `ptp-spin` 0.8s linear infinite) REPLACING the icons —
+ * top arc, `sig-spin` 0.8s linear infinite) REPLACING the icons —
  * never spinning beside them. Icons are strict `IconName`s (the same
  * live-map contract as `<Icon>`), constrained to 1rem via
  * css/primitives.css so they sit inside the text line.

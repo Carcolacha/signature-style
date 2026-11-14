@@ -6,7 +6,7 @@ export function ProgressBar({ value, colorToken, label, limitText }) {
         return null;
     }
     const clamped = Math.min(100, Math.max(0, value));
-    return (_jsxs(_Fragment, { children: [_jsx("div", { className: "ptp-progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": clamped, "aria-label": label, children: _jsx("div", { className: "ptp-progress__fill", style: { width: `${clamped}%`, background: `var(${colorToken})` } }) }), limitText !== undefined && (_jsx("div", { className: "ptp-progress__caption", children: limitText }))] }));
+    return (_jsxs(_Fragment, { children: [_jsx("div", { className: "sig-progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": clamped, "aria-label": label, children: _jsx("div", { className: "sig-progress__fill", style: { width: `${clamped}%`, background: `var(${colorToken})` } }) }), limitText !== undefined && (_jsx("div", { className: "sig-progress__caption", children: limitText }))] }));
 }
 export function StatRing({ value, colorToken, size = 120, strokeWidth = 8, showValue = true, label, total, unit, }) {
     if (!colorToken.startsWith("--party-")) {
@@ -35,7 +35,7 @@ export function StatRing({ value, colorToken, size = 120, strokeWidth = 8, showV
         // The bare dial (pre-3.0.0 consumers): svg direct, nothing new.
         return ring;
     }
-    return (_jsxs("div", { className: "ptp-ring", "data-expanded": detail || undefined, children: [_jsx("div", { className: "ptp-ring__dial", style: { width: size, height: size }, onClick: () => setDetail((current) => !current), children: ring }), _jsx("div", { className: "ptp-ring__detail", "data-open": detail || undefined, children: _jsxs("div", { className: "ptp-ring__detail-inner", children: [clamped, "% \u00B7 ", numerator, " / ", total, " ", unit ?? ""] }) })] }));
+    return (_jsxs("div", { className: "sig-ring", "data-expanded": detail || undefined, children: [_jsx("div", { className: "sig-ring__dial", style: { width: size, height: size }, onClick: () => setDetail((current) => !current), children: ring }), _jsx("div", { className: "sig-ring__detail", "data-open": detail || undefined, children: _jsxs("div", { className: "sig-ring__detail-inner", children: [clamped, "% \u00B7 ", numerator, " / ", total, " ", unit ?? ""] }) })] }));
 }
 /**
  * The PURE geometry helper — data in, viewBox points out. No DOM, no
@@ -95,7 +95,7 @@ export function Sparkline({ data, colorToken = "--party-sky", width = 120, heigh
 /**
  * `<StatCard>` — the KPI card (2.4.0).
  *
- * `<div class="ptp-stat-card">` → the label span (muted, uppercase,
+ * `<div class="sig-stat-card">` → the label span (muted, uppercase,
  * 0.1em tracking) → the value span (1.5rem, weight 600, tabular-nums)
  * → optional delta span (`--up` → var(--party-green), `--down` →
  * var(--party-peach) — content outcomes, party tokens) → optional
@@ -118,9 +118,9 @@ export function Sparkline({ data, colorToken = "--party-sky", width = 120, heigh
  */
 export function StatCard({ label, value, delta, deltaDirection, sparklineData, colorToken, }) {
     const deltaClass = deltaDirection !== undefined
-        ? ` ptp-stat-card__delta--${deltaDirection}`
+        ? ` sig-stat-card__delta--${deltaDirection}`
         : "";
-    return (_jsxs("div", { className: "ptp-stat-card", children: [_jsx("span", { className: "ptp-stat-card__label", children: label }), _jsx("span", { className: "ptp-stat-card__value", children: value }), delta !== undefined && (_jsx("span", { className: `ptp-stat-card__delta${deltaClass}`, children: delta })), sparklineData !== undefined && (_jsx(Sparkline, { data: sparklineData, colorToken: colorToken, label: `${label} trend` }))] }));
+    return (_jsxs("div", { className: "sig-stat-card", children: [_jsx("span", { className: "sig-stat-card__label", children: label }), _jsx("span", { className: "sig-stat-card__value", children: value }), delta !== undefined && (_jsx("span", { className: `sig-stat-card__delta${deltaClass}`, children: delta })), sparklineData !== undefined && (_jsx(Sparkline, { data: sparklineData, colorToken: colorToken, label: `${label} trend` }))] }));
 }
 /* The shared 320×200 chart box. Top pad leaves room for hover readouts;
    the baseline strip carries the mono axis labels. */
@@ -162,7 +162,7 @@ function verticalBar(datum, index, count, scaleMax) {
     const trackMax = datum.max ?? scaleMax;
     const trackHeight = (trackMax / scaleMax) * plotHeight;
     const barHeight = (datum.value / scaleMax) * plotHeight;
-    return (_jsxs("g", { className: "ptp-bars__group", children: [_jsx("rect", { className: "ptp-bars__track", x: center - barWidth / 2, y: BAR_BASELINE - trackHeight, width: barWidth, height: trackHeight, rx: 3 }), _jsx("rect", { className: "ptp-bars__bar", x: center - barWidth / 2, y: BAR_BASELINE - barHeight, width: barWidth, height: barHeight, rx: 3, style: { fill: `var(${token})` } }), _jsx("text", { className: "ptp-bars__value", x: center, y: BAR_BASELINE - barHeight - 6, textAnchor: "middle", children: datum.value }), _jsx("text", { className: "ptp-bars__label", x: center, y: BAR_LABEL_Y, textAnchor: "middle", children: datum.label })] }, `${datum.label}-${index}`));
+    return (_jsxs("g", { className: "sig-bars__group", children: [_jsx("rect", { className: "sig-bars__track", x: center - barWidth / 2, y: BAR_BASELINE - trackHeight, width: barWidth, height: trackHeight, rx: 3 }), _jsx("rect", { className: "sig-bars__bar", x: center - barWidth / 2, y: BAR_BASELINE - barHeight, width: barWidth, height: barHeight, rx: 3, style: { fill: `var(${token})` } }), _jsx("text", { className: "sig-bars__value", x: center, y: BAR_BASELINE - barHeight - 6, textAnchor: "middle", children: datum.value }), _jsx("text", { className: "sig-bars__label", x: center, y: BAR_LABEL_Y, textAnchor: "middle", children: datum.label })] }, `${datum.label}-${index}`));
 }
 /** One horizontal bar group — labels left, capacity tracks to the right. */
 function horizontalBar(datum, index, count, scaleMax) {
@@ -176,7 +176,7 @@ function horizontalBar(datum, index, count, scaleMax) {
     const trackMax = datum.max ?? scaleMax;
     const trackWidth = (trackMax / scaleMax) * plotWidth;
     const barWidth = (datum.value / scaleMax) * plotWidth;
-    return (_jsxs("g", { className: "ptp-bars__group", children: [_jsx("rect", { className: "ptp-bars__track", x: HORIZONTAL_PLOT_X, y: center - barHeight / 2, width: trackWidth, height: barHeight, rx: 3 }), _jsx("rect", { className: "ptp-bars__bar", x: HORIZONTAL_PLOT_X, y: center - barHeight / 2, width: barWidth, height: barHeight, rx: 3, style: { fill: `var(${token})` } }), _jsx("text", { className: "ptp-bars__value", x: HORIZONTAL_PLOT_X + barWidth + 6, y: center + 4, children: datum.value }), _jsx("text", { className: "ptp-bars__label", x: HORIZONTAL_LABEL_X, y: center + 4, textAnchor: "end", children: datum.label })] }, `${datum.label}-${index}`));
+    return (_jsxs("g", { className: "sig-bars__group", children: [_jsx("rect", { className: "sig-bars__track", x: HORIZONTAL_PLOT_X, y: center - barHeight / 2, width: trackWidth, height: barHeight, rx: 3 }), _jsx("rect", { className: "sig-bars__bar", x: HORIZONTAL_PLOT_X, y: center - barHeight / 2, width: barWidth, height: barHeight, rx: 3, style: { fill: `var(${token})` } }), _jsx("text", { className: "sig-bars__value", x: HORIZONTAL_PLOT_X + barWidth + 6, y: center + 4, children: datum.value }), _jsx("text", { className: "sig-bars__label", x: HORIZONTAL_LABEL_X, y: center + 4, textAnchor: "end", children: datum.label })] }, `${datum.label}-${index}`));
 }
 /**
  * `<BarChart>` — capacity tracks + party value bars + dashed reference
@@ -221,9 +221,9 @@ export const BarChart = memo(function BarChart({ data, orientation = "vertical",
                 y1: HORIZONTAL_TOP,
                 y2: HORIZONTAL_BOTTOM,
             };
-        return (_jsx("line", { className: "ptp-bars__refline", strokeDasharray: "4 4", strokeWidth: 1, ...geometry }, quota));
+        return (_jsx("line", { className: "sig-bars__refline", strokeDasharray: "4 4", strokeWidth: 1, ...geometry }, quota));
     });
-    return (_jsxs("svg", { role: "img", "aria-label": label ?? `Bar chart of ${data.length} categories`, className: "ptp-bars", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, children: [refLines, data.map((datum, index) => isVertical
+    return (_jsxs("svg", { role: "img", "aria-label": label ?? `Bar chart of ${data.length} categories`, className: "sig-bars", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, children: [refLines, data.map((datum, index) => isVertical
                 ? verticalBar(datum, index, data.length, scaleMax)
                 : horizontalBar(datum, index, data.length, scaleMax))] }));
 });
@@ -301,16 +301,16 @@ export const AreaChart = memo(function AreaChart({ points, colorToken = "--party
         return null;
     }
     // React ids carry colons — strip them so url(#id) parses everywhere.
-    const gradientId = `ptp-area${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    const gradientId = `sig-area${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
     const coords = areaCoords(points);
     const line = smoothPath(coords);
     const first = coords[0];
     const last = coords[coords.length - 1];
     const area = `${line} L ${last.x} ${AREA_PLOT_BOTTOM} L ${first.x} ${AREA_PLOT_BOTTOM} Z`;
-    return (_jsxs("svg", { role: "img", "aria-label": label ?? `Area chart of ${points.length} points`, className: "ptp-area", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, style: { height }, children: [_jsx("defs", { children: _jsxs("linearGradient", { id: gradientId, x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: `color-mix(in srgb, var(${colorToken}) 30%, transparent)` }), _jsx("stop", { offset: "100%", stopColor: "transparent" })] }) }), _jsx("path", { className: "ptp-area__fill", d: area, fill: `url(#${gradientId})` }), _jsx("path", { className: "ptp-area__line", d: line, style: { stroke: `var(${colorToken})` }, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }), points.map((point, index) => {
+    return (_jsxs("svg", { role: "img", "aria-label": label ?? `Area chart of ${points.length} points`, className: "sig-area", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, style: { height }, children: [_jsx("defs", { children: _jsxs("linearGradient", { id: gradientId, x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: `color-mix(in srgb, var(${colorToken}) 30%, transparent)` }), _jsx("stop", { offset: "100%", stopColor: "transparent" })] }) }), _jsx("path", { className: "sig-area__fill", d: area, fill: `url(#${gradientId})` }), _jsx("path", { className: "sig-area__line", d: line, style: { stroke: `var(${colorToken})` }, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }), points.map((point, index) => {
                 const coord = coords[index];
                 if (coord === undefined)
                     return null;
-                return (_jsxs("g", { className: "ptp-area__spot", children: [_jsx("circle", { className: "ptp-area__point", cx: coord.x, cy: coord.y, r: 4, strokeWidth: 2, style: { stroke: `var(${colorToken})` } }), _jsx("text", { className: "ptp-area__readout", x: coord.x, y: coord.y - 10, textAnchor: "middle", children: point.value }), _jsx("text", { className: "ptp-area__xlabel", x: coord.x, y: AREA_LABEL_Y, textAnchor: "middle", children: point.label })] }, `${point.label}-${index}`));
+                return (_jsxs("g", { className: "sig-area__spot", children: [_jsx("circle", { className: "sig-area__point", cx: coord.x, cy: coord.y, r: 4, strokeWidth: 2, style: { stroke: `var(${colorToken})` } }), _jsx("text", { className: "sig-area__readout", x: coord.x, y: coord.y - 10, textAnchor: "middle", children: point.value }), _jsx("text", { className: "sig-area__xlabel", x: coord.x, y: AREA_LABEL_Y, textAnchor: "middle", children: point.label })] }, `${point.label}-${index}`));
             })] }));
 });

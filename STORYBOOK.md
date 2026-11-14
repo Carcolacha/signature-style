@@ -155,7 +155,7 @@ Two bigger pieces build on the primitives — they are components, not primitive
 
 #### `<EventTimeline>` — the chronological party timeline
 
-A flat CSS Grid: one container (`.ptp-timeline`) whose **direct children** are date headers (`h2`), node circles, and event content blocks — no row wrappers, and the vertical line is the container's `::before` pseudo-element, never a div. Desktop events alternate left/right around a center line; at **max-width 768px** the line moves to the far left and everything stacks right (pure CSS, no JS breakpoint). Sticky date headers pin at `z-index: var(--z-sticky)` (10) with opaque backgrounds, and content scrolls beneath them. An empty `events` array renders `<EmptyState icon="CalendarX">` immediately — no line, no chrome.
+A flat CSS Grid: one container (`.sig-timeline`) whose **direct children** are date headers (`h2`), node circles, and event content blocks — no row wrappers, and the vertical line is the container's `::before` pseudo-element, never a div. Desktop events alternate left/right around a center line; at **max-width 768px** the line moves to the far left and everything stacks right (pure CSS, no JS breakpoint). Sticky date headers pin at `z-index: var(--z-sticky)` (10) with opaque backgrounds, and content scrolls beneath them. An empty `events` array renders `<EmptyState icon="CalendarX">` immediately — no line, no chrome.
 
 ```ts
 interface PtpEvent {

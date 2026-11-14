@@ -8,14 +8,14 @@
  * (`TimelineItem extends PtpEvent`) and adds the working half: a
  * composer, filter pills, settle toggles, deletes and an inspect
  * callback. The styles APPEND to css/timeline.css under the
- * .ptp-tmanager namespace — zero rules above were edited.
+ * .sig-tmanager namespace — zero rules above were edited.
  *
  * CONTROLLED, like the package's switches: the component owns NO
  * items — `items` renders, and every mutation rides the callbacks
  * (onAdd / onToggleSettled / onDelete). The only internal state is
  * UI-local: the composer fields and the active filter pill.
  *
- * DOM (Pruning Protocol): ONE `<section class="ptp-tmanager">` → the
+ * DOM (Pruning Protocol): ONE `<section class="sig-tmanager">` → the
  * composer row (package Input + two package Selects + the package
  * Button) → the filter strip (attribute-driven pills — aria-pressed IS
  * the state, the Flamingo underline answers it — plus the tabular
@@ -157,8 +157,8 @@ export function TimelineManager({
   };
 
   return (
-    <section className="ptp-tmanager" aria-label={label ?? "Milestone manager"}>
-      <div className="ptp-tmanager__composer">
+    <section className="sig-tmanager" aria-label={label ?? "Milestone manager"}>
+      <div className="sig-tmanager__composer">
         <Input
           placeholder="Milestone title"
           aria-label="Milestone title"
@@ -187,19 +187,19 @@ export function TimelineManager({
           Settle Item
         </Button>
       </div>
-      <div className="ptp-tmanager__filters">
+      <div className="sig-tmanager__filters">
         {FILTERS.map((entry) => (
           <button
             key={entry.id}
             type="button"
-            className="ptp-tmanager__pill"
+            className="sig-tmanager__pill"
             aria-pressed={filter === entry.id}
             onClick={() => setFilter(entry.id)}
           >
             {entry.label}
           </button>
         ))}
-        <span className="ptp-tmanager__count">
+        <span className="sig-tmanager__count">
           {settledCount} / {items.length} Settled
         </span>
       </div>
@@ -210,15 +210,15 @@ export function TimelineManager({
           message="No milestones match this filter."
         />
       ) : (
-        <ul className="ptp-tmanager__list">
+        <ul className="sig-tmanager__list">
           {visible.map((item) => (
             <li
               key={item.id}
-              className={`ptp-tmanager__row${item.settled === true ? " ptp-tmanager__row--settled" : ""}`}
+              className={`sig-tmanager__row${item.settled === true ? " sig-tmanager__row--settled" : ""}`}
             >
               <button
                 type="button"
-                className="ptp-tmanager__settle"
+                className="sig-tmanager__settle"
                 aria-pressed={item.settled === true}
                 aria-label="Toggle settled"
                 onClick={() => onToggleSettled(item.id)}
@@ -227,19 +227,19 @@ export function TimelineManager({
               </button>
               <button
                 type="button"
-                className="ptp-tmanager__body"
+                className="sig-tmanager__body"
                 onClick={() => onInspect?.(item)}
               >
-                <span className="ptp-tmanager__meta">{item.date}</span>
-                <span className="ptp-tmanager__title">{item.title}</span>
+                <span className="sig-tmanager__meta">{item.date}</span>
+                <span className="sig-tmanager__title">{item.title}</span>
                 <PartyBadge colorToken={item.category} label={item.categoryLabel} />
                 {item.settled === true && (
-                  <span className="ptp-tmanager__done">Settled</span>
+                  <span className="sig-tmanager__done">Settled</span>
                 )}
               </button>
               <button
                 type="button"
-                className="ptp-tmanager__delete"
+                className="sig-tmanager__delete"
                 aria-label={`Delete ${item.title}`}
                 onClick={() => onDelete(item.id)}
               >

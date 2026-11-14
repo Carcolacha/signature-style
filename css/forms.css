@@ -3,36 +3,36 @@
    Layered into `cascade` by signature-style.css (imported after viz.css).
 
    SIX CONTROLS (1.4.0 three, 2.3.0 adds three):
-   - .ptp-input / .ptp-textarea — inset wells: the field interior is
+   - .sig-input / .sig-textarea — inset wells: the field interior is
      --bg-inset (the keeper's semantic job since 0.2.0), separated from
      the page by the border doctrine hairline, NOT a shadow.
-   - .ptp-switch (→ __pill / __text, 2.4.1) — THE toggle. Peak pruning
-     at the pill: ONE <button role="switch" class="ptp-switch__pill">
+   - .sig-switch (→ __pill / __text, 2.4.1) — THE toggle. Peak pruning
+     at the pill: ONE <button role="switch" class="sig-switch__pill">
      carries the whole control; the knob is the ::before pseudo-element.
-     A present label composes the pill with a visible .ptp-switch__text
-     span inside the justified .ptp-switch wrapper (see 2.4.1 below).
+     A present label composes the pill with a visible .sig-switch__text
+     span inside the justified .sig-switch wrapper (see 2.4.1 below).
      No input/label pair — the state is the attribute ([aria-checked]),
      exactly like the nav's [aria-current="page"]: the attribute IS the
      state machine.
-   - .ptp-select (+ .ptp-select__native / __chevron) — the native
+   - .sig-select (+ .sig-select__native / __chevron) — the native
      dropdown with the token chevron; the <span> wrapper is STRUCTURAL
      (the absolute-positioned chevron needs its positioned anchor).
-   - .ptp-checkbox (+ __input / __text) — the native check; the <label>
+   - .sig-checkbox (+ __input / __text) — the native check; the <label>
      wrapper is a SEMANTIC necessity (native label association).
 
    2.4.0 ADDITIONS:
-    - .ptp-form-field (+ __label / __hint / __error) — the accessible
+    - .sig-form-field (+ __label / __hint / __error) — the accessible
       around-the-control scaffold. The __field slot contract (flex
       column + tight gap) lives ON the root — one class fewer; the
       label keeps its display:block + margin-bottom so the wrapper
       still reads correctly if a consumer strips the flex. Error
       replaces hint in the ONE message slot (react side renders either
       or, never both).
-    - .ptp-radio-cards / .ptp-radio-card (+ __input / __body / __label /
+    - .sig-radio-cards / .sig-radio-card (+ __input / __body / __label /
       __desc) — card-metaphor radios. The LABEL is the card; the input
       is visually hidden (position absolute + opacity 0). THE :HAS()
       DOCTRINE + FALLBACK NOTE: the keyboard focus ring is painted on
-      the CARD via .ptp-radio-card:has(input:focus-visible) — :has()
+      the CARD via .sig-radio-card:has(input:focus-visible) — :has()
       needs Chrome 105+ / Safari 15.4+ / Firefox 121+. On browsers
       without :has() the card loses ONLY the visible focus ring; the
       selected card still reads via the Flamingo border (:checked is
@@ -40,34 +40,34 @@
       arrow-key radios). Accepted, documented degrade. Selected state:
       border goes 2px Flamingo with padding compensated by -1px so the
       card never shifts (border-box keeps the outer box fixed).
-   - .ptp-avatar — the initials disc; the party ring arrives INLINE as
+   - .sig-avatar — the initials disc; the party ring arrives INLINE as
      border (never box-shadow).
 
    2.4.1 ADDITIONS (Intuitive Form Anatomy & Alignment Fix):
-    - .ptp-form-field__required — the peach required asterisk (visual
+    - .sig-form-field__required — the peach required asterisk (visual
       only, aria-hidden) after the label text.
-    - the switch grows a visible label: .ptp-switch becomes the wrapper
-      (flex, align-center, tight gap) around .ptp-switch__pill (the
-      SAME pill geometry, every selector migrated) + .ptp-switch__text
+    - the switch grows a visible label: .sig-switch becomes the wrapper
+      (flex, align-center, tight gap) around .sig-switch__pill (the
+      SAME pill geometry, every selector migrated) + .sig-switch__text
       (0.875rem, weight 500, text-main). The pill stays the ONLY
       interactive element.
     - the selected radio card lifts to var(--bg-surface) over its inset
       siblings (owner override of the 2.4.0 10% cake tint).
 
    2.5.0 ADDITIONS (Ergonomic Form Rules — the top-down field anatomy):
-    - .ptp-form-field__label PROMOTED to the primary text voice
+    - .sig-form-field__label PROMOTED to the primary text voice
       (text-main, 0.875rem, weight 500 — was muted 0.75rem): the title
       is the field's headline, not a caption.
-    - .ptp-form-field__desc — the FORMAT line ABOVE the control
+    - .sig-form-field__desc — the FORMAT line ABOVE the control
       ("5 numbers only · e.g., 79901"). Format rules live with the
       title; the below-input hint keeps its helper-text job.
-    - .ptp-form-field__well + __chip — the adornment zone replacing the
+    - .sig-form-field__well + __chip — the adornment zone replacing the
       2.4.1 __row/__prefix: when prefix/suffix are present the bare
       control rides inside the well (the well OWNS background, border,
       focus ring and the error state), flanked by mono transparent
       chips separated from the cursor by a hairline. THE CONTRACT:
       prefix/suffix children must be BARE inputs — the scoped kill
-      `.ptp-form-field__well > .ptp-input, .ptp-form-field__well >
+      `.sig-form-field__well > .sig-input, .sig-form-field__well >
       input` strips the field chrome inside the well.
     - THE WELL FOCUS HALO — a DECISION, documented: the owner spec'd a
       0 0 0 3px box-shadow halo, but the FROZEN scripts/verify.mjs (f1)
@@ -75,13 +75,13 @@
       in css/. The halo renders as a 3px translucent Flamingo OUTLINE
       hugging the border (outline is not a shadow — the same halo read,
       zero shadow declarations).
-    - .ptp-form-field__valid — the live-validation success line in
+    - .sig-form-field__valid — the live-validation success line in
       var(--party-green); the validation zone priority is error →
       validMessage → hint (react renders exactly one).
-    - @keyframes ptp-shake + the [data-invalid] well — the error state
+    - @keyframes sig-shake + the [data-invalid] well — the error state
       physically shakes the well (0.3s, translateX ±4px); killed under
       prefers-reduced-motion.
-    - .ptp-password (+ __toggle / __meter / __stage / __pill) — the
+    - .sig-password (+ __toggle / __meter / __stage / __pill) — the
       PasswordInput: bare input + eye toggle in a well, the 4-segment
       strength meter (data-score paints the filled prefix peach →
       yellow → sky → green), and the condition pills (data-satisfied →
@@ -127,15 +127,15 @@
 
    3.0.0 SYMMETRICAL FORMS — THE OWNER'S REVERSAL OF THE 2.5.0 ORDER,
    documented here because the comment IS the contract:
-     - THE LABEL ROW — .ptp-form-field__label-row carries a fixed
+     - THE LABEL ROW — .sig-form-field__label-row carries a fixed
        1.25rem (20px, grid multiple) min-height, so every side-by-side
        field's label sits on the same baseline; the infoTooltip button
        rides beside the label (never inside it).
-     - THE INFO TOOLTIP — .ptp-form-field__info is a pure-CSS tooltip:
+     - THE INFO TOOLTIP — .sig-form-field__info is a pure-CSS tooltip:
        a ::after bubble reading data-tooltip, parked above the button,
        revealed on :hover AND :focus-visible (keyboard parity by
        construction). Zero deps, zero JS state, zero shadow (e1).
-     - THE HELPERS SLOT MOVES BELOW THE WELL — .ptp-form-field__helpers
+     - THE HELPERS SLOT MOVES BELOW THE WELL — .sig-form-field__helpers
        (min-height 20px, flex wrap, tight gap) carries description +
        hint UNDERNEATH the control. THE A11Y PRESERVATION: the
        description renders with a generated id wired onto the control
@@ -151,7 +151,7 @@
 @layer cascade {
 
   /* -- text input: an inset well --------------------------------------------- */
-  .ptp-input {
+  .sig-input {
     background: var(--bg-inset);
     color: var(--text-main);
     border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
@@ -163,19 +163,19 @@
     width: 100%;
     transition: var(--transition-standard);
   }
-  .ptp-input:focus {
+  .sig-input:focus {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-input::placeholder {
+  .sig-input::placeholder {
     color: var(--text-muted);
   }
-  .ptp-input[aria-invalid="true"] {
+  .sig-input[aria-invalid="true"] {
     border-color: var(--party-peach);
   }
 
   /* -- textarea: the same well, multi-line ------------------------------------ */
-  .ptp-textarea {
+  .sig-textarea {
     background: var(--bg-inset);
     color: var(--text-main);
     border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
@@ -190,33 +190,33 @@
     resize: vertical;
     transition: var(--transition-standard);
   }
-  .ptp-textarea:focus {
+  .sig-textarea:focus {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-textarea::placeholder {
+  .sig-textarea::placeholder {
     color: var(--text-muted);
   }
-  .ptp-textarea[aria-invalid="true"] {
+  .sig-textarea[aria-invalid="true"] {
     border-color: var(--party-peach);
   }
 
   /* -- the switch: the pill + the visible label (2.4.1) ------------------------
      999px = the pill SHAPE of the widget (see header note), not a
      radius-token bypass. Travel math: 44 − 16 − 8 = 20px = 1.25rem.
-     SELECTOR MIGRATION (2.4.1): every pill rule moved .ptp-switch →
-     .ptp-switch__pill; .ptp-switch is now the JUSTIFIED WRAPPER around
+     SELECTOR MIGRATION (2.4.1): every pill rule moved .sig-switch →
+     .sig-switch__pill; .sig-switch is now the JUSTIFIED WRAPPER around
      pill + visible text (the pill + visible-text composition — the
-     .ptp-select sanction: a flex pairing of control and caption is
+     .sig-select sanction: a flex pairing of control and caption is
      impossible without it). ONLY the pill is interactive; the text is
      visual (the button keeps aria-label, so the accessible name never
      depends on the text span). */
-  .ptp-switch {
+  .sig-switch {
     display: inline-flex;
     align-items: center;
     gap: var(--space-tight);
   }
-  .ptp-switch__pill {
+  .sig-switch__pill {
     width: 2.75rem;  /* 44px */
     height: 1.5rem;  /* 24px */
     border-radius: 999px;
@@ -228,7 +228,7 @@
     padding: 0;
     flex: none;
   }
-  .ptp-switch__pill::before {
+  .sig-switch__pill::before {
     content: "";
     position: absolute;
     width: 1rem;     /* 16px knob */
@@ -240,22 +240,22 @@
     transition: transform var(--transition-standard),
       background var(--transition-standard);
   }
-  .ptp-switch__pill[aria-checked="true"] {
+  .sig-switch__pill[aria-checked="true"] {
     background: var(--color-cake-secondary); /* Teal — the owner-spec'd on state */
   }
-  .ptp-switch__pill[aria-checked="true"]::before {
+  .sig-switch__pill[aria-checked="true"]::before {
     transform: translateX(1.25rem); /* 20px travel: lands 4px from the right */
     background: var(--bg-base);     /* dark knob on Teal — on-cake echo (see header) */
   }
   /* The visible label (2.4.1) — text-main, 0.875rem, weight 500. */
-  .ptp-switch__text {
+  .sig-switch__text {
     color: var(--text-main);
     font-size: 0.875rem;
     font-weight: 500;
   }
 
   /* -- the doctrine ring, keyboard only ---------------------------------------- */
-  .ptp-switch__pill:focus-visible {
+  .sig-switch__pill:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
@@ -263,14 +263,14 @@
   /* -- the select: native dropdown, token chevron (2.3.0) ----------------------
      THE WRAPPER IS STRUCTURAL: appearance: none strips the UA arrow and
      the custom chevron needs a positioned ancestor to hang off — without
-     the .ptp-select span the absolutely-positioned icon would anchor to
+     the .sig-select span the absolutely-positioned icon would anchor to
      the nearest positioned ancestor (a card), landing anywhere but the
      field's right edge. The native <select> keeps every native behavior. */
-  .ptp-select {
+  .sig-select {
     position: relative;
     width: 100%;
   }
-  .ptp-select__native {
+  .sig-select__native {
     appearance: none;
     -webkit-appearance: none; /* older Safari still honors only the prefix */
     background: var(--bg-inset);
@@ -287,14 +287,14 @@
     cursor: pointer;
     transition: var(--transition-standard);
   }
-  .ptp-select__native:focus-visible {
+  .sig-select__native:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-select__native[aria-invalid="true"] {
+  .sig-select__native[aria-invalid="true"] {
     border-color: var(--party-peach); /* the v1.4.0 error doctrine */
   }
-  .ptp-select__chevron {
+  .sig-select__chevron {
     position: absolute;
     right: var(--space-standard);
     top: 50%;
@@ -311,7 +311,7 @@
      box is ours). The <label> wrapper is the COMPONENT's semantic
      necessity: label association wires pointer + screen-reader clicks to
      the input with zero JS. */
-  .ptp-checkbox {
+  .sig-checkbox {
     display: inline-flex;
     align-items: center;
     gap: var(--space-tight);
@@ -319,7 +319,7 @@
     font-size: 0.875rem;
     cursor: pointer;
   }
-  .ptp-checkbox__input {
+  .sig-checkbox__input {
     appearance: none;
     -webkit-appearance: none;
     width: 1rem;  /* 16px box */
@@ -333,7 +333,7 @@
     transition: var(--transition-standard);
   }
   /* :checked = the Teal fill (the switch's aria-checked answer, echoed) */
-  .ptp-checkbox__input:checked {
+  .sig-checkbox__input:checked {
     background: var(--color-cake-secondary);
     border-color: var(--color-cake-secondary);
   }
@@ -342,7 +342,7 @@
      Geometry: box 16px (border-box, the base layer's universal rule);
      mark 0.375rem × 0.625rem → left = (16 − 6) / 2 = 5px,
      top = (16 − 10) / 2 = 3px; opacity swaps on :checked. */
-  .ptp-checkbox__input::after {
+  .sig-checkbox__input::after {
     content: "";
     position: absolute;
     width: 0.375rem;
@@ -355,10 +355,10 @@
     opacity: 0;
     transition: opacity var(--transition-standard);
   }
-  .ptp-checkbox__input:checked::after {
+  .sig-checkbox__input:checked::after {
     opacity: 1;
   }
-  .ptp-checkbox__input:focus-visible {
+  .sig-checkbox__input:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
@@ -368,7 +368,7 @@
      var(--party-token) — border, NEVER box-shadow (the e1 doctrine:
      separation is drawn with borders; this file stays shadow-free and
      the scan below would fail it otherwise). */
-  .ptp-avatar {
+  .sig-avatar {
     border-radius: 50%;
     background: var(--bg-inset);
     color: var(--text-main);
@@ -396,7 +396,7 @@
       consumer values preserved) — screen readers STILL announce the
       format rule when the input takes focus, no matter where the pixels
       sit. The reversal is visual; the contract is programmatic. */
-  .ptp-form-field {
+  .sig-form-field {
     display: flex;
     flex-direction: column;
     gap: var(--space-tight);
@@ -404,13 +404,13 @@
   /* 3.0.0 — THE LABEL ROW: fixed 1.25rem (20px, a grid multiple)
      min-height so side-by-side fields' labels align on the same
      baseline, with or without the ⓘ button. Flex centers the row. */
-  .ptp-form-field__label-row {
+  .sig-form-field__label-row {
     min-height: 1.25rem; /* 20px — the alignment rail */
     display: flex;
     align-items: center;
     gap: 0.25rem; /* glyph geometry (the __required lead precedent) */
   }
-  .ptp-form-field__label {
+  .sig-form-field__label {
     color: var(--text-main);
     font-size: 0.875rem;
     font-weight: 500;
@@ -422,7 +422,7 @@
      ABOVE the button; :hover AND :focus-visible reveal it (keyboard
      parity by construction). title + aria-label carry the text for
      native/AT fallbacks. Flat: hairline border only, zero shadow (e1). */
-  .ptp-form-field__info {
+  .sig-form-field__info {
     position: relative;
     appearance: none;
     background: transparent;
@@ -438,15 +438,15 @@
     flex: none;
     transition: var(--transition-standard);
   }
-  .ptp-form-field__info:hover {
+  .sig-form-field__info:hover {
     color: var(--text-main);
   }
-  .ptp-form-field__info:focus-visible {
+  .sig-form-field__info:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
     color: var(--text-main);
   }
-  .ptp-form-field__info::after {
+  .sig-form-field__info::after {
     content: attr(data-tooltip);
     position: absolute;
     bottom: calc(100% + 4px);
@@ -467,14 +467,14 @@
     pointer-events: none;
     transition: var(--transition-standard);
   }
-  .ptp-form-field__info:hover::after,
-  .ptp-form-field__info:focus-visible::after {
+  .sig-form-field__info:hover::after,
+  .sig-form-field__info:focus-visible::after {
     opacity: 1;
   }
   /* 3.0.0 — THE HELPERS SLOT (below the well): description + hint, flex
      wrap with the tight gap, the 20px bottom rail mirroring the label
      rail so every field keeps its rhythm. Muted 0.75rem slots. */
-  .ptp-form-field__helpers {
+  .sig-form-field__helpers {
     min-height: 1.25rem; /* 20px — the bottom rail (mirror of the label rail) */
     display: flex;
     flex-wrap: wrap;
@@ -482,24 +482,24 @@
     gap: var(--space-tight);
   }
   /* 2.5.0 — the format line; 3.0.0: it lives in the HELPERS SLOT below
-     the control (the reversal — see the .ptp-form-field header). 12px
+     the control (the reversal — see the .sig-form-field header). 12px
      muted: the spec speaks softly, but it is still announced (the
      aria-describedby wiring lives in react/forms.tsx). */
-  .ptp-form-field__desc {
+  .sig-form-field__desc {
     color: var(--text-muted);
     font-size: 0.75rem;
   }
-  .ptp-form-field__hint {
+  .sig-form-field__hint {
     color: var(--text-muted);
     font-size: 0.75rem;
   }
-  .ptp-form-field__error {
+  .sig-form-field__error {
     color: var(--party-peach); /* the v1.4.0 error doctrine, message slot */
     font-size: 0.75rem;
   }
   /* 2.5.0 — the live-validation success line. Third in the validation
      zone priority (error → validMessage → hint; react renders ONE). */
-  .ptp-form-field__valid {
+  .sig-form-field__valid {
     color: var(--party-green);
     font-size: 0.75rem;
   }
@@ -508,7 +508,7 @@
      the consumer's wiring, never the wrapper's assumption. The 0.25rem
      lead is glyph geometry (the checkbox-mark precedent), not layout
      spacing — the 8px-grid tokens stay reserved for layout. */
-  .ptp-form-field__required {
+  .sig-form-field__required {
     color: var(--party-peach);
     margin-left: 0.25rem;
   }
@@ -520,7 +520,7 @@
      halo is a 3px translucent Flamingo OUTLINE (see header decision:
      the box-shadow spelling is banned by the frozen (f1) gate; an
      outline is not a shadow — same halo read). */
-  .ptp-form-field__well {
+  .sig-form-field__well {
     display: flex;
     align-items: center;
     background: var(--bg-inset);
@@ -528,24 +528,24 @@
     border-radius: var(--radius-ui);
     transition: var(--transition-standard);
   }
-  .ptp-form-field__well:focus-within {
+  .sig-form-field__well:focus-within {
     border-color: var(--color-cake-primary);
     outline: 3px solid color-mix(in srgb, var(--color-cake-primary) 25%, transparent);
     outline-offset: 0;
   }
-  .ptp-form-field__well[data-invalid] {
+  .sig-form-field__well[data-invalid] {
     border-color: var(--party-peach);
-    animation: ptp-shake 0.3s ease-out;
+    animation: sig-shake 0.3s ease-out;
   }
   /* The scoped kill — the contract made css: bare inputs only. */
-  .ptp-form-field__well > .ptp-input,
-  .ptp-form-field__well > input {
+  .sig-form-field__well > .sig-input,
+  .sig-form-field__well > input {
     background: transparent;
     border: none;
     outline: none;
   }
-  .ptp-form-field__well > .ptp-input::placeholder,
-  .ptp-form-field__well > input::placeholder {
+  .sig-form-field__well > .sig-input::placeholder,
+  .sig-form-field__well > input::placeholder {
     color: var(--text-muted);
   }
   /* The chips: mono adornments flanking the cursor, separated by a
@@ -553,7 +553,7 @@
      Transparent background, muted 600 voice. The LEFT chip (first
      child) draws its hairline on the cursor side (border-right); the
      RIGHT chip mirrors it (border-left). */
-  .ptp-form-field__chip {
+  .sig-form-field__chip {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     background: transparent;
     color: var(--text-muted);
@@ -561,15 +561,15 @@
     padding-inline: var(--space-tight);
     flex: none;
   }
-  .ptp-form-field__well > .ptp-form-field__chip:first-child {
+  .sig-form-field__well > .sig-form-field__chip:first-child {
     border-right: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
   }
-  .ptp-form-field__well > .ptp-form-field__chip:last-child {
+  .sig-form-field__well > .sig-form-field__chip:last-child {
     border-left: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
   }
   /* The error shake — fires the moment data-invalid appears (the
      attribute is the trigger, so a submit-driven flip animates once). */
-  @keyframes ptp-shake {
+  @keyframes sig-shake {
     0%,
     100% {
       transform: translateX(0);
@@ -596,7 +596,7 @@
      attribute is the state; the class is a consumer convenience mirror).
      The 2px selected border is compensated by -1px padding so the card
      never shifts (border-box keeps the outer box fixed). */
-  .ptp-radio-cards {
+  .sig-radio-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: var(--space-tight);
@@ -605,11 +605,11 @@
      row to a single column. No container ancestor → the query never
      matches → auto-fit packing keeps rendering (zero regression). */
   @container (max-width: 480px) {
-    .ptp-radio-cards {
+    .sig-radio-cards {
       grid-template-columns: 1fr;
     }
   }
-  .ptp-radio-card {
+  .sig-radio-card {
     position: relative;
     display: flex;
     align-items: flex-start;
@@ -621,11 +621,11 @@
     cursor: pointer;
     transition: var(--transition-standard);
   }
-  .ptp-radio-card:hover {
+  .sig-radio-card:hover {
     border-color: var(--color-cake-secondary); /* teal hover — structural */
   }
-  .ptp-radio-card.ptp-radio-card--selected,
-  .ptp-radio-card:has(input:checked) {
+  .sig-radio-card.sig-radio-card--selected,
+  .sig-radio-card:has(input:checked) {
     border-color: var(--color-cake-primary);
     border-width: 2px;
     padding: calc(var(--space-standard) - 1px);
@@ -638,25 +638,25 @@
   /* The keyboard focus ring lands on the hidden INPUT — :has() lifts it
      onto the card (flamingo ring doctrine). Fallback: no :has(), no ring
      — the group stays operable (see the header note). */
-  .ptp-radio-card:has(input:focus-visible) {
+  .sig-radio-card:has(input:focus-visible) {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-radio-card__input {
+  .sig-radio-card__input {
     position: absolute;
     opacity: 0;
     margin: 0;
   }
-  .ptp-radio-card__body {
+  .sig-radio-card__body {
     display: flex;
     flex-direction: column;
   }
-  .ptp-radio-card__label {
+  .sig-radio-card__label {
     color: var(--text-main);
     font-size: 0.875rem;
     font-weight: 600;
   }
-  .ptp-radio-card__desc {
+  .sig-radio-card__desc {
     color: var(--text-muted);
     font-size: 0.75rem;
   }
@@ -668,7 +668,7 @@
      meter paints its filled PREFIX with the stage color — 1 peach,
      2 yellow (--party-yellow, this release's token), 3 sky, 4 green —
      and the stage label follows. Score = satisfied-rules count. */
-  .ptp-password__native {
+  .sig-password__native {
     flex: 1;
     min-width: 0;
     padding: var(--space-tight) var(--space-standard);
@@ -676,10 +676,10 @@
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .ptp-password__native::placeholder {
+  .sig-password__native::placeholder {
     color: var(--text-muted);
   }
-  .ptp-password__toggle {
+  .sig-password__toggle {
     background: transparent;
     border: none;
     color: var(--text-muted);
@@ -690,66 +690,66 @@
     flex: none;
     transition: var(--transition-standard);
   }
-  .ptp-password__toggle:hover {
+  .sig-password__toggle:hover {
     color: var(--text-main);
   }
-  .ptp-password__toggle:focus-visible {
+  .sig-password__toggle:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-password__meter-row {
+  .sig-password__meter-row {
     display: flex;
     align-items: center;
     gap: var(--space-tight);
   }
-  .ptp-password__meter {
+  .sig-password__meter {
     display: flex;
     flex: 1;
     gap: var(--space-tight);
     height: 0.375rem; /* 6px segments — half of the 8px tight step */
   }
-  .ptp-password__meter span {
+  .sig-password__meter span {
     flex: 1;
     background: var(--bg-surface); /* the empty segment */
     border-radius: 999px; /* segment = a pill sliver, the switch-shape echo */
     transition: background var(--transition-standard);
   }
-  .ptp-password__meter[data-score="1"] span:nth-child(1) {
+  .sig-password__meter[data-score="1"] span:nth-child(1) {
     background: var(--party-peach);
   }
-  .ptp-password__meter[data-score="2"] span:nth-child(-n + 2) {
+  .sig-password__meter[data-score="2"] span:nth-child(-n + 2) {
     background: var(--party-yellow);
   }
-  .ptp-password__meter[data-score="3"] span:nth-child(-n + 3) {
+  .sig-password__meter[data-score="3"] span:nth-child(-n + 3) {
     background: var(--party-sky);
   }
-  .ptp-password__meter[data-score="4"] span:nth-child(-n + 4) {
+  .sig-password__meter[data-score="4"] span:nth-child(-n + 4) {
     background: var(--party-green);
   }
-  .ptp-password__stage {
+  .sig-password__stage {
     font-size: 0.75rem;
     color: var(--text-muted);
     flex: none;
     min-width: 3.5rem; /* the row never reflows when the word changes */
   }
-  .ptp-password__stage[data-score="1"] {
+  .sig-password__stage[data-score="1"] {
     color: var(--party-peach);
   }
-  .ptp-password__stage[data-score="2"] {
+  .sig-password__stage[data-score="2"] {
     color: var(--party-yellow);
   }
-  .ptp-password__stage[data-score="3"] {
+  .sig-password__stage[data-score="3"] {
     color: var(--party-sky);
   }
-  .ptp-password__stage[data-score="4"] {
+  .sig-password__stage[data-score="4"] {
     color: var(--party-green);
   }
-  .ptp-password__pills {
+  .sig-password__pills {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-tight);
   }
-  .ptp-password__pill {
+  .sig-password__pill {
     font-size: 0.75rem;
     color: var(--text-muted);
     border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
@@ -757,7 +757,7 @@
     padding: 0.125rem var(--space-tight);
     transition: var(--transition-standard);
   }
-  .ptp-password__pill[data-satisfied] {
+  .sig-password__pill[data-satisfied] {
     background: color-mix(in srgb, var(--party-green) 20%, transparent);
     border-color: color-mix(in srgb, var(--party-green) 45%, transparent);
     color: var(--party-green);
@@ -765,22 +765,22 @@
 
   /* Motion is a gift, not a requirement. */
   @media (prefers-reduced-motion: reduce) {
-    .ptp-input,
-    .ptp-textarea,
-    .ptp-switch__pill,
-    .ptp-switch__pill::before,
-    .ptp-select__native,
-    .ptp-checkbox__input,
-    .ptp-checkbox__input::after,
-    .ptp-radio-card,
-    .ptp-form-field__well,
-    .ptp-form-field__info,
-    .ptp-form-field__info::after,
-    .ptp-password__meter span,
-    .ptp-password__pill {
+    .sig-input,
+    .sig-textarea,
+    .sig-switch__pill,
+    .sig-switch__pill::before,
+    .sig-select__native,
+    .sig-checkbox__input,
+    .sig-checkbox__input::after,
+    .sig-radio-card,
+    .sig-form-field__well,
+    .sig-form-field__info,
+    .sig-form-field__info::after,
+    .sig-password__meter span,
+    .sig-password__pill {
       transition: none;
     }
-    .ptp-form-field__well[data-invalid] {
+    .sig-form-field__well[data-invalid] {
       animation: none; /* the shake is motion — it stands down first */
     }
   }

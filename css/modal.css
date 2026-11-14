@@ -36,7 +36,7 @@
    ========================================================================== */
 
 /* The scrim — the documented rgba exception (see header). */
-.ptp-modal-backdrop {
+.sig-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -44,7 +44,7 @@
 }
 
 /* The dialog card — fixed, centered, hairline-bordered, token-driven. */
-.ptp-modal-card {
+.sig-modal-card {
   position: fixed;
   inset: 0;
   margin: auto;
@@ -65,7 +65,7 @@
 
 /* Header row 1: title owns columns 1-2 (negative end line = breakpoint-
    neutral), the close button owns the last column — pure grid placement. */
-.ptp-modal-title {
+.sig-modal-title {
   grid-column: 1 / -2;
   grid-row: 1;
   align-self: center;
@@ -76,7 +76,7 @@
 
 /* Close button — icon-only, muted by default, Teal on hover (the signature
    structural accent; Rule of Engagement untouched). */
-.ptp-modal-close {
+.sig-modal-close {
   grid-column: -1;
   grid-row: 1;
   justify-self: end;
@@ -92,18 +92,18 @@
   cursor: pointer;
 }
 
-.ptp-modal-close:hover {
+.sig-modal-close:hover {
   color: var(--color-cake-secondary);
 }
 
-.ptp-modal-close:focus-visible {
+.sig-modal-close:focus-visible {
   outline: 2px solid var(--color-cake-primary);
   outline-offset: 2px;
 }
 
 /* Badge row: the PartyBadge is the card's only bare <span> child — every
-   other span wears a ptp-modal class — so this selector is exact. */
-.ptp-modal-card > span:not([class]) {
+   other span wears a sig-modal class — so this selector is exact. */
+.sig-modal-card > span:not([class]) {
   grid-column: 1 / -1;
   justify-self: start;
   margin-top: var(--space-tight);
@@ -111,7 +111,7 @@
 
 /* Label/value rows: labels in column 1 (explicit, so auto-placement never
    spills into the close button's column), values in column 2. */
-.ptp-modal-label {
+.sig-modal-label {
   grid-column: 1;
   align-self: baseline;
   color: var(--text-muted);
@@ -121,7 +121,7 @@
   letter-spacing: 0.06em;
 }
 
-.ptp-modal-value {
+.sig-modal-value {
   grid-column: 2;
   align-self: baseline;
   margin: 0;
@@ -130,7 +130,7 @@
 
 /* Mechanical physics — motion is a gift, not a requirement. */
 @media (prefers-reduced-motion: no-preference) {
-  .ptp-modal-close {
+  .sig-modal-close {
     transition: var(--transition-standard);
   }
 }
@@ -139,16 +139,16 @@
    row takes the full width. The header stays a single row via the
    negative-line placement above. */
 @media (max-width: 768px) {
-  .ptp-modal-card {
+  .sig-modal-card {
     grid-template-columns: 1fr auto;
   }
 
-  .ptp-modal-label,
-  .ptp-modal-value {
+  .sig-modal-label,
+  .sig-modal-value {
     grid-column: 1 / -1;
   }
 
-  .ptp-modal-label {
+  .sig-modal-label {
     margin-top: var(--space-tight);
   }
 }

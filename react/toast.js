@@ -61,7 +61,7 @@ function Toast({ toast, onExpire }) {
         return () => clearTimeout(timer);
     }, [toast.id, onExpire]);
     const style = { "--status": STATUS_VARIABLE[toast.status] };
-    return (_jsx("div", { className: "ptp-toast", style: style, onAnimationEnd: () => onExpire(toast.id), children: toast.message }));
+    return (_jsx("div", { className: "sig-toast", style: style, onAnimationEnd: () => onExpire(toast.id), children: toast.message }));
 }
 /**
  * `<ToastProvider>` — mounts the toast region on document.body and hands
@@ -98,7 +98,7 @@ export function ToastProvider({ children }) {
         setToasts((current) => [...current, { id, status, message }]);
     }, []);
     const value = useMemo(() => toast, [toast]);
-    const region = (_jsx("div", { className: "ptp-toast-region", role: "status", "aria-live": "polite", children: toasts.map((t) => (_jsx(Toast, { toast: t, onExpire: expire }, t.id))) }));
+    const region = (_jsx("div", { className: "sig-toast-region", role: "status", "aria-live": "polite", children: toasts.map((t) => (_jsx(Toast, { toast: t, onExpire: expire }, t.id))) }));
     return (_jsxs(ToastContext.Provider, { value: value, children: [children, createPortal(region, document.body)] }));
 }
 /**

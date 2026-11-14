@@ -22,7 +22,7 @@
  *
  *   GRAPH — the obsidian interactions: nodes carry r 34 (viewBox
  *   units), labels 13px; right-clicking a node draws the live
- *   .ptp-graph__tether (stroke rgb(34,138,242) = --party-azure,
+ *   .sig-graph__tether (stroke rgb(34,138,242) = --party-azure,
  *   dasharray 6 4); double-click spawns a node; the wheel zooms the
  *   viewBox (0.5–2.5 clamp).
  *
@@ -61,23 +61,23 @@ if (bentoChildren !== 11) failures.push(`(spans) the bento must keep its 11-cell
 /* ---------------- RING: zoom + detail ---------------- */
 await page.click('[data-testid="tabs-module"] button:has-text("Core Dashboard")');
 await page.waitForTimeout(300);
-const ringWrap = page.locator('[data-testid="ring-rsvp"] .ptp-ring');
+const ringWrap = page.locator('[data-testid="ring-rsvp"] .sig-ring');
 const ringCount = await ringWrap.count();
 if (ringCount !== 1) {
-  failures.push(`(ring) the live ring must render the .ptp-ring wrapper, found ${ringCount}`);
+  failures.push(`(ring) the live ring must render the .sig-ring wrapper, found ${ringCount}`);
 } else {
-  const dialBox = await page.locator('[data-testid="ring-rsvp"] .ptp-ring__dial').boundingBox();
+  const dialBox = await page.locator('[data-testid="ring-rsvp"] .sig-ring__dial').boundingBox();
   console.log(`[ring] dial box: ${dialBox.width.toFixed(0)}×${dialBox.height.toFixed(0)}px`);
   if (Math.abs(dialBox.width - 120) > 2 || Math.abs(dialBox.height - 120) > 2) {
     failures.push(`(ring) the dial must be the 120px square, found ${dialBox.width.toFixed(0)}×${dialBox.height.toFixed(0)}`);
   }
-  const detailBefore = await page.locator('[data-testid="ring-rsvp"] .ptp-ring__detail').getAttribute("data-open");
-  await page.locator('[data-testid="ring-rsvp"] .ptp-ring__dial').click();
+  const detailBefore = await page.locator('[data-testid="ring-rsvp"] .sig-ring__detail').getAttribute("data-open");
+  await page.locator('[data-testid="ring-rsvp"] .sig-ring__dial').click();
   await page.waitForTimeout(450); // the 0fr → 1fr slide
   const expanded = await ringWrap.getAttribute("data-expanded");
-  const detailText = (await page.locator('[data-testid="ring-rsvp"] .ptp-ring__detail-inner').textContent())?.trim() ?? "";
+  const detailText = (await page.locator('[data-testid="ring-rsvp"] .sig-ring__detail-inner').textContent())?.trim() ?? "";
   const detailRows = await page.evaluate(() => {
-    const el = document.querySelector('[data-testid="ring-rsvp"] .ptp-ring__detail');
+    const el = document.querySelector('[data-testid="ring-rsvp"] .sig-ring__detail');
     return el ? getComputedStyle(el).gridTemplateRows : "none";
   });
   console.log(`[ring] data-expanded: ${expanded} · detail rows: ${detailRows} · text: "${detailText}"`);
@@ -91,7 +91,7 @@ if (ringCount !== 1) {
   if (!/\d+% · \d+ \/ 200 Guests/.test(detailText)) {
     failures.push(`(ring) the detail strip must read "<v>% · <n> / 200 Guests", found "${detailText}"`);
   }
-  await page.locator('[data-testid="ring-rsvp"] .ptp-ring__dial').click();
+  await page.locator('[data-testid="ring-rsvp"] .sig-ring__dial').click();
 }
 
 /* ---------------- PARITY: the archetypes ---------------- */
@@ -108,9 +108,9 @@ const parity = await page.evaluate(() => {
     };
   };
   return {
-    flip: read(".ptp-flip-card"),
-    accordion: read(".ptp-accordion"),
-    matchup: read(".ptp-matchup"),
+    flip: read(".sig-flip-card"),
+    accordion: read(".sig-accordion"),
+    matchup: read(".sig-matchup"),
   };
 });
 for (const [name, measured] of Object.entries(parity)) {
@@ -132,10 +132,10 @@ for (const [name, measured] of Object.entries(parity)) {
 
 /* ---------------- GRAPH: the obsidian interactions ---------------- */
 await page.click('[data-testid="tabs-module"] button:has-text("Graphs & Planner")');
-await page.waitForSelector('[data-testid="knowledge-graph"] g.ptp-graph__node');
+await page.waitForSelector('[data-testid="knowledge-graph"] g.sig-graph__node');
 const graphGeometry = await page.evaluate(() => {
-  const circle = document.querySelector('[data-testid="knowledge-graph"] g.ptp-graph__node circle');
-  const text = document.querySelector('[data-testid="knowledge-graph"] g.ptp-graph__node text');
+  const circle = document.querySelector('[data-testid="knowledge-graph"] g.sig-graph__node circle');
+  const text = document.querySelector('[data-testid="knowledge-graph"] g.sig-graph__node text');
   return {
     r: circle?.getAttribute("r"),
     fontSize: text?.getAttribute("font-size") ?? getComputedStyle(text).fontSize,
@@ -146,13 +146,13 @@ if (graphGeometry.r !== "34") failures.push(`(graph) nodes must be generous (r 3
 if (graphGeometry.fontSize !== "13") failures.push(`(graph) labels must be 13px, found ${graphGeometry.fontSize}`);
 
 // THE TETHER — right-click a node, move, assert the live azure dashed path.
-const node = page.locator('[data-testid="knowledge-graph"] g.ptp-graph__node').first();
+const node = page.locator('[data-testid="knowledge-graph"] g.sig-graph__node').first();
 const nodeBox = await node.boundingBox();
 await page.mouse.move(nodeBox.x + nodeBox.width / 2, nodeBox.y + nodeBox.height / 2);
 await page.mouse.down({ button: "right" });
 await page.mouse.move(nodeBox.x + nodeBox.width / 2 + 140, nodeBox.y + nodeBox.height / 2 + 80, { steps: 6 });
 const tether = await page.evaluate(() => {
-  const path = document.querySelector(".ptp-graph__tether");
+  const path = document.querySelector(".sig-graph__tether");
   if (path === null) return null;
   const cs = getComputedStyle(path);
   return { d: path.getAttribute("d"), stroke: cs.stroke, dasharray: cs.strokeDasharray, width: cs.strokeWidth };
@@ -171,20 +171,20 @@ if (tether === null || tether.d === "") {
 }
 
 // THE SPAWN — double-click empty canvas.
-const nodesBefore = await page.locator('[data-testid="knowledge-graph"] g.ptp-graph__node').count();
-const canvas = await page.locator('[data-testid="knowledge-graph"] svg.ptp-graph').boundingBox();
+const nodesBefore = await page.locator('[data-testid="knowledge-graph"] g.sig-graph__node').count();
+const canvas = await page.locator('[data-testid="knowledge-graph"] svg.sig-graph').boundingBox();
 await page.mouse.dblclick(canvas.x + 30, canvas.y + canvas.height - 30);
 await page.waitForTimeout(300);
-const nodesAfter = await page.locator('[data-testid="knowledge-graph"] g.ptp-graph__node').count();
+const nodesAfter = await page.locator('[data-testid="knowledge-graph"] g.sig-graph__node').count();
 console.log(`[graph] spawn: ${nodesBefore} → ${nodesAfter} nodes`);
 if (nodesAfter !== nodesBefore + 1) failures.push(`(graph) the dbl-click spawn must add one node, ${nodesBefore} → ${nodesAfter}`);
 
 // THE WHEEL ZOOM — scroll on the canvas, assert the viewBox changed.
-const viewBoxBefore = await page.locator('[data-testid="knowledge-graph"] svg.ptp-graph').getAttribute("viewBox");
+const viewBoxBefore = await page.locator('[data-testid="knowledge-graph"] svg.sig-graph').getAttribute("viewBox");
 await page.mouse.move(canvas.x + canvas.width / 2, canvas.y + canvas.height / 2);
 await page.mouse.wheel(0, -240);
 await page.waitForTimeout(200);
-const viewBoxAfter = await page.locator('[data-testid="knowledge-graph"] svg.ptp-graph').getAttribute("viewBox");
+const viewBoxAfter = await page.locator('[data-testid="knowledge-graph"] svg.sig-graph').getAttribute("viewBox");
 console.log(`[graph] wheel zoom: "${viewBoxBefore}" → "${viewBoxAfter}"`);
 if (viewBoxBefore === viewBoxAfter) failures.push("(graph) the wheel must zoom the viewBox");
 

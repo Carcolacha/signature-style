@@ -726,7 +726,7 @@ Props surface — react/forms.d.ts (`FormFieldProps`):
 
 ```ts
 export interface FormFieldProps {
-    /** The visible label text (rendered in the `.ptp-form-field__label`). */
+    /** The visible label text (rendered in the `.sig-form-field__label`). */
     label: string;
     /**
      * The control's `id` — YOU also pass it to the child control; this
@@ -767,13 +767,13 @@ export interface FormFieldProps {
      * A literal adornment rendered BEFORE the control (2.4.1; 2.5.0
      * re-homed), e.g. `prefix="$"` for money fields. When prefix/suffix
      * are present the children are wrapped in the
-     * `.ptp-form-field__well` adornment zone (THE JUSTIFIED WRAPPER: an
+     * `.sig-form-field__well` adornment zone (THE JUSTIFIED WRAPPER: an
      * adornment composition needs a flex parent that can own the border —
      * the bare control must stay untouched inside it) with the
-     * `.ptp-form-field__chip` mono span ahead of it. THE CONTRACT: the
+     * `.sig-form-field__chip` mono span ahead of it. THE CONTRACT: the
      * children must be BARE inputs — the well owns the background,
      * border and focus ring (css/forms.css scopes
-     * `.ptp-form-field__well > .ptp-input` kills). The adornment is
+     * `.sig-form-field__well > .sig-input` kills). The adornment is
      * DECORATION — the value's currency belongs to the consumer's
      * placeholder/validation, never to the input's value. The chip is
      * separated from the cursor by a hairline, never glued into the label
@@ -829,7 +829,7 @@ import { Input } from "@edwyn/signature-style/react";
 HTML variant (no React — real package classes/inline styles):
 
 ```html
-<input class="ptp-input" type="text" placeholder="Guest name" />
+<input class="sig-input" type="text" placeholder="Guest name" />
 ```
 
 Props surface — react/forms.d.ts (`InputProps`):
@@ -1036,9 +1036,9 @@ import { Button } from "@edwyn/signature-style/react";
 HTML variant (no React — real package classes/inline styles):
 
 ```html
-<button class="ptp-btn ptp-btn--primary" type="submit">Check In</button>
-<button class="ptp-btn ptp-btn--secondary" type="button">Maybe</button>
-<button class="ptp-btn ptp-btn--ghost ptp-btn--sm" type="button">Skip</button>
+<button class="sig-btn sig-btn--primary" type="submit">Check In</button>
+<button class="sig-btn sig-btn--secondary" type="button">Maybe</button>
+<button class="sig-btn sig-btn--ghost sig-btn--sm" type="button">Skip</button>
 ```
 
 Props surface — react/primitives.d.ts (`ButtonProps`):
@@ -1069,7 +1069,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     rightIcon?: IconName;
     /**
      * The busy state: the icons are REPLACED by the
-     * `.ptp-btn__spinner` (aria-hidden), the button gains
+     * `.sig-btn__spinner` (aria-hidden), the button gains
      * `aria-busy="true"` and `disabled` — a loading button cannot be
      * re-submitted.
      */
@@ -1135,7 +1135,7 @@ export interface StatRingProps {
     /**
      * 3.0.0 — the denominator for the expandable detail strip (e.g. 200).
      * When present, the ring renders zoomable: hover/press scale(1.07),
-     * and a click toggles the `.ptp-ring__detail` strip below the ring —
+     * and a click toggles the `.sig-ring__detail` strip below the ring —
      * "{value}% · {numerator}/{denominator} {unit}" with the numerator
      * derived from the value (85% of 200 → "170 / 200 Guests"). The core
      * dash geometry + the ARIA contract are untouched.
@@ -1597,7 +1597,7 @@ import { Callout } from "@edwyn/signature-style/react";
 HTML variant (no React — real package classes/inline styles):
 
 ```html
-<div class="ptp-callout" role="note" style="--status: var(--party-peach);">
+<div class="sig-callout" role="note" style="--status: var(--party-peach);">
   3 pending RSVPs close Friday.
 </div>
 ```
@@ -1640,7 +1640,7 @@ export interface CarouselProps {
      * 3.0.0 replaces the old scrollLeft/itemWidth scroll math). "paged-3"
      * chunks the children into pages of THREE (pure math: ceil(n / 3))
      * and renders each page as ONE snap unit — a `repeat(3, 1fr)` grid
-     * with the 16px gap (css: .ptp-carousel__page); Prev/Next advance
+     * with the 16px gap (css: .sig-carousel__page); Prev/Next advance
      * ±1 PAGE, dots are one per PAGE, the indicator reads "p / P".
      */
     mode?: "paged-3" | "free-scroll";
@@ -1721,9 +1721,9 @@ import { AnnouncementBanner } from "@edwyn/signature-style/react";
 HTML variant (no React — real package classes/inline styles):
 
 ```html
-<div class="ptp-announcement" role="status" style="--status: var(--color-cake-primary);">
-  <span class="ptp-announcement__icon">…</span>
-  <span class="ptp-announcement__text">v2.8.0 — the Pattern Studio ships.</span>
+<div class="sig-announcement" role="status" style="--status: var(--color-cake-primary);">
+  <span class="sig-announcement__icon">…</span>
+  <span class="sig-announcement__text">v2.8.0 — the Pattern Studio ships.</span>
 </div>
 ```
 

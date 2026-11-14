@@ -3,7 +3,7 @@
    Card Archetypes"). Layered into `cascade` by signature-style.css
    (imported after data.css).
 
-   THE ONE BUTTON: .ptp-btn + the --{variant} modifier + the optional
+   THE ONE BUTTON: .sig-btn + the --{variant} modifier + the optional
    size modifier. Everything rides the tokens:
 
      primary    — Flamingo fill (--color-cake-primary), on-cake ink,
@@ -20,7 +20,7 @@
    .sig-surface-card rules. The primary's hierarchy pop (weight 600) is
    typographic, not luminous; ELEVATION stays a composition-layer
    decision (the playground re-adds its v1.6.0 ambient shadow on
-   .ptp-btn--primary in its own stylesheet).
+   .sig-btn--primary in its own stylesheet).
 
    SIZES — the 8px grid, all sides:
      sm — tight padding, 0.8125rem (13px, a grid half-step)
@@ -31,14 +31,14 @@
    STATES: :active scale(0.97) (the doctrine press), :focus-visible the
    Flamingo ring, :disabled the doctrine gray-out (--bg-surface +
    --text-muted, no press). LOADING: the spinner is a 2px currentColor
-   ring with a transparent top arc — ptp-spin, 0.8s linear infinite,
+   ring with a transparent top arc — sig-spin, 0.8s linear infinite,
    aria-hidden in react (aria-busy on the button is the real state).
 
    COLOR DOCTRINE: zero hex, zero box-shadow. Zero raw rgba.
    ========================================================================== */
 
 @layer cascade {
-  .ptp-btn {
+  .sig-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -52,14 +52,14 @@
     cursor: pointer;
     transition: var(--transition-standard), var(--transition-transform);
   }
-  .ptp-btn:not(:disabled):active {
+  .sig-btn:not(:disabled):active {
     transform: scale(0.97);
   }
-  .ptp-btn:focus-visible {
+  .sig-btn:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .ptp-btn:disabled {
+  .sig-btn:disabled {
     background: var(--bg-surface);
     border-color: transparent;
     color: var(--text-muted);
@@ -67,24 +67,24 @@
   }
 
   /* -- variants ----------------------------------------------------------- */
-  .ptp-btn--primary {
+  .sig-btn--primary {
     background: var(--color-cake-primary);
     color: var(--color-on-cake);
     font-weight: 600;
   }
-  .ptp-btn--secondary {
+  .sig-btn--secondary {
     background: var(--bg-surface);
     border-color: color-mix(in srgb, var(--text-muted) 20%, transparent);
     color: var(--text-main);
   }
-  .ptp-btn--ghost {
+  .sig-btn--ghost {
     background: transparent;
     color: var(--text-main);
   }
-  .ptp-btn--ghost:hover {
+  .sig-btn--ghost:hover {
     background: var(--bg-inset);
   }
-  .ptp-btn--danger {
+  .sig-btn--danger {
     background: color-mix(in srgb, var(--party-peach) 18%, transparent);
     border-color: color-mix(in srgb, var(--party-peach) 45%, transparent);
     color: var(--party-peach);
@@ -92,30 +92,30 @@
   }
 
   /* -- sizes --------------------------------------------------------------- */
-  .ptp-btn--sm {
+  .sig-btn--sm {
     padding: var(--space-tight);
     font-size: 0.8125rem;
   }
-  .ptp-btn--lg {
+  .sig-btn--lg {
     padding: var(--space-standard);
     font-size: 1rem;
   }
 
   /* -- icons + the loading spinner ------------------------------------------ */
-  .ptp-btn__icon {
+  .sig-btn__icon {
     width: 1rem;
     height: 1rem;
     flex: none;
   }
-  .ptp-btn__spinner {
+  .sig-btn__spinner {
     width: 1rem;
     height: 1rem;
     border-radius: 50%;
     border: 2px solid currentColor;
     border-top-color: transparent;
-    animation: ptp-spin 0.8s linear infinite;
+    animation: sig-spin 0.8s linear infinite;
   }
-  @keyframes ptp-spin {
+  @keyframes sig-spin {
     to {
       transform: rotate(360deg);
     }
@@ -123,10 +123,10 @@
 
   /* Motion is a gift, not a requirement. */
   @media (prefers-reduced-motion: reduce) {
-    .ptp-btn {
+    .sig-btn {
       transition: none;
     }
-    .ptp-btn__spinner {
+    .sig-btn__spinner {
       animation: none;
     }
   }

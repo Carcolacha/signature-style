@@ -28,7 +28,7 @@
  * Zero hex beyond the documented scrim. Closed renders nothing at all.
  *
  * Pruning Protocol: backdrop (div) → panel (div) → input + list. The
- * kbd chips reuse .ptp-action-tile__kbd (cards.css) instead of growing
+ * kbd chips reuse .sig-action-tile__kbd (cards.css) instead of growing
  * a second chip anatomy.
  */
 
@@ -207,7 +207,7 @@ export function CommandPalette({
         id={`${baseId}-opt-${command.id}`}
         role="option"
         aria-selected={index === activeIndex}
-        className="ptp-command__option"
+        className="sig-command__option"
         data-testid={`command-${command.id}`}
         onMouseEnter={() => setActiveIndex(index)}
         onClick={() => {
@@ -218,27 +218,27 @@ export function CommandPalette({
         {command.icon !== undefined && (
           <Icon name={command.icon} size={16} aria-hidden />
         )}
-        <span className="ptp-command__label">{command.label}</span>
+        <span className="sig-command__label">{command.label}</span>
         {command.hint !== undefined && (
-          <span className="ptp-command__hint">{command.hint}</span>
+          <span className="sig-command__hint">{command.hint}</span>
         )}
       </li>
     ));
 
   return createPortal(
     <div
-      className="ptp-command-backdrop"
+      className="sig-command-backdrop"
       data-testid="command-backdrop"
       onClick={onClose}
     >
       <div
-        className="ptp-command"
+        className="sig-command"
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
         onClick={(domEvent) => domEvent.stopPropagation()}
       >
-        <div className="ptp-command__inputrow">
+        <div className="sig-command__inputrow">
           <Icon name="Search" size={16} aria-hidden />
           <input
             ref={inputRef}
@@ -257,31 +257,31 @@ export function CommandPalette({
             placeholder="Type a command…"
             data-testid="command-input"
           />
-          <kbd className="ptp-action-tile__kbd">esc</kbd>
+          <kbd className="sig-action-tile__kbd">esc</kbd>
         </div>
         {filtered.length === 0 ? (
-          <p className="ptp-command__empty">No command matches “{query}”.</p>
+          <p className="sig-command__empty">No command matches “{query}”.</p>
         ) : (
           <ul
             ref={listRef}
             id={`${baseId}-list`}
             role="listbox"
             aria-label="Commands"
-            className="ptp-command__list"
+            className="sig-command__list"
             data-testid="command-list"
           >
             {renderRows()}
           </ul>
         )}
-        <div className="ptp-command__legend">
+        <div className="sig-command__legend">
           <span>
-            <kbd className="ptp-action-tile__kbd">↑↓</kbd> navigate
+            <kbd className="sig-action-tile__kbd">↑↓</kbd> navigate
           </span>
           <span>
-            <kbd className="ptp-action-tile__kbd">↵</kbd> run
+            <kbd className="sig-action-tile__kbd">↵</kbd> run
           </span>
           <span>
-            <kbd className="ptp-action-tile__kbd">esc</kbd> close
+            <kbd className="sig-action-tile__kbd">esc</kbd> close
           </span>
         </div>
       </div>

@@ -146,12 +146,12 @@ const MODULE_TABS = ["Data & Tables", "Form & Input Matrix", "Graphs & Planner"]
     ≤ 768px (Pillar 2 hides the bar; the hamburger opens the drawer and
     every drawer link closes it). */
 async function gotoView(page, label) {
-  const flatBarVisible = await page.locator(".ptp-nav__list").first().isVisible();
+  const flatBarVisible = await page.locator(".sig-nav__list").first().isVisible();
   if (flatBarVisible) {
     await page.getByRole("link", { name: label }).first().click();
   } else {
-    await page.locator(".ptp-nav__menu-btn").first().click();
-    await page.locator(".ptp-nav-drawer").getByRole("link", { name: label }).click();
+    await page.locator(".sig-nav__menu-btn").first().click();
+    await page.locator(".sig-nav-drawer").getByRole("link", { name: label }).click();
   }
   await page.waitForTimeout(180);
 }
@@ -214,7 +214,7 @@ for (const [width, height] of VIEWPORTS) {
 
   // Skeleton shimmer: animation none + static surface ground.
   const shimmer = await page.evaluate(() => {
-    const line = document.querySelector(".hub__cq-probe .ptp-skeleton--line");
+    const line = document.querySelector(".hub__cq-probe .sig-skeleton--line");
     if (line === null) return null;
     const cs = getComputedStyle(line);
     return { animation: cs.animationName, background: cs.backgroundColor };
@@ -225,7 +225,7 @@ for (const [width, height] of VIEWPORTS) {
 
   // Flip card: the inner stage drops the transform (opacity path takes over).
   const flip = await page.evaluate(() => {
-    const card = document.querySelector(".ptp-flip-card__inner");
+    const card = document.querySelector(".sig-flip-card__inner");
     if (card === null) return null;
     const cs = getComputedStyle(card);
     return { transform: cs.transform, transition: cs.transitionDuration };
@@ -240,7 +240,7 @@ for (const [width, height] of VIEWPORTS) {
   const shake = await page.evaluate(() => {
     const input = document.querySelector("#matrix-share");
     if (input === null) return null;
-    const well = input.closest(".ptp-form-field__well");
+    const well = input.closest(".sig-form-field__well");
     if (well === null) return null;
     well.setAttribute("data-invalid", "");
     const cs = getComputedStyle(well);
@@ -253,7 +253,7 @@ for (const [width, height] of VIEWPORTS) {
 
   // Password meter segments: transitions none.
   const meter = await page.evaluate(() => {
-    const segment = document.querySelector(".ptp-password__meter span");
+    const segment = document.querySelector(".sig-password__meter span");
     if (segment === null) return null;
     return getComputedStyle(segment).transitionDuration;
   });
@@ -338,12 +338,12 @@ for (const [width, height] of VIEWPORTS) {
     // live inside the Pattern Studio's always-mounted frames.
     const probes = [
       [".studio__palette-note", "placeholder probe (removed)"],
-      [".ptp-form-field__error", "party-peach error line (studio FormField frame)"],
-      [".ptp-form-field__valid", "party-green valid line (studio FormField frame)"],
+      [".sig-form-field__error", "party-peach error line (studio FormField frame)"],
+      [".sig-form-field__valid", "party-green valid line (studio FormField frame)"],
       [".sig-tier-card__features li svg", "party-green check bullets (studio TierCard frame)"],
-      [".ptp-chronicle__tag", "chronicle tag (inline --accent, studio ChronicleTimeline frame)"],
-      [".ptp-graph__node text", "graph node labels (studio KnowledgeGraph frame)"],
-      [".ptp-command__option[aria-selected=\"true\"]", "selected command row text (Flamingo 8% wash)"],
+      [".sig-chronicle__tag", "chronicle tag (inline --accent, studio ChronicleTimeline frame)"],
+      [".sig-graph__node text", "graph node labels (studio KnowledgeGraph frame)"],
+      [".sig-command__option[aria-selected=\"true\"]", "selected command row text (Flamingo 8% wash)"],
     ];
     const out = [];
     for (const [selector, note] of probes) {

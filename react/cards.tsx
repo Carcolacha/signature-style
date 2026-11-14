@@ -75,12 +75,12 @@ export interface ActionTileProps {
 /**
  * `<ActionTile>` — the action-row card (2.5.0).
  *
- * ONE `<button class="ptp-action-tile">` → the icon well (a 40px
- * rounded `.ptp-action-tile__well` on --bg-inset), the body
+ * ONE `<button class="sig-action-tile">` → the icon well (a 40px
+ * rounded `.sig-action-tile__well` on --bg-inset), the body
  * (strong title + muted subtitle), and the optional
- * `.ptp-action-tile__kbd` shortcut chip (mono, inset — the standalone
+ * `.sig-action-tile__kbd` shortcut chip (mono, inset — the standalone
  * cousin of the prose kbd chip; css/cards.css owns it because
- * editorial.css scopes its kbd under .ptp-prose). ZERO divs: spans
+ * editorial.css scopes its kbd under .sig-prose). ZERO divs: spans
  * inside the button, `margin-left: auto` parks the kbd at the far
  * edge. Hover: the Teal border (structural hover, the radio-card
  * precedent); press: `:active scale(0.98)`.
@@ -92,16 +92,16 @@ export interface ActionTileProps {
  */
 export function ActionTile({ title, subtitle, icon, kbdShortcut, onClick }: ActionTileProps) {
   return (
-    <button type="button" className="ptp-action-tile" onClick={onClick}>
-      <span className="ptp-action-tile__well">
+    <button type="button" className="sig-action-tile" onClick={onClick}>
+      <span className="sig-action-tile__well">
         <Icon name={icon} aria-hidden />
       </span>
-      <span className="ptp-action-tile__body">
+      <span className="sig-action-tile__body">
         <strong>{title}</strong>
         {subtitle !== undefined && <span>{subtitle}</span>}
       </span>
       {kbdShortcut !== undefined && (
-        <kbd className="ptp-action-tile__kbd">{kbdShortcut}</kbd>
+        <kbd className="sig-action-tile__kbd">{kbdShortcut}</kbd>
       )}
     </button>
   );
@@ -125,7 +125,7 @@ export interface FlipCardProps {
 /**
  * `<FlipCard>` — the two-face reveal (2.5.0).
  *
- * ONE `<button class="ptp-flip-card" aria-pressed>` — THE FLAT
+ * ONE `<button class="sig-flip-card" aria-pressed>` — THE FLAT
  * STRUCTURE: button → `__inner` (the 3d stage: `transform-style:
  * preserve-3d`, the owner mechanical bezier on the rotateY) → two
  * `__face` spans (backface-visibility: hidden; the back pre-rotated
@@ -147,7 +147,7 @@ export function FlipCard({ front, back, onFlip }: FlipCardProps) {
   return (
     <button
       type="button"
-      className="ptp-flip-card"
+      className="sig-flip-card"
       aria-pressed={flipped}
       onClick={() => {
         const next = !flipped;
@@ -155,13 +155,13 @@ export function FlipCard({ front, back, onFlip }: FlipCardProps) {
         onFlip?.(next);
       }}
     >
-      <span className="ptp-flip-card__inner">
-        <span className="ptp-flip-card__face ptp-flip-card__front">
-          <span className="ptp-flip-card__tag">FRONT</span>
+      <span className="sig-flip-card__inner">
+        <span className="sig-flip-card__face sig-flip-card__front">
+          <span className="sig-flip-card__tag">FRONT</span>
           {front}
         </span>
-        <span className="ptp-flip-card__face ptp-flip-card__back">
-          <span className="ptp-flip-card__tag">BACK</span>
+        <span className="sig-flip-card__face sig-flip-card__back">
+          <span className="sig-flip-card__tag">BACK</span>
           {back}
         </span>
       </span>
@@ -185,12 +185,12 @@ export interface AccordionCardProps {
 /**
  * `<AccordionCard>` — the zero-JS accordion (2.5.0).
  *
- * `<details class="ptp-accordion">` → `<summary
- * class="ptp-accordion__summary">` (title + the token chevron) → the
+ * `<details class="sig-accordion">` → `<summary
+ * class="sig-accordion__summary">` (title + the token chevron) → the
  * `__body` div. No state, no handler, no aria wiring: `<details>`
  * carries disclosure semantics natively, the marker is stripped in css
  * (list-style: none + ::-webkit-details-marker), and
- * `details[open] .ptp-accordion__chevron` rotates the chevron 180° —
+ * `details[open] .sig-accordion__chevron` rotates the chevron 180° —
  * an attribute selector answering an attribute the USER toggled.
  *
  * @example
@@ -202,12 +202,12 @@ export interface AccordionCardProps {
  */
 export function AccordionCard({ title, children }: AccordionCardProps) {
   return (
-    <details className="ptp-accordion">
-      <summary className="ptp-accordion__summary">
+    <details className="sig-accordion">
+      <summary className="sig-accordion__summary">
         {title}
-        <Icon name="ChevronDown" className="ptp-accordion__chevron" aria-hidden />
+        <Icon name="ChevronDown" className="sig-accordion__chevron" aria-hidden />
       </summary>
-      <div className="ptp-accordion__body">{children}</div>
+      <div className="sig-accordion__body">{children}</div>
     </details>
   );
 }
@@ -238,7 +238,7 @@ export interface MatchupCardProps {
 /**
  * `<MatchupCard>` — the 1v1 grid (2.5.0).
  *
- * `<div class="ptp-matchup">` (grid `1fr auto 1fr`, centered) → side /
+ * `<div class="sig-matchup">` (grid `1fr auto 1fr`, centered) → side /
  * VS pill / side, each side a centered column (the 40px `<Avatar>` +
  * the name), the VS pill a mono inset capsule, and the optional
  * `__stakes` footer on `grid-column: 1 / -1` (inset well, mono muted
@@ -256,21 +256,21 @@ export interface MatchupCardProps {
  */
 export function MatchupCard({ title, left, right, stakes }: MatchupCardProps) {
   return (
-    <div className="ptp-matchup">
+    <div className="sig-matchup">
       {title !== undefined && (
-        <strong className="ptp-matchup__title">{title}</strong>
+        <strong className="sig-matchup__title">{title}</strong>
       )}
-      <span className="ptp-matchup__side">
+      <span className="sig-matchup__side">
         <Avatar name={left.name} ringToken={left.ringToken} size={40} />
         <span>{left.name}</span>
       </span>
-      <span className="ptp-matchup__vs">VS</span>
-      <span className="ptp-matchup__side">
+      <span className="sig-matchup__vs">VS</span>
+      <span className="sig-matchup__side">
         <Avatar name={right.name} ringToken={right.ringToken} size={40} />
         <span>{right.name}</span>
       </span>
       {stakes !== undefined && (
-        <footer className="ptp-matchup__stakes">{stakes}</footer>
+        <footer className="sig-matchup__stakes">{stakes}</footer>
       )}
     </div>
   );
@@ -743,7 +743,7 @@ export interface ChronicleTimelineProps {
 /**
  * `<ChronicleTimeline>` — the release chronicle (2.6.0).
  *
- * ONE `<ol class="ptp-chronicle" aria-label>`: per release an `<li>`
+ * ONE `<ol class="sig-chronicle" aria-label>`: per release an `<li>`
  * carrying the inline `--accent` variable → the milestone node (a 12px
  * circle, 2px solid var(--accent), surface-filled, absolutely parked
  * OVER the ::before hairline spine), the mono tag in the accent, and
@@ -771,28 +771,28 @@ export function ChronicleTimeline({
   className,
 }: ChronicleTimelineProps) {
   const classes =
-    className !== undefined ? `ptp-chronicle ${className}` : "ptp-chronicle";
+    className !== undefined ? `sig-chronicle ${className}` : "sig-chronicle";
   return (
     <ol className={classes} aria-label={label ?? "Version chronicle"}>
       {releases.map((release) => (
         <li
           key={release.tag}
-          className="ptp-chronicle__item"
+          className="sig-chronicle__item"
           style={
             {
               "--accent": `var(${release.accentToken ?? "--party-lavender"})`,
             } as CSSProperties
           }
         >
-          <span className="ptp-chronicle__node" />
-          <span className="ptp-chronicle__tag">{release.tag}</span>
-          <div className="ptp-chronicle__body">
+          <span className="sig-chronicle__node" />
+          <span className="sig-chronicle__tag">{release.tag}</span>
+          <div className="sig-chronicle__body">
             <strong>{release.title}</strong>
             {release.story !== undefined && (
-              <span className="ptp-chronicle__story">{release.story}</span>
+              <span className="sig-chronicle__story">{release.story}</span>
             )}
             {release.stat !== undefined && (
-              <span className="ptp-chronicle__stat">{release.stat}</span>
+              <span className="sig-chronicle__stat">{release.stat}</span>
             )}
           </div>
         </li>

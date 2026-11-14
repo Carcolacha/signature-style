@@ -43,7 +43,7 @@
 @layer cascade {
 
   /* -- the region: fixed bottom-right, above modals --------------------------- */
-  .ptp-toast-region {
+  .sig-toast-region {
     position: fixed;
     right: var(--space-standard);
     bottom: var(--space-standard);
@@ -55,7 +55,7 @@
   }
 
   /* -- a toast: surface card with a status strip ------------------------------- */
-  .ptp-toast {
+  .sig-toast {
     background: var(--bg-surface);
     border-left: 4px solid var(--status);
     border-radius: var(--radius-ui);
@@ -90,7 +90,7 @@
   /* Motion is a gift, not a requirement: no slide, no auto-fade — the
      toast simply sits until the component's timeout removes it. */
   @media (prefers-reduced-motion: reduce) {
-    .ptp-toast {
+    .sig-toast {
       animation: none;
       opacity: 1;
     }

@@ -50,16 +50,16 @@ function groupEvents(events) {
 function renderHeader(group, headerRow) {
     // Span the whole group so the sticky header can travel its section.
     const spanEnd = headerRow + group.events.length + 1;
-    return (_jsx("h2", { className: "ptp-timeline__header", style: { gridRow: `${headerRow} / ${spanEnd}` }, children: group.displayDate }, `date-${group.key}`));
+    return (_jsx("h2", { className: "sig-timeline__header", style: { gridRow: `${headerRow} / ${spanEnd}` }, children: group.displayDate }, `date-${group.key}`));
 }
 function renderNode(event, row, index, onEventSelect) {
-    const groupFirst = index === 0 ? " ptp-timeline__node--group-first" : "";
-    return (_jsx("button", { type: "button", className: `ptp-timeline__node${groupFirst}`, style: { gridRow: row, gridColumn: "var(--tl-node-col)" }, "aria-label": event.title, onClick: onEventSelect !== undefined ? () => onEventSelect(event) : undefined, children: _jsx(Icon, { name: event.icon ?? "Circle", "aria-hidden": true }) }, `node-${event.id}`));
+    const groupFirst = index === 0 ? " sig-timeline__node--group-first" : "";
+    return (_jsx("button", { type: "button", className: `sig-timeline__node${groupFirst}`, style: { gridRow: row, gridColumn: "var(--tl-node-col)" }, "aria-label": event.title, onClick: onEventSelect !== undefined ? () => onEventSelect(event) : undefined, children: _jsx(Icon, { name: event.icon ?? "Circle", "aria-hidden": true }) }, `node-${event.id}`));
 }
 function renderItem(event, row, index) {
     const side = index % 2 === 0 ? "left" : "right";
-    const groupFirst = index === 0 ? " ptp-timeline__item--group-first" : "";
-    return (_jsxs("div", { className: `ptp-timeline__item ptp-timeline__item--${side}${groupFirst}`, style: { gridRow: row }, children: [_jsx(PartyBadge, { colorToken: event.category, label: event.categoryLabel }), _jsx("h3", { className: "ptp-timeline__title", children: event.title }), event.time !== undefined && (_jsx("time", { className: "ptp-timeline__time", children: event.time }))] }, `event-${event.id}`));
+    const groupFirst = index === 0 ? " sig-timeline__item--group-first" : "";
+    return (_jsxs("div", { className: `sig-timeline__item sig-timeline__item--${side}${groupFirst}`, style: { gridRow: row }, children: [_jsx(PartyBadge, { colorToken: event.category, label: event.categoryLabel }), _jsx("h3", { className: "sig-timeline__title", children: event.title }), event.time !== undefined && (_jsx("time", { className: "sig-timeline__time", children: event.time }))] }, `event-${event.id}`));
 }
 /**
  * `<EventTimeline>` — a chronological, alternating party timeline.
@@ -101,5 +101,5 @@ export const EventTimeline = memo(function EventTimeline({ events, onEventSelect
             row += 1;
         }
     }
-    return _jsx("div", { className: "ptp-timeline", children: children });
+    return _jsx("div", { className: "sig-timeline", children: children });
 });

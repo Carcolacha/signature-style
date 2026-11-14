@@ -48,7 +48,7 @@ export interface SkeletonLineProps {
 export function SkeletonLine({ width }: SkeletonLineProps) {
   const style: CSSProperties =
     width === undefined ? {} : { width: typeof width === "number" ? `${width}px` : width };
-  return <div className="ptp-skeleton ptp-skeleton--line" style={style} aria-hidden="true" />;
+  return <div className="sig-skeleton sig-skeleton--line" style={style} aria-hidden="true" />;
 }
 
 /**
@@ -62,11 +62,11 @@ export function SkeletonLine({ width }: SkeletonLineProps) {
  */
 export function SkeletonCard() {
   return (
-    <div className="ptp-skeleton-card" aria-hidden="true">
-      <div className="ptp-skeleton ptp-skeleton--line" style={{ width: "40%" }} />
-      <div className="ptp-skeleton ptp-skeleton--row" />
-      <div className="ptp-skeleton ptp-skeleton--row" style={{ width: "92%" }} />
-      <div className="ptp-skeleton ptp-skeleton--row" style={{ width: "76%" }} />
+    <div className="sig-skeleton-card" aria-hidden="true">
+      <div className="sig-skeleton sig-skeleton--line" style={{ width: "40%" }} />
+      <div className="sig-skeleton sig-skeleton--row" />
+      <div className="sig-skeleton sig-skeleton--row" style={{ width: "92%" }} />
+      <div className="sig-skeleton sig-skeleton--row" style={{ width: "76%" }} />
     </div>
   );
 }
@@ -96,14 +96,14 @@ export function SkeletonTableRow({ columns = 3 }: SkeletonTableRowProps) {
     cells.push(
       <td key={i}>
         <div
-          className="ptp-skeleton ptp-skeleton--row"
+          className="sig-skeleton sig-skeleton--row"
           style={{ width: i === 0 ? "72%" : "88%" }}
         />
       </td>,
     );
   }
   return (
-    <tr className="ptp-skeleton-tr" aria-hidden="true">
+    <tr className="sig-skeleton-tr" aria-hidden="true">
       {cells}
     </tr>
   );

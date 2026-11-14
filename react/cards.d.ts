@@ -64,12 +64,12 @@ export interface ActionTileProps {
 /**
  * `<ActionTile>` — the action-row card (2.5.0).
  *
- * ONE `<button class="ptp-action-tile">` → the icon well (a 40px
- * rounded `.ptp-action-tile__well` on --bg-inset), the body
+ * ONE `<button class="sig-action-tile">` → the icon well (a 40px
+ * rounded `.sig-action-tile__well` on --bg-inset), the body
  * (strong title + muted subtitle), and the optional
- * `.ptp-action-tile__kbd` shortcut chip (mono, inset — the standalone
+ * `.sig-action-tile__kbd` shortcut chip (mono, inset — the standalone
  * cousin of the prose kbd chip; css/cards.css owns it because
- * editorial.css scopes its kbd under .ptp-prose). ZERO divs: spans
+ * editorial.css scopes its kbd under .sig-prose). ZERO divs: spans
  * inside the button, `margin-left: auto` parks the kbd at the far
  * edge. Hover: the Teal border (structural hover, the radio-card
  * precedent); press: `:active scale(0.98)`.
@@ -97,7 +97,7 @@ export interface FlipCardProps {
 /**
  * `<FlipCard>` — the two-face reveal (2.5.0).
  *
- * ONE `<button class="ptp-flip-card" aria-pressed>` — THE FLAT
+ * ONE `<button class="sig-flip-card" aria-pressed>` — THE FLAT
  * STRUCTURE: button → `__inner` (the 3d stage: `transform-style:
  * preserve-3d`, the owner mechanical bezier on the rotateY) → two
  * `__face` spans (backface-visibility: hidden; the back pre-rotated
@@ -130,12 +130,12 @@ export interface AccordionCardProps {
 /**
  * `<AccordionCard>` — the zero-JS accordion (2.5.0).
  *
- * `<details class="ptp-accordion">` → `<summary
- * class="ptp-accordion__summary">` (title + the token chevron) → the
+ * `<details class="sig-accordion">` → `<summary
+ * class="sig-accordion__summary">` (title + the token chevron) → the
  * `__body` div. No state, no handler, no aria wiring: `<details>`
  * carries disclosure semantics natively, the marker is stripped in css
  * (list-style: none + ::-webkit-details-marker), and
- * `details[open] .ptp-accordion__chevron` rotates the chevron 180° —
+ * `details[open] .sig-accordion__chevron` rotates the chevron 180° —
  * an attribute selector answering an attribute the USER toggled.
  *
  * @example
@@ -170,7 +170,7 @@ export interface MatchupCardProps {
 /**
  * `<MatchupCard>` — the 1v1 grid (2.5.0).
  *
- * `<div class="ptp-matchup">` (grid `1fr auto 1fr`, centered) → side /
+ * `<div class="sig-matchup">` (grid `1fr auto 1fr`, centered) → side /
  * VS pill / side, each side a centered column (the 40px `<Avatar>` +
  * the name), the VS pill a mono inset capsule, and the optional
  * `__stakes` footer on `grid-column: 1 / -1` (inset well, mono muted
@@ -416,7 +416,7 @@ export interface ChronicleTimelineProps {
 /**
  * `<ChronicleTimeline>` — the release chronicle (2.6.0).
  *
- * ONE `<ol class="ptp-chronicle" aria-label>`: per release an `<li>`
+ * ONE `<ol class="sig-chronicle" aria-label>`: per release an `<li>`
  * carrying the inline `--accent` variable → the milestone node (a 12px
  * circle, 2px solid var(--accent), surface-filled, absolutely parked
  * OVER the ::before hairline spine), the mono tag in the accent, and

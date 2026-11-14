@@ -115,7 +115,7 @@ function renderHeader(group: EventGroup, headerRow: number): ReactNode {
   return (
     <h2
       key={`date-${group.key}`}
-      className="ptp-timeline__header"
+      className="sig-timeline__header"
       style={{ gridRow: `${headerRow} / ${spanEnd}` }}
     >
       {group.displayDate}
@@ -129,12 +129,12 @@ function renderNode(
   index: number,
   onEventSelect?: (event: PtpEvent) => void,
 ): ReactNode {
-  const groupFirst = index === 0 ? " ptp-timeline__node--group-first" : "";
+  const groupFirst = index === 0 ? " sig-timeline__node--group-first" : "";
   return (
     <button
       key={`node-${event.id}`}
       type="button"
-      className={`ptp-timeline__node${groupFirst}`}
+      className={`sig-timeline__node${groupFirst}`}
       style={{ gridRow: row, gridColumn: "var(--tl-node-col)" }}
       aria-label={event.title}
       onClick={onEventSelect !== undefined ? () => onEventSelect(event) : undefined}
@@ -146,17 +146,17 @@ function renderNode(
 
 function renderItem(event: PtpEvent, row: number, index: number): ReactNode {
   const side = index % 2 === 0 ? "left" : "right";
-  const groupFirst = index === 0 ? " ptp-timeline__item--group-first" : "";
+  const groupFirst = index === 0 ? " sig-timeline__item--group-first" : "";
   return (
     <div
       key={`event-${event.id}`}
-      className={`ptp-timeline__item ptp-timeline__item--${side}${groupFirst}`}
+      className={`sig-timeline__item sig-timeline__item--${side}${groupFirst}`}
       style={{ gridRow: row }}
     >
       <PartyBadge colorToken={event.category} label={event.categoryLabel} />
-      <h3 className="ptp-timeline__title">{event.title}</h3>
+      <h3 className="sig-timeline__title">{event.title}</h3>
       {event.time !== undefined && (
-        <time className="ptp-timeline__time">{event.time}</time>
+        <time className="sig-timeline__time">{event.time}</time>
       )}
     </div>
   );
@@ -208,5 +208,5 @@ export const EventTimeline = memo(function EventTimeline({ events, onEventSelect
       row += 1;
     }
   }
-  return <div className="ptp-timeline">{children}</div>;
+  return <div className="sig-timeline">{children}</div>;
 });

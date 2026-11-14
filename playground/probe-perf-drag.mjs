@@ -11,7 +11,7 @@
  *   1. open the dashboard → the "Graphs & Planner" module tab;
  *   2. inject a rAF SAMPLER into the page (a before-fix that records
  *      consecutive frame timestamps into window.__frameDeltas);
- *   3. grab the FIRST graph node (g.ptp-graph__node) and drag it in 25
+ *   3. grab the FIRST graph node (g.sig-graph__node) and drag it in 25
  *      pointer steps across the canvas (~600ms);
  *   4. compute the drag-window deltas (frames that overlapped the
  *      mouse moves), report median/p95/max;
@@ -60,7 +60,7 @@ await page.waitForTimeout(1300); // settle: fonts + the bento stagger
 
 // Into the Graphs & Planner module.
 await page.click('[data-testid="tabs-module"] button:has-text("Graphs & Planner")');
-await page.waitForSelector('[data-testid="knowledge-graph"] g.ptp-graph__node');
+await page.waitForSelector('[data-testid="knowledge-graph"] g.sig-graph__node');
 await page.waitForTimeout(300);
 
 // THE SAMPLER — record every rAF timestamp's delta.
@@ -78,7 +78,7 @@ await page.evaluate(() => {
 });
 
 // THE DRAG — first node, 25 steps across the canvas.
-const node = page.locator('[data-testid="knowledge-graph"] g.ptp-graph__node').first();
+const node = page.locator('[data-testid="knowledge-graph"] g.sig-graph__node').first();
 const before = await node.boundingBox();
 if (before === null) {
   failures.push("the first graph node has no bounding box — nothing to drag");

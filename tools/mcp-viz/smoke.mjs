@@ -10,7 +10,7 @@
  * Asserts:
  *   (s1) tools/list contains EXACTLY the two tools;
  *   (s2) inspect_layout returns rect hits including at least one
- *        .ptp-timeline__node with width > 0 AND height > 0;
+ *        .sig-timeline__node with width > 0 AND height > 0;
  *   (s3) capture_screenshot returns non-empty base64 image data.
  *
  * Prerequisite: playground dev server on http://localhost:5173
@@ -116,10 +116,10 @@ try {
   });
   assert(layout.isError !== true, `inspect_layout errored: ${JSON.stringify(layout.content)}`);
   const layoutPayload = JSON.parse(layout.content[0].text);
-  const nodeHits = layoutPayload.hits.filter((h) => h.selector === ".ptp-timeline__node");
+  const nodeHits = layoutPayload.hits.filter((h) => h.selector === ".sig-timeline__node");
   const aliveNodes = nodeHits.filter((h) => h.rect.width > 0 && h.rect.height > 0);
-  assert(nodeHits.length > 0, "no .ptp-timeline__node hits at all");
-  assert(aliveNodes.length > 0, "no .ptp-timeline__node with width>0 && height>0");
+  assert(nodeHits.length > 0, "no .sig-timeline__node hits at all");
+  assert(aliveNodes.length > 0, "no .sig-timeline__node with width>0 && height>0");
 
   // (s3) capture_screenshot — non-empty base64.
   const shot = await rpc.call("tools/call", {

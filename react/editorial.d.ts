@@ -41,7 +41,7 @@ import { type IconName } from "./primitives.js";
 /**
  * Props for `<CarouselItem>` — the required child wrapper of a
  * `<Carousel>`. Children of `<Carousel>` must ALREADY be
- * `.ptp-carousel__item` elements (the track styles snap/flex them);
+ * `.sig-carousel__item` elements (the track styles snap/flex them);
  * this helper is the one-line way to produce them.
  */
 export interface CarouselItemProps {
@@ -51,7 +51,7 @@ export interface CarouselItemProps {
     children?: ReactNode;
 }
 /**
- * `<CarouselItem>` — ONE `<div class="ptp-carousel__item">`. The snap
+ * `<CarouselItem>` — ONE `<div class="sig-carousel__item">`. The snap
  * slot: `flex: 0 0 auto` + `scroll-snap-align: start` come from
  * css/editorial.css; width is content-driven (compose a min-width to
  * control the scroll rhythm).
@@ -76,7 +76,7 @@ export interface CarouselProps {
      * 3.0.0 replaces the old scrollLeft/itemWidth scroll math). "paged-3"
      * chunks the children into pages of THREE (pure math: ceil(n / 3))
      * and renders each page as ONE snap unit — a `repeat(3, 1fr)` grid
-     * with the 16px gap (css: .ptp-carousel__page); Prev/Next advance
+     * with the 16px gap (css: .sig-carousel__page); Prev/Next advance
      * ±1 PAGE, dots are one per PAGE, the indicator reads "p / P".
      */
     mode?: "paged-3" | "free-scroll";
@@ -88,7 +88,7 @@ export interface CarouselProps {
  *
  * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
  * track rides on top (full width, never squeezed between buttons), and
- * BELOW it one `.ptp-carousel__controls` flex row: prev · dots ·
+ * BELOW it one `.sig-carousel__controls` flex row: prev · dots ·
  * indicator ("1 / N", aria-live polite) · next. The readout never
  * overlaps card content — it lives in its own bar.
  *
@@ -103,7 +103,7 @@ export interface CarouselProps {
  *
  * paged-3: the children are chunked into PAGES OF THREE (pure math:
  * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
- * — a `.ptp-carousel__page` slide wearing the 100% width and the
+ * — a `.sig-carousel__page` slide wearing the 100% width and the
  * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
  * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
  * dots are one per page, and the indicator reads "p / P" (pages). The
@@ -135,7 +135,7 @@ export interface ProseBlockProps {
 /**
  * `<ProseBlock>` — the editorial slot (2.4.0).
  *
- * ONE `<div class="ptp-prose">`, NO props beyond className passthrough —
+ * ONE `<div class="sig-prose">`, NO props beyond className passthrough —
  * a pure typography container. css/editorial.css styles its
  * DESCENDANTS: `p` (0.875rem / 1.6 line-height), `blockquote` (inset
  * well, 4px Flamingo left rule, italic bright ink), `footer`/`cite`
@@ -200,12 +200,12 @@ export interface AnnouncementBannerProps {
  * `<AnnouncementBanner>` — the full-width announcement strip (2.4.0,
  * API evolved 2.4.1).
  *
- * `<div class="ptp-announcement" role="status">` (the live-region
+ * `<div class="sig-announcement" role="status">` (the live-region
  * contract: a banner that announces itself politely on mount — unlike
  * `<Callout>`'s static role="note") with `--status` set INLINE from
- * the variant map → `<span class="ptp-announcement__icon">` (the
+ * the variant map → `<span class="sig-announcement__icon">` (the
  * variant's icon, tinted `var(--status)`) → `<span
- * class="ptp-announcement__text">` → the optional `action` ghost
+ * class="sig-announcement__text">` → the optional `action` ghost
  * button → the optional ghost close (the modal-close signature:
  * muted, Teal hover). Dismissal is YOUR state — the component never
  * unmounts itself.

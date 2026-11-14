@@ -8,14 +8,14 @@
  * (`TimelineItem extends PtpEvent`) and adds the working half: a
  * composer, filter pills, settle toggles, deletes and an inspect
  * callback. The styles APPEND to css/timeline.css under the
- * .ptp-tmanager namespace — zero rules above were edited.
+ * .sig-tmanager namespace — zero rules above were edited.
  *
  * CONTROLLED, like the package's switches: the component owns NO
  * items — `items` renders, and every mutation rides the callbacks
  * (onAdd / onToggleSettled / onDelete). The only internal state is
  * UI-local: the composer fields and the active filter pill.
  *
- * DOM (Pruning Protocol): ONE `<section class="ptp-tmanager">` → the
+ * DOM (Pruning Protocol): ONE `<section class="sig-tmanager">` → the
  * composer row (package Input + two package Selects + the package
  * Button) → the filter strip (attribute-driven pills — aria-pressed IS
  * the state, the Flamingo underline answers it — plus the tabular

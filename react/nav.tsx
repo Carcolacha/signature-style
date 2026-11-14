@@ -13,7 +13,7 @@
  *
  * Link-agnostic API: `as` accepts any component-agnostic link renderer
  * (React Router's NavLink). Links receive
- * `{ href, className: "ptp-nav__link", children }`; with plain anchors
+ * `{ href, className: "sig-nav__link", children }`; with plain anchors
  * (`as` undefined) `activeHref` sets `aria-current="page"`, while with a
  * router link the ROUTER owns aria-current — leave `activeHref` unset.
  * The drawer links go through the same renderer.
@@ -85,7 +85,7 @@ function linkProps(
 ): Record<string, unknown> {
   return {
     href: item.href,
-    className: "ptp-nav__link",
+    className: "sig-nav__link",
     ...(onClick !== undefined ? { onClick } : {}),
     ...(active && plainAnchor ? { "aria-current": "page" } : {}),
   };
@@ -165,17 +165,17 @@ export function GlobalNav({ items, as, activeHref }: GlobalNavProps) {
 
   return (
     <>
-      <nav className="ptp-nav">
-        <ul className="ptp-nav__list">
+      <nav className="sig-nav">
+        <ul className="sig-nav__list">
           {renderItems(Link, items, activeHref, plainAnchor)}
         </ul>
         <button
           ref={menuBtnRef}
-          className="ptp-nav__menu-btn"
+          className="sig-nav__menu-btn"
           type="button"
           aria-label="Open menu"
           aria-expanded={menuOpen}
-          aria-controls="ptp-nav-drawer"
+          aria-controls="sig-nav-drawer"
           onClick={open}
         >
           <Icon name="Menu" aria-hidden />
@@ -183,11 +183,11 @@ export function GlobalNav({ items, as, activeHref }: GlobalNavProps) {
       </nav>
       {menuOpen &&
         createPortal(
-          <div className="ptp-modal-backdrop" onClick={close}>
+          <div className="sig-modal-backdrop" onClick={close}>
             <aside
-              id="ptp-nav-drawer"
+              id="sig-nav-drawer"
               ref={drawerRef}
-              className="ptp-nav-drawer"
+              className="sig-nav-drawer"
               data-open="true"
               role="dialog"
               aria-modal="true"
@@ -195,11 +195,11 @@ export function GlobalNav({ items, as, activeHref }: GlobalNavProps) {
               tabIndex={-1}
               onClick={(domEvent) => domEvent.stopPropagation()}
             >
-              <ul className="ptp-nav-drawer__list">
+              <ul className="sig-nav-drawer__list">
                 {renderItems(Link, items, activeHref, plainAnchor, close)}
               </ul>
               <button
-                className="ptp-modal-close"
+                className="sig-modal-close"
                 type="button"
                 aria-label="Close menu"
                 onClick={close}
@@ -254,7 +254,7 @@ export function Breadcrumbs({ items, label, children }: BreadcrumbsProps) {
     return <>{children ?? null}</>;
   }
   return (
-    <nav className="ptp-breadcrumbs" aria-label={label ?? "Breadcrumb"}>
+    <nav className="sig-breadcrumbs" aria-label={label ?? "Breadcrumb"}>
       <ol>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -268,7 +268,7 @@ export function Breadcrumbs({ items, label, children }: BreadcrumbsProps) {
                 <a href={item.href}>{item.label}</a>
               )}
               {!isLast && (
-                <span className="ptp-breadcrumbs__sep" aria-hidden="true">
+                <span className="sig-breadcrumbs__sep" aria-hidden="true">
                   /
                 </span>
               )}

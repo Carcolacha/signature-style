@@ -15,13 +15,13 @@
    full boundary reads on ANY surface.
 
    THREE RULES:
-   - `.ptp-progress` — the track (inset chrome + hairline boundary,
+   - `.sig-progress` — the track (inset chrome + hairline boundary,
      clipped fill).
-   - `.ptp-progress__fill` — the party-colored data ink.
-   - `.ptp-progress__caption` — the 2.2.0 limit caption (mono,
+   - `.sig-progress__fill` — the party-colored data ink.
+   - `.sig-progress__caption` — the 2.2.0 limit caption (mono,
      tabular-nums so digits don't jitter as values tick).
 
-   2.4.0 ADDITION — `.ptp-stat-card` (+ __label / __value / __delta
+   2.4.0 ADDITION — `.sig-stat-card` (+ __label / __value / __delta
    [--up/--down]) — the KPI card. FLAT: surface background, the 20%
    hairline, NO shadow (the e1 doctrine extends to every new file).
    Delta colors are content outcomes: up → --party-green, down →
@@ -31,7 +31,7 @@
    lives on the circles/points (the ring's boundary hairline is an SVG
    circle, not css); this file deliberately does not know they exist.
 
-   2.7.0 ANALYTICAL CHARTS — .ptp-bars / .ptp-area join (BarChart +
+   2.7.0 ANALYTICAL CHARTS — .sig-bars / .sig-area join (BarChart +
    AreaChart): capacity tracks on var(--bg-inset), dashed reference
    lines, hover readouts (class-driven opacity), the useId-gradient
    area, point circles. STILL ZERO box-shadow, ZERO hex — chart
@@ -41,7 +41,7 @@
    on the fill. `prefers-reduced-motion` turns it off outright — motion
    is a gift, not a requirement.
 
-   2.9.0 CONTAINER REFLOW — `.ptp-stat-card` inside an inline-size
+   2.9.0 CONTAINER REFLOW — `.sig-stat-card` inside an inline-size
    container (the playground's `.sig-cell` wrapper) at ≥ 360px docks
    the sparkline BESIDE the metric (grid: metric column + 96px trend
    column, the value type scales 1.5 → 1.75rem); narrower containers —
@@ -54,7 +54,7 @@
 
 /* The track — an 8px rung on the grid, INSET chrome since 2.2.0, the
    20% hairline is the visible 100% boundary on any card, clipped fill. */
-.ptp-progress {
+.sig-progress {
   height: 8px;
   border-radius: var(--radius-ui);
   background: var(--bg-inset);
@@ -66,7 +66,7 @@
    the track (a sibling, never a wrapper). Mono stack + tabular-nums:
    "$1,325 / $2,000" keeps every digit on the same grid so the number
    doesn't shimmy as it counts. Muted: it is metadata, not data. */
-.ptp-progress__caption {
+.sig-progress__caption {
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
@@ -76,7 +76,7 @@
 
 /* The fill — height 100% of the track, inherits the track's radius,
    animates its width with the owner-mandated physics. */
-.ptp-progress__fill {
+.sig-progress__fill {
   height: 100%;
   border-radius: inherit;
   transition: width 0.3s ease-out;
@@ -86,7 +86,7 @@
    visitor asked for reduced motion (the base layer's global guard
    also runs). */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-progress__fill {
+  .sig-progress__fill {
     transition: none;
   }
 }
@@ -98,7 +98,7 @@
    tabular-nums headline; the delta colors are content outcomes (up →
    party-green, down → party-peach — Rule of Engagement). The sparkline
    it may contain needs no css (pure SVG, like the ring). */
-.ptp-stat-card {
+.sig-stat-card {
   display: flex;
   flex-direction: column;
   gap: var(--space-tight);
@@ -107,27 +107,27 @@
   border-radius: var(--radius-ui);
   padding: var(--space-standard);
 }
-.ptp-stat-card__label {
+.sig-stat-card__label {
   color: var(--text-muted);
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
-.ptp-stat-card__value {
+.sig-stat-card__value {
   color: var(--text-main);
   font-size: 1.5rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
-.ptp-stat-card__delta {
+.sig-stat-card__delta {
   color: var(--text-muted);
   font-size: 0.75rem;
   font-weight: 600;
 }
-.ptp-stat-card__delta--up {
+.sig-stat-card__delta--up {
   color: var(--party-green);
 }
-.ptp-stat-card__delta--down {
+.sig-stat-card__delta--down {
   color: var(--party-peach);
 }
 
@@ -138,26 +138,26 @@
    8px-grid friendly). The sparkline's preserveAspectRatio="none"
    stretch fills the docked box. */
 @container (min-width: 360px) {
-  .ptp-stat-card {
+  .sig-stat-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: var(--space-standard);
     align-items: center;
   }
-  .ptp-stat-card > svg {
+  .sig-stat-card > svg {
     grid-column: 2;
     grid-row: 1 / span 3;
     width: 96px;
     align-self: center;
   }
-  .ptp-stat-card__label {
+  .sig-stat-card__label {
     grid-column: 1;
   }
-  .ptp-stat-card__value {
+  .sig-stat-card__value {
     grid-column: 1;
     font-size: 1.75rem;
   }
-  .ptp-stat-card__delta {
+  .sig-stat-card__delta {
     grid-column: 1;
   }
 }
@@ -166,22 +166,22 @@
    3.0.0 STATRING ZOOM + DETAIL — scoped additions, the dash geometry in
    react/viz.tsx untouched (the owner authorized the MINIMAL component
    growth: the internal expand state + total/unit props). The svg WRAPPER
-   (.ptp-ring__dial) is the fixed square (aspect-ratio 1/1, 120px default
+   (.sig-ring__dial) is the fixed square (aspect-ratio 1/1, 120px default
    the component feeds inline); :hover AND the root's [data-expanded]
    zoom it to scale(1.07) on the transform-transition token. The detail
-   strip (.ptp-ring__detail) rides the 0fr → 1fr grid-rows trick
+   strip (.sig-ring__detail) rides the 0fr → 1fr grid-rows trick
    (animatable height without a magic max-height), reading tabular-nums
    "{value}% · {numerator} / {denominator} {unit}" — e.g. "85% · 170 /
    200 Guests". Reduced motion kills both transitions outright.
    ========================================================================== */
 
-.ptp-ring {
+.sig-ring {
   display: inline-flex;
   flex-direction: column;
   gap: var(--space-tight);
 }
 
-.ptp-ring__dial {
+.sig-ring__dial {
   aspect-ratio: 1 / 1;
   /* 120px default — the component overrides inline via the size prop. */
   width: 120px;
@@ -189,11 +189,11 @@
   cursor: pointer;
   transition: var(--transition-transform);
 }
-.ptp-ring__dial:hover,
-.ptp-ring[data-expanded="true"] .ptp-ring__dial {
+.sig-ring__dial:hover,
+.sig-ring[data-expanded="true"] .sig-ring__dial {
   transform: scale(1.07);
 }
-.ptp-ring__dial > svg {
+.sig-ring__dial > svg {
   display: block;
   width: 100%;
   height: 100%;
@@ -202,15 +202,15 @@
 /* THE DETAIL STRIP — slides open under the ring (0fr → 1fr: the row
    collapses to zero without a magic max-height). Tabular digits never
    jitter; muted 0.75rem: the strip is metadata under the dial. */
-.ptp-ring__detail {
+.sig-ring__detail {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows var(--transition-transform);
 }
-.ptp-ring__detail[data-open="true"] {
+.sig-ring__detail[data-open="true"] {
   grid-template-rows: 1fr;
 }
-.ptp-ring__detail-inner {
+.sig-ring__detail-inner {
   overflow: hidden;
   min-height: 0;
   font-variant-numeric: tabular-nums;
@@ -221,14 +221,14 @@
 
 /* Motion is a gift, not a requirement — the zoom and the slide snap. */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-ring__dial,
-  .ptp-ring__detail {
+  .sig-ring__dial,
+  .sig-ring__detail {
     transition: none;
   }
 }
 
 /* ==========================================================================
-   2.7.0 ANALYTICAL CHARTS — .ptp-bars / .ptp-area (BarChart + AreaChart).
+   2.7.0 ANALYTICAL CHARTS — .sig-bars / .sig-area (BarChart + AreaChart).
    The e1 treaty holds: chart interiors stay FLAT — every rule below is
    hairlines, fills and opacity, ZERO box-shadow, ZERO hex. Hover reveals
    are CLASS-driven (the attribute/class is the state): the bar brightens
@@ -237,7 +237,7 @@
    ========================================================================== */
 
 /* The bar chart svg — fills its card, proportions pinned by the viewBox. */
-.ptp-bars {
+.sig-bars {
   display: block;
   width: 100%;
   height: auto;
@@ -245,24 +245,24 @@
 
 /* The capacity track — inset chrome + the 20% hairline (the 2.2.0 track
    doctrine, transplanted into SVG). */
-.ptp-bars__track {
+.sig-bars__track {
   fill: var(--bg-inset);
   stroke: color-mix(in srgb, var(--text-muted) 20%, transparent);
   stroke-width: 1;
 }
 
 /* The value bar — party ink (inline fill), one opacity step of emphasis. */
-.ptp-bars__bar {
+.sig-bars__bar {
   opacity: 0.85;
   transition: var(--transition-standard);
 }
-.ptp-bars__group:hover .ptp-bars__bar {
+.sig-bars__group:hover .sig-bars__bar {
   opacity: 1;
 }
 
 /* THE HOVER READOUT — hidden until its group is hovered; tabular digits
    never jitter as the visitor sweeps the chart. */
-.ptp-bars__value {
+.sig-bars__value {
   opacity: 0;
   fill: var(--text-main);
   font-size: 11px;
@@ -270,12 +270,12 @@
   font-variant-numeric: tabular-nums;
   transition: var(--transition-standard);
 }
-.ptp-bars__group:hover .ptp-bars__value {
+.sig-bars__group:hover .sig-bars__value {
   opacity: 1;
 }
 
 /* Axis labels — the mono muted 0.6875rem voice (metadata, not data). */
-.ptp-bars__label {
+.sig-bars__label {
   fill: var(--text-muted);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.6875rem;
@@ -283,37 +283,37 @@
 
 /* The dashed 25/50/75% reference lines — the ONLY grid the data-ink
    doctrine allows (dasharray rides the SVG attribute; color here). */
-.ptp-bars__refline {
+.sig-bars__refline {
   stroke: color-mix(in srgb, var(--text-muted) 25%, transparent);
 }
 
 /* The area chart svg — same box contract as the bars. */
-.ptp-area {
+.sig-area {
   display: block;
   width: 100%;
   height: auto;
 }
 
 /* The gradient-filled area path rides the svg gradient at half opacity. */
-.ptp-area__fill {
+.sig-area__fill {
   opacity: 0.5;
 }
 
 /* The smoothed line — stroke color is inline (per-instance token). */
-.ptp-area__line {
+.sig-area__line {
   fill: none;
 }
 
 /* The data points — surface-filled discs ringed by the series token;
    hover enlarges the disc (SVG geometry property) and reveals the readout. */
-.ptp-area__point {
+.sig-area__point {
   fill: var(--bg-surface);
   transition: var(--transition-standard);
 }
-.ptp-area__spot:hover .ptp-area__point {
+.sig-area__spot:hover .sig-area__point {
   r: 6px;
 }
-.ptp-area__readout {
+.sig-area__readout {
   opacity: 0;
   fill: var(--text-main);
   font-size: 11px;
@@ -321,10 +321,10 @@
   font-variant-numeric: tabular-nums;
   transition: var(--transition-standard);
 }
-.ptp-area__spot:hover .ptp-area__readout {
+.sig-area__spot:hover .sig-area__readout {
   opacity: 1;
 }
-.ptp-area__xlabel {
+.sig-area__xlabel {
   fill: var(--text-muted);
   font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
   font-size: 0.6875rem;
@@ -332,10 +332,10 @@
 
 /* Motion is a gift, not a requirement — the hover reveals snap instead. */
 @media (prefers-reduced-motion: reduce) {
-  .ptp-bars__bar,
-  .ptp-bars__value,
-  .ptp-area__point,
-  .ptp-area__readout {
+  .sig-bars__bar,
+  .sig-bars__value,
+  .sig-area__point,
+  .sig-area__readout {
     transition: none;
   }
 }

@@ -33,7 +33,7 @@ per-unique-class coverage summary (`total` / `visible` / `notVisible`).
 | Param | Type | Default | Notes |
 |---|---|---|---|
 | `url` | string | `http://localhost:5173` | Any absolute URL |
-| `selectors` | string[] | `["[data-testid]", ".ptp-timeline__node", ".ptp-timeline__item", ".ptp-timeline__header", ".ptp-progress", ".ptp-progress__fill", ".bento__card", ".bento__metric", ".bento__btn"]` | The dashboard's anatomy |
+| `selectors` | string[] | `["[data-testid]", ".sig-timeline__node", ".sig-timeline__item", ".sig-timeline__header", ".sig-progress", ".sig-progress__fill", ".bento__card", ".bento__metric", ".bento__btn"]` | The dashboard's anatomy |
 
 Navigation waits for `networkidle` **plus 600ms** so entry animations settle
 before measurement — no mid-flight rects.
@@ -97,5 +97,5 @@ The standard Claude-Desktop-style shape for any MCP host that reads
 
 `npm run smoke` spawns `dist/server.js` and speaks raw JSON-RPC over stdio
 (initialize → tools/list → tools/call × 2), asserting: exactly the two tools
-are listed; at least one `.ptp-timeline__node` measures width>0 && height>0;
+are listed; at least one `.sig-timeline__node` measures width>0 && height>0;
 the screenshot returns non-empty base64. ALL PASS or the release is blocked.

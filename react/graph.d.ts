@@ -28,7 +28,7 @@
  * fill none.
  *
  * FOCUS DIMMING is class-driven, not style-driven: selecting a node
- * adds `.ptp-graph--focused` to the svg and `data-dim="true"` to every
+ * adds `.sig-graph--focused` to the svg and `data-dim="true"` to every
  * node/edge NOT adjacent to the selection; css/graph.css answers with
  * opacity 0.25. The selected circle's stroke flips to the structural
  * Flamingo at width 3 (selection is STRUCTURE, not content — Rule of

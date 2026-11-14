@@ -71,7 +71,7 @@
  *         the package is the private @edwyn/visual-cortex-mcp, and root
  *         package.json carries the "verify:mcp" script that actually
  *         runs the smoke (raw JSON-RPC: exactly two tools, a
- *         .ptp-timeline__node with real area, non-empty screenshot);
+ *         .sig-timeline__node with real area, non-empty screenshot);
  *   (m3)  data-testid wiring in App.tsx — the stable hooks the cortex
  *         greps for: four hub cards, three telemetry metrics, and the
  *         primary toast button. 2.0.0: the card hooks were renamed
@@ -84,7 +84,7 @@
  *         (color-mix(in srgb, var(--bg-surface) 80%, transparent) +
  *         backdrop-filter: blur(8px), webkit-prefixed too) while
  *         playground/styles.css ALONE carries the node-shadow needle
- *         (`.hub__card .ptp-timeline__node` → 0 4px 12px
+ *         (`.hub__card .sig-timeline__node` → 0 4px 12px
  *         rgba(0, 0, 0, 0.2)); a targeted scan re-asserts timeline.css
  *         declares ZERO box-shadow — the package keeps its shadow law,
  *         elevation lives in the composition layer (e1 stays green).
@@ -199,7 +199,7 @@
  *         values, and the compiled react/surface.{js,d.ts} exist.
  *   (v22) TELEMETRY LIMITS, the LIVING v1 evolution — css/viz.css:
  *         track on var(--bg-inset) + the 20% hairline boundary +
- *         .ptp-progress__caption (mono, tabular-nums, muted, 0.75rem);
+ *         .sig-progress__caption (mono, tabular-nums, muted, 0.75rem);
  *         react/viz.tsx: the limitText caption prop, the ring boundary
  *         hairline circle, the centered showValue readout with
  *         tabular-nums. (scripts/verify.mjs's frozen v1 floor reads
@@ -256,7 +256,7 @@
  *         two party rings), the Forms branch (Select with three
  *         options, Checkbox, the v2.1.0 matrix).
  *   (dd6) CORTEX SWEEP — tools/mcp-viz/server.ts DEFAULT_SELECTORS
- *         carries .ptp-data-table / .ptp-tabs__tab / .ptp-callout
+ *         carries .sig-data-table / .sig-tabs__tab / .sig-callout
  *         (plus the 2.2.0 .sig-surface-card) and the server version
  *         string is 2.3.0.
  *
@@ -278,7 +278,7 @@
  *         (re-exports). scripts/verify.mjs stays BYTE-FROZEN.
  *   (n-hub4)  V2.4.0 FROZEN PROOF, rebased to v2.3.0 incl tools/: tools/
  *         is UNTOUCHED this release (the cortex sweep's class targets
- *         are unchanged — ptp- prefixes only), so no tools exclusion
+ *         are unchanged — sig- prefixes only), so no tools exclusion
  *         delta is authorized; the sweep needles (dd6) stay pinned.
  *   (m3)  the 2.4.0 hooks join: data-testid="kpi-trio",
  *         data-testid="banner-release", data-testid="carousel-clippings".
@@ -297,7 +297,7 @@
  *         types) re-exported from BOTH react/index.d.ts AND
  *         react/index.js; react/editorial.{js,d.ts} compiled on disk.
  *   (ed3) FORMS ADDITIONS — css/forms.css: the :has() focus ring
- *         (.ptp-radio-card:has(input:focus-visible) → the Flamingo
+ *         (.sig-radio-card:has(input:focus-visible) → the Flamingo
  *         outline; the no-:has degrade documented), the radio selected
  *         contract (--selected class + :has(input:checked) → 2px
  *         Flamingo border + the 10% cake-tint background), the visually
@@ -308,7 +308,7 @@
  *   (ed4) VIZ ADDITIONS — react/viz.tsx: Sparkline renders ONE svg
  *         (role="img", preserveAspectRatio="none") with EXACTLY two
  *         elements (polygon + polyline) plus the --party-* runtime
- *         guard and the ≥2-point guard; css/viz.css: .ptp-stat-card is
+ *         guard and the ≥2-point guard; css/viz.css: .sig-stat-card is
  *         FLAT (surface background + 20% hairline, zero shadow —
  *         e1-scanned) with tabular-nums value + uppercase label +
  *         up/down party delta colors.
@@ -332,7 +332,7 @@
  *         and css/signature-style.css are NOT excluded — both must stay
  *         byte-identical to v2.4.0. scripts/verify.mjs stays
  *         BYTE-FROZEN; tools/ fully frozen (no DEFAULT_SELECTORS change
- *         needed — every 2.4.1 class keeps the ptp- prefix).
+ *         needed — every 2.4.1 class keeps the sig- prefix).
  *   (dd4 AMENDMENT)  the codex title needle moves to v2.7.
  *   (ed1 AMENDMENT)  the quote-rule needle moves Flamingo → mauve.
  *   (ed2 AMENDMENT)  AnnouncementStatus → AnnouncementVariant +
@@ -346,16 +346,16 @@
  *   (showcase AMENDMENT)  label="Contribution" + prefix="$", banner
  *         variant="announcement" + action, v2.4.1 banner copy.
  *   (af1) DATA ALIGN — css/data.css carries the ancestor-scoped
- *         .ptp-data-table__align-{left,center,right} utilities (the
- *         (0,2,0) prefix beats .ptp-data-table thead th (0,1,2) — the
+ *         .sig-data-table__align-{left,center,right} utilities (the
+ *         (0,2,0) prefix beats .sig-data-table thead th (0,1,2) — the
  *         bare class would LOSE and re-create the bug); react/data.tsx
  *         declares align?: "left"|"right"|"center" and flows
  *         dataTableCellClass to BOTH th and td; react/data.d.ts is
  *         factual; App.tsx ledger sets numeric + align: "right".
  *   (af2) FORM ANATOMY — css/forms.css: __required (peach, visual
  *         only), __row/__prefix (the justified adornment composition),
- *         the switch wrapper .ptp-switch (inline-flex) + migrated
- *         .ptp-switch__pill (NO pill property left on the bare
+ *         the switch wrapper .sig-switch (inline-flex) + migrated
+ *         .sig-switch__pill (NO pill property left on the bare
  *         wrapper, no [aria-checked] outside the pill, reduced-motion
  *         follows) + __text (text-main 0.875rem/500), the radio
  *         selected lift to var(--bg-surface) with the 2px Flamingo
@@ -373,7 +373,7 @@
  *         (FormField/RadioCardGroup/ToggleSwitch/AnnouncementBanner/
  *         ProseBlock/Carousel snippets + align/lift/mauve needles).
  *   Negative test (falsifiability, restore-verified): removing the
- *         `.ptp-data-table .ptp-data-table__align-right` rule from
+ *         `.sig-data-table .sig-data-table__align-right` rule from
  *         css/data.css flips (af1) to FAIL; restore → PASS
  *         (git-verified byte-identical).
  *
@@ -403,8 +403,8 @@
  *         frozen css files stay byte-identical.
  *   (n-hub4)  V2.5.0 FROZEN PROOF, rebased to v2.4.1 incl tools/: the
  *         ONLY tools/ delta authorized is tools/mcp-viz/server.ts
- *         (owner-editable: DEFAULT_SELECTORS += .ptp-btn,
- *         .ptp-stat-card, .sig-shell; version 2.5.0).
+ *         (owner-editable: DEFAULT_SELECTORS += .sig-btn,
+ *         .sig-stat-card, .sig-shell; version 2.5.0).
  *   (m3)  the 2.5.0 hooks join: data-testid="guest-form",
  *         "ledger-table", "ring-rsvp" (the live-state probes); the
  *         metric/button/tab/banner/carousel/kpi hooks stay.
@@ -422,7 +422,7 @@
  *         (text-main 0.875rem/500), __desc, the owning well
  *         (focus-within Flamingo ring, [data-invalid] peach),
  *         the chips (hairline-separated), the scoped bare-input kill,
- *         @keyframes ptp-shake + the reduced-motion kill.
+ *         @keyframes sig-shake + the reduced-motion kill.
  *   (pw1) PASSWORDINPUT — forms.tsx: the Eye/EyeOff toggle
  *         (live-map-probed), the role="progressbar" meter (0..4, now
  *         score), data-score, the four rules + Weak/Fair/Good/Strong,
@@ -431,7 +431,7 @@
  *   (bt1) THE BUTTON FAMILY — primitives.tsx: 4 variants, 3 sizes,
  *         leftIcon/rightIcon, loading (spinner replaces icons, aria-busy
  *         + disabled); css/primitives.css: the 4 variant classes, 2
- *         size classes, @keyframes ptp-spin, :active scale(0.97), the
+ *         size classes, @keyframes sig-spin, :active scale(0.97), the
  *         Flamingo focus ring, ZERO hex + ZERO box-shadow (the flat
  *         primary is package law); bundle membership after data.css;
  *         umbrella re-export.
@@ -450,7 +450,7 @@
  *         carries the contract); __required, the switch migration and
  *         the radio lift needles stay.
  *   (dd4 AMENDMENT)  the codex title needle moves to v2.8.
- *   (dd6 AMENDMENT)  the cortex sweep grows .ptp-btn / .ptp-stat-card
+ *   (dd6 AMENDMENT)  the cortex sweep grows .sig-btn / .sig-stat-card
  *         / .sig-shell; the server version moves to 2.5.0.
  *   (showcase AMENDMENT)  the bento needles: Postal Code +
  *         descriptions + validMessage + PasswordInput + the archetypes
@@ -518,7 +518,7 @@
  *         size={avatarSize} + ringToken, the 2–3 stats dev-warn;
  *         css/cards.css: the tabular stat values.
  *   (cc5)  CHRONICLETIMELINE — react/cards.tsx: the <ol
- *         class="ptp-chronicle"> with the inline --accent variable;
+ *         class="sig-chronicle"> with the inline --accent variable;
  *         css/cards.css: the ::before spine, the absolutely-parked
  *         12px node, zero shadows.
  *   (mi1)  THE MASTER INDEX — App.tsx: the filter Tabs (label "Catalog
@@ -530,16 +530,16 @@
  *         styles.css: .hub__row--3 (repeat(3, 1fr)) + .hub__row--4
  *         with the 768px collapses, .hub--index as the flex column.
  *   (ed1 AMENDMENT)  the track scrollbar needle moves thin → none +
- *         the webkit display:none; the .ptp-carousel__dots /
- *         .ptp-carousel__dot anatomy joins ([data-active="true"] →
+ *         the webkit display:none; the .sig-carousel__dots /
+ *         .sig-carousel__dot anatomy joins ([data-active="true"] →
  *         the Flamingo 1.5rem pill).
  *   (dd4 AMENDMENT)  the codex title needle moves to v2.9; the codex
  *         gains the six new recipes (SurfaceCard chromatic params,
  *         ContentCard, ReferenceCard, TierCard, ProfileCard,
  *         ChronicleTimeline) — fact-checked against the compiled
  *         .d.ts files.
- *   (dd6 AMENDMENT)  the cortex sweep grows .ptp-carousel__dot /
- *         .ptp-chronicle__item; the server version moves to 2.6.0.
+ *   (dd6 AMENDMENT)  the cortex sweep grows .sig-carousel__dot /
+ *         .sig-chronicle__item; the server version moves to 2.6.0.
  *   (s1 AMENDMENT)  the elevation literals re-tune: the raised tier is
  *         inset 0.06 + ambient 0.42 (the base card default); the
  *         hover deepen 0 16px 40px rgba(0, 0, 0, 0.5) stands.
@@ -560,7 +560,7 @@
  *         react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts}).
  *   (b7)/(n-hub4)  REBASED to the v2.6.0 baseline. The owner-authorized
  *         2.7.0 deltas, and NOTHING else: css/viz.css (BarChart +
- *         AreaChart classes), css/timeline.css (APPEND-only .ptp-tmanager
+ *         AreaChart classes), css/timeline.css (APPEND-only .sig-tmanager
  *         block, e2-governed), css/graph.css (NEW), css/signature-style.css
  *         (the graph import), react/viz.{tsx,js,d.ts} (BarChart/AreaChart
  *         growth), react/graph.{tsx,js,d.ts} (NEW),
@@ -578,7 +578,7 @@
  *         the exported PURE layoutGraph + cubicBezierEdge helpers, the
  *         role="application" svg, one bezier edge per node-with-parent
  *         (data-parent/data-child), the class-driven
- *         .ptp-graph--focused dim, the footer inspect strip, the
+ *         .sig-graph--focused dim, the footer inspect strip, the
  *         "Add & Link" toolbar; signature-style.css imports
  *         ./graph.css layer(cascade) AFTER ./cards.css; umbrella
  *         re-exports.
@@ -686,7 +686,7 @@
  *            shared/ is NOT packed (files-array excluded — the (b3)
  *            proof stays 58);
  *   (par)    card parity: bg-surface + 15% glass border + radius-card +
- *            220px floor on .ptp-flip-card/.ptp-accordion/.ptp-matchup,
+ *            220px floor on .sig-flip-card/.sig-accordion/.sig-matchup,
  *            the 12% tinted wells, the 45% [data-accent] top accent,
  *            cards.css STILL absolute zero;
  *   (car3)   carousel modes: paged-3 (repeat(3,1fr) snap pages, page
@@ -720,7 +720,7 @@
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, writeFileSync, unlinkSync, existsSync, readdirSync } from "node:fs";
 import { execFileSync, spawnSync } from "node:child_process";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -1114,6 +1114,10 @@ for (const rel of readdirSync(resolve(root, "css")).map((f) => join("css", f))) 
 // single-use entry ("background: var(--bg-base);") was consumed by THAT
 // release. v2.0.0 sanctions nothing — timeline.css was untouched this
 // release, so the diff is empty and (e2) passes trivially.
+// 3.1.0 AMENDMENT (the purge): the baseline is NORMALIZED through the
+// owner-mandated rename map (.ptp- → .sig-) before diffing — a pure rename
+// is not a code deletion, so the renamed baseline compares equal and REAL
+// deletions still fail the gate.
 const timelineCss16 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
 const RESURRECTION_NEEDLES = [
   ["align-self: start", "the spanning sticky header must not stretch into a cover slab"],
@@ -1125,15 +1129,25 @@ for (const [needle, label] of RESURRECTION_NEEDLES) {
     failures.push(`(e2) css/timeline.css must contain ${needle} — ${label}`);
   }
 }
+const E2_RENAME_MAP = [{ from: /\.ptp-/g, to: ".sig-" }];
 let timelineDiffLines = [];
+let normalizedBaseline = null;
 try {
-  timelineDiffLines = execFileSync(
-    "git",
-    ["diff", "v1.8.0", "--", "css/timeline.css"],
-    { cwd: root, encoding: "utf8" },
-  ).split("\n");
+  // Diff the CURRENT file against the RENAMED v1.8.0 baseline. spawnSync
+  // (not execFileSync) because `git diff --no-index` exits 1 when the files
+  // DIFFER — which for a touched file is the expected, non-throwing case.
+  const v180raw = execFileSync("git", ["show", "v1.8.0:css/timeline.css"], { cwd: root, encoding: "utf8" });
+  normalizedBaseline = v180raw;
+  for (const { from, to } of E2_RENAME_MAP) normalizedBaseline = normalizedBaseline.replace(from, to);
+  writeFileSync(resolve(root, ".git/e2-baseline-normalized.css"), normalizedBaseline);
+  const diff = spawnSync("git", ["diff", "--no-index", "--", ".git/e2-baseline-normalized.css", "css/timeline.css"], {
+    cwd: root,
+    encoding: "utf8",
+  });
+  timelineDiffLines = String(diff.stdout ?? "").split("\n");
+  unlinkSync(resolve(root, ".git/e2-baseline-normalized.css"));
 } catch (error) {
-  failures.push(`(e2) could not diff css/timeline.css vs v1.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(e2) could not diff css/timeline.css vs the normalized v1.8.0 baseline — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 const deletions = timelineDiffLines.filter((l) => l.startsWith("-") && !l.startsWith("---"));
 // Precise check: map each deleted line back to its position in the v1.8.0
@@ -1144,7 +1158,13 @@ const E2_DELETED_ALLOWLIST = [];
 let allowlist = [...E2_DELETED_ALLOWLIST];
 let oldTimeline = null;
 try {
-  oldTimeline = execFileSync("git", ["show", "v1.8.0:css/timeline.css"], { cwd: root, encoding: "utf8" }).split("\n");
+  // The mask target is the NORMALIZED baseline (the diff's old side) so the
+  // hunk-header line numbers align after the 3.1.0 rename normalization.
+  if (normalizedBaseline !== null) {
+    oldTimeline = normalizedBaseline.split("\n");
+  } else {
+    oldTimeline = execFileSync("git", ["show", "v1.8.0:css/timeline.css"], { cwd: root, encoding: "utf8" }).split("\n");
+  }
 } catch (error) {
   failures.push(`(e2) could not read v1.8.0:css/timeline.css — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
@@ -1212,10 +1232,13 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v2.9.1 are owner-authorized ----------
-// 3.0.0 REBASE (the floor moves v2.9.0 → v2.9.1): the major. The
-// owner-authorized 3.0.0 deltas (the per-task enumerated set), and
-// NOTHING else:
+// ---- (b7) SAFETY PROOF: core deltas vs v3.0.0 are owner-authorized ----------
+// 3.1.0 REBASE (the floor moves v2.9.1 → v3.0.0): the PURE-RENAME release
+// ("Pure Engine — Complete Domain Decoupling & Standalone Identity"). The
+// owner-mandated 3.1.0 PURGE deltas (the per-task enumerated set), and
+// NOTHING else — every delta below is a NAME/COPY change; VALUES and
+// LAYOUT stay byte-stable (proven by the tokens.json guard below and the
+// cortex ZERO-delta probe):
 //   css/tokens.css           — the 16-color chromatic expansion (cobalt
 //                              + 15 fills, blue retired) + --radius-card
 //                              + their documented comments
@@ -1246,73 +1269,114 @@ if (oldTimeline !== null) {
 //                              verify.mjs pin-re-target precedent)
 //   SYSTEM_PROMPT.md         — the v3.3 codex
 // demo/, tools/ stay byte-identical to v2.9.1.
-const B7_LOCKED_300 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
-const AUTHORIZED_300 = new Set([
+const B7_LOCKED_310 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/"];
+// The v3.1.0 authorized delta set: exactly the files the PURGE touches
+// (class prefix .ptp-→.sig-, tokens --party-→--sig-, identifiers
+// PtpEvent/PartyBadge/PartyColorToken/PartyTokenName, standalone copy,
+// storage keys, the purity gate itself).
+const AUTHORIZED_310 = new Set([
   "css/tokens.css",
-  "tokens.json",
-  "scripts/verify.mjs",
   "css/cards.css",
+  "css/command.css",
+  "css/data.css",
   "css/editorial.css",
   "css/forms.css",
-  "css/viz.css",
   "css/graph.css",
+  "css/modal.css",
+  "css/nav.css",
+  "css/primitives.css",
+  "css/skeleton.css",
   "css/surface.css",
+  "css/timeline.css",
+  "css/toast.css",
+  "css/viz.css",
   "react/ThemeProvider.tsx",
   "react/ThemeProvider.js",
   "react/ThemeProvider.d.ts",
+  "react/cards.tsx",
+  "react/cards.js",
+  "react/cards.d.ts",
+  "react/command.tsx",
+  "react/command.js",
+  "react/command.d.ts",
+  "react/data.tsx",
+  "react/data.js",
+  "react/data.d.ts",
   "react/editorial.tsx",
   "react/editorial.js",
   "react/editorial.d.ts",
   "react/forms.tsx",
   "react/forms.js",
   "react/forms.d.ts",
-  "react/viz.tsx",
-  "react/viz.js",
-  "react/viz.d.ts",
   "react/graph.tsx",
   "react/graph.js",
   "react/graph.d.ts",
-  "react/data.tsx",
-  "react/data.js",
-  "react/data.d.ts",
+  "react/index.ts",
+  "react/index.js",
+  "react/index.d.ts",
+  "react/modal.tsx",
+  "react/modal.js",
+  "react/modal.d.ts",
+  "react/nav.tsx",
+  "react/nav.js",
+  "react/nav.d.ts",
+  "react/primitives.tsx",
+  "react/primitives.js",
+  "react/primitives.d.ts",
+  "react/skeleton.tsx",
+  "react/skeleton.js",
+  "react/skeleton.d.ts",
+  "react/surface.tsx",
+  "react/surface.js",
+  "react/surface.d.ts",
   "react/timeline.tsx",
   "react/timeline.js",
   "react/timeline.d.ts",
   "react/timeline-manager.tsx",
   "react/timeline-manager.js",
+  "react/timeline-manager.d.ts",
+  "react/toast.tsx",
+  "react/toast.js",
+  "react/toast.d.ts",
+  "react/viz.tsx",
+  "react/viz.js",
+  "react/viz.d.ts",
+  "demo/index.html",
+  "scripts/verify.mjs",
+  "scripts/verify-standalone.mjs",
+  "tools/mcp-viz/server.ts",
+  "tools/mcp-viz/smoke.mjs",
+  "tools/mcp-viz/README.md",
   "SYSTEM_PROMPT.md",
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v2.9.1", "--name-only", "--", ...B7_LOCKED_300],
+    ["diff", "v3.0.0", "--name-only", "--", ...B7_LOCKED_310],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.9.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v3.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
-  if (!AUTHORIZED_300.has(file)) {
+  if (!AUTHORIZED_310.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v2.9.1 — outside the owner-authorized 3.0.0 delta set (the chromatic tokens, the five component growths + compiled pairs, the memo wraps, the obsidian graph, the symmetrical forms, the carousel modes, the ring zoom, the codex, the owner-sanctioned verify.mjs pins)`,
+      `(b7) SAFETY: ${file} changed since v3.0.0 — outside the owner-authorized 3.1.0 purge set (the domain decoupling: .ptp-→.sig- classes, --party-→--sig- tokens, PtpEvent/PartyBadge renames, standalone copy, storage keys, the purity gate)`,
     );
   }
 }
-if (b7Changed.includes("demo/") || b7Changed.some((f) => f.startsWith("demo/"))) {
-  failures.push("(b7) SAFETY: demo/ is LOCKED in 3.0.0");
+if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify.mjs" && f !== "scripts/verify-standalone.mjs")) {
+  failures.push("(b7) SAFETY: scripts/ beyond verify.mjs + verify-standalone.mjs is LOCKED in 3.1.0");
 }
-if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify.mjs")) {
-  failures.push("(b7) SAFETY: scripts/ is LOCKED in 3.0.0 beyond the sanctioned verify.mjs pin re-targets");
+if (b7Changed.some((f) => f === "css/signature-style.css" || f === "css/cascade.css" || f === "css/overrides.css")) {
+  failures.push("(b7) SAFETY: css/signature-style.css, cascade.css, overrides.css are LOCKED in 3.1.0 (the import order and the override layer carry no purged names)");
 }
-if (b7Changed.some((f) => f === "css/signature-style.css")) {
-  failures.push("(b7) SAFETY: css/signature-style.css is LOCKED in 3.0.0 — no new import (--radius-card lives in tokens.css)");
-}
-if (b7Changed.some((f) => f.startsWith("tools/"))) {
-  failures.push("(b7) SAFETY: tools/ is LOCKED in 3.0.0 (the cortex version stays 2.7.0)");
+if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/dist/") || f.startsWith("tools/mcp-viz/node_modules/"))) {
+  failures.push("(b7) SAFETY: tools/mcp-viz build output is LOCKED in 3.1.0");
 }
 
 // tokens.json guard (baseline v2.9.1): the THEME blocks + the doctrine
@@ -1359,27 +1423,27 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.0.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V3.0.0 FROZEN PROOF — v2.9.1 baseline, tools/ included ----
-// tools/ takes ZERO deltas this release (the probes ride the playground's
-// own playwright scripts + custom selectors; server.ts is untouched, the
-// cortex version stays 2.7.0). The authorized set is the 3.0.0 list from (b7).
-const N_HUB4_LOCKED_300 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
+// ---- (n-hub4) THE V3.1.0 FROZEN PROOF — v3.0.0 baseline, tools/ included ----
+// The purge touches tools/ BY OWNER MANDATE (the DEFAULT_SELECTORS ride the
+// class prefix; smoke.mjs + README carry purged copy). The authorized set is
+// the 3.1.0 list from (b7).
+const N_HUB4_LOCKED_310 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.9.1", "--name-only", "--", ...N_HUB4_LOCKED_300],
+    ["diff", "v3.0.0", "--name-only", "--", ...N_HUB4_LOCKED_310],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line !== "" && !AUTHORIZED_300.has(line));
+    .filter((line) => line !== "" && !AUTHORIZED_310.has(line));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v2.9.1 beyond the 3.0.0 authorization — ${v2SafetyDiff.join(", ")} (tools/, demo/ and scripts/-beyond-verify.mjs are LOCKED; css/react deltas must be in the authorized set)`,
+      `(n-hub4) SAFETY: files changed since v3.0.0 beyond the 3.1.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated purge set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.9.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists -----------------------------------------
@@ -1512,7 +1576,7 @@ if (!metricAir.test(stylesCss)) {
 // + blur). playground/styles.css: the node-shadow needle — and ONLY there.
 const timelineCss18 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
 const GLASS_NEEDLES = [
-  ["color-mix(in srgb, var(--bg-surface) 80%, transparent)", "the 80% translucent glass surface on .ptp-timeline__header"],
+  ["color-mix(in srgb, var(--bg-surface) 80%, transparent)", "the 80% translucent glass surface on .sig-timeline__header"],
   ["-webkit-backdrop-filter: blur(8px)", "the webkit-prefixed glass blur"],
   ["backdrop-filter: blur(8px)", "the glass blur behind the sticky header"],
 ];
@@ -1521,10 +1585,10 @@ for (const [needle, label] of GLASS_NEEDLES) {
     failures.push(`(g2) css/timeline.css must contain ${needle} — ${label}`);
   }
 }
-const nodeShadow = /\.sig-surface-card \.ptp-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
+const nodeShadow = /\.sig-surface-card \.sig-timeline__node\s*\{[^}]*box-shadow: 0 4px 12px rgba\(0, 0, 0, 0\.2\);/s;
 if (!nodeShadow.test(stylesCss)) {
   failures.push(
-    "(g2) styles.css must carry the composition-layer node elevation — .sig-surface-card .ptp-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); } (2.2.0: the ancestor is the package primitive)",
+    "(g2) styles.css must carry the composition-layer node elevation — .sig-surface-card .sig-timeline__node { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); } (2.2.0: the ancestor is the package primitive)",
   );
 }
 // THE DOCTRINE BOUNDARY, enforced twice: the package file itself must still
@@ -1545,10 +1609,10 @@ if (!metricRow.test(stylesCss)) {
     "(g3) .hub__metric must be space-between + flex-end (caption left, value flush right, shared bottom floor)",
   );
 }
-const breathingBars = /\.hub__metric \.ptp-progress,\s*\.hub__metric \+ \.ptp-progress\s*\{[^}]*margin-top: var\(--space-tight\);/s;
+const breathingBars = /\.hub__metric \.sig-progress,\s*\.hub__metric \+ \.sig-progress\s*\{[^}]*margin-top: var\(--space-tight\);/s;
 if (!breathingBars.test(stylesCss)) {
   failures.push(
-    "(g3) the composition-scoped breathing-bars rule is missing — .hub__metric .ptp-progress, .hub__metric + .ptp-progress { margin-top: var(--space-tight); } (package viz.css untouched)",
+    "(g3) the composition-scoped breathing-bars rule is missing — .hub__metric .sig-progress, .hub__metric + .sig-progress { margin-top: var(--space-tight); } (package viz.css untouched)",
   );
 }
 
@@ -1581,10 +1645,10 @@ if (!existsSync(surfaceCssPath)) {
   }
 }
 const vizCss22 = readFileSync(resolve(root, "css/viz.css"), "utf8");
-const captionRule = /\.ptp-progress__caption\s*\{[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-muted\);[^}]*font-size: 0\.75rem;/s;
+const captionRule = /\.sig-progress__caption\s*\{[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-muted\);[^}]*font-size: 0\.75rem;/s;
 if (!captionRule.test(vizCss22)) {
   failures.push(
-    "(s1) css/viz.css must carry the limit caption — .ptp-progress__caption { font-variant-numeric: tabular-nums; color: var(--text-muted); font-size: 0.75rem; } (digits never jitter)",
+    "(s1) css/viz.css must carry the limit caption — .sig-progress__caption { font-variant-numeric: tabular-nums; color: var(--text-muted); font-size: 0.75rem; } (digits never jitter)",
   );
 }
 
@@ -1623,15 +1687,15 @@ for (const surfaceValueExport of ["SurfaceCard", "PageHero"]) {
 // boundary in css/viz.css, and the react/viz.tsx surface (limitText caption,
 // ring boundary hairline circle, centered tabular-nums readout).
 const vizSrc22 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
-const vizTrack = /\.ptp-progress\s*\{[^}]*background: var\(--bg-inset\);[^}]*border: 1px solid color-mix\(in srgb, var\(--text-muted\) 20%, transparent\);/s;
+const vizTrack = /\.sig-progress\s*\{[^}]*background: var\(--bg-inset\);[^}]*border: 1px solid color-mix\(in srgb, var\(--text-muted\) 20%, transparent\);/s;
 if (!vizTrack.test(vizCss22)) {
   failures.push(
-    "(v22) css/viz.css must retarget the track — .ptp-progress { background: var(--bg-inset); border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent); } (the surface-on-surface fix; the 100% boundary reads on any card)",
+    "(v22) css/viz.css must retarget the track — .sig-progress { background: var(--bg-inset); border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent); } (the surface-on-surface fix; the 100% boundary reads on any card)",
   );
 }
 const VIZ_TSX_REQUIREMENTS = [
   ["limitText", "the limit caption prop (ProgressBar)"],
-  ["ptp-progress__caption", "the caption class the third element wears"],
+  ["sig-progress__caption", "the caption class the third element wears"],
   ["r={47.5}", "the ring boundary hairline circle (SVG-native border)"],
   ['stroke="color-mix(in srgb, var(--text-muted) 20%, transparent)"', "the 20% hairline boundary stroke"],
   ["showValue", "the optional centered ring readout (default true)"],
@@ -1654,19 +1718,19 @@ for (const [needle, label] of VIZ_TSX_REQUIREMENTS) {
 // padding + node margin) must move TOGETHER or the title drifts off the
 // node. AFTER probe: 100px offset − 77px slab = 23px air (≥16px), all on
 // the 4px grid (24 / 100). Package css/timeline.css stays untouched.
-const headerAir = /\.hub__card--timeline \.ptp-timeline__header\s*\{[^}]*padding-bottom: calc\(var\(--space-standard\) \+ var\(--space-tight\)\);/s;
+const headerAir = /\.hub__card--timeline \.sig-timeline__header\s*\{[^}]*padding-bottom: calc\(var\(--space-standard\) \+ var\(--space-tight\)\);/s;
 if (!headerAir.test(stylesCss)) {
   failures.push(
-    "(sp1) styles.css must grow the sticky slab — .hub__card--timeline .ptp-timeline__header { padding-bottom: calc(var(--space-standard) + var(--space-tight)); }",
+    "(sp1) styles.css must grow the sticky slab — .hub__card--timeline .sig-timeline__header { padding-bottom: calc(var(--space-standard) + var(--space-tight)); }",
   );
 }
-const itemClearance = /\.hub__card--timeline \.ptp-timeline__item--group-first\s*\{[^}]*padding-top: calc\(var\(--tl-header-clearance\) \+ var\(--space-standard\) \* 2\);/s;
+const itemClearance = /\.hub__card--timeline \.sig-timeline__item--group-first\s*\{[^}]*padding-top: calc\(var\(--tl-header-clearance\) \+ var\(--space-standard\) \* 2\);/s;
 if (!itemClearance.test(stylesCss)) {
   failures.push(
     "(sp1) styles.css must mirror the clearance into group-first ITEMS — padding-top: calc(var(--tl-header-clearance) + var(--space-standard) * 2) = 100px",
   );
 }
-const nodeClearance = /\.hub__card--timeline \.ptp-timeline__node--group-first\s*\{[^}]*margin-top: calc\(var\(--tl-header-clearance\) \+ var\(--space-standard\) \* 2\);/s;
+const nodeClearance = /\.hub__card--timeline \.sig-timeline__node--group-first\s*\{[^}]*margin-top: calc\(var\(--tl-header-clearance\) \+ var\(--space-standard\) \* 2\);/s;
 if (!nodeClearance.test(stylesCss)) {
   failures.push(
     "(sp1) styles.css must mirror the clearance into group-first NODES — margin-top: calc(var(--tl-header-clearance) + var(--space-standard) * 2) = 100px (siblings move together)",
@@ -1784,7 +1848,7 @@ if (!existsSync(dataCssPath)) {
 } else {
   const dataCss = readFileSync(dataCssPath, "utf8");
   const DATA_REQUIREMENTS = [
-    [".ptp-table-scroll", "the scroll-containment wrapper (the mobile strategy)"],
+    [".sig-table-scroll", "the scroll-containment wrapper (the mobile strategy)"],
     ["overflow-x: auto", "the horizontal scroll containment"],
     ["text-transform: uppercase", "the uppercase ledger header"],
     ["letter-spacing: 0.1em", "the letter-spaced header"],
@@ -1883,15 +1947,15 @@ for (const dataType of DD2_TYPES) {
 // BORDER (never box-shadow), the runtime --party-* ring guard.
 const formsCss23 = readFileSync(resolve(root, "css/forms.css"), "utf8");
 const FORMS_23_REQUIREMENTS = [
-  [".ptp-select", "the justified chevron-anchor wrapper"],
-  [".ptp-select__native", "the native select wearing the token skin"],
+  [".sig-select", "the justified chevron-anchor wrapper"],
+  [".sig-select__native", "the native select wearing the token skin"],
   ["appearance: none", "the UA chrome stripped (select + checkbox)"],
-  [".ptp-select__chevron", "the token chevron"],
+  [".sig-select__chevron", "the token chevron"],
   ["pointer-events: none", "the chevron lets clicks fall through to the select"],
-  [".ptp-checkbox__input:checked", "the checked state machine"],
-  [".ptp-checkbox__input::after", "the checkmark as a pseudo-element (appearance-none inputs support pseudo-elements)"],
+  [".sig-checkbox__input:checked", "the checked state machine"],
+  [".sig-checkbox__input::after", "the checkmark as a pseudo-element (appearance-none inputs support pseudo-elements)"],
   ["border-right: 2px solid var(--color-on-cake)", "the checkmark ink — dark on-cake on the Teal fill"],
-  [".ptp-avatar", "the initials disc"],
+  [".sig-avatar", "the initials disc"],
   ["border-radius: 50%", "the avatar is a circle"],
 ];
 for (const [needle, label] of FORMS_23_REQUIREMENTS) {
@@ -1899,10 +1963,10 @@ for (const [needle, label] of FORMS_23_REQUIREMENTS) {
     failures.push(`(dd3) css/forms.css must contain ${needle} — ${label}`);
   }
 }
-const checkedTeal = /\.ptp-checkbox__input:checked\s*\{[^}]*background: var\(--color-cake-secondary\);/s;
+const checkedTeal = /\.sig-checkbox__input:checked\s*\{[^}]*background: var\(--color-cake-secondary\);/s;
 if (!checkedTeal.test(formsCss23)) {
   failures.push(
-    "(dd3) .ptp-checkbox__input:checked must paint the Teal fill — background: var(--color-cake-secondary) (the aria-checked answer, echoed)",
+    "(dd3) .sig-checkbox__input:checked must paint the Teal fill — background: var(--color-cake-secondary) (the aria-checked answer, echoed)",
   );
 }
 const formsSrc23 = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
@@ -1991,34 +2055,34 @@ for (const [needle, label] of SM3_REQUIREMENTS) {
 {
   const editorialCss30 = readFileSync(resolve(root, "css/editorial.css"), "utf8");
   const CAR3_CSS = [
-    [".ptp-carousel__controls", "the docked control bar"],
-    [".ptp-carousel--paged .ptp-carousel__track", "the paged track (zero inter-page gap)"],
-    [".ptp-carousel__page", "the page slide"],
+    [".sig-carousel__controls", "the docked control bar"],
+    [".sig-carousel--paged .sig-carousel__track", "the paged track (zero inter-page gap)"],
+    [".sig-carousel__page", "the page slide"],
     ["grid-template-columns: repeat(3, 1fr)", "the 3-up page grid"],
     ["gap: var(--space-standard)", "the page's 16px internal gap"],
     ["scroll-snap-align: start", "each page is a snap unit"],
     ["@container (max-width: 640px)", "the narrow-cell page collapse"],
-    [".ptp-carousel__indicator", "the bar-docked readout"],
-    [".ptp-carousel__dots", "the dots (docked in the bar)"],
+    [".sig-carousel__indicator", "the bar-docked readout"],
+    [".sig-carousel__dots", "the dots (docked in the bar)"],
   ];
   for (const [needle, label] of CAR3_CSS) {
     if (!editorialCss30.includes(needle)) {
       failures.push(`(car3) css/editorial.css must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  const controlsRow = /\.ptp-carousel__controls\s*\{[^}]*display: flex;[^}]*align-items: center;/s;
+  const controlsRow = /\.sig-carousel__controls\s*\{[^}]*display: flex;[^}]*align-items: center;/s;
   if (!controlsRow.test(editorialCss30)) {
     failures.push(
-      "(car3) .ptp-carousel__controls must be the flex control bar (prev · dots · indicator · next)",
+      "(car3) .sig-carousel__controls must be the flex control bar (prev · dots · indicator · next)",
     );
   }
-  const pageGrid = /\.ptp-carousel__page\s*\{[^}]*flex: 0 0 100%;[^}]*grid-template-columns: repeat\(3, 1fr\);/s;
+  const pageGrid = /\.sig-carousel__page\s*\{[^}]*flex: 0 0 100%;[^}]*grid-template-columns: repeat\(3, 1fr\);/s;
   if (!pageGrid.test(editorialCss30)) {
     failures.push(
-      "(car3) .ptp-carousel__page must be flex: 0 0 100% + repeat(3, 1fr) — ONE snap unit per page of three",
+      "(car3) .sig-carousel__page must be flex: 0 0 100% + repeat(3, 1fr) — ONE snap unit per page of three",
     );
   }
-  const pagedGap = /\.ptp-carousel--paged \.ptp-carousel__track\s*\{[^}]*gap: 0;/s;
+  const pagedGap = /\.sig-carousel--paged \.sig-carousel__track\s*\{[^}]*gap: 0;/s;
   if (!pagedGap.test(editorialCss30)) {
     failures.push(
       "(car3) the paged track must zero its own gap (the page owns the 16px internal gap) — scroll math depends on width-only strides",
@@ -2076,10 +2140,10 @@ for (const [needle, label] of TABS_REQUIREMENTS) {
 // ---- (dd6) CORTEX SWEEP — the data-module selectors + version (2.3.0) ------------
 // tools/ is owner-editable tooling (noted in the changelog); the sweep grows
 // the data-module contract and the server version moves to 2.3.0.
-// 2.5.0 AMENDMENT: the sweep grows .ptp-btn / .ptp-stat-card / .sig-shell
+// 2.5.0 AMENDMENT: the sweep grows .sig-btn / .sig-stat-card / .sig-shell
 // and the server version moves to 2.5.0.
 const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
-for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card", ".ptp-btn", ".ptp-stat-card", ".sig-shell", ".ptp-carousel__dot", ".ptp-chronicle__item", ".ptp-graph__node", ".ptp-bars__bar", ".ptp-tmanager__count"]) {
+for (const selector of [".sig-data-table", ".sig-tabs__tab", ".sig-callout", ".sig-surface-card", ".sig-btn", ".sig-stat-card", ".sig-shell", ".sig-carousel__dot", ".sig-chronicle__item", ".sig-graph__node", ".sig-bars__bar", ".sig-tmanager__count"]) {
   if (!mcpServerSrc.includes(`"${selector}"`)) {
     failures.push(
       `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index + the Graphs & Planner module (2.7.0: graph nodes, bar ink, milestone counter)`,
@@ -2112,15 +2176,15 @@ if (!existsSync(editorialCssPath)) {
     // 2.6.0 AMENDMENT: the track's native scrollbar is GONE (the dots are
     // the position affordance now) — both engine spellings.
     ["scrollbar-width: none", "the scrollbar-free track (2.6.0 owner mandate)"],
-    [".ptp-carousel__track::-webkit-scrollbar", "the webkit scrollbar kill"],
-    [".ptp-carousel__item", "the item slot (flex 0 0 auto)"],
+    [".sig-carousel__track::-webkit-scrollbar", "the webkit scrollbar kill"],
+    [".sig-carousel__item", "the item slot (flex 0 0 auto)"],
     ["flex: 0 0 auto", "items keep content width"],
     // 2.6.0: the dot indicators.
-    [".ptp-carousel__dots", "the dots row (one button per child)"],
-    [".ptp-carousel__dot[data-active=\"true\"]", "the attribute IS the active-dot state"],
+    [".sig-carousel__dots", "the dots row (one button per child)"],
+    [".sig-carousel__dot[data-active=\"true\"]", "the attribute IS the active-dot state"],
     ["width: 1.5rem", "the active Flamingo pill"],
     ["width: 0.375rem", "the resting dot circle"],
-    [".ptp-prose blockquote", "the prose blockquote anatomy"],
+    [".sig-prose blockquote", "the prose blockquote anatomy"],
     ["border-left: 4px solid var(--party-mauve)", "the MAUVE quote rule (2.4.1 owner override — the quote is editorial content, the content voice; was v2.4.0's Flamingo)"],
     ["font-style: italic", "the quote voice"],
     ["border-left: 4px solid var(--status)", "the banner status strip (the toast/callout mechanism)"],
@@ -2221,17 +2285,17 @@ for (const name of ED2_TYPES) {
 // react/forms.tsx: the hint-XOR-error slot and the radiogroup contract.
 const formsCss24 = readFileSync(resolve(root, "css/forms.css"), "utf8");
 const FORMS_24_REQUIREMENTS = [
-  [".ptp-form-field", "the accessible wrapper root (the __field contract: flex column + tight gap)"],
-  [".ptp-form-field__label", "the label element"],
-  [".ptp-form-field__hint", "the muted hint slot"],
-  [".ptp-form-field__error", "the error slot"],
-  [".ptp-radio-cards", "the radiogroup container"],
+  [".sig-form-field", "the accessible wrapper root (the __field contract: flex column + tight gap)"],
+  [".sig-form-field__label", "the label element"],
+  [".sig-form-field__hint", "the muted hint slot"],
+  [".sig-form-field__error", "the error slot"],
+  [".sig-radio-cards", "the radiogroup container"],
   ["repeat(auto-fit, minmax(140px, 1fr))", "the responsive card grid"],
-  [".ptp-radio-card__input", "the visually hidden native radio"],
+  [".sig-radio-card__input", "the visually hidden native radio"],
   ["position: absolute", "the input's hiding mechanism (with opacity: 0)"],
-  [".ptp-radio-card:has(input:focus-visible)", "THE :has() focus ring — the keyboard focus lands on the hidden input, the CARD rings"],
-  [".ptp-radio-card:has(input:checked)", "the selected state machine — the attribute IS the state"],
-  [".ptp-radio-card.ptp-radio-card--selected", "the selected class mirror (consumer convenience, specificity-safe vs :hover)"],
+  [".sig-radio-card:has(input:focus-visible)", "THE :has() focus ring — the keyboard focus lands on the hidden input, the CARD rings"],
+  [".sig-radio-card:has(input:checked)", "the selected state machine — the attribute IS the state"],
+  [".sig-radio-card.sig-radio-card--selected", "the selected class mirror (consumer convenience, specificity-safe vs :hover)"],
   ["background: var(--bg-surface)", "the selected card LIFTS to --bg-surface (2.4.1 owner override of the 10% cake tint — a surface read over the inset siblings)"],
   ["var(--party-peach)", "the error message token (the v1.4.0 doctrine, message slot)"],
 ];
@@ -2249,24 +2313,24 @@ if (!/Firefox 121/.test(formsCss24)) {
     "(ed3) css/forms.css must document the no-:has() fallback note (browsers without :has() lose only the card focus ring — the degrade is a documented contract)",
   );
 }
-const selectedFlamingo = /\.ptp-radio-card\.ptp-radio-card--selected,\s*\.ptp-radio-card:has\(input:checked\)\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*border-width: 2px;/s;
+const selectedFlamingo = /\.sig-radio-card\.sig-radio-card--selected,\s*\.sig-radio-card:has\(input:checked\)\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*border-width: 2px;/s;
 if (!selectedFlamingo.test(formsCss24)) {
   failures.push(
-    "(ed3) the radio selected contract must paint the 2px Flamingo border — .ptp-radio-card--selected / :has(input:checked) → border-color: var(--color-cake-primary) + border-width: 2px",
+    "(ed3) the radio selected contract must paint the 2px Flamingo border — .sig-radio-card--selected / :has(input:checked) → border-color: var(--color-cake-primary) + border-width: 2px",
   );
 }
-const focusRing = /\.ptp-radio-card:has\(input:focus-visible\)\s*\{[^}]*outline: 2px solid var\(--color-cake-primary\);/s;
+const focusRing = /\.sig-radio-card:has\(input:focus-visible\)\s*\{[^}]*outline: 2px solid var\(--color-cake-primary\);/s;
 if (!focusRing.test(formsCss24)) {
   failures.push(
-    "(ed3) the :has() focus ring must be the doctrine ring — .ptp-radio-card:has(input:focus-visible) → outline: 2px solid var(--color-cake-primary)",
+    "(ed3) the :has() focus ring must be the doctrine ring — .sig-radio-card:has(input:focus-visible) → outline: 2px solid var(--color-cake-primary)",
   );
 }
 const formsSrc24 = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
 const FORMS_TSX_24_REQUIREMENTS = [
   ['role="radiogroup"', "the radiogroup role"],
   ["aria-label={label}", "the radiogroup accessible name"],
-  ['className="ptp-form-field__error" role="alert"', 'the error slot announces itself (role="alert")'],
-  ["ptp-radio-card--selected", "the selected class mirror on the card label"],
+  ['className="sig-form-field__error" role="alert"', 'the error slot announces itself (role="alert")'],
+  ["sig-radio-card--selected", "the selected class mirror on the card label"],
   ['type="radio"', "the native radio (keyboard + forms for free)"],
 ];
 for (const [needle, label] of FORMS_TSX_24_REQUIREMENTS) {
@@ -2295,13 +2359,13 @@ for (const [needle, label] of VIZ_TSX_24_REQUIREMENTS) {
 }
 const vizCss24 = readFileSync(resolve(root, "css/viz.css"), "utf8");
 const VIZ_CSS_24_REQUIREMENTS = [
-  [".ptp-stat-card", "the KPI card"],
+  [".sig-stat-card", "the KPI card"],
   ["font-variant-numeric: tabular-nums", "the value's tabular digits (never jitter)"],
   ["text-transform: uppercase", "the label's uppercase caption"],
   ["letter-spacing: 0.1em", "the label's tracking"],
   ["font-size: 1.5rem", "the value's headline size"],
-  [".ptp-stat-card__delta--up", "the up delta (party-green via the modifier)"],
-  [".ptp-stat-card__delta--down", "the down delta (party-peach via the modifier)"],
+  [".sig-stat-card__delta--up", "the up delta (party-green via the modifier)"],
+  [".sig-stat-card__delta--down", "the down delta (party-peach via the modifier)"],
 ];
 for (const [needle, label] of VIZ_CSS_24_REQUIREMENTS) {
   if (!vizCss24.includes(needle)) {
@@ -2310,12 +2374,12 @@ for (const [needle, label] of VIZ_CSS_24_REQUIREMENTS) {
 }
 // StatCard FLATNESS: the stat-card rule block must carry NO box-shadow
 // (belt-and-braces with the (e1) css/-wide scan — this one names the class).
-const statCardBlock = vizCss24.match(/\.ptp-stat-card\s*\{[^}]*\}/s);
+const statCardBlock = vizCss24.match(/\.sig-stat-card\s*\{[^}]*\}/s);
 if (statCardBlock === null) {
-  failures.push("(ed4) css/viz.css has no parseable .ptp-stat-card rule block");
+  failures.push("(ed4) css/viz.css has no parseable .sig-stat-card rule block");
 } else if (/box-shadow/.test(statCardBlock[0])) {
   failures.push(
-    "(ed4) .ptp-stat-card mentions box-shadow — the KPI card is FLAT (surface + hairline, the e1 doctrine)",
+    "(ed4) .sig-stat-card mentions box-shadow — the KPI card is FLAT (surface + hairline, the e1 doctrine)",
   );
 }
 
@@ -2423,9 +2487,9 @@ for (const [needle, label] of SHOWCASE_REQUIREMENTS) {
 
 // ---- (af1) INTUITIVE ANATOMY I — the DataTable align fix (2.4.1) -------------------
 // The bug: `numeric` right-aligned the CELLS but the HEADER stayed left —
-// `.ptp-data-table thead th` (specificity 0,1,2) outranks the bare
-// .ptp-data-table__num class (0,1,0). The fix: DataTableColumn.align flows to
-// BOTH th and td through ancestor-scoped .ptp-data-table__align-* utilities
+// `.sig-data-table thead th` (specificity 0,1,2) outranks the bare
+// .sig-data-table__num class (0,1,0). The fix: DataTableColumn.align flows to
+// BOTH th and td through ancestor-scoped .sig-data-table__align-* utilities
 // (0,2,0 — back on top), composing with __num (align = geometry, numeric =
 // tabular digits). css/data.css owns the paint (class-based, gate-able);
 // react/data.tsx applies per column; the compiled .d.ts carries the prop.
@@ -2433,9 +2497,9 @@ const dataCssAf = readFileSync(resolve(root, "css/data.css"), "utf8");
 const dataSrcAf = readFileSync(resolve(root, "react/data.tsx"), "utf8");
 const dataDtsAf = readFileSync(resolve(root, "react/data.d.ts"), "utf8");
 for (const [needle, label] of [
-  [".ptp-data-table__align-left", "the left alignment utility"],
-  [".ptp-data-table__align-center", "the center alignment utility"],
-  [".ptp-data-table__align-right", "the right alignment utility"],
+  [".sig-data-table__align-left", "the left alignment utility"],
+  [".sig-data-table__align-center", "the center alignment utility"],
+  [".sig-data-table__align-right", "the right alignment utility"],
 ]) {
   if (!dataCssAf.includes(needle)) {
     failures.push(`(af1) css/data.css must contain ${needle} — ${label}`);
@@ -2443,12 +2507,12 @@ for (const [needle, label] of [
 }
 for (const [side, value] of [["left", "left"], ["center", "center"], ["right", "right"]]) {
   const rule = new RegExp(
-    `\\.ptp-data-table \\.ptp-data-table__align-${side}\\s*\\{[^}]*text-align: ${value};`,
+    `\\.sig-data-table \\.sig-data-table__align-${side}\\s*\\{[^}]*text-align: ${value};`,
     "s",
   );
   if (!rule.test(dataCssAf)) {
     failures.push(
-      `(af1) css/data.css must scope .ptp-data-table__align-${side} under .ptp-data-table with text-align: ${value} — the ancestor prefix (0,2,0) is the specificity fix that beats .ptp-data-table thead th (0,1,2); a bare class would LOSE and the header would stay left (the bug itself)`,
+      `(af1) css/data.css must scope .sig-data-table__align-${side} under .sig-data-table with text-align: ${value} — the ancestor prefix (0,2,0) is the specificity fix that beats .sig-data-table thead th (0,1,2); a bare class would LOSE and the header would stay left (the bug itself)`,
     );
   }
 }
@@ -2457,9 +2521,9 @@ if (!dataSrcAf.includes('align?: "left" | "right" | "center"')) {
     '(af1) react/data.tsx must declare align?: "left" | "right" | "center" on DataTableColumn',
   );
 }
-if (!dataSrcAf.includes("`ptp-data-table__align-${column.align}`")) {
+if (!dataSrcAf.includes("`sig-data-table__align-${column.align}`")) {
   failures.push(
-    "(af1) react/data.tsx must derive the .ptp-data-table__align-* class from column.align",
+    "(af1) react/data.tsx must derive the .sig-data-table__align-* class from column.align",
   );
 }
 const cellClassUses = (dataSrcAf.match(/className=\{dataTableCellClass\(column\)\}/g) ?? []).length;
@@ -2483,7 +2547,7 @@ if (!appSrc.includes('numeric: true, align: "right"')) {
 // switch label + the radio lift (2.4.1). The required asterisk is VISUAL
 // (aria-hidden; the CONTROL's aria-required is consumer wiring), the prefix
 // rides the justified __row flex composition, the switch migrates every pill
-// selector .ptp-switch → .ptp-switch__pill with the label as visible text,
+// selector .sig-switch → .sig-switch__pill with the label as visible text,
 // and the selected radio card lifts to var(--bg-surface).
 const formsCssAf = readFileSync(resolve(root, "css/forms.css"), "utf8");
 const formsSrcAf = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
@@ -2493,65 +2557,65 @@ const formsDtsAf = readFileSync(resolve(root, "react/forms.d.ts"), "utf8");
 // gate ff1 below). __required, the switch migration and the radio lift
 // stay pinned here.
 for (const [needle, label] of [
-  [".ptp-form-field__required", "the peach required asterisk slot"],
-  [".ptp-switch", "the switch wrapper (pill + visible text composition)"],
-  [".ptp-switch__pill", "the migrated pill (every pill selector renamed)"],
-  [".ptp-switch__text", "the visible label text"],
+  [".sig-form-field__required", "the peach required asterisk slot"],
+  [".sig-switch", "the switch wrapper (pill + visible text composition)"],
+  [".sig-switch__pill", "the migrated pill (every pill selector renamed)"],
+  [".sig-switch__text", "the visible label text"],
 ]) {
   if (!formsCssAf.includes(needle)) {
     failures.push(`(af2) css/forms.css must contain ${needle} — ${label}`);
   }
 }
-const rowRule = /\.ptp-form-field__well\s*\{[^}]*display: flex;[^}]*align-items: center;/s;
+const rowRule = /\.sig-form-field__well\s*\{[^}]*display: flex;[^}]*align-items: center;/s;
 if (!rowRule.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-form-field__well must be flex + align-items: center (the 2.5.0 successor of the justified adornment wrapper)",
+    "(af2) .sig-form-field__well must be flex + align-items: center (the 2.5.0 successor of the justified adornment wrapper)",
   );
 }
-const prefixRule = /\.ptp-form-field__chip\s*\{[^}]*var\(--font-mono,[^}]*font-weight: 600;/s;
+const prefixRule = /\.sig-form-field__chip\s*\{[^}]*var\(--font-mono,[^}]*font-weight: 600;/s;
 if (!prefixRule.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-form-field__chip must be mono + weight 600 (the adornment voice)",
+    "(af2) .sig-form-field__chip must be mono + weight 600 (the adornment voice)",
   );
 }
-const requiredRule = /\.ptp-form-field__required\s*\{[^}]*color: var\(--party-peach\);/s;
+const requiredRule = /\.sig-form-field__required\s*\{[^}]*color: var\(--party-peach\);/s;
 if (!requiredRule.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-form-field__required must paint the peach asterisk — color: var(--party-peach) (the v1.4.0 attention token)",
+    "(af2) .sig-form-field__required must paint the peach asterisk — color: var(--party-peach) (the v1.4.0 attention token)",
   );
 }
-const switchWrapper = /\.ptp-switch\s*\{[^}]*display: inline-flex;[^}]*align-items: center;/s;
+const switchWrapper = /\.sig-switch\s*\{[^}]*display: inline-flex;[^}]*align-items: center;/s;
 if (!switchWrapper.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-switch must now be the inline-flex wrapper (pill + visible text) — the JUSTIFIED composition, commented in css",
+    "(af2) .sig-switch must now be the inline-flex wrapper (pill + visible text) — the JUSTIFIED composition, commented in css",
   );
 }
-const switchText = /\.ptp-switch__text\s*\{[^}]*color: var\(--text-main\);[^}]*font-size: 0\.875rem;[^}]*font-weight: 500;/s;
+const switchText = /\.sig-switch__text\s*\{[^}]*color: var\(--text-main\);[^}]*font-size: 0\.875rem;[^}]*font-weight: 500;/s;
 if (!switchText.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-switch__text must be text-main 0.875rem weight 500 (the visible label contract)",
+    "(af2) .sig-switch__text must be text-main 0.875rem weight 500 (the visible label contract)",
   );
 }
-const wrapperBlock = formsCssAf.match(/(?:^|\n)\s*\.ptp-switch\s*\{([^}]*)\}/s);
+const wrapperBlock = formsCssAf.match(/(?:^|\n)\s*\.sig-switch\s*\{([^}]*)\}/s);
 if (wrapperBlock === null || wrapperBlock[1].includes("border-radius: 999px")) {
   failures.push(
-    "(af2) the bare .ptp-switch block must NOT be the pill anymore (no 999px radius) — every pill property migrated to .ptp-switch__pill",
+    "(af2) the bare .sig-switch block must NOT be the pill anymore (no 999px radius) — every pill property migrated to .sig-switch__pill",
   );
 }
 // The attribute scan runs on comment-stripped text: prose may EXPLAIN the
 // state machine (the header's geometry comment quotes the selector), only
 // rule selectors may carry it.
-if (/\[aria-checked="true"\]/.test(formsCssAf.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\.ptp-switch__pill\[aria-checked="true"\]/g, ""))) {
+if (/\[aria-checked="true"\]/.test(formsCssAf.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\.sig-switch__pill\[aria-checked="true"\]/g, ""))) {
   failures.push(
-    '(af2) an [aria-checked="true"] selector remains OUTSIDE .ptp-switch__pill — the state machine must live on the migrated pill only',
+    '(af2) an [aria-checked="true"] selector remains OUTSIDE .sig-switch__pill — the state machine must live on the migrated pill only',
   );
 }
-if (!formsCssAf.includes(".ptp-switch__pill,\n    .ptp-switch__pill::before,")) {
+if (!formsCssAf.includes(".sig-switch__pill,\n    .sig-switch__pill::before,")) {
   failures.push(
-    "(af2) the reduced-motion guard must follow the migration — .ptp-switch__pill / .ptp-switch__pill::before in the prefers-reduced-motion list",
+    "(af2) the reduced-motion guard must follow the migration — .sig-switch__pill / .sig-switch__pill::before in the prefers-reduced-motion list",
   );
 }
-const radioLift = /\.ptp-radio-card\.ptp-radio-card--selected,\s*\.ptp-radio-card:has\(input:checked\)\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*border-width: 2px;[^}]*background: var\(--bg-surface\);/s;
+const radioLift = /\.sig-radio-card\.sig-radio-card--selected,\s*\.sig-radio-card:has\(input:checked\)\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*border-width: 2px;[^}]*background: var\(--bg-surface\);/s;
 if (!radioLift.test(formsCssAf)) {
   failures.push(
     "(af2) the selected radio card must KEEP the 2px Flamingo border AND lift to background: var(--bg-surface) (2.4.1 owner override of the cake tint)",
@@ -2560,13 +2624,13 @@ if (!radioLift.test(formsCssAf)) {
 for (const [needle, label] of [
   ["required?: boolean", "the FormField required prop"],
   ["prefix?: string", "the FormField prefix prop"],
-  ['className="ptp-form-field__well"', "the well wraps children ONLY when prefix/suffix is present"],
-  ['className="ptp-form-field__chip"', "the chip renders as the adornment (prefix before, suffix after)"],
-  ['className="ptp-form-field__required"', "the asterisk span on the label"],
+  ['className="sig-form-field__well"', "the well wraps children ONLY when prefix/suffix is present"],
+  ['className="sig-form-field__chip"', "the chip renders as the adornment (prefix before, suffix after)"],
+  ['className="sig-form-field__required"', "the asterisk span on the label"],
   ['aria-hidden="true"', "the asterisk is VISUAL — screen readers get aria-required from the control, never from the wrapper"],
-  ['className="ptp-switch"', "the justified switch wrapper"],
-  ['className="ptp-switch__pill"', "the pill class (migrated)"],
-  ['className="ptp-switch__text"', "the visible label span (NOT aria-hidden — visible text)"],
+  ['className="sig-switch"', "the justified switch wrapper"],
+  ['className="sig-switch__pill"', "the pill class (migrated)"],
+  ['className="sig-switch__text"', "the visible label span (NOT aria-hidden — visible text)"],
   ["if (label === undefined)", "no label → the bare pill, exactly ONE element (peak pruning preserved)"],
   ['role="switch"', "the pill keeps the switch role"],
 ]) {
@@ -2592,28 +2656,28 @@ const editorialCssAf = readFileSync(resolve(root, "css/editorial.css"), "utf8");
 const editorialSrcAf = readFileSync(resolve(root, "react/editorial.tsx"), "utf8");
 const editorialDtsAf = readFileSync(resolve(root, "react/editorial.d.ts"), "utf8");
 for (const [needle, label] of [
-  [".ptp-carousel__indicator", "the page indicator class"],
-  [".ptp-prose h3", "the h3 sub-section voice"],
-  [".ptp-prose kbd", "kbd joins the inline-code chip"],
-  [".ptp-announcement__action", "the ghost action button"],
+  [".sig-carousel__indicator", "the page indicator class"],
+  [".sig-prose h3", "the h3 sub-section voice"],
+  [".sig-prose kbd", "kbd joins the inline-code chip"],
+  [".sig-announcement__action", "the ghost action button"],
 ]) {
   if (!editorialCssAf.includes(needle)) {
     failures.push(`(af3) css/editorial.css must contain ${needle} — ${label}`);
   }
 }
-const indicatorRule = /\.ptp-carousel__indicator\s*\{[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-muted\);/s;
+const indicatorRule = /\.sig-carousel__indicator\s*\{[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-muted\);/s;
 if (!indicatorRule.test(editorialCssAf)) {
   failures.push(
-    "(af3) .ptp-carousel__indicator must be tabular-nums muted (the position readout is metadata, not a headline)",
+    "(af3) .sig-carousel__indicator must be tabular-nums muted (the position readout is metadata, not a headline)",
   );
 }
-const kbdRule = /\.ptp-prose code,\s*\n\.ptp-prose kbd\s*\{[^}]*background: var\(--bg-inset\);[^}]*border-radius: 0\.25rem;[^}]*padding: 0\.125rem 0\.375rem;[^}]*font-size: 0\.8125rem;[^}]*color: var\(--text-bright\);/s;
+const kbdRule = /\.sig-prose code,\s*\n\.sig-prose kbd\s*\{[^}]*background: var\(--bg-inset\);[^}]*border-radius: 0\.25rem;[^}]*padding: 0\.125rem 0\.375rem;[^}]*font-size: 0\.8125rem;[^}]*color: var\(--text-bright\);/s;
 if (!kbdRule.test(editorialCssAf)) {
   failures.push(
-    "(af3) .ptp-prose code/kbd must carry the inline chip contract — inset body, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, --text-bright",
+    "(af3) .sig-prose code/kbd must carry the inline chip contract — inset body, 0.25rem radius, 0.125rem × 0.375rem padding, 0.8125rem, --text-bright",
   );
 }
-const proseH3Block = editorialCssAf.match(/\.ptp-prose h3\s*\{([^}]*)\}/s);
+const proseH3Block = editorialCssAf.match(/\.sig-prose h3\s*\{([^}]*)\}/s);
 if (
   proseH3Block === null ||
   !/\bfont-size: 0\.9375rem;/.test(proseH3Block[1]) ||
@@ -2621,13 +2685,13 @@ if (
   !/\bcolor: var\(--text-main\);/.test(proseH3Block[1])
 ) {
   failures.push(
-    "(af3) .ptp-prose h3 must be 0.9375rem weight 600 text-main (the ensured sub-section styles)",
+    "(af3) .sig-prose h3 must be 0.9375rem weight 600 text-main (the ensured sub-section styles)",
   );
 }
-const actionHover = /\.ptp-announcement__action:hover\s*\{[^}]*border-color: var\(--color-cake-secondary\);/s;
+const actionHover = /\.sig-announcement__action:hover\s*\{[^}]*border-color: var\(--color-cake-secondary\);/s;
 if (!actionHover.test(editorialCssAf)) {
   failures.push(
-    "(af3) .ptp-announcement__action:hover must answer with the Teal border (token-driven ghost button)",
+    "(af3) .sig-announcement__action:hover must answer with the Teal border (token-driven ghost button)",
   );
 }
 for (const [needle, label] of [
@@ -2639,7 +2703,7 @@ for (const [needle, label] of [
   ['info: "Info"', "the info default icon"],
   ["announcement: \"var(--color-cake-primary)\"", "the Flamingo banner strip — the variant map"],
   ["action?: AnnouncementBannerAction", "the call-to-action slot"],
-  ['className="ptp-announcement__action"', "the ghost action button render"],
+  ['className="sig-announcement__action"', "the ghost action button render"],
   ["aria-live=\"polite\"", "the indicator announces page turns politely"],
   // 3.0.0 (car3) AMENDMENT: the owner-spec'd scrollLeft/itemWidth formula is
   // REPLACED by the IntersectionObserver sync (free-scroll) + the page math
@@ -2653,8 +2717,8 @@ for (const [needle, label] of [
   ["onScroll={handleScroll}", "the paged page-sync rides the native scroll event"],
   ["requestAnimationFrame", "the rAF throttle — one state write per frame"],
   ["cancelAnimationFrame", "the pending frame is cleaned up on unmount"],
-  ['"ptp-carousel__controls"', "the docked control bar (prev · dots · indicator · next)"],
-  ['"ptp-carousel__page"', "the paged-3 snap slide"],
+  ['"sig-carousel__controls"', "the docked control bar (prev · dots · indicator · next)"],
+  ['"sig-carousel__page"', "the paged-3 snap slide"],
   ["Math.ceil(items.length / stride)", "the pure page-count math"],
 ]) {
   if (!editorialSrcAf.includes(needle)) {
@@ -2783,17 +2847,17 @@ const formFieldSrc = formsSrcAf.slice(
 );
 // 3.0.0 (ff2) AMENDMENT of the 2.5.0 (ff1) DOM-order law: the owner
 // REVERSED the helpers position — description + hint now render BELOW
-// the control in the .ptp-form-field__helpers slot (the a11y survival
+// the control in the .sig-form-field__helpers slot (the a11y survival
 // is programmatic: aria-describedby). The validation zone still renders
 // after everything.
-const descIdx = formFieldSrc.indexOf('className="ptp-form-field__desc"');
+const descIdx = formFieldSrc.indexOf('className="sig-form-field__desc"');
 const controlRenderIdx = formFieldSrc.indexOf("{control}");
-const wellDefIdx = formFieldSrc.indexOf('className="ptp-form-field__well"');
-const alertIdx = formFieldSrc.indexOf('className="ptp-form-field__error" role="alert"');
-const validIdx = formFieldSrc.indexOf('className="ptp-form-field__valid"');
+const wellDefIdx = formFieldSrc.indexOf('className="sig-form-field__well"');
+const alertIdx = formFieldSrc.indexOf('className="sig-form-field__error" role="alert"');
+const validIdx = formFieldSrc.indexOf('className="sig-form-field__valid"');
 if (descIdx === -1 || controlRenderIdx === -1 || descIdx < controlRenderIdx) {
   failures.push(
-    "(ff1, 3.0.0 amendment) FormField must render .ptp-form-field__desc in the HELPERS slot AFTER the control zone — the owner's v3.0.0 reversal of the 2.5.0 desc-above anatomy (helpers below the well)",
+    "(ff1, 3.0.0 amendment) FormField must render .sig-form-field__desc in the HELPERS slot AFTER the control zone — the owner's v3.0.0 reversal of the 2.5.0 desc-above anatomy (helpers below the well)",
   );
 }
 if (wellDefIdx === -1 || alertIdx === -1 || controlRenderIdx > alertIdx) {
@@ -2802,48 +2866,48 @@ if (wellDefIdx === -1 || alertIdx === -1 || controlRenderIdx > alertIdx) {
   );
 }
 if (validIdx === -1) {
-  failures.push('(ff1) FormField must render the .ptp-form-field__valid slot (the validMessage line)');
+  failures.push('(ff1) FormField must render the .sig-form-field__valid slot (the validMessage line)');
 }
 for (const [needle, label] of [
   ["description?: string", "the description prop (format rules ABOVE the input)"],
   ["validMessage?: string", "the validMessage prop (the live-validation success line)"],
   ["suffix?: string", "the suffix prop (the right chip)"],
   ['data-invalid={!!error || undefined}', "the well's error attribute drives the shake + peach border"],
-  ['className="ptp-form-field__chip ptp-form-field__chip--right"', "the suffix chip carries the right modifier"],
+  ['className="sig-form-field__chip sig-form-field__chip--right"', "the suffix chip carries the right modifier"],
 ]) {
   if (!formsSrcAf.includes(needle)) {
     failures.push(`react/forms.tsx must contain ${JSON.stringify(needle)} — (ff1) ${label}`);
   }
 }
 for (const [needle, label] of [
-  [".ptp-form-field__desc", "the format-line slot (muted 0.75rem, ABOVE the control)"],
-  [".ptp-form-field__valid", "the success line slot (party-green)"],
-  [".ptp-form-field__well:focus-within", "the well OWNS the focus treatment"],
-  [".ptp-form-field__well > .ptp-input,\n  .ptp-form-field__well > input", "the scoped kill — prefix/suffix children must be BARE inputs"],
-  [".ptp-form-field__chip:first-child", "the LEFT chip's cursor-side hairline (border-right)"],
-  ["@keyframes ptp-shake", "the error shake keyframes"],
-  ["animation: ptp-shake 0.3s ease-out", "the shake rides [data-invalid]"],
+  [".sig-form-field__desc", "the format-line slot (muted 0.75rem, ABOVE the control)"],
+  [".sig-form-field__valid", "the success line slot (party-green)"],
+  [".sig-form-field__well:focus-within", "the well OWNS the focus treatment"],
+  [".sig-form-field__well > .sig-input,\n  .sig-form-field__well > input", "the scoped kill — prefix/suffix children must be BARE inputs"],
+  [".sig-form-field__chip:first-child", "the LEFT chip's cursor-side hairline (border-right)"],
+  ["@keyframes sig-shake", "the error shake keyframes"],
+  ["animation: sig-shake 0.3s ease-out", "the shake rides [data-invalid]"],
 ]) {
   if (!formsCssAf.includes(needle)) {
     failures.push(`css/forms.css must contain ${JSON.stringify(needle)} — (ff1) ${label}`);
   }
 }
-const promotedLabel = /\.ptp-form-field__label\s*\{[^}]*color: var\(--text-main\);[^}]*font-size: 0\.875rem;[^}]*font-weight: 500;/s;
+const promotedLabel = /\.sig-form-field__label\s*\{[^}]*color: var\(--text-main\);[^}]*font-size: 0\.875rem;[^}]*font-weight: 500;/s;
 if (!promotedLabel.test(formsCssAf)) {
   failures.push(
-    "(ff1) the field label is PROMOTED — .ptp-form-field__label { color: var(--text-main); font-size: 0.875rem; font-weight: 500; } (the title is the headline, not a caption)",
+    "(ff1) the field label is PROMOTED — .sig-form-field__label { color: var(--text-main); font-size: 0.875rem; font-weight: 500; } (the title is the headline, not a caption)",
   );
 }
-const wellFocus = /\.ptp-form-field__well:focus-within\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*outline: 3px solid color-mix\(in srgb, var\(--color-cake-primary\) 25%, transparent\);/s;
+const wellFocus = /\.sig-form-field__well:focus-within\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*outline: 3px solid color-mix\(in srgb, var\(--color-cake-primary\) 25%, transparent\);/s;
 if (!wellFocus.test(formsCssAf)) {
   failures.push(
     "(ff1) the well focus halo — border-color Flamingo + the 3px translucent Flamingo OUTLINE (the box-shadow spelling is banned by the frozen (f1) gate; documented decision)",
   );
 }
-const shakeKill = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.ptp-form-field__well\[data-invalid\]\s*\{[^}]*animation: none;/s;
+const shakeKill = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.sig-form-field__well\[data-invalid\]\s*\{[^}]*animation: none;/s;
 if (!shakeKill.test(formsCssAf)) {
   failures.push(
-    "(ff1) the reduced-motion guard must kill the shake — .ptp-form-field__well[data-invalid] { animation: none; } inside prefers-reduced-motion",
+    "(ff1) the reduced-motion guard must kill the shake — .sig-form-field__well[data-invalid] { animation: none; } inside prefers-reduced-motion",
   );
 }
 
@@ -2853,27 +2917,27 @@ if (!shakeKill.test(formsCssAf)) {
 {
   const formsCss30 = formsCssAf;
   const FF2_CSS = [
-    [".ptp-form-field__label-row", "the label alignment row"],
-    [".ptp-form-field__info", "the tooltip trigger button"],
+    [".sig-form-field__label-row", "the label alignment row"],
+    [".sig-form-field__info", "the tooltip trigger button"],
     ["content: attr(data-tooltip)", "the pure-CSS bubble text"],
-    [".ptp-form-field__info:hover::after,\n  .ptp-form-field__info:focus-visible::after", "hover AND keyboard focus reveal the tooltip"],
-    [".ptp-form-field__helpers", "the helpers slot (description + hint below the well)"],
+    [".sig-form-field__info:hover::after,\n  .sig-form-field__info:focus-visible::after", "hover AND keyboard focus reveal the tooltip"],
+    [".sig-form-field__helpers", "the helpers slot (description + hint below the well)"],
   ];
   for (const [needle, label] of FF2_CSS) {
     if (!formsCss30.includes(needle)) {
       failures.push(`(ff2) css/forms.css must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  const labelRail = /\.ptp-form-field__label-row\s*\{[^}]*min-height: 1\.25rem;/s;
+  const labelRail = /\.sig-form-field__label-row\s*\{[^}]*min-height: 1\.25rem;/s;
   if (!labelRail.test(formsCss30)) {
     failures.push(
       "(ff2) the label row must carry the fixed 1.25rem (20px) min-height — every side-by-side field's label aligns on the same baseline",
     );
   }
-  const helpersRail = /\.ptp-form-field__helpers\s*\{[^}]*min-height: 1\.25rem;[^}]*display: flex;[^}]*flex-wrap: wrap;[^}]*gap: var\(--space-tight\);/s;
+  const helpersRail = /\.sig-form-field__helpers\s*\{[^}]*min-height: 1\.25rem;[^}]*display: flex;[^}]*flex-wrap: wrap;[^}]*gap: var\(--space-tight\);/s;
   if (!helpersRail.test(formsCss30)) {
     failures.push(
-      "(ff2) .ptp-form-field__helpers must be min-height 20px + flex wrap + the tight gap — the bottom rail of the symmetrical field",
+      "(ff2) .sig-form-field__helpers must be min-height 20px + flex wrap + the tight gap — the bottom rail of the symmetrical field",
     );
   }
   if (!/bottom: calc\(100% \+ 4px\);/.test(formsCss30)) {
@@ -2884,8 +2948,8 @@ if (!shakeKill.test(formsCssAf)) {
   const formsDts30 = formsDtsAf;
   for (const [needle, label] of [
     ["infoTooltip?: string", "the infoTooltip prop (compiled contract)"],
-    ['className="ptp-form-field__label-row"', "the label row renders"],
-    ['className="ptp-form-field__helpers"', "the helpers slot renders"],
+    ['className="sig-form-field__label-row"', "the label row renders"],
+    ['className="sig-form-field__helpers"', "the helpers slot renders"],
     ['name="Info"', "the tooltip icon (live-map-probed key)"],
     ['title={infoTooltip}', "the native title fallback"],
     ["aria-describedby", "the describedby preservation — the format rule stays announced"],
@@ -2925,16 +2989,16 @@ for (const [needle, label] of [
   }
 }
 for (const [needle, label] of [
-  [".ptp-password__meter", "the meter"],
-  [".ptp-password__meter span", "the four segments"],
+  [".sig-password__meter", "the meter"],
+  [".sig-password__meter span", "the four segments"],
   ['[data-score="1"] span:nth-child(1)', "stage 1 — peach"],
   ['[data-score="2"] span:nth-child(-n + 2)', "stage 2 — the --party-yellow release token"],
   ['[data-score="3"] span:nth-child(-n + 3)', "stage 3 — sky"],
   ['[data-score="4"] span:nth-child(-n + 4)', "stage 4 — green"],
-  [".ptp-password__stage", "the stage label"],
-  [".ptp-password__pill", "the condition pills"],
-  [".ptp-password__pill[data-satisfied]", "the satisfied pill fill"],
-  [".ptp-password__toggle", "the eye button"],
+  [".sig-password__stage", "the stage label"],
+  [".sig-password__pill", "the condition pills"],
+  [".sig-password__pill[data-satisfied]", "the satisfied pill fill"],
+  [".sig-password__toggle", "the eye button"],
   ["color-mix(in srgb, var(--party-green) 20%, transparent)", "the satisfied pill's wash"],
 ]) {
   if (!formsCssAf.includes(needle)) {
@@ -2965,14 +3029,14 @@ if (!existsSync(primitivesCssPath)) {
 } else {
   const primitivesCss = readFileSync(primitivesCssPath, "utf8");
   const BT1_CSS = [
-    [".ptp-btn--primary", "the Flamingo fill variant"],
-    [".ptp-btn--secondary", "the surface + hairline variant"],
-    [".ptp-btn--ghost", "the transparent variant"],
-    [".ptp-btn--danger", "the peach attention variant"],
-    [".ptp-btn--sm", "the small size"],
-    [".ptp-btn--lg", "the large size"],
-    [".ptp-btn__spinner", "the loading spinner"],
-    ["@keyframes ptp-spin", "the spin physics"],
+    [".sig-btn--primary", "the Flamingo fill variant"],
+    [".sig-btn--secondary", "the surface + hairline variant"],
+    [".sig-btn--ghost", "the transparent variant"],
+    [".sig-btn--danger", "the peach attention variant"],
+    [".sig-btn--sm", "the small size"],
+    [".sig-btn--lg", "the large size"],
+    [".sig-btn__spinner", "the loading spinner"],
+    ["@keyframes sig-spin", "the spin physics"],
     ["scale(0.97)", "the doctrine press"],
     ["outline: 2px solid var(--color-cake-primary)", "the Flamingo focus ring"],
     ["prefers-reduced-motion", "the reduced-motion guard"],
@@ -3015,10 +3079,10 @@ for (const [needle, label] of [
   ["leftIcon?: IconName", "the leading icon (strict IconName)"],
   ["rightIcon?: IconName", "the trailing icon"],
   ["loading?: boolean", "the busy state"],
-  ['className="ptp-btn__spinner"', "the spinner replaces the icons"],
+  ['className="sig-btn__spinner"', "the spinner replaces the icons"],
   ["aria-busy={loading || undefined}", "the busy attribute"],
   ["disabled={loading || disabled}", "a loading button cannot be re-submitted"],
-  ['className={`ptp-btn ptp-btn--${variant}${sizeClass}', "ONE button with the composed classes"],
+  ['className={`sig-btn sig-btn--${variant}${sizeClass}', "ONE button with the composed classes"],
 ]) {
   if (!primitivesSrc.includes(needle)) {
     failures.push(`react/primitives.tsx must contain ${JSON.stringify(needle)} — (bt1) ${label}`);
@@ -3059,10 +3123,10 @@ if (!existsSync(cardsCssPath)) {
     ["transform-style: preserve-3d", "the flip's 3d stage"],
     ["backface-visibility: hidden", "the faces hide their backs"],
     ["rotateY(180deg)", "the flip mechanics (inner + pre-rotated back)"],
-    [".ptp-accordion[open] .ptp-accordion__chevron", "the attribute IS the state — details[open] rotates the chevron"],
+    [".sig-accordion[open] .sig-accordion__chevron", "the attribute IS the state — details[open] rotates the chevron"],
     ["grid-template-columns: 1fr auto 1fr", "the matchup grid"],
-    [".ptp-action-tile__kbd", "the standalone shortcut chip"],
-    [".ptp-flip-card[aria-pressed=\"true\"]", "the flip state rides aria-pressed"],
+    [".sig-action-tile__kbd", "the standalone shortcut chip"],
+    [".sig-flip-card[aria-pressed=\"true\"]", "the flip state rides aria-pressed"],
     ["::-webkit-details-marker", "the UA marker stripped (plus list-style: none)"],
     ["prefers-reduced-motion", "the reduced-motion guard (the opacity swap)"],
     ["min-height: 220px", "the flip card's parity floor (3.0.0: cards never collapse — the faces are absolute)"],
@@ -3098,13 +3162,13 @@ if (!existsSync(cardsCssPath)) {
 }
 for (const [needle, label] of [
   ["aria-pressed={flipped}", "the flip state is aria-pressed (button semantics carry Space/Enter)"],
-  ['className="ptp-flip-card"', "the flip root"],
-  ['<details className="ptp-accordion">', "the ZERO-JS accordion"],
-  ['className="ptp-accordion__summary"', "the summary line"],
-  ['<Icon name="ChevronDown" className="ptp-accordion__chevron"', "the token chevron"],
+  ['className="sig-flip-card"', "the flip root"],
+  ['<details className="sig-accordion">', "the ZERO-JS accordion"],
+  ['className="sig-accordion__summary"', "the summary line"],
+  ['<Icon name="ChevronDown" className="sig-accordion__chevron"', "the token chevron"],
   ["size={40}", "the matchup avatars ride the grid-perfect diameter"],
-  ['className="ptp-matchup__vs"', "the VS pill"],
-  ['className="ptp-matchup__stakes"', "the stakes footer"],
+  ['className="sig-matchup__vs"', "the VS pill"],
+  ['className="sig-matchup__stakes"', "the stakes footer"],
   ["useState(false)", "the flip's INTERNAL state (uncontrolled default)"],
 ]) {
   const cardsSrc = readFileSync(cardsSrcPath, "utf8");
@@ -3125,13 +3189,13 @@ for (const name of ["ActionTile", "FlipCard", "AccordionCard", "MatchupCard"]) {
 // The three hand-rolled archetypes become self-contained surfaces (never
 // transparent/collapsed in grid rows) and gain the chromatic enrichment:
 // bg-surface + the 15% glass-inset border + var(--radius-card) + the 220px
-// floor on .ptp-flip-card / .ptp-accordion / .ptp-matchup; the ActionTile
+// floor on .sig-flip-card / .sig-accordion / .sig-matchup; the ActionTile
 // well tints 12% from --sig-accent (Teal fallback); [data-accent] cards wear
 // the 45% translucent chromatic border-top. Shadow policy unchanged:
 // cards.css stays ABSOLUTE ZERO (belt-and-braces with (cd1)/(e1)).
 {
   const cardsCss30 = readFileSync(resolve(root, "css/cards.css"), "utf8");
-  for (const archetype of [".ptp-flip-card", ".ptp-accordion", ".ptp-matchup"]) {
+  for (const archetype of [".sig-flip-card", ".sig-accordion", ".sig-matchup"]) {
     const block = cardsCss30.match(
       new RegExp(`${archetype.replace(/-/g, "\\-")}\\s*\\{([^}]*)\\}`, "s"),
     );
@@ -3153,18 +3217,18 @@ for (const name of ["ActionTile", "FlipCard", "AccordionCard", "MatchupCard"]) {
       failures.push(`(par) ${archetype} must carry min-height: 220px — never transparent/collapsed in grid rows`);
     }
   }
-  const wellTint = /\.ptp-action-tile__well\s*\{[^}]*background: color-mix\(in srgb, var\(--sig-accent, var\(--color-cake-secondary\)\) 12%, transparent\);/s;
+  const wellTint = /\.sig-action-tile__well\s*\{[^}]*background: color-mix\(in srgb, var\(--sig-accent, var\(--color-cake-secondary\)\) 12%, transparent\);/s;
   if (!wellTint.test(cardsCss30)) {
     failures.push(
-      "(par) .ptp-action-tile__well must tint 12% — background: color-mix(in srgb, var(--sig-accent, var(--color-cake-secondary)) 12%, transparent)",
+      "(par) .sig-action-tile__well must tint 12% — background: color-mix(in srgb, var(--sig-accent, var(--color-cake-secondary)) 12%, transparent)",
     );
   }
-  if (!cardsCss30.includes("[data-accent] .ptp-flip-card,\n  [data-accent] .ptp-accordion,\n  [data-accent] .ptp-matchup")) {
+  if (!cardsCss30.includes("[data-accent] .sig-flip-card,\n  [data-accent] .sig-accordion,\n  [data-accent] .sig-matchup")) {
     failures.push(
       "(par) the [data-accent] chromatic top-accent rule must cover all three archetypes",
     );
   }
-  const topAccent = /\[data-accent\] \.ptp-flip-card,\s*\n\s*\[data-accent\] \.ptp-accordion,\s*\n\s*\[data-accent\] \.ptp-matchup\s*\{[^}]*border-top: 2px solid color-mix\(in srgb, var\(--sig-accent\) 45%, transparent\);/s;
+  const topAccent = /\[data-accent\] \.sig-flip-card,\s*\n\s*\[data-accent\] \.sig-accordion,\s*\n\s*\[data-accent\] \.sig-matchup\s*\{[^}]*border-top: 2px solid color-mix\(in srgb, var\(--sig-accent\) 45%, transparent\);/s;
   if (!topAccent.test(cardsCss30)) {
     failures.push(
       "(par) the chromatic top accent must be border-top: 2px solid color-mix(in srgb, var(--sig-accent) 45%, transparent) — the card's identity mark, distinct from the title underline",
@@ -3481,27 +3545,27 @@ if (!statValueRule.test(cardsCss26)) {
 // ---- (cc5) CHRONICLETIMELINE (2.6.0) ---------------------------------------------------------
 for (const [needle, label] of [
   ['<ol className={classes} aria-label={label ?? "Version chronicle"}>', "the <ol> root with the accessible name"],
-  ['className="ptp-chronicle__item"', "the release item"],
+  ['className="sig-chronicle__item"', "the release item"],
   ['"--accent": `var(${release.accentToken ?? "--party-lavender"})`', "the inline accent variable (lavender fallback)"],
-  ['className="ptp-chronicle__node"', "the milestone dot"],
-  ['className="ptp-chronicle__tag"', "the mono accent tag"],
-  ['className="ptp-chronicle__stat"', "the optional mono stat"],
+  ['className="sig-chronicle__node"', "the milestone dot"],
+  ['className="sig-chronicle__tag"', "the mono accent tag"],
+  ['className="sig-chronicle__stat"', "the optional mono stat"],
   ["export interface ChronicleRelease", "the release contract"],
 ]) {
   if (!cardsSrc26.includes(needle)) {
     failures.push(`react/cards.tsx must contain ${JSON.stringify(needle)} — (cc5) ${label}`);
   }
 }
-const chronicleSpine = /\.ptp-chronicle::before\s*\{[^}]*width: 2px;[^}]*background: color-mix\(in srgb, var\(--text-muted\) 20%, transparent\);/s;
+const chronicleSpine = /\.sig-chronicle::before\s*\{[^}]*width: 2px;[^}]*background: color-mix\(in srgb, var\(--text-muted\) 20%, transparent\);/s;
 if (!chronicleSpine.test(cardsCss26)) {
   failures.push(
-    "(cc5) .ptp-chronicle::before must be the 2px 20% color-mix hairline spine",
+    "(cc5) .sig-chronicle::before must be the 2px 20% color-mix hairline spine",
   );
 }
-const chronicleNode = /\.ptp-chronicle__node\s*\{[^}]*width: 12px;[^}]*border: 2px solid var\(--accent\);[^}]*background: var\(--bg-surface\);/s;
+const chronicleNode = /\.sig-chronicle__node\s*\{[^}]*width: 12px;[^}]*border: 2px solid var\(--accent\);[^}]*background: var\(--bg-surface\);/s;
 if (!chronicleNode.test(cardsCss26)) {
   failures.push(
-    "(cc5) .ptp-chronicle__node must be the 12px accent-ringed, surface-filled dot",
+    "(cc5) .sig-chronicle__node must be the 12px accent-ringed, surface-filled dot",
   );
 }
 
@@ -3515,12 +3579,12 @@ if (!chronicleNode.test(cardsCss26)) {
   const vizCss30 = vizCss24;
   const vizSrc30 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
   const RING2_CSS = [
-    [".ptp-ring__dial", "the square dial wrapper"],
+    [".sig-ring__dial", "the square dial wrapper"],
     ["aspect-ratio: 1 / 1", "the 1/1 square"],
     ["width: 120px", "the 120px default box"],
     ["transform: scale(1.07)", "the zoom"],
-    [".ptp-ring[data-expanded=\"true\"] .ptp-ring__dial", "the expanded zoom state"],
-    [".ptp-ring__detail", "the detail strip"],
+    [".sig-ring[data-expanded=\"true\"] .sig-ring__dial", "the expanded zoom state"],
+    [".sig-ring__detail", "the detail strip"],
     ["grid-template-rows: 0fr", "the collapsed strip (the 0fr→1fr trick)"],
     ["grid-template-rows: 1fr", "the open strip"],
     ["font-variant-numeric: tabular-nums", "the strip's tabular digits"],
@@ -3530,13 +3594,13 @@ if (!chronicleNode.test(cardsCss26)) {
       failures.push(`(ring2) css/viz.css must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  const dialSquare = /\.ptp-ring__dial\s*\{[^}]*aspect-ratio: 1 \/ 1;[^}]*width: 120px;/s;
+  const dialSquare = /\.sig-ring__dial\s*\{[^}]*aspect-ratio: 1 \/ 1;[^}]*width: 120px;/s;
   if (!dialSquare.test(vizCss30)) {
     failures.push(
-      "(ring2) .ptp-ring__dial must be the aspect-ratio 1/1 square with the 120px default",
+      "(ring2) .sig-ring__dial must be the aspect-ratio 1/1 square with the 120px default",
     );
   }
-  const reducedRing = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.ptp-ring__dial,\s*\n\s*\.ptp-ring__detail\s*\{[^}]*transition: none;/s;
+  const reducedRing = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.sig-ring__dial,\s*\n\s*\.sig-ring__detail\s*\{[^}]*transition: none;/s;
   if (!reducedRing.test(vizCss30)) {
     failures.push(
       "(ring2) the reduced-motion guard must kill the zoom + the slide (dial + detail, transition: none)",
@@ -3546,9 +3610,9 @@ if (!chronicleNode.test(cardsCss26)) {
     ["total?: number", "the detail denominator prop"],
     ["unit?: string", "the detail unit label prop"],
     ["useState(false)", "the internal detail expand state"],
-    ['"ptp-ring"', "the wrapper renders"],
-    ['"ptp-ring__dial"', "the square dial renders"],
-    ['"ptp-ring__detail"', "the strip renders"],
+    ['"sig-ring"', "the wrapper renders"],
+    ['"sig-ring__dial"', "the square dial renders"],
+    ['"sig-ring__detail"', "the strip renders"],
     ["{clamped}% · {numerator} / {total} {unit", "the detail readout format"],
   ]) {
     if (!vizSrc30.includes(needle)) {
@@ -3669,14 +3733,14 @@ if (!existsSync(graphCssPath)) {
     ["border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent)", "the 15% hairline frame"],
     ["border-radius: var(--radius-ui)", "the minimalist corners"],
     ["width: 100%", "the canvas fills its card"],
-    [".ptp-graph--focused .ptp-graph__edge[data-dim=\"true\"],", "the class-driven dim selector (edge half)"],
-    [".ptp-graph--focused .ptp-graph__node[data-dim=\"true\"]", "the class-driven dim selector (node half)"],
+    [".sig-graph--focused .sig-graph__edge[data-dim=\"true\"],", "the class-driven dim selector (edge half)"],
+    [".sig-graph--focused .sig-graph__node[data-dim=\"true\"]", "the class-driven dim selector (node half)"],
     ["opacity: 0.25", "THE DIM — non-adjacent ink fades to a quarter"],
-    [".ptp-graph__footer", "the inspect strip"],
+    [".sig-graph__footer", "the inspect strip"],
     ["padding: var(--space-tight) var(--space-standard)", "the footer's 8px-grid padding"],
-    [".ptp-graph__toolbar", "the add-and-link toolbar row"],
+    [".sig-graph__toolbar", "the add-and-link toolbar row"],
     ["cursor: pointer", "the node pointer affordance"],
-    [".ptp-graph__node:focus-visible", "the keyboard ring on the node group"],
+    [".sig-graph__node:focus-visible", "the keyboard ring on the node group"],
     ["outline: 2px solid var(--color-cake-primary)", "the doctrine focus ring"],
     ["prefers-reduced-motion", "the reduced-motion guard on transitions"],
   ];
@@ -3721,18 +3785,18 @@ if (!existsSync(graphSrcPath)) {
     ["categoryToken: PartyColorToken", "party-typed node category (Rule of Engagement)"],
     ["parentId?: string", "parentId undefined = root"],
     ['role="application"', "the svg's application role"],
-    ["ptp-graph ptp-graph--focused", "the focused class driven by selection state"],
-    ['"ptp-graph"', "the bare canvas class"],
-    ['className="ptp-graph__edge"', "one path per node-with-parent"],
+    ["sig-graph sig-graph--focused", "the focused class driven by selection state"],
+    ['"sig-graph"', "the bare canvas class"],
+    ['className="sig-graph__edge"', "one path per node-with-parent"],
     ["data-parent={node.parentId}", "the edge's parent hook"],
     ["data-child={node.id}", "the edge's child hook"],
-    ['className="ptp-graph__node"', "the interactive node group"],
+    ['className="sig-graph__node"', "the interactive node group"],
     ['role="button"', "nodes are buttons (aria contract)"],
     ["tabIndex={0}", "keyboard focus lands on the node"],
     ['data-dim={dim || undefined}', "the attribute IS the dim state"],
     ['stroke={isSelected ? "var(--color-cake-primary)" : strokeFor(node)}', "selection flips the stroke to structural Flamingo"],
     ["strokeWidth={isSelected ? 3 : 2}", "the selected ring thickens to 3"],
-    ['className="ptp-graph__footer"', "the inspect strip render"],
+    ['className="sig-graph__footer"', "the inspect strip render"],
     ["Select a node to inspect its note.", "the resting footer copy"],
     ["Add &amp; Link", "the toolbar button label"],
     ['variant="secondary"', "the toolbar rides the package Button"],
@@ -3814,10 +3878,10 @@ if (!existsSync(graphDtsPath)) {
       failures.push(`(ob1) must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  const tetherRule = /\.ptp-graph__tether\s*\{[^}]*stroke: var\(--party-azure\);[^}]*stroke-width: 1\.5;[^}]*stroke-dasharray: 6 4;/s;
+  const tetherRule = /\.sig-graph__tether\s*\{[^}]*stroke: var\(--party-azure\);[^}]*stroke-width: 1\.5;[^}]*stroke-dasharray: 6 4;/s;
   if (!tetherRule.test(readFileSync(resolve(root, "css/graph.css"), "utf8"))) {
     failures.push(
-      "(ob1) .ptp-graph__tether must be the azure dashed 6 4 1.5px line — the live right-click tether",
+      "(ob1) .sig-graph__tether must be the azure dashed 6 4 1.5px line — the live right-click tether",
     );
   }
   for (const [needle, label] of [
@@ -3840,7 +3904,7 @@ if (!existsSync(graphDtsPath)) {
 // ---- (vz1) ANALYTICAL CHARTS — BarChart + AreaChart (2.7.0) -------------------------
 // react/viz.tsx: the pure smoothPath export, dasharray reference lines, inset
 // track class, hover readout classes, the useId-gradient, point circles.
-// css/viz.css: .ptp-bars/.ptp-area anatomy + hover opacity rules + reduced-
+// css/viz.css: .sig-bars/.sig-area anatomy + hover opacity rules + reduced-
 // motion guards (the e1 css/-wide scan already covers shadow/hex bans).
 const vizSrc27 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
 const VIZ_TSX_27_REQUIREMENTS = [
@@ -3851,19 +3915,19 @@ const VIZ_TSX_27_REQUIREMENTS = [
   ["export interface AreaPoint", "the point contract (label/value)"],
   ["export function smoothPath(", "the exported PURE Catmull-Rom helper (gate-testable)"],
   ['strokeDasharray="4 4"', "the dashed reference lines"],
-  ['className="ptp-bars__track"', "the inset capacity track element"],
-  ['className="ptp-bars__bar"', "the party value bar element"],
-  ['className="ptp-bars__value"', "the hover value readout element"],
-  ['className="ptp-bars__refline"', "the 25/50/75% reference line element"],
-  ['className="ptp-bars__label"', "the mono axis label element"],
+  ['className="sig-bars__track"', "the inset capacity track element"],
+  ['className="sig-bars__bar"', "the party value bar element"],
+  ['className="sig-bars__value"', "the hover value readout element"],
+  ['className="sig-bars__refline"', "the 25/50/75% reference line element"],
+  ['className="sig-bars__label"', "the mono axis label element"],
   ["useId()", "the gradient id source (no collisions)"],
   ["<linearGradient", "the svg gradient"],
   ["color-mix(in srgb, var(${colorToken}) 30%, transparent)", "the gradient's 30% top stop"],
-  ['className="ptp-area__fill"', "the gradient area path"],
-  ['className="ptp-area__line"', "the smoothed line path"],
-  ['className="ptp-area__point"', "the data-point circles"],
+  ['className="sig-area__fill"', "the gradient area path"],
+  ['className="sig-area__line"', "the smoothed line path"],
+  ['className="sig-area__point"', "the data-point circles"],
   ["r={4}", "the resting point radius"],
-  ['className="ptp-area__readout"', "the hover tabular readout"],
+  ['className="sig-area__readout"', "the hover tabular readout"],
   ["colorToken = \"--party-sky\"", "the sky default token (AreaChart)"],
   ["height = 200", "the default svg height (AreaChart)"],
   ["points.length < 2", "the ≥2-point guard (no trend, no ink)"],
@@ -3876,23 +3940,23 @@ for (const [needle, label] of VIZ_TSX_27_REQUIREMENTS) {
 }
 const vizCss27 = readFileSync(resolve(root, "css/viz.css"), "utf8");
 const VIZ_CSS_27_REQUIREMENTS = [
-  [".ptp-bars", "the bar chart svg"],
-  [".ptp-bars__track", "the capacity track rule"],
+  [".sig-bars", "the bar chart svg"],
+  [".sig-bars__track", "the capacity track rule"],
   ["fill: var(--bg-inset)", "the track's inset fill (the 2.2.0 track doctrine)"],
-  [".ptp-bars__value", "the hover readout rule"],
-  [".ptp-bars__group:hover .ptp-bars__value", "the hover reveal (class-driven)"],
+  [".sig-bars__value", "the hover readout rule"],
+  [".sig-bars__group:hover .sig-bars__value", "the hover reveal (class-driven)"],
   ["font-variant-numeric: tabular-nums", "the readout's tabular digits"],
-  [".ptp-bars__label", "the axis label rule"],
+  [".sig-bars__label", "the axis label rule"],
   ["font-size: 0.6875rem", "the mono muted axis voice"],
-  [".ptp-bars__refline", "the dashed reference line rule"],
+  [".sig-bars__refline", "the dashed reference line rule"],
   ["color-mix(in srgb, var(--text-muted) 25%, transparent)", "the 25% muted refline stroke"],
-  [".ptp-area", "the area chart svg"],
-  [".ptp-area__fill", "the gradient area rule"],
+  [".sig-area", "the area chart svg"],
+  [".sig-area__fill", "the gradient area rule"],
   ["opacity: 0.5", "the area's half opacity"],
-  [".ptp-area__point", "the point circle rule"],
-  [".ptp-area__spot:hover .ptp-area__point", "the hover enlarge (r: 6px)"],
-  [".ptp-area__readout", "the area readout rule"],
-  [".ptp-area__xlabel", "the axis label rule"],
+  [".sig-area__point", "the point circle rule"],
+  [".sig-area__spot:hover .sig-area__point", "the hover enlarge (r: 6px)"],
+  [".sig-area__readout", "the area readout rule"],
+  [".sig-area__xlabel", "the axis label rule"],
   ["prefers-reduced-motion", "the reduced-motion guard on the hover transitions"],
 ];
 for (const [needle, label] of VIZ_CSS_27_REQUIREMENTS) {
@@ -3917,7 +3981,7 @@ for (const name of ["BarChart", "AreaChart", "smoothPath"]) {
 // two package Selects + the primary sm Button), the aria-pressed filter
 // pills, the tabular counter, the aria-pressed settle toggles, the
 // Funnel EmptyState edge, the Trash delete buttons. css/timeline.css: the
-// APPEND-only .ptp-tmanager block (EventTimeline rules untouched — the
+// APPEND-only .sig-tmanager block (EventTimeline rules untouched — the
 // e2 deletion guard proves it) with the tabular counter, the Flamingo
 // pill underline, the party-green settle fill, reduced-motion.
 // LIVE-MAP PROBE NOTE (the "Music" lesson): the owner-spec'd "Trash2" and
@@ -3937,28 +4001,28 @@ if (!existsSync(tmSrcPath)) {
     ["onToggleSettled: (id: string) => void", "the controlled toggle callback"],
     ["onDelete: (id: string) => void", "the controlled delete callback"],
     ["onInspect?: (item: TimelineItem) => void", "the optional inspect callback"],
-    ['className="ptp-tmanager"', "the section root"],
-    ['className="ptp-tmanager__composer"', "the composer row"],
+    ['className="sig-tmanager"', "the section root"],
+    ['className="sig-tmanager__composer"', "the composer row"],
     ['placeholder="Milestone title"', "the composer title field"],
     ['label="Month"', "the month select's accessible name"],
     ['label="Category"', "the category select's accessible name"],
     ['variant="primary" size="sm"', "the composer's primary sm Button"],
     ["Settle Item", "the composer submit label"],
     ["trimmed === \"\"", "the empty-title guard (warn + ignore)"],
-    ['className="ptp-tmanager__pill"', "the filter pill"],
+    ['className="sig-tmanager__pill"', "the filter pill"],
     ["aria-pressed={filter === entry.id}", "THE pill state — the attribute IS the state"],
-    ['className="ptp-tmanager__count"', "the live counter"],
+    ['className="sig-tmanager__count"', "the live counter"],
     ["{settledCount} / {items.length} Settled", "the counter's N / M Settled readout"],
-    ['className="ptp-tmanager__settle"', "the settle toggle"],
+    ['className="sig-tmanager__settle"', "the settle toggle"],
     ['aria-pressed={item.settled === true}', "the settle state attribute"],
     ['aria-label="Toggle settled"', "the toggle's accessible name"],
     ['name="Check"', "the toggle's icon (live-map-probed key)"],
-    ['className="ptp-tmanager__body"', "the row body button"],
+    ['className="sig-tmanager__body"', "the row body button"],
     ["onInspect?.(item)", "the inspect fires with the item"],
     ["PartyBadge", "the category chip (the official primitive)"],
-    ['className="ptp-tmanager__done"', "the settled chip"],
+    ['className="sig-tmanager__done"', "the settled chip"],
     ["Settled", "the settled chip text"],
-    ['className="ptp-tmanager__delete"', "the delete button"],
+    ['className="sig-tmanager__delete"', "the delete button"],
     ["`Delete ${item.title}`", "the delete's per-item accessible name"],
     ['name="Trash"', "the delete icon — LIVE-MAP PROBE: \"Trash2\" is NOT a lucide-react 1.72.0 key; \"Trash\" is (the AudioLines/Music precedent)"],
     ['icon="Funnel"', "the EmptyState icon — LIVE-MAP PROBE: \"Filter\" is NOT a lucide-react 1.72.0 key; \"Funnel\" is (the AudioLines/Music precedent)"],
@@ -3979,22 +4043,22 @@ if (!existsSync(tmSrcPath)) {
 }
 const timelineCss27 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
 const TM_CSS_REQUIREMENTS = [
-  [".ptp-tmanager", "the manager section root"],
-  [".ptp-tmanager__composer", "the composer row"],
+  [".sig-tmanager", "the manager section root"],
+  [".sig-tmanager__composer", "the composer row"],
   ["gap: var(--space-tight)", "the 8px-grid gap"],
-  [".ptp-tmanager__pill[aria-pressed=\"true\"]", "THE pill state selector"],
+  [".sig-tmanager__pill[aria-pressed=\"true\"]", "THE pill state selector"],
   ["border-bottom-color: var(--color-cake-primary)", "the Flamingo active underline (the Tabs/GlobalNav contract)"],
-  [".ptp-tmanager__count", "the live counter rule"],
+  [".sig-tmanager__count", "the live counter rule"],
   ["font-variant-numeric: tabular-nums", "the counter's tabular digits"],
-  [".ptp-tmanager__settle[aria-pressed=\"true\"]", "the settled toggle selector"],
+  [".sig-tmanager__settle[aria-pressed=\"true\"]", "the settled toggle selector"],
   ["color: var(--party-green)", "the settled toggle's party-green fill"],
-  [".ptp-tmanager__row--settled .ptp-tmanager__body", "the settled body"],
+  [".sig-tmanager__row--settled .sig-tmanager__body", "the settled body"],
   ["opacity: 0.6", "the settled fade"],
   ["text-decoration: line-through", "the settled strike-through"],
-  [".ptp-tmanager__done", "the settled chip"],
-  [".ptp-tmanager__delete:hover", "the delete hover"],
+  [".sig-tmanager__done", "the settled chip"],
+  [".sig-tmanager__delete:hover", "the delete hover"],
   ["color: var(--party-peach)", "the delete attention ink"],
-  [".ptp-tmanager__body:focus-visible", "the body's keyboard ring"],
+  [".sig-tmanager__body:focus-visible", "the body's keyboard ring"],
   ["prefers-reduced-motion", "the reduced-motion guard on the manager transitions"],
 ];
 for (const [needle, label] of TM_CSS_REQUIREMENTS) {
@@ -4304,7 +4368,7 @@ if (!studioCollapse.test(stylesCss)) {
 const newBlocks = stylesCss.slice(stylesCss.indexOf("2.8.0 THE PATTERN FRAME"));
 for (const match of newBlocks.matchAll(/([^{}]+)\{[^}]*box-shadow:[^}]*\}/g)) {
   const selector = match[1].trim().split("\n").pop()?.trim() ?? "?";
-  if (!selector.includes("ptp-btn--primary")) {
+  if (!selector.includes("sig-btn--primary")) {
     failures.push(`(ps-studio) e1 treaty: the 2.8.0 css declares box-shadow on ${selector} — the new anatomy stays FLAT`);
   }
 }
@@ -4395,12 +4459,12 @@ if (!existsSync(llmsFullPath)) {
   const stylesCss29 = stylesCss;
   const CQ_REQUIREMENTS = [
     [cardsCss29, "@container (max-width: 380px)", "css/cards.css: the matchup stacks below a 380px container"],
-    [cardsCss29, ".ptp-matchup__vs::before", "css/cards.css: the VS pill grows hairline dividers when stacked"],
+    [cardsCss29, ".sig-matchup__vs::before", "css/cards.css: the VS pill grows hairline dividers when stacked"],
     [cardsCss29, "@container (min-width: 440px)", "css/cards.css: the content/profile media-object reflow at 440px"],
     [cardsCss29, ".sig-content-card__visual {\n      grid-column: 1;", "css/cards.css: the 16/9 visual docks in the 40% column"],
-    [cardsCss29, ".sig-profile-card > .ptp-avatar {\n      grid-column: 1;", "css/cards.css: the avatar docks beside the name block"],
+    [cardsCss29, ".sig-profile-card > .sig-avatar {\n      grid-column: 1;", "css/cards.css: the avatar docks beside the name block"],
     [vizCss29, "@container (min-width: 360px)", "css/viz.css: the stat-card dock at 360px"],
-    [vizCss29, ".ptp-stat-card > svg {\n    grid-column: 2;", "css/viz.css: the sparkline docks in column 2"],
+    [vizCss29, ".sig-stat-card > svg {\n    grid-column: 2;", "css/viz.css: the sparkline docks in column 2"],
     [formsCss29, "@container (max-width: 480px)", "css/forms.css: the radio-card row collapses below 480px"],
     [stylesCss29, ".sig-cell {\n  container-type: inline-size;\n}", "styles.css: the .sig-cell container wrapper (OUTER cells only)"],
     [stylesCss29, "@container (max-width: 480px) {\n  .hub__form-grid {\n    grid-template-columns: 1fr;\n  }\n}", "styles.css: the form-matrix row stacks in narrow containers"],
@@ -4416,13 +4480,13 @@ if (!existsSync(llmsFullPath)) {
     }
   }
   // Containment NEVER lands on the queried element (circular sizing):
-  // the package css must not set container-type on .ptp-matchup,
-  // .ptp-stat-card, .sig-content-card or .sig-profile-card themselves.
+  // the package css must not set container-type on .sig-matchup,
+  // .sig-stat-card, .sig-content-card or .sig-profile-card themselves.
   for (const [source, queried] of [
-    [cardsCss29, ".ptp-matchup"],
+    [cardsCss29, ".sig-matchup"],
     [cardsCss29, ".sig-content-card"],
     [cardsCss29, ".sig-profile-card"],
-    [vizCss29, ".ptp-stat-card"],
+    [vizCss29, ".sig-stat-card"],
   ]) {
     if (new RegExp(`${queried.replace(/-/g, "\\-")}\\s*\\{[^}]*container-type:`, "s").test(source)) {
       failures.push(`(cq1) container-type must NOT land on ${queried} itself (circular sizing) — containment goes on the OUTER .sig-cell only`);
@@ -4574,9 +4638,9 @@ if (!existsSync(llmsFullPath)) {
     ["export function SkeletonTableRow", "the table-row skeleton"],
     ["columns = 3", "the column default"],
     ['aria-hidden="true"', "the decorative contract (the consumer announces loading)"],
-    ['className="ptp-skeleton ptp-skeleton--line"', "the line anatomy"],
-    ['className="ptp-skeleton ptp-skeleton--row"', "the row anatomy"],
-    ['className="ptp-skeleton-tr"', "the native <tr> root"],
+    ['className="sig-skeleton sig-skeleton--line"', "the line anatomy"],
+    ['className="sig-skeleton sig-skeleton--row"', "the row anatomy"],
+    ['className="sig-skeleton-tr"', "the native <tr> root"],
   ];
   for (const [needle, label] of SK_TSX) {
     if (!skeletonSrc.includes(needle)) {
@@ -4587,7 +4651,7 @@ if (!existsSync(llmsFullPath)) {
   const SK_CSS = [
     ["color-mix(in srgb, var(--bg-inset) 60%, transparent)", "the shimmer's translucent end"],
     ["var(--bg-surface)", "the shimmer's surface end (and the static ground)"],
-    ["@keyframes ptp-skeleton-sweep", "the ONE sweep"],
+    ["@keyframes sig-skeleton-sweep", "the ONE sweep"],
     ["background-position", "the sweep mechanism (no transforms)"],
     ["height: 16px", "the line height (two 8px steps)"],
     ["height: 8px", "the row height (the tight step)"],
@@ -4729,7 +4793,7 @@ if (!existsSync(llmsFullPath)) {
     ["export interface BreadcrumbsProps", "the props contract"],
     ['aria-label={label ?? "Breadcrumb"}', "the nav's accessible name"],
     ['aria-current={isLast ? "page" : undefined}', "THE current-page attribute on the last crumb"],
-    ['className="ptp-breadcrumbs__sep"', "the separator span"],
+    ['className="sig-breadcrumbs__sep"', "the separator span"],
     ['aria-hidden="true"', "the separator is silent to screen readers"],
   ];
   for (const [needle, label] of BC_TSX) {
@@ -4742,9 +4806,9 @@ if (!existsSync(llmsFullPath)) {
   }
   const navCss = readFileSync(resolve(root, "css/nav.css"), "utf8");
   const BC_CSS = [
-    ['.ptp-breadcrumbs [aria-current="page"]', "THE current-page selector"],
+    ['.sig-breadcrumbs [aria-current="page"]', "THE current-page selector"],
     ["font-weight: 700", "the bold current crumb"],
-    [".ptp-breadcrumbs__sep", "the separator anatomy"],
+    [".sig-breadcrumbs__sep", "the separator anatomy"],
     ["var(--font-mono, ui-monospace, \"SFMono-Regular\", Menlo, Consolas, monospace)", "the mono path voice"],
     ["prefers-reduced-motion", "the reduced-motion guard follows"],
   ];
