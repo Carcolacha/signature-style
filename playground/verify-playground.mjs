@@ -1799,9 +1799,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.0")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.2")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.0 (the 2.7.0 codex: KnowledgeGraph, BarChart, AreaChart, TimelineManager, the Local Persistence & JSON Snapshot Pattern)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.2 (the 2.9.0 codex: CommandPalette, Skeletons, Breadcrumbs, the .sig-cell container-query pattern, the transparent self-audit log)",
   );
 }
 

@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v3.0
+# System Instruction: The Dynamic Signature Engine v3.2
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -638,7 +638,101 @@ import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react
 />
 ```
 
+### <CommandPalette>
+
+The keyboard-first launcher (2.9.0) — CONTROLLED: the parent owns `open`; the palette owns nothing but the view state. The global Ctrl+K / Cmd+K listener is the launcher (it ignores keystrokes while the focus is in an input/textarea/select/contentEditable); while open the same listener drives ArrowUp/ArrowDown (aria-activedescendant), Enter (run + close), Escape (close + RESTORE focus to the pre-open trigger). Type-to-filter is a case-insensitive substring over `label` + `keywords`. The backdrop is the modal scrim + blur(8px); the panel is glass = scrim + border, never shadow:
+
+```tsx
+import { CommandPalette, type CommandEntry } from "@edwyn/signature-style/react";
+
+const [open, setOpen] = useState(false);
+const commands: CommandEntry[] = [
+  { id: "go-home", label: "Go home", keywords: "dashboard view", icon: "Gauge", run: goHome },
+  { id: "export", label: "Export JSON", icon: "Download", hint: "workspace", run: exportJson },
+];
+
+<CommandPalette
+  commands={commands}
+  open={open}
+  onClose={() => setOpen(false)}
+  onOpen={() => setOpen(true)}
+/>
+```
+
+### <SkeletonLine> + <SkeletonCard> + <SkeletonTableRow>
+
+The loading placeholders (2.9.0) — heights locked to the 8px grid (lines 16px, card rows 8px), the shimmer is ONE background-position sweep, and under prefers-reduced-motion it stands down to a static surface block. Every shape is aria-hidden — the LOADING announcement is the consumer's job (aria-busy on the region, or a visually-hidden line); these are decorative pulse, never content:
+
+```tsx
+import { SkeletonLine, SkeletonCard, SkeletonTableRow } from "@edwyn/signature-style/react";
+
+<section aria-busy="true">
+  <SkeletonLine width="60%" />
+  <SkeletonCard />
+  <tbody>
+    {rows.length === 0 && <SkeletonTableRow columns={3} />}
+  </tbody>
+</section>
+```
+
+### <Breadcrumbs>
+
+The Shed-style mono path (2.9.0) — ONE `nav[aria-label]` > `ol` > `li`; crumbs with an `href` render `<a>`, the LAST crumb renders `<span aria-current="page">` (bold text-main); the "/" separators are explicit `aria-hidden` spans so screen readers hear the path, not the punctuation:
+
+```tsx
+import { Breadcrumbs } from "@edwyn/signature-style/react";
+
+<Breadcrumbs
+  items={[
+    { label: "engine", href: "#/dashboard" },
+    { label: "set-02", href: "#/studio" },
+    { label: "matchup-card" },
+  ]}
+/>
+```
+
+### Container-Query Authoring — the .sig-cell Pattern (2.9.0)
+
+True portability: a card answers its CONTAINER, not the viewport — two cards in one row can reflow differently. THE CONTRACT: `container-type: inline-size` goes on OUTER wrappers ONLY (a container cannot measure itself — circular sizing); the package ships `.sig-cell` usage through the composition layer and answers with @container queries, never media queries. The authoring pattern in the package css: the BASE rule keeps the historical layout (consumers without a container ancestor keep today's rendering — zero regression), and the @container blocks REFINES it when a `.sig-cell` ancestor opts in:
+
+```tsx
+{/* the wrapper is the container — never the queried element */}
+<div className="sig-cell">
+  <MatchupCard left={…} right={…} />
+</div>
+```
+
+```css
+/* the composition layer owns the wrapper */
+.sig-cell { container-type: inline-size; }
+
+/* the package answers (css/cards.css) — base keeps the legacy layout */
+@container (max-width: 380px) {
+  .ptp-matchup { grid-template-columns: 1fr; } /* sides stack, VS divider */
+}
+@container (min-width: 440px) {
+  .sig-content-card { display: grid; }          /* media-object dock */
+}
+```
+
+Reflow table (2.9.0): matchup stacks below a 380px container (the VS pill becomes a horizontal hairline divider); ContentCard + ProfileCard grow their media-object at ≥ 440px; StatCard docks its sparkline beside the metric at ≥ 360px (the value scales 1.5 → 1.75rem); FormField radio rows collapse below 480px.
+
+### The v2.9.0 Self-Audit Log (the owner reads this on return)
+
+Phase 4 of this release tried to break the release from inside a browser (`playground/probe-audit-v290.mjs` — 4 viewports × 5 views + 3 module tabs, the palette keyboard, emulated reduced-motion, a contrast sweep, a console audit). Every bug it caught, and the fix, in the open:
+
+1. **The tab bars page-broke at 375px** (dashboard module row +12px, the index catalog row +135px): the package's `.ptp-tabs` is a no-wrap flex row, and long labels ("Commerce & Profiles") outgrew the viewport. FIX (playground layer, package untouched): `.sig-shell .ptp-tabs { flex-wrap: wrap; }` — each tab keeps its own border-box, the Flamingo underline survives the wrap.
+2. **The Chronicle hero overflowed 18px at 375px**: "CHRONICLE" is ONE unbreakable word wearing the hero's 36px + 0.35em tracking; it cannot wrap and outgrew the 327px shell column. FIX (playground layer): below 480px the shell's hero folds to 28px / 0.22em — the word fits with air, nothing else moves.
+3. **A studio preview bled 2px at 375px**: a nowrap `<code>` chip escaped the preview stage. FIX (playground layer): `.pattern-frame__preview { overflow-x: auto; }` — a stage pans, it never page-breaks.
+4. **CommandPalette's Ctrl+K fired while typing in inputs**: the `isTypingTarget` guard was written but never wired into the launcher branch. FIX: the listener honors it; the palette now ignores the launcher in any input/textarea/select/contentEditable. (Found during the Phase 2 wiring, fixed there; recorded here because it is exactly the class of bug this audit exists for.)
+5. **Contrast flags, NOT touched (owner call required)**: `--party-mauve-bright` reads 2.32:1 on `--bg-surface` (3.03:1 on base) and `--party-blue` 2.56:1 on surface — both are chart/badge FILL tokens whose TEXT usages are rare (the ChronicleTimeline can wear mauve-bright as a tag color). Per the audit mandate: flagged and documented, no fix without owner approval.
+6. Also caught during Phase 2 (fixed before this audit): the palette's Escape closed without restoring focus — the trigger-capture existed but the restore effect was missing; keyboard users would have fallen off the page.
+
+Everything else: 32/32 viewport×target sweep cells at zero horizontal overflow with non-zero shell margins; the palette's full keyboard contract green; emulated reduced-motion collapses the shimmer/flip/shake/meter to the floor; zero console errors and zero pageerror events across every sweep.
+
 ### The Local Persistence & JSON Snapshot Pattern (2.7.0)
+
+
 
 The Excalidraw/tldraw pattern: user state mirrors into localStorage so a reload restores the work, and exports/imports as JSON so it can travel. ONE zero-dependency hook — lazy init parses inside try/catch (corrupt → fallback), the setter stringifies inside try/catch (quota/private-mode safe), `reset()` removes the key and restores the fallback:
 

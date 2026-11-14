@@ -129,6 +129,88 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.9.0 — Autonomous Optimization Sprint: CSS Container Queries, Power-User Utilities, Humanized Craft & Full Self-Audit
+
+The release that makes the components **truly portable**: they now answer
+their CONTAINER, not the viewport. Plus three power-user primitives
+(`<CommandPalette>`, the `<Skeleton*>` family, `<Breadcrumbs>`), a
+humanizer pass over the studio's copy, and a hostile self-audit whose
+every catch is logged in SYSTEM_PROMPT.md ("The v2.9.0 Self-Audit Log").
+
+**Phase 1 — CSS Container Queries.** The playground ships `.sig-cell {
+container-type: inline-size; }` (containment on OUTER wrappers only — a
+container cannot measure itself) and the package answers with
+`@container` reflows, never media queries: `.ptp-matchup` stacks its
+sides below a 380px container (the VS pill becomes a horizontal hairline
+divider); `.sig-content-card` + `.sig-profile-card` grow their
+media-object alignment at ≥ 440px; `.ptp-stat-card` docks its sparkline
+beside the metric at ≥ 360px (the KPI value scales 1.5 → 1.75rem); the
+FormField radio rows collapse below 480px. The authoring doctrine: the
+BASE rule keeps the historical layout, so consumers without a container
+ancestor keep today's rendering — zero regression. The release blocker
+is a playwright proof (`playground/probe-container-queries.mjs`)
+placing the SAME MatchupCard/StatCard/ContentCard in a 280px and a 900px
+container and asserting different computed layouts (matchup
+`grid-template-columns` 1fr vs 3 tracks; stat-card display flex vs grid;
+content-card 16px flex column vs 24px media-object grid).
+
+**Phase 2 — Power-user primitives.** `<CommandPalette>` (controlled
+keyboard-first launcher: Ctrl/Cmd+K global shortcut that ignores typing
+fields, combobox/listbox aria contract with `aria-activedescendant`,
+type-to-filter over label + keywords, Enter runs + closes, Escape closes
+AND restores focus to the pre-open trigger; modal-scrim + blur(8px)
+glass, zero shadows). `<SkeletonLine>` / `<SkeletonCard>` /
+`<SkeletonTableRow>` (8px-grid heights, one background-position shimmer
+sweep, mandatory reduced-motion static ground, aria-hidden decorative
+pulse). `<Breadcrumbs>` (mono path, last crumb
+`span[aria-current="page"]`, aria-hidden "/" separators). The playground
+wires all three: the hub topbar carries per-view breadcrumbs beside a ⌘K
+trigger, and the palette's 15 commands cover the 5 views, the 6 Pattern
+Studio sets, Export Workspace JSON, the reduced-motion preview toggle
+(`[data-motion="reduced"]`), a keyboard-shortcuts dialog, and the
+llms.txt URL copy. Pack grows 52 → 58 files (css/command.css +
+css/skeleton.css + react/command.{js,d.ts} + react/skeleton.{js,d.ts});
+`package.json files` gains the `!react/command.tsx` + `!react/skeleton.tsx`
+negations (the sources never ship, their compiled pairs do).
+
+**Phase 3 — The Humanizer.** Every playground string audited against
+robotic boilerplate: `Saved`, `Panel: N.`, `modal.open(sample event)`,
+`Send test toast` are gone — replaced with domain-real copy (party
+planning, catering, budgets). The 6-Set blurbs audited and two rewritten
+in the when/why voice; `npm run llms` regenerates llms-full.txt from the
+humanized sources (drift-proof by generator).
+
+**Phase 4 — The hostile self-audit.** A playwright audit
+(`playground/probe-audit-v290.mjs`) swept 4 viewports (375/768/1440/1920)
+× 5 views × 3 module tabs asserting zero horizontal overflow and live
+shell margins, exercised the palette's full keyboard contract, emulated
+`prefers-reduced-motion` (shimmer/flip/shake/meter all degrade), read
+the 11 party tokens' contrast against both grounds, and collected console
+noise (zero errors, zero pageerror events). Four bugs were caught and
+fixed (tab-bar wraps, the Chronicle hero's unbreakable tracked word, a
+preview-stage bleed, the palette's typing-guard wiring) — the full log
+lives in SYSTEM_PROMPT.md.
+
+**Phase 5 — The close.** SYSTEM_PROMPT.md moves to **Engine v3.2** with
+the three new recipes + the `.sig-cell` container-query authoring
+pattern + the transparent self-audit log. `tokens.json` carries one
+authorized delta (`meta.version` → 2.9.0); the 34-token whitelist stays
+byte-equal (meta-only deep-equal gate). `npm pack` is EXACTLY 58 files.
+
+**Container-query authoring (for consumers).** Wrap any card in a
+`.sig-cell` (copy the one-liner into your own css — the package ships no
+wrapper element by design):
+
+```html
+<div class="sig-cell" style="container-type: inline-size">
+  <!-- any package card reflows to THIS width -->
+</div>
+```
+
+The card inside needs no props — the reflows are pure css. Without a
+`.sig-cell` ancestor nothing changes (the @container blocks simply never
+match), so adoption is opt-in per slot.
+
 ### 2.8.0 — The Signature Pattern Website, 6-Set Taxonomy & One-Click Copy Studio
 
 The playground becomes the **public-ready Signature Design Website** —

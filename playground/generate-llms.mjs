@@ -154,7 +154,7 @@ lines.push("");
 lines.push("**Rule of Engagement (non-negotiable):** `--party-*` is content-only; Flamingo/Teal (`--color-cake-primary` / `--color-cake-secondary`) is structural-only. The two families never cross.");
 lines.push("");
 
-lines.push("## The Rules (The Dynamic Signature Engine v3.0)");
+lines.push("## The Rules (The Dynamic Signature Engine v3.2)");
 lines.push("");
 lines.push(doctrines);
 lines.push("");
