@@ -550,6 +550,39 @@
  *         flips BOTH (elev) and (cc3) to FAIL; restore → PASS
  *         (git-verified byte-identical).
  *
+ * 2.7.0 gates ("Interactive Knowledge Graph, Analytical SVG Charts &
+ * Manageable Timeline" — the persistence addendum folded in):
+ *   (b2 AMENDMENT)  the frozen files array evolves ONE more step:
+ *         v1.4.0 + the four prior negations + "!react/graph.tsx" +
+ *         "!react/timeline-manager.tsx" (the negations precedent — the
+ *         new sources never ship, their compiled .js/.d.ts do).
+ *   (b3)  npm pack grows 47 → 52 files (47 + css/graph.css +
+ *         react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts}).
+ *   (b7)/(n-hub4)  REBASED to the v2.6.0 baseline. The owner-authorized
+ *         2.7.0 deltas, and NOTHING else: css/viz.css (BarChart +
+ *         AreaChart classes), css/timeline.css (APPEND-only .ptp-tmanager
+ *         block, e2-governed), css/graph.css (NEW), css/signature-style.css
+ *         (the graph import), react/viz.{tsx,js,d.ts} (BarChart/AreaChart
+ *         growth), react/graph.{tsx,js,d.ts} (NEW),
+ *         react/timeline-manager.{tsx,js,d.ts} (NEW),
+ *         react/index.{ts,js,d.ts} (re-exports), SYSTEM_PROMPT.md (the
+ *         v3.0 codex), tools/mcp-viz/server.ts (n-hub4 only: the sweep
+ *         selectors + version 2.7.0). ZERO token changes: tokens.json and
+ *         css/tokens.css stay byte-identical; EventTimeline
+ *         (react/timeline.tsx) stays intact; demo/ and scripts/
+ *         byte-frozen. scripts/verify.mjs stays BYTE-FROZEN.
+ *   (kg1) THE KNOWLEDGE GRAPH — css/graph.css: the inset canvas
+ *         (--bg-inset), the 15% hairline border, the 0.25 dim answer,
+ *         __footer + __toolbar anatomy, the focus-visible ring,
+ *         reduced-motion, ZERO hex + ZERO box-shadow; react/graph.tsx:
+ *         the exported PURE layoutGraph + cubicBezierEdge helpers, the
+ *         role="application" svg, one bezier edge per node-with-parent
+ *         (data-parent/data-child), the class-driven
+ *         .ptp-graph--focused dim, the footer inspect strip, the
+ *         "Add & Link" toolbar; signature-style.css imports
+ *         ./graph.css layer(cascade) AFTER ./cards.css; umbrella
+ *         re-exports.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -599,8 +632,11 @@ if (!selfWired) {
 // ("!react/editorial.tsx"), same precedent.
 // 2.5.0 AMENDMENT: the cards promotion adds the fourth
 // ("!react/cards.tsx"), same precedent.
+// 2.7.0 AMENDMENT: the graph + timeline-manager promotions add the
+// fifth and sixth ("!react/graph.tsx", "!react/timeline-manager.tsx"),
+// same precedent.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
-const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -618,13 +654,15 @@ if (v140pkg !== null) {
   const expectedFiles = [...(v140pkg.files ?? []), ...FILES_NEGATIONS];
   if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
     failures.push(
-      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the negations !react/surface.tsx + !react/data.tsx — the packing contract evolves documented steps",
+      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx — the packing contract evolves documented steps",
     );
   }
 }
 
-// ---- (b3) npm pack still exactly 47 files (2.6.0: ZERO new files — every
-// delta grows an existing packed file) ----
+// ---- (b3) npm pack grows 47 → 52 files in two steps (2.7.0 step 1:
+// css/graph.css + react/graph.{js,d.ts} = 50; step 2 adds
+// react/timeline-manager.{js,d.ts} = 52; playground/ and tools/ stay
+// excluded by the files array) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -643,9 +681,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "47") {
+} else if (totalFiles[1] !== "50") {
   failures.push(
-    `(b3) npm pack must yield exactly 47 files (2.6.0 = ZERO new files — every delta grows an existing packed file; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 50 files at 2.7.0 step 1 (47 + css/graph.css + react/graph.{js,d.ts}; step 2 grows to 52 with react/timeline-manager.{js,d.ts}; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -1035,39 +1073,36 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.5.0 ------------------------
-// 2.6.0 REBASE (the release that legitimately touches core rebases the floor —
-// v2.4.1 → v2.5.0). The owner-authorized 2.6.0 deltas, and NOTHING else:
-//   css/surface.css                   — grows: chromatic accents + elevation tiers
-//   css/cards.css                     — grows: the five universal archetypes
-//   css/editorial.css                 — grows: scrollbar-free track + dot indicators
-//   css/forms.css                     — grows: textarea resize: vertical (owner mandate)
-//   react/surface.{tsx,js,d.ts}       — grow: accentToken/elevation + the accent types
-//   react/cards.{tsx,js,d.ts}         — grow: ContentCard/ReferenceCard/TierCard/
-//                                        ProfileCard/ChronicleTimeline
-//   react/editorial.{tsx,js,d.ts}     — grow: the Carousel dot indicators
+// ---- (b7) SAFETY PROOF: core files untouched since v2.6.0 ------------------------
+// 2.7.0 REBASE (the release that legitimately touches core rebases the floor —
+// v2.5.0 → v2.6.0). The owner-authorized 2.7.0 deltas, and NOTHING else:
+//   css/viz.css                       — grows: .ptp-bars/.ptp-area (BarChart/AreaChart)
+//   css/timeline.css                  — grows: the APPEND-only .ptp-tmanager block (e2-governed)
+//   css/graph.css                     — NEW: the KnowledgeGraph stylesheet
+//   css/signature-style.css           — grows: the graph.css layered import (after cards.css)
+//   react/viz.{tsx,js,d.ts}           — grow: BarChart + AreaChart (+ smoothPath)
+//   react/graph.{tsx,js,d.ts}         — NEW: KnowledgeGraph (+ layoutGraph/cubicBezierEdge)
+//   react/timeline-manager.{tsx,js,d.ts} — NEW: TimelineManager
 //   react/index.{ts,js,d.ts}          — the umbrella re-exports
-//   SYSTEM_PROMPT.md                  — the v2.9 codex
-// ZERO NEW FILES (pack stays 47). react/forms.{tsx,js,d.ts} are NOT authorized
-// (the textarea resize is css-only; the form audits live in the playground);
-// react/viz.tsx, tokens.json, tokens.css, the frozen css files and everything
-// else stay byte-identical to v2.5.0. scripts/verify.mjs stays BYTE-FROZEN.
+//   SYSTEM_PROMPT.md                  — the v3.0 codex
+// ZERO token changes (tokens.json + css/tokens.css byte-identical to v2.6.0);
+// EventTimeline (react/timeline.tsx) intact; demo/ byte-frozen.
+// scripts/verify.mjs stays BYTE-FROZEN.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 const B7_AUTHORIZED = [
   ":(exclude)css/timeline.css",
-  ":(exclude)css/surface.css",
-  ":(exclude)css/cards.css",
-  ":(exclude)css/editorial.css",
-  ":(exclude)css/forms.css",
-  ":(exclude)react/surface.tsx",
-  ":(exclude)react/surface.js",
-  ":(exclude)react/surface.d.ts",
-  ":(exclude)react/cards.tsx",
-  ":(exclude)react/cards.js",
-  ":(exclude)react/cards.d.ts",
-  ":(exclude)react/editorial.tsx",
-  ":(exclude)react/editorial.js",
-  ":(exclude)react/editorial.d.ts",
+  ":(exclude)css/viz.css",
+  ":(exclude)css/graph.css",
+  ":(exclude)css/signature-style.css",
+  ":(exclude)react/viz.tsx",
+  ":(exclude)react/viz.js",
+  ":(exclude)react/viz.d.ts",
+  ":(exclude)react/graph.tsx",
+  ":(exclude)react/graph.js",
+  ":(exclude)react/graph.d.ts",
+  ":(exclude)react/timeline-manager.tsx",
+  ":(exclude)react/timeline-manager.js",
+  ":(exclude)react/timeline-manager.d.ts",
   ":(exclude)react/index.ts",
   ":(exclude)react/index.js",
   ":(exclude)react/index.d.ts",
@@ -1077,39 +1112,39 @@ let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.5.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.6.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.5.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.6.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.5.0 beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.6.0 beyond the owner-authorized 2.7.0 deltas (graph.css NEW + viz/timeline growth + the bundle import, react viz growth + graph/timeline-manager modules, umbrella re-exports, v3.0 codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.6.0 FROZEN PROOF — v2.5.0 baseline, tools/ included ---------
-// Rebased v2.4.1 → v2.5.0 for 2.6.0. tools/ gets exactly ONE authorized delta:
+// ---- (n-hub4) THE V2.7.0 FROZEN PROOF — v2.6.0 baseline, tools/ included ---------
+// Rebased v2.5.0 → v2.6.0 for 2.7.0. tools/ gets exactly ONE authorized delta:
 // tools/mcp-viz/server.ts (owner-editable: DEFAULT_SELECTORS grows
-// .ptp-carousel__dot / .ptp-chronicle__item; version 2.6.0; the compiled
-// dist/ is gitignored). Everything else under the locked paths beyond the
-// (b7) deltas must stay byte-identical to v2.5.0.
+// .ptp-graph__node / .ptp-bars__bar / .ptp-tmanager__count; version 2.7.0; the
+// compiled dist/ is gitignored). Everything else under the locked paths beyond
+// the (b7) deltas must stay byte-identical to v2.6.0.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED, ":(exclude)tools/mcp-viz/server.ts"];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.5.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.6.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.5.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.6.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.5.0 beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex, mcp server selectors) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.6.0 beyond the owner-authorized 2.7.0 deltas (graph css/react modules, viz/timeline growth, bundle import, umbrella re-exports, v3.0 codex, mcp server selectors) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -3065,10 +3100,131 @@ for (const [needle, label] of [
   }
 }
 
+// ---- (kg1) THE KNOWLEDGE GRAPH (2.7.0) ---------------------------------------------
+// css/graph.css: the inset canvas + 15% hairline + the 0.25 dim answer +
+// footer/toolbar anatomy + focus ring + reduced-motion + ZERO hex/shadow
+// (the e1 css/-wide scan already covers the shadow ban — restated here).
+// react/graph.tsx: the exported PURE helpers (layoutGraph + cubicBezierEdge),
+// the role="application" svg, per-parent bezier edges with data-parent/
+// data-child, the class-driven --focused dim, the footer strip, the
+// Add & Link toolbar. Bundle membership AFTER ./cards.css; umbrella
+// re-exports for the component, its types AND the pure helpers.
+const graphCssPath = resolve(root, "css/graph.css");
+if (!existsSync(graphCssPath)) {
+  failures.push("(kg1) css/graph.css is missing — the KnowledgeGraph ships its own stylesheet");
+} else {
+  const graphCss = readFileSync(graphCssPath, "utf8");
+  const GRAPH_REQUIREMENTS = [
+    ["background: var(--bg-inset)", "the inset chart interior (data-ink doctrine)"],
+    ["border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent)", "the 15% hairline frame"],
+    ["border-radius: var(--radius-ui)", "the minimalist corners"],
+    ["width: 100%", "the canvas fills its card"],
+    [".ptp-graph--focused .ptp-graph__edge[data-dim=\"true\"],", "the class-driven dim selector (edge half)"],
+    [".ptp-graph--focused .ptp-graph__node[data-dim=\"true\"]", "the class-driven dim selector (node half)"],
+    ["opacity: 0.25", "THE DIM — non-adjacent ink fades to a quarter"],
+    [".ptp-graph__footer", "the inspect strip"],
+    ["padding: var(--space-tight) var(--space-standard)", "the footer's 8px-grid padding"],
+    [".ptp-graph__toolbar", "the add-and-link toolbar row"],
+    ["cursor: pointer", "the node pointer affordance"],
+    [".ptp-graph__node:focus-visible", "the keyboard ring on the node group"],
+    ["outline: 2px solid var(--color-cake-primary)", "the doctrine focus ring"],
+    ["prefers-reduced-motion", "the reduced-motion guard on transitions"],
+  ];
+  for (const [needle, label] of GRAPH_REQUIREMENTS) {
+    if (!graphCss.includes(needle)) {
+      failures.push(`(kg1) css/graph.css must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const graphHexes = graphCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (graphHexes !== null) {
+    failures.push(
+      `(kg1) css/graph.css contains hex literal(s) ${[...new Set(graphHexes)].join(", ")} — the graph is token-driven, zero hex`,
+    );
+  }
+  const graphShadows = graphCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (graphShadows !== null) {
+    failures.push(
+      `(kg1) css/graph.css declares a box-shadow (${graphShadows.join(" ")}) — chart interiors stay FLAT (the e1 treaty; shadows live only in css/surface.css sanctioned blocks)`,
+    );
+  }
+  const graphImportIndex = bundleCss.indexOf('@import "./graph.css" layer(cascade);');
+  if (graphImportIndex === -1) {
+    failures.push(
+      'css/signature-style.css must import "./graph.css" layer(cascade) — cascade membership is the layered-import doctrine',
+    );
+  } else {
+    const cardsImportIndexForGraph = bundleCss.indexOf('@import "./cards.css" layer(cascade);');
+    if (cardsImportIndexForGraph !== -1 && graphImportIndex < cardsImportIndexForGraph) {
+      failures.push("css/signature-style.css must import ./graph.css AFTER ./cards.css (cards styles load first)");
+    }
+  }
+}
+const graphSrcPath = resolve(root, "react/graph.tsx");
+if (!existsSync(graphSrcPath)) {
+  failures.push("(kg1) react/graph.tsx is missing — the KnowledgeGraph is a new module");
+} else {
+  const graphSrc = readFileSync(graphSrcPath, "utf8");
+  const GRAPH_TSX_REQUIREMENTS = [
+    ["export function layoutGraph(", "the exported PURE layout helper (gate-testable determinism)"],
+    ["export function cubicBezierEdge(", "the exported PURE edge helper (control points 60% along the radial)"],
+    ["export interface GraphNode", "the node contract"],
+    ["categoryToken: PartyColorToken", "party-typed node category (Rule of Engagement)"],
+    ["parentId?: string", "parentId undefined = root"],
+    ['role="application"', "the svg's application role"],
+    ["ptp-graph ptp-graph--focused", "the focused class driven by selection state"],
+    ['"ptp-graph"', "the bare canvas class"],
+    ['className="ptp-graph__edge"', "one path per node-with-parent"],
+    ["data-parent={node.parentId}", "the edge's parent hook"],
+    ["data-child={node.id}", "the edge's child hook"],
+    ['className="ptp-graph__node"', "the interactive node group"],
+    ['role="button"', "nodes are buttons (aria contract)"],
+    ["tabIndex={0}", "keyboard focus lands on the node"],
+    ['data-dim={dim || undefined}', "the attribute IS the dim state"],
+    ['stroke={isSelected ? "var(--color-cake-primary)" : strokeFor(node)}', "selection flips the stroke to structural Flamingo"],
+    ["strokeWidth={isSelected ? 3 : 2}", "the selected ring thickens to 3"],
+    ['className="ptp-graph__footer"', "the inspect strip render"],
+    ["Select a node to inspect its note.", "the resting footer copy"],
+    ["Add &amp; Link", "the toolbar button label"],
+    ['variant="secondary"', "the toolbar rides the package Button"],
+    ['categoryToken: "--party-lavender"', "Add & Link seeds the lavender content token"],
+    ['onAddNode({', "the toolbar fires the controlled callback"],
+    ["parentId: selectedId ?? rootId", "new nodes parent to the selection, else the root (no nodes → root)"],
+  ];
+  for (const [needle, label] of GRAPH_TSX_REQUIREMENTS) {
+    if (!graphSrc.includes(needle)) {
+      failures.push(`(kg1) react/graph.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const graphSrcHexes = graphSrc.match(/#[0-9a-f]{6}/gi);
+  if (graphSrcHexes !== null) {
+    failures.push(
+      `(kg1) react/graph.tsx contains hardcoded hex literal(s) ${[...new Set(graphSrcHexes)].join(", ")} — the graph consumes var(--token) only (r4 doctrine)`,
+    );
+  }
+}
+for (const name of ["KnowledgeGraph", "KnowledgeGraphProps", "GraphNode", "GraphPosition", "layoutGraph", "cubicBezierEdge"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${name} — (kg1)`);
+  }
+}
+for (const name of ["KnowledgeGraph", "layoutGraph", "cubicBezierEdge"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${name} — (kg1)`);
+  }
+}
+const graphJsPath = resolve(root, "react/graph.js");
+const graphDtsPath = resolve(root, "react/graph.d.ts");
+if (!existsSync(graphJsPath)) {
+  failures.push("(kg1) react/graph.js is missing — build it: npx tsc -p tsconfig.json");
+}
+if (!existsSync(graphDtsPath)) {
+  failures.push("(kg1) react/graph.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1): scaffold, wiring, pack=47 (2.6.0: ZERO new files), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.6.0: Copy/Check/ArrowUpRight join the probe), v2.5.0 safety diff empty beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex; forms.tsx + viz.tsx + tokens + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4, version 2.6.0), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the 2.6.0 shadow amendment (surface.css: .sig-surface-card rules + the three [data-elevation] tier blocks + [data-accent] glow; cards.css absolute zero), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column (1520px catalog width) + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css incl. the scrollbar-free track + dot indicators); 2.5.0 gates intact (bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0: (acc1) the accent contract (data-accent + --sig-accent painted in css, PartyColorToken/AccentToken typed + compiled), (elev) the three-tier ladder (flat/raised/floating; interactive+floating lifts -4px, cards.css stays absolute zero), (pt11) the 11-token sweep (the whitelist IS the union), (cc1)-(cc5) the five universal archetypes (16/9 content, clipboard reference, featured tier, tabular profile, the flat chronicle), (mi1) the master index (filter tabs, three chromatic gateways in the balanced row, the commerce trio, the food slab + 4-up profiles, the 23-release memorial chronicle); negative test: deleting the [data-elevation=\"floating\"] tier block flips (elev)/(cc3) FAIL, restore PASS");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1): scaffold, wiring, pack=50→52 (2.7.0 two steps: css/graph.css + react/graph.{js,d.ts}, then react/timeline-manager.{js,d.ts}), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.6.0: Copy/Check/ArrowUpRight join the probe), v2.5.0 safety diff empty beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex; forms.tsx + viz.tsx + tokens + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4, version 2.6.0), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the 2.6.0 shadow amendment (surface.css: .sig-surface-card rules + the three [data-elevation] tier blocks + [data-accent] glow; cards.css absolute zero), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column (1520px catalog width) + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css incl. the scrollbar-free track + dot indicators); 2.5.0 gates intact (bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0: (acc1) the accent contract (data-accent + --sig-accent painted in css, PartyColorToken/AccentToken typed + compiled), (elev) the three-tier ladder (flat/raised/floating; interactive+floating lifts -4px, cards.css stays absolute zero), (pt11) the 11-token sweep (the whitelist IS the union), (cc1)-(cc5) the five universal archetypes (16/9 content, clipboard reference, featured tier, tabular profile, the flat chronicle), (mi1) the master index (filter tabs, three chromatic gateways in the balanced row, the commerce trio, the food slab + 4-up profiles, the 23-release memorial chronicle); negative test: deleting the [data-elevation=\"floating\"] tier block flips (elev)/(cc3) FAIL, restore PASS");

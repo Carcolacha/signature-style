@@ -17,3 +17,4 @@ export { SurfaceCard, PageHero, } from "./surface.js";
 export { DataTable, Tabs, Callout, } from "./data.js";
 export { Carousel, CarouselItem, ProseBlock, AnnouncementBanner, } from "./editorial.js";
 export { ActionTile, FlipCard, AccordionCard, MatchupCard, ContentCard, ReferenceCard, TierCard, ProfileCard, ChronicleTimeline, } from "./cards.js";
+export { KnowledgeGraph, layoutGraph, cubicBezierEdge, } from "./graph.js";

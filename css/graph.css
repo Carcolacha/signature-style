@@ -1,0 +1,88 @@
+/* ==========================================================================
+   GRAPH — <KnowledgeGraph> (2.7.0 "Interactive Knowledge Graph,
+   Analytical SVG Charts & Manageable Timeline"). Layered into `cascade`
+   by signature-style.css (imported after cards.css).
+
+   THE e1 SHADOW TREATY HOLDS — this file declares ZERO box-shadow and
+   ZERO hex. The graph canvas is a chart interior: it separates from the
+   card with a 15% hairline and the inset background, never elevation
+   (shadows live ONLY in css/surface.css's sanctioned blocks).
+
+   DOM SHAPE (Pruning Protocol): the component renders a FRAGMENT —
+   the optional toolbar row, ONE svg.ptp-graph (role="application",
+   viewBox 0 0 640 320) whose children are the bezier edges (path) and
+   the node groups (g > circle + text), then the footer strip. No
+   wrapper div anywhere.
+
+   FOCUS DIMMING is class-driven: a selection adds .ptp-graph--focused
+   to the svg and data-dim="true" to every non-adjacent node/edge; the
+   rules below answer with opacity 0.25. Nothing inline, nothing
+   style-driven — the attribute IS the state (the aria-current lesson).
+
+   Reduced motion kills every transition outright — motion is a gift.
+   ========================================================================== */
+
+/* The canvas — inset chart interior, 15% hairline frame, flat. */
+.ptp-graph {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+/* Edges — the 40% muted mix hairline (stroke lives here; geometry in SVG). */
+.ptp-graph__edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--text-muted) 40%, transparent);
+  stroke-width: 1.5;
+  transition: var(--transition-standard);
+}
+
+/* Nodes — pointer affordance; the g is the interactive element. */
+.ptp-graph__node {
+  cursor: pointer;
+}
+.ptp-graph__node circle {
+  transition: var(--transition-standard);
+}
+
+/* Keyboard parity: the doctrine ring on the focused node group. */
+.ptp-graph__node:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* THE DIM — non-adjacent ink fades to a quarter while a node is focused. */
+.ptp-graph--focused .ptp-graph__edge[data-dim="true"],
+.ptp-graph--focused .ptp-graph__node[data-dim="true"] {
+  opacity: 0.25;
+}
+
+/* The inspect strip — muted 0.8125rem metadata under the canvas. */
+.ptp-graph__footer {
+  padding: var(--space-tight) var(--space-standard);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* The add-and-link toolbar — one flex row, 8px-grid gap. */
+.ptp-graph__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  margin-bottom: var(--space-tight);
+}
+.ptp-graph__toolbar .ptp-input {
+  flex: 1 1 12rem;
+  width: auto;
+}
+
+/* Motion is a gift, not a requirement. */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-graph__edge,
+  .ptp-graph__node circle {
+    transition: none;
+  }
+}

@@ -137,3 +137,11 @@ export {
   type ChronicleTimelineProps,
   type ChronicleRelease,
 } from "./cards.js";
+export {
+  KnowledgeGraph,
+  type KnowledgeGraphProps,
+  type GraphNode,
+  type GraphPosition,
+  layoutGraph,
+  cubicBezierEdge,
+} from "./graph.js";

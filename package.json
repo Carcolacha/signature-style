@@ -40,7 +40,9 @@
     "!react/surface.tsx",
     "!react/data.tsx",
     "!react/editorial.tsx",
-    "!react/cards.tsx"
+    "!react/cards.tsx",
+    "!react/graph.tsx",
+    "!react/timeline-manager.tsx"
   ],
   "sideEffects": [
     "*.css"
