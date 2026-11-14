@@ -462,6 +462,94 @@
  *   Negative test (falsifiability, restore-verified): breaking the
  *         banner's span-12 class flips (b12) to FAIL; restore → PASS.
  *
+ * 2.6.0 gates ("Universal Developer Card Suite, Chromatic Elevation &
+ * The Master Index Overhaul" — zero new files, pack stays 47; every
+ * delta grows an EXISTING file):
+ *   (b7)/(n-hub4)  REBASED to the v2.5.0 baseline with the authorized
+ *         2.6.0 deltas enumerated: css/surface.css (chromatic accents +
+ *         elevation tiers), css/cards.css (the five universal
+ *         archetypes), css/editorial.css (scrollbar-free track + dots),
+ *         css/forms.css (textarea resize), react/surface.{tsx,js,d.ts},
+ *         react/cards.{tsx,js,d.ts}, react/editorial.{tsx,js,d.ts},
+ *         react/index.{ts,js,d.ts} (re-exports), SYSTEM_PROMPT.md (the
+ *         v2.9 codex) — and for (n-hub4) additionally tools/mcp-viz/
+ *         server.ts (version 2.6.0 + the chronicle/dot sweep
+ *         selectors). react/forms.{tsx,js,d.ts} are NOT authorized —
+ *         the textarea resize is css-only and the form audits live in
+ *         the playground. scripts/verify.mjs stays BYTE-FROZEN.
+ *   (sh1 AMENDMENT)  the shell WIDENS for the catalog: max-width
+ *         1520px + clamp(24px, 4vw, 56px) side padding (the 24px
+ *         floor).
+ *   (acc1) THE ACCENT CONTRACT — css/surface.css carries the
+ *         [data-accent] + --sig-accent rules (eyebrow color, 2px
+ *         title underline, chromatic glow), react/surface.tsx exports
+ *         the PartyColorToken alias (the 11 --party-* tokens) and the
+ *         AccentToken union (party + the two structural signatures);
+ *         <SurfaceCard> renders data-accent/data-elevation + the
+ *         inline --sig-accent variable.
+ *   (elev) THE ELEVATION LADDER — css/surface.css declares the three
+ *         bare tier blocks ([data-elevation="flat"/"raised"/
+ *         "floating"]) AND the (e1) scope is AMENDED: shadow
+ *         declarations in surface.css are legal ONLY under (a)
+ *         .sig-surface-card selectors, (b) the three tier blocks,
+ *         (c) [data-accent] glow rules. css/cards.css stays ABSOLUTE
+ *         ZERO (the featured TierCard's floating shadow arrives
+ *         through the shared ladder) — both files' shadow policies
+ *         asserted explicitly.
+ *   (pt11) THE 11-TOKEN SWEEP — the ThemeProvider whitelist covers
+ *         EXACTLY the 11 --party-* names, and the PartyColorToken
+ *         alias exists in the compiled react/surface.d.ts (the union
+ *         resolves through Extract<KnownToken, `--party-${string}`> —
+ *         the whitelist IS the union).
+ *   (cc1)  CONTENTCARD — css/cards.css: the 16/9 visual (aspect-ratio:
+ *         16 / 9), the mono 0.6875rem meta pill, the accent underline,
+ *         the footer's margin-top: auto; react/cards.tsx: the
+ *         gradient-art fallback (color-mix + var, ZERO hex), the
+ *         package Button footer.
+ *   (cc2)  REFERENCECARD — react/cards.tsx: navigator.clipboard
+ *         .writeText, the 2000ms copied reset (timer cleaned up), the
+ *         onCopied-after-success contract, the "Copied!" flash;
+ *         css/cards.css: the uppercase tag chip + the code well.
+ *   (cc3)  TIERCARD — react/cards.tsx: featured → data-elevation
+ *         "floating" + the Check bullets; css/cards.css: the 2px
+ *         accent border on --featured, the party-green Check ink, the
+ *         2rem tabular price.
+ *   (cc4)  PROFILECARD — react/cards.tsx: the Avatar with
+ *         size={avatarSize} + ringToken, the 2–3 stats dev-warn;
+ *         css/cards.css: the tabular stat values.
+ *   (cc5)  CHRONICLETIMELINE — react/cards.tsx: the <ol
+ *         class="ptp-chronicle"> with the inline --accent variable;
+ *         css/cards.css: the ::before spine, the absolutely-parked
+ *         12px node, zero shadows.
+ *   (mi1)  THE MASTER INDEX — App.tsx: the filter Tabs (label "Catalog
+ *         categories", the five category ids, conditional rendering
+ *         per row), the three chromatic gateways (PLANNER/STUDY/ARENA,
+ *         data-accent + --sig-accent), the commerce trio, the food
+ *         slab + the 4-up profile row, the flat chronicle slab with
+ *         EXACTLY 23 RELEASE_HISTORY entries (v0.1.0 → v2.6.0);
+ *         styles.css: .hub__row--3 (repeat(3, 1fr)) + .hub__row--4
+ *         with the 768px collapses, .hub--index as the flex column.
+ *   (ed1 AMENDMENT)  the track scrollbar needle moves thin → none +
+ *         the webkit display:none; the .ptp-carousel__dots /
+ *         .ptp-carousel__dot anatomy joins ([data-active="true"] →
+ *         the Flamingo 1.5rem pill).
+ *   (dd4 AMENDMENT)  the codex title needle moves to v2.9; the codex
+ *         gains the six new recipes (SurfaceCard chromatic params,
+ *         ContentCard, ReferenceCard, TierCard, ProfileCard,
+ *         ChronicleTimeline) — fact-checked against the compiled
+ *         .d.ts files.
+ *   (dd6 AMENDMENT)  the cortex sweep grows .ptp-carousel__dot /
+ *         .ptp-chronicle__item; the server version moves to 2.6.0.
+ *   (s1 AMENDMENT)  the elevation literals re-tune: the raised tier is
+ *         inset 0.06 + ambient 0.42 (the base card default); the
+ *         hover deepen 0 16px 40px rgba(0, 0, 0, 0.5) stands.
+ *   (icons AMENDMENT)  += Copy, Check, ArrowUpRight (the ReferenceCard
+ *         and TierCard render them).
+ *   Negative test (falsifiability, restore-verified): deleting the
+ *         `[data-elevation="floating"]` tier block from css/surface.css
+ *         flips BOTH (elev) and (cc3) to FAIL; restore → PASS
+ *         (git-verified byte-identical).
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -535,8 +623,8 @@ if (v140pkg !== null) {
   }
 }
 
-// ---- (b3) npm pack still exactly 47 files (2.5.0: 43 + primitives.css +
-// cards.css + cards.js + cards.d.ts) ----
+// ---- (b3) npm pack still exactly 47 files (2.6.0: ZERO new files — every
+// delta grows an existing packed file) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -557,7 +645,7 @@ if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
 } else if (totalFiles[1] !== "47") {
   failures.push(
-    `(b3) npm pack must yield exactly 47 files (2.5.0 = 43 + css/primitives.css + css/cards.css + react/cards.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 47 files (2.6.0 = ZERO new files — every delta grows an existing packed file; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -777,11 +865,15 @@ if (mockIconNames.length === 0) {
 // COMPOSITION LAYER — and, since 2.2.0, in css/surface.css, where the ambient
 // elevation contract ships WITH the promoted .sig-surface-card primitive.
 // 2.2.0 RESCOPE: every css/ file stays ABSOLUTE ZERO on box-shadow EXCEPT
-// css/surface.css, where shadow declarations are permitted ONLY inside rule
-// blocks whose selector contains `.sig-surface-card` (parsed per rule block,
-// comments stripped). Hex literals stay banned EVERYWHERE — surface.css's
-// sanctioned literals are rgba only. styles.css keeps the composition
-// elevations it still owns: the button pop (600 weight + its own shadow).
+// css/surface.css. 2.6.0 AMENDMENT (chromatic elevation): inside surface.css,
+// shadow declarations are permitted ONLY under (a) selectors containing
+// `.sig-surface-card` (the primitive + its modifiers), (b) the three BARE
+// elevation-tier blocks `[data-elevation="flat"|"raised"|"floating"]` (the
+// shared ladder — the featured TierCard rides it from css/cards.css which
+// itself stays absolute zero), (c) selectors containing `[data-accent]` (the
+// chromatic glow contract). Hex literals stay banned EVERYWHERE —
+// surface.css's sanctioned literals are rgba only. styles.css keeps the
+// composition elevations it still owns: the button pop, the node shadow.
 const ELEVATION_REQUIREMENTS = [
   ["font-weight: 600", "the button hierarchy pop (was 500)"],
   ["0 4px 16px rgba(0, 0, 0, 0.3)", "the button's own elevation"],
@@ -791,24 +883,34 @@ for (const [needle, label] of ELEVATION_REQUIREMENTS) {
     failures.push(`(e1) styles.css must contain ${needle} — ${label}`);
   }
 }
+const ELEVATION_TIER_SELECTORS = [
+  '[data-elevation="flat"]',
+  '[data-elevation="raised"]',
+  '[data-elevation="floating"]',
+];
 for (const rel of readdirSync(resolve(root, "css")).map((f) => join("css", f))) {
   const text = readFileSync(resolve(root, rel), "utf8");
   const isSurface = rel === join("css", "surface.css");
   const shadowDecls = text.match(/box-shadow\s*:\s*[^;]+;/g);
   const nonNoneShadows = (shadowDecls ?? []).filter((d) => !/^box-shadow\s*:\s*none\s*;$/i.test(d));
   if (isSurface) {
-    // THE OWNER SANCTION, scoped: strip comments, then audit each rule
-    // block — a shadow may only appear under a `.sig-surface-card`
-    // selector (covers the base class and the --interactive modifier).
+    // THE OWNER SANCTION, scoped (2.6.0 amendment): strip comments, then
+    // audit each rule block — a shadow may only appear under a
+    // .sig-surface-card selector, one of the three bare elevation-tier
+    // blocks, or a [data-accent] chromatic-glow rule.
     if (nonNoneShadows.length > 0) {
       const noComments = text.replace(/\/\*[\s\S]*?\*\//g, "");
       for (const block of noComments.split("}")) {
         if (!/box-shadow\s*:\s*[^;]+;/.test(block)) continue;
         const braceIdx = block.indexOf("{");
         const selector = braceIdx === -1 ? "" : block.slice(0, braceIdx).trim();
-        if (!selector.includes(".sig-surface-card")) {
+        const sanctioned =
+          selector.includes(".sig-surface-card") ||
+          ELEVATION_TIER_SELECTORS.some((tier) => selector === tier) ||
+          selector.includes("[data-accent]");
+        if (!sanctioned) {
           failures.push(
-            `(e1) css/surface.css declares a box-shadow OUTSIDE a .sig-surface-card rule (selector: ${selector || "?"}) — the owner elevation sanction covers .sig-surface-card rules ONLY`,
+            `(e1) css/surface.css declares a box-shadow OUTSIDE a sanctioned rule (selector: ${selector || "?"}) — the 2.6.0 amendment covers .sig-surface-card rules, the three [data-elevation] tier blocks, and [data-accent] glow rules ONLY`,
           );
         }
       }
@@ -933,47 +1035,39 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.4.1 ------------------------
-// 2.5.0 REBASE (the release that legitimately touches core rebases the floor —
-// v2.4.0 → v2.4.1). The owner-authorized 2.5.0 deltas, and NOTHING else:
-//   css/tokens.css                    — grows: --party-yellow (whitelist 34)
-//   tokens.json                       — grows: the token + meta 2.5.0
-//   css/forms.css                     — grows: FormField anatomy + PasswordInput
-//   css/primitives.css                — NEW: the Button family (flat, e1 law)
-//   css/cards.css                     — NEW: the card archetypes
-//   css/signature-style.css           — the two layered imports (after data.css)
-//   react/ThemeProvider.{tsx,js,d.ts} — the whitelist 33 → 34
-//   react/primitives.{tsx,js,d.ts}    — grow: Button + ButtonProps
-//   react/forms.{tsx,js,d.ts}         — grow: FormField rework + PasswordInput
-//   react/cards.{tsx,js,d.ts}         — NEW: the archetypes
+// ---- (b7) SAFETY PROOF: core files untouched since v2.5.0 ------------------------
+// 2.6.0 REBASE (the release that legitimately touches core rebases the floor —
+// v2.4.1 → v2.5.0). The owner-authorized 2.6.0 deltas, and NOTHING else:
+//   css/surface.css                   — grows: chromatic accents + elevation tiers
+//   css/cards.css                     — grows: the five universal archetypes
+//   css/editorial.css                 — grows: scrollbar-free track + dot indicators
+//   css/forms.css                     — grows: textarea resize: vertical (owner mandate)
+//   react/surface.{tsx,js,d.ts}       — grow: accentToken/elevation + the accent types
+//   react/cards.{tsx,js,d.ts}         — grow: ContentCard/ReferenceCard/TierCard/
+//                                        ProfileCard/ChronicleTimeline
+//   react/editorial.{tsx,js,d.ts}     — grow: the Carousel dot indicators
 //   react/index.{ts,js,d.ts}          — the umbrella re-exports
-//   SYSTEM_PROMPT.md                  — the v2.8 codex
-// css/cascade.css, overrides, timeline, modal, nav, viz.css, surface, toast,
-// data.css, editorial.css + their react sources stay byte-identical to
-// v2.4.1 (react/viz.tsx UNTOUCHED — the ring animates from the playground).
-// scripts/verify.mjs stays BYTE-FROZEN. Everything else must be
-// byte-identical to v2.4.1.
+//   SYSTEM_PROMPT.md                  — the v2.9 codex
+// ZERO NEW FILES (pack stays 47). react/forms.{tsx,js,d.ts} are NOT authorized
+// (the textarea resize is css-only; the form audits live in the playground);
+// react/viz.tsx, tokens.json, tokens.css, the frozen css files and everything
+// else stay byte-identical to v2.5.0. scripts/verify.mjs stays BYTE-FROZEN.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 const B7_AUTHORIZED = [
   ":(exclude)css/timeline.css",
-  ":(exclude)css/tokens.css",
-  ":(exclude)tokens.json",
-  ":(exclude)css/forms.css",
-  ":(exclude)css/primitives.css",
+  ":(exclude)css/surface.css",
   ":(exclude)css/cards.css",
-  ":(exclude)css/signature-style.css",
-  ":(exclude)react/ThemeProvider.tsx",
-  ":(exclude)react/ThemeProvider.js",
-  ":(exclude)react/ThemeProvider.d.ts",
-  ":(exclude)react/primitives.tsx",
-  ":(exclude)react/primitives.js",
-  ":(exclude)react/primitives.d.ts",
-  ":(exclude)react/forms.tsx",
-  ":(exclude)react/forms.js",
-  ":(exclude)react/forms.d.ts",
+  ":(exclude)css/editorial.css",
+  ":(exclude)css/forms.css",
+  ":(exclude)react/surface.tsx",
+  ":(exclude)react/surface.js",
+  ":(exclude)react/surface.d.ts",
   ":(exclude)react/cards.tsx",
   ":(exclude)react/cards.js",
   ":(exclude)react/cards.d.ts",
+  ":(exclude)react/editorial.tsx",
+  ":(exclude)react/editorial.js",
+  ":(exclude)react/editorial.d.ts",
   ":(exclude)react/index.ts",
   ":(exclude)react/index.js",
   ":(exclude)react/index.d.ts",
@@ -983,39 +1077,39 @@ let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.4.1", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.5.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.4.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.5.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.4.1 beyond the owner-authorized 2.5.0 deltas (token, forms anatomy, primitives/cards/css, whitelist, umbrella re-exports, codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.5.0 beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.5.0 FROZEN PROOF — v2.4.1 baseline, tools/ included ---------
-// Rebased v2.4.0 → v2.4.1 for 2.5.0. tools/ gets exactly ONE authorized delta:
+// ---- (n-hub4) THE V2.6.0 FROZEN PROOF — v2.5.0 baseline, tools/ included ---------
+// Rebased v2.4.1 → v2.5.0 for 2.6.0. tools/ gets exactly ONE authorized delta:
 // tools/mcp-viz/server.ts (owner-editable: DEFAULT_SELECTORS grows
-// .ptp-btn / .ptp-stat-card / .sig-shell; version 2.5.0; the compiled
+// .ptp-carousel__dot / .ptp-chronicle__item; version 2.6.0; the compiled
 // dist/ is gitignored). Everything else under the locked paths beyond the
-// (b7) deltas must stay byte-identical to v2.4.1.
+// (b7) deltas must stay byte-identical to v2.5.0.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED, ":(exclude)tools/mcp-viz/server.ts"];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.4.1", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.5.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.4.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.5.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.4.1 beyond the owner-authorized 2.5.0 deltas (token, forms anatomy, primitives/cards css, whitelist, umbrella re-exports, codex, mcp server selectors) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.5.0 beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex, mcp server selectors) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -1201,8 +1295,10 @@ if (!existsSync(surfaceCssPath)) {
   const surfaceCss = readFileSync(surfaceCssPath, "utf8");
   const SURFACE_REQUIREMENTS = [
     ["color-mix(in srgb, var(--text-muted) 15%, transparent)", "the 15% elevation card border"],
-    ["inset 0 1px 0 rgba(255, 255, 255, 0.05)", "the glass inset top-highlight on .sig-surface-card"],
-    ["0 12px 32px rgba(0, 0, 0, 0.4)", "the soft ambient shadow on .sig-surface-card"],
+    // 2.6.0 AMENDMENT: the raised tier re-tunes — the base card default is
+    // inset 0.06 + ambient 0.42; the hover deepen 0.5 stands.
+    ["inset 0 1px 0 rgba(255, 255, 255, 0.06)", "the glass inset top-highlight on .sig-surface-card"],
+    ["0 12px 32px rgba(0, 0, 0, 0.42)", "the soft ambient shadow on .sig-surface-card"],
     ["transform: translateY(-2px)", "the tactile hover lift on the --interactive modifier"],
     ["0 16px 40px rgba(0, 0, 0, 0.5)", "the deepened hover ambient shadow"],
     ["color: var(--color-cake-secondary)", "the signature teal eyebrow"],
@@ -1322,7 +1418,7 @@ const INDEX_REQUIREMENTS = [
   ["<EmptyState", "the workshop placeholders dogfood the package EmptyState primitive"],
   ['icon="Hammer"', "the workshop icon"],
   ['title: "THE MASTER INDEX"', "the index hero title"],
-  ["three doors · one engine · zero dead ends", "the index hero subtitle"],
+  ["every archetype · one catalog · zero dead ends", "the index hero subtitle (2.6.0: the catalog)"],
 ];
 for (const [needle, label] of INDEX_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
@@ -1330,22 +1426,39 @@ for (const [needle, label] of INDEX_REQUIREMENTS) {
   }
 }
 
-// ---- (ix2) THE THREE GATEWAYS — exact Shed anatomy strings -------------------
+// ---- (ix2) THE THREE GATEWAYS — 2.6.0: chromatic doors in the balanced row ----
+// Titles renamed per the 2.6.0 spec (Event & Party Planner / Study &
+// Flashcard Engine / Party Game Arena); eyebrows PLANNER/STUDY/ARENA;
+// accents flamingo/lavender/peach through data-accent + --sig-accent.
 const GATEWAYS = [
-  ["PLANNER", "views/planner.tsx", "Event Planner Bento"],
-  ["STUDY", "modules/study.tsx", "Study & Flashcard Generator"],
-  ["GAMES", "modules/games.tsx", "Party Game Modules"],
+  ["PLANNER", "views/planner.tsx", "Event & Party Planner", "--color-cake-primary"],
+  ["STUDY", "modules/study.tsx", "Study & Flashcard Engine", "--party-lavender"],
+  ["ARENA", "modules/games.tsx", "Party Game Arena", "--party-peach"],
 ];
-for (const [label, path, title] of GATEWAYS) {
+for (const [label, path, title, accent] of GATEWAYS) {
   for (const [needle, what] of [
     [`label: "${label}"`, `label ${label}`],
     [`path: "${path}"`, `path ${path}`],
     [`title: "${title}"`, `title ${title}`],
+    [`accent: "${accent}"`, `accent ${accent}`],
   ]) {
     if (!appSrc.includes(needle)) {
       failures.push(`(ix2) App.tsx must declare the gateway ${what} — ${JSON.stringify(needle)}`);
     }
   }
+}
+// The chromatic mechanism on the gateway buttons: data-accent + the
+// inline --sig-accent variable (the package css paints underline +
+// eyebrow + glow — the (acc1) contract exercised).
+if (!appSrc.includes('data-accent\n              data-elevation="raised"')) {
+  failures.push(
+    '(ix2) the gateway buttons must wear data-accent + data-elevation="raised" — the chromatic elevation contract on the doors',
+  );
+}
+if (!appSrc.includes('"--sig-accent": `var(${gateway.accent})`')) {
+  failures.push(
+    "(ix2) the gateway buttons must set the inline --sig-accent variable from gateway.accent",
+  );
 }
 // The three cards come from ONE mapped wiring; the per-card count lives in
 // the runtime probe — here we pin the wiring + the gateways array shape.
@@ -1355,10 +1468,30 @@ if (!appSrc.includes("const gateways: Gateway[] = [")) {
 if (!appSrc.includes('data-testid={`gateway-${gateway.label.toLowerCase()}`}') && !appSrc.includes('data-testid={`gateway-${')) {
   failures.push("(ix2) App.tsx must wire data-testid={`gateway-<label> hooks on the gateway cards");
 }
-const indexColumn = /\.hub--index\s*\{[^}]*max-width: 900px;/s;
+// 2.6.0: the 900px door column retired — the index is a flex column of
+// balanced ROW grids (.hub__row--3 / .hub__row--4, both collapsing at 768px).
+const indexColumn = /\.hub--index\s*\{[^}]*display: flex;[^}]*flex-direction: column;/s;
 if (!indexColumn.test(stylesCss)) {
   failures.push(
-    "(ix2) styles.css must constrain the index column — .hub--index { max-width: 900px; } (three doors read better narrow, owner call)",
+    "(ix2) styles.css must declare .hub--index as the flex column — .hub--index { display: flex; flex-direction: column; … } (2.6.0: the catalog rows stack, the shell owns the width)",
+  );
+}
+const row3Grid = /\.hub__row--3\s*\{[^}]*display: grid;[^}]*grid-template-columns: repeat\(3, 1fr\);[^}]*gap: 2rem;/s;
+if (!row3Grid.test(stylesCss)) {
+  failures.push(
+    "(ix2) styles.css must declare .hub__row--3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; } — the THREE BALANCED gateway row (equal width, no lopsided orphans)",
+  );
+}
+const row4Grid = /\.hub__row--4\s*\{[^}]*grid-template-columns: repeat\(4, 1fr\);/s;
+if (!row4Grid.test(stylesCss)) {
+  failures.push(
+    "(ix2) styles.css must declare .hub__row--4 { … grid-template-columns: repeat(4, 1fr); } — the 4-up profile row",
+  );
+}
+const rowCollapse = /@media \(max-width: 768px\)\s*\{[^@]*\.hub__row--3,[^}]*\.hub__row--4\s*\{[^}]*grid-template-columns: 1fr;/s;
+if (!rowCollapse.test(stylesCss)) {
+  failures.push(
+    "(ix2) both row grids must collapse to one column at max-width: 768px (Pillar 2)",
   );
 }
 
@@ -1533,9 +1666,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.8")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.9")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.8 (the 2.5.0 codex: Button, FormField anatomy, PasswordInput, the four card archetypes, the sig-shell layout)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.9 (the 2.6.0 codex: SurfaceCard chromatic params, ContentCard, ReferenceCard, TierCard, ProfileCard, ChronicleTimeline)",
   );
 }
 
@@ -1581,16 +1714,16 @@ for (const [needle, label] of TABS_REQUIREMENTS) {
 // 2.5.0 AMENDMENT: the sweep grows .ptp-btn / .ptp-stat-card / .sig-shell
 // and the server version moves to 2.5.0.
 const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
-for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card", ".ptp-btn", ".ptp-stat-card", ".sig-shell"]) {
+for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card", ".ptp-btn", ".ptp-stat-card", ".sig-shell", ".ptp-carousel__dot", ".ptp-chronicle__item"]) {
   if (!mcpServerSrc.includes(`"${selector}"`)) {
     failures.push(
-      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento`,
+      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index (2.6.0: dots + chronicle)`,
     );
   }
 }
-if (!mcpServerSrc.includes('version: "2.5.0"')) {
+if (!mcpServerSrc.includes('version: "2.6.0"')) {
   failures.push(
-    'tools/mcp-viz/server.ts server version string must be 2.5.0 (tooling-only bump)',
+    'tools/mcp-viz/server.ts server version string must be 2.6.0 (tooling-only bump)',
   );
 }
 
@@ -1611,9 +1744,17 @@ if (!existsSync(editorialCssPath)) {
   const EDITORIAL_REQUIREMENTS = [
     ["scroll-snap-type: x mandatory", "the carousel snap contract"],
     ["scroll-snap-align: start", "the snap-start items"],
-    ["scrollbar-width: thin", "the thin scrollbar on the track"],
+    // 2.6.0 AMENDMENT: the track's native scrollbar is GONE (the dots are
+    // the position affordance now) — both engine spellings.
+    ["scrollbar-width: none", "the scrollbar-free track (2.6.0 owner mandate)"],
+    [".ptp-carousel__track::-webkit-scrollbar", "the webkit scrollbar kill"],
     [".ptp-carousel__item", "the item slot (flex 0 0 auto)"],
     ["flex: 0 0 auto", "items keep content width"],
+    // 2.6.0: the dot indicators.
+    [".ptp-carousel__dots", "the dots row (one button per child)"],
+    [".ptp-carousel__dot[data-active=\"true\"]", "the attribute IS the active-dot state"],
+    ["width: 1.5rem", "the active Flamingo pill"],
+    ["width: 0.375rem", "the resting dot circle"],
     [".ptp-prose blockquote", "the prose blockquote anatomy"],
     ["border-left: 4px solid var(--party-mauve)", "the MAUVE quote rule (2.4.1 owner override — the quote is editorial content, the content voice; was v2.4.0's Flamingo)"],
     ["font-style: italic", "the quote voice"],
@@ -1836,6 +1977,10 @@ try {
     "EyeOff",
     "SquarePen",
     "Shuffle",
+    // 2.6.0: the ReferenceCard copy/link icons + the TierCard Check bullet.
+    "Copy",
+    "Check",
+    "ArrowUpRight",
   ]) {
     if (!(name in icons)) {
       failures.push(`(icons) icon "${name}" does not exist in the lucide-react icons map — a package source would render a blank square`);
@@ -2172,6 +2317,19 @@ for (const [needle, label] of [
   ["### The sig-shell layout (2.5.0)", "the sig-shell layout snippet exists"],
   ["description", "the codex documents the description-above contract"],
   ["validMessage", "the codex shows the live-validation success slot"],
+  // 2.6.0 — the v2.9 codex recipes (fact-checked against the compiled .d.ts).
+  ["accentToken", "the codex shows the SurfaceCard chromatic accent"],
+  ["elevation", "the codex shows the SurfaceCard elevation tiers"],
+  ["### <ContentCard>", "the ContentCard recipe exists (2.6.0)"],
+  ["categoryToken", "the codex shows the category badge token"],
+  ["### <ReferenceCard>", "the ReferenceCard recipe exists (2.6.0)"],
+  ["onCopied", "the codex documents the toast contract (wrap in ToastProvider)"],
+  ["### <TierCard>", "the TierCard recipe exists (2.6.0)"],
+  ["featured", "the codex shows the featured hierarchy"],
+  ["### <ProfileCard>", "the ProfileCard recipe exists (2.6.0)"],
+  ["### <ChronicleTimeline>", "the ChronicleTimeline recipe exists (2.6.0)"],
+  ["Night of Versions", "the codex credits the memorial"],
+  ["data-elevation", "the codex documents the shared elevation ladder"],
 ]) {
   const found = needle instanceof RegExp ? needle.test(systemPrompt) : systemPrompt.includes(needle);
   if (!found) {
@@ -2217,15 +2375,14 @@ for (const usage of ["sig-span-12", "sig-span-7", "sig-span-5", "sig-span-4", "s
   }
 }
 
-// ---- (sh1) THE SHELL (2.5.0, defect #1) ------------------------------------------
-// .sig-shell: max-width 1400px, centered, clamp(20px, 4vw, 48px) side
-// padding (≥20px viewport margins at every width — the cortex proof
-// measures it on all three tabs), 64px bottom air. App.tsx wraps every
-// view's content in it.
-const shellRule = /\.sig-shell\s*\{[^}]*max-width: 1400px;[^}]*padding-inline: clamp\(20px, 4vw, 48px\);[^}]*padding-bottom: 64px;/s;
+// ---- (sh1) THE SHELL (2.5.0, defect #1; 2.6.0 WIDENED) ---------------------------
+// .sig-shell: max-width 1520px (the catalog needs the room), centered,
+// clamp(24px, 4vw, 56px) side padding (≥24px viewport margins at every
+// width), 64px bottom air. App.tsx wraps every view's content in it.
+const shellRule = /\.sig-shell\s*\{[^}]*max-width: 1520px;[^}]*padding-inline: clamp\(24px, 4vw, 56px\);[^}]*padding-bottom: 64px;/s;
 if (!shellRule.test(stylesCss)) {
   failures.push(
-    "(sh1) styles.css must declare .sig-shell { max-width: 1400px; margin-inline: auto; padding-inline: clamp(20px, 4vw, 48px); padding-bottom: 64px; }",
+    "(sh1) styles.css must declare .sig-shell { max-width: 1520px; margin-inline: auto; padding-inline: clamp(24px, 4vw, 56px); padding-bottom: 64px; } (2.6.0: widened for the master catalog)",
   );
 }
 if (!appSrc.includes('<div className="sig-shell">')) {
@@ -2543,10 +2700,375 @@ if (!appSrc.includes("rows={derived.ledgerRows}")) {
   failures.push("(al1) the live ledger must render rows={derived.ledgerRows} — LIVE from state, not a const");
 }
 
+// ---- (acc1) THE ACCENT CONTRACT (2.6.0) --------------------------------------------
+// The chromatic mechanism: [data-accent] + the inline --sig-accent variable,
+// painted entirely in css (eyebrow color, 2px title underline, glow). The
+// types: PartyColorToken (the 11 --party-* tokens) + AccentToken (party +
+// the two structural signatures) exported from the surface module; the
+// compiled .d.ts is the consumer-facing contract.
+const surfaceSrc26 = readFileSync(resolve(root, "react/surface.tsx"), "utf8");
+const surfaceDts26 = readFileSync(resolve(root, "react/surface.d.ts"), "utf8");
+for (const [needle, label] of [
+  ["[data-accent] .sig-surface-card__eyebrow", "the accent eyebrow rule"],
+  ["[data-accent] .sig-surface-card__title", "the accent title rule"],
+  ["border-bottom: 2px solid var(--sig-accent)", "the 2px accent underline (the GlobalNav/Tabs contract)"],
+  ["color: var(--sig-accent)", "the accent eyebrow ink"],
+  ["--sig-accent", "the inline accent variable"],
+]) {
+  if (!surfaceCssH1.includes(needle)) {
+    failures.push(`css/surface.css must contain ${JSON.stringify(needle)} — (acc1) ${label}`);
+  }
+}
+for (const [needle, label] of [
+  ["export type PartyColorToken = PartyTokenName", "the 11-token content accent alias"],
+  ['export type StructuralAccentToken = "--color-cake-primary" | "--color-cake-secondary"', "the two structural accents"],
+  ["export type AccentToken = PartyColorToken | StructuralAccentToken", "the full accent union"],
+  ['accentToken?: AccentToken', "the SurfaceCard chromatic prop"],
+  ['elevation?: SurfaceElevation', "the SurfaceCard elevation prop"],
+  ['elevation = "raised"', "the raised default"],
+  ["data-accent={accentToken !== undefined || undefined}", "the attribute IS the accent state"],
+  ["data-elevation={elevation}", "the attribute IS the tier state"],
+]) {
+  if (!surfaceSrc26.includes(needle)) {
+    failures.push(`react/surface.tsx must contain ${JSON.stringify(needle)} — (acc1) ${label}`);
+  }
+}
+for (const typeName of ["PartyColorToken", "StructuralAccentToken", "AccentToken", "SurfaceElevation"]) {
+  if (!new RegExp(`\\b${typeName}\\b`).test(surfaceDts26)) {
+    failures.push(`react/surface.d.ts must export ${typeName} — (acc1) the compiled contract`);
+  }
+  if (!new RegExp(`\\b${typeName}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${typeName} — (acc1)`);
+  }
+}
+if (!/PartyColorToken/.test(cardsDtsPath ? readFileSync(cardsDtsPath, "utf8") : "")) {
+  failures.push("(acc1) react/cards.d.ts must consume PartyColorToken — the archetypes are accent-typed");
+}
+
+// ---- (elev) THE ELEVATION LADDER (2.6.0) -------------------------------------------
+// The three bare tier blocks in css/surface.css (the shared ladder — the
+// featured TierCard rides it); the shadow policies asserted EXPLICITLY for
+// both files: surface.css sanctions are the (e1) scopes; cards.css is
+// ABSOLUTE ZERO (the chromatic glow lives in surface.css's [data-accent]
+// rules, the floating shadow in the shared tier blocks).
+for (const tier of ELEVATION_TIER_SELECTORS) {
+  const tierBlock = new RegExp(`${tier.replace(/"/g, '\\"')}\\s*\\{[^}]*box-shadow:`, "s");
+  if (!tierBlock.test(surfaceCssH1.replace(/\/\*[\s\S]*?\*\//g, ""))) {
+    failures.push(
+      `css/surface.css must declare the ${tier} tier block with a box-shadow — (elev) the shared elevation ladder`,
+    );
+  }
+}
+const floatingBlock = surfaceCssH1.match(/\[data-elevation="floating"\]\s*\{([^}]*)\}/s);
+if (floatingBlock === null || !floatingBlock[1].includes("0 22px 52px rgba(0, 0, 0, 0.60)")) {
+  failures.push(
+    '(elev) the floating tier must carry the deep display shadow — 0 22px 52px rgba(0, 0, 0, 0.60)',
+  );
+}
+const raisedBlock = surfaceCssH1.match(/\[data-elevation="raised"\]\s*\{([^}]*)\}/s);
+if (raisedBlock === null || !raisedBlock[1].includes("0 12px 32px rgba(0, 0, 0, 0.42)")) {
+  failures.push(
+    '(elev) the raised tier must carry the tuned ambient — 0 12px 32px rgba(0, 0, 0, 0.42)',
+  );
+}
+if (!/\.sig-surface-card--interactive\[data-elevation="floating"\]:hover\s*\{[^}]*transform: translateY\(-4px\);/s.test(surfaceCssH1)) {
+  failures.push(
+    '(elev) interactive+floating must lift translateY(-4px) on hover (interactive alone stays -2px — the reconciliation, documented)',
+  );
+}
+// css/cards.css: the archetypes stay ABSOLUTE ZERO on box-shadow (also
+// asserted by (cd1); restated here as the 2.6.0 policy statement).
+const cardsCss26 = readFileSync(cardsCssPath, "utf8");
+const cardsShadows26 = cardsCss26.match(/box-shadow\s*:\s*[^;]+;/g);
+if (cardsShadows26 !== null) {
+  failures.push(
+    `(elev) css/cards.css declares a box-shadow (${cardsShadows26.join(" ")}) — the 2.6.0 policy: the archetypes stay FLAT; featured TierCard elevation rides the shared [data-elevation] ladder in css/surface.css and the chromatic glow lives in the [data-accent] rules there`,
+  );
+}
+
+// ---- (pt11) THE 11-TOKEN SWEEP (2.6.0) ----------------------------------------------
+// PartyColorToken's union resolves through Extract<KnownToken,
+// `--party-${string}`> — the ThemeProvider whitelist IS the union, so the
+// sweep pins the whitelist to EXACTLY the 11 names and checks the alias
+// exists in the compiled surface.d.ts. (verify-playground has no running
+// whitelist parse of its own — the TOKEN_KEYS array is parsed here, the
+// same way the frozen scripts/verify.mjs reads it.)
+const EXPECTED_PARTY_11 = [
+  "--party-pink-bright",
+  "--party-pink-soft",
+  "--party-pink-alt",
+  "--party-mauve-bright",
+  "--party-mauve-soft",
+  "--party-lavender",
+  "--party-sky",
+  "--party-blue",
+  "--party-peach",
+  "--party-green",
+  "--party-yellow",
+];
+const themeProviderSrc26 = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
+const tokenKeysMatch26 = themeProviderSrc26.match(/const\s+TOKEN_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const;/);
+if (tokenKeysMatch26 === null) {
+  failures.push("(pt11) cannot sweep — react/ThemeProvider.tsx has no parseable TOKEN_KEYS array");
+} else {
+  const whitelist26 = [...tokenKeysMatch26[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  const partyNames = whitelist26.filter((name) => name.startsWith("--party-"));
+  if (partyNames.length !== 11) {
+    failures.push(
+      `(pt11) the whitelist carries ${partyNames.length} --party-* tokens, expected EXACTLY 11 — the PartyColorToken union is the whitelist`,
+    );
+  }
+  for (const name of EXPECTED_PARTY_11) {
+    if (!partyNames.includes(name)) {
+      failures.push(`(pt11) the 11-token sweep is missing ${name}`);
+    }
+  }
+}
+if (!/export type PartyColorToken = PartyTokenName/.test(surfaceDts26)) {
+  failures.push(
+    "(pt11) react/surface.d.ts must carry `export type PartyColorToken = PartyTokenName` — the alias resolves through Extract<KnownToken, `--party-${string}`>",
+  );
+}
+
+// ---- (cc1) CONTENTCARD (2.6.0) --------------------------------------------------------
+const cardsSrc26 = readFileSync(cardsSrcPath, "utf8");
+const CC1_CSS = [
+  ["aspect-ratio: 16 / 9", "the 16/9 visual header"],
+  [".sig-content-card__pill", "the mono meta pill"],
+  ["font-size: 0.6875rem", "the 11px pill voice"],
+  [".sig-content-card__footer", "the action footer"],
+  ["[data-accent] .sig-content-card__title", "the accent underline contract"],
+];
+for (const [needle, label] of CC1_CSS) {
+  if (!cardsCss26.includes(needle)) {
+    failures.push(`css/cards.css must contain ${JSON.stringify(needle)} — (cc1) ${label}`);
+  }
+}
+const contentFooterRule = /\.sig-content-card__footer\s*\{[^}]*margin-top: auto;/s;
+if (!contentFooterRule.test(cardsCss26)) {
+  failures.push("(cc1) .sig-content-card__footer must pin to the card floor — margin-top: auto");
+}
+for (const [needle, label] of [
+  ["export interface ContentCardProps", "the props contract"],
+  ["image?: string", "the optional cover image URL"],
+  ["categoryToken?: PartyColorToken", "the party-typed category badge"],
+  ["meta?: string[]", "the mono meta pills"],
+  ['className="sig-content-card__visual"', "the 16/9 visual element"],
+  ['className="sig-content-card__pill"', "the meta pill render"],
+  ["linear-gradient(135deg, color-mix(in srgb, var(--sig-accent, var(--color-cake-primary)) 30%, var(--bg-inset)), var(--bg-inset))", "the token-driven gradient art fallback (zero hex)"],
+  ['<Button variant="secondary" size="sm" onClick={action.onClick}>', "the footer rides the PACKAGE Button"],
+]) {
+  if (!cardsSrc26.includes(needle)) {
+    failures.push(`react/cards.tsx must contain ${JSON.stringify(needle)} — (cc1) ${label}`);
+  }
+}
+const cardsSrcHexes26 = cardsSrc26.match(/#[0-9a-f]{6}/gi);
+if (cardsSrcHexes26 !== null) {
+  failures.push(
+    `react/cards.tsx contains hardcoded hex literal(s) ${[...new Set(cardsSrcHexes26)].join(", ")} — the archetypes consume var(--token) only (r4 doctrine)`,
+  );
+}
+
+// ---- (cc2) REFERENCECARD (2.6.0) --------------------------------------------------------
+for (const [needle, label] of [
+  ["navigator.clipboard\n      .writeText(code)", "the async clipboard write"],
+  ["onCopied?.()", "fires AFTER a successful copy (the toast contract — decoupled by design)"],
+  ["copied ? \"Copied!\" : \"Copy Snippet\"", "the copied flash"],
+  ["}, 2000);", "the copied state resets after 2s"],
+  ["window.clearTimeout(resetTimer.current)", "the timer is cleaned up"],
+  [".catch(() => {", "the clipboard failure stays silent (the label never lies)"],
+  ['<Button variant="ghost" size="sm" leftIcon="Copy" onClick={copy}>', "the ghost Copy button (the package Button)"],
+  ['className="sig-reference-card__tag"', "the mono tag chip"],
+  ['className="sig-reference-card__code"', "the code well"],
+  ["Reference ↗", "the optional footer anchor"],
+]) {
+  if (!cardsSrc26.includes(needle)) {
+    failures.push(`react/cards.tsx must contain ${JSON.stringify(needle)} — (cc2) ${label}`);
+  }
+}
+const refTagRule = /\.sig-reference-card__tag\s*\{[^}]*text-transform: uppercase;[^}]*background: var\(--bg-inset\);/s;
+if (!refTagRule.test(cardsCss26)) {
+  failures.push(
+    "(cc2) .sig-reference-card__tag must be the uppercase inset chip (mono, hairline)",
+  );
+}
+const refCodeRule = /\.sig-reference-card__code\s*\{[^}]*background: var\(--bg-inset\);[^}]*overflow-x: auto;[^}]*font-size: 0\.8125rem;/s;
+if (!refCodeRule.test(cardsCss26)) {
+  failures.push(
+    "(cc2) .sig-reference-card__code must be the mono 0.8125rem inset well with overflow-x: auto",
+  );
+}
+
+// ---- (cc3) TIERCARD (2.6.0) --------------------------------------------------------------
+for (const [needle, label] of [
+  ['data-elevation={featured ? "floating" : "raised"}', "featured rides the shared ladder's floating rung"],
+  ['<Icon name="Check" aria-hidden />', "the Check feature bullets"],
+  ["sig-tier-card--featured", "the featured modifier"],
+  ["variant={featured ? \"primary\" : \"secondary\"}", "the CTA variant flips with featured"],
+]) {
+  if (!cardsSrc26.includes(needle)) {
+    failures.push(`react/cards.tsx must contain ${JSON.stringify(needle)} — (cc3) ${label}`);
+  }
+}
+const tierFeaturedRule = /\.sig-tier-card--featured\s*\{[^}]*border: 2px solid var\(--sig-accent, var\(--color-cake-primary\)\);/s;
+if (!tierFeaturedRule.test(cardsCss26)) {
+  failures.push(
+    "(cc3) .sig-tier-card--featured must carry the 2px accent border — border: 2px solid var(--sig-accent, var(--color-cake-primary)) (no scale transform)",
+  );
+}
+const tierCheckRule = /\.sig-tier-card__features li svg\s*\{[^}]*color: var\(--party-green\);/s;
+if (!tierCheckRule.test(cardsCss26)) {
+  failures.push(
+    "(cc3) the TierCard Check bullets must wear party green — .sig-tier-card__features li svg { color: var(--party-green); }",
+  );
+}
+const tierPriceRule = /\.sig-tier-card__price\s*\{[^}]*font-size: 2rem;[^}]*font-weight: 600;[^}]*font-variant-numeric: tabular-nums;/s;
+if (!tierPriceRule.test(cardsCss26)) {
+  failures.push(
+    "(cc3) .sig-tier-card__price must be 2rem tabular-nums weight 600 (digits never jitter)",
+  );
+}
+
+// ---- (cc4) PROFILECARD (2.6.0) -------------------------------------------------------------
+for (const [needle, label] of [
+  ["<Avatar name={name} size={avatarSize} ringToken={accentToken} />", "the avatar wears the party ring (typed PartyColorToken)"],
+  ["accentToken?: PartyColorToken", "the profile accent is party-only (the avatar-ring rule)"],
+  ["avatarSize?: 32 | 40", "the grid-perfect diameters"],
+  ["stats.length < 2 || stats.length > 3", "the 2–3 stats band (dev-warned outside)"],
+  ["font-variant-numeric: tabular-nums", "css-side: the stat digits"],
+]) {
+  const target = needle.startsWith("font-variant") ? cardsCss26 : cardsSrc26;
+  if (!target.includes(needle)) {
+    failures.push(
+      `${needle.startsWith("font-variant") ? "css/cards.css" : "react/cards.tsx"} must contain ${JSON.stringify(needle)} — (cc4) ${label}`,
+    );
+  }
+}
+const statValueRule = /\.sig-profile-card__stat-value\s*\{[^}]*font-weight: 600;[^}]*font-variant-numeric: tabular-nums;[^}]*color: var\(--text-main\);/s;
+if (!statValueRule.test(cardsCss26)) {
+  failures.push(
+    "(cc4) .sig-profile-card__stat-value must be tabular-nums weight 600 text-main",
+  );
+}
+
+// ---- (cc5) CHRONICLETIMELINE (2.6.0) ---------------------------------------------------------
+for (const [needle, label] of [
+  ['<ol className={classes} aria-label={label ?? "Version chronicle"}>', "the <ol> root with the accessible name"],
+  ['className="ptp-chronicle__item"', "the release item"],
+  ['"--accent": `var(${release.accentToken ?? "--party-lavender"})`', "the inline accent variable (lavender fallback)"],
+  ['className="ptp-chronicle__node"', "the milestone dot"],
+  ['className="ptp-chronicle__tag"', "the mono accent tag"],
+  ['className="ptp-chronicle__stat"', "the optional mono stat"],
+  ["export interface ChronicleRelease", "the release contract"],
+]) {
+  if (!cardsSrc26.includes(needle)) {
+    failures.push(`react/cards.tsx must contain ${JSON.stringify(needle)} — (cc5) ${label}`);
+  }
+}
+const chronicleSpine = /\.ptp-chronicle::before\s*\{[^}]*width: 2px;[^}]*background: color-mix\(in srgb, var\(--text-muted\) 20%, transparent\);/s;
+if (!chronicleSpine.test(cardsCss26)) {
+  failures.push(
+    "(cc5) .ptp-chronicle::before must be the 2px 20% color-mix hairline spine",
+  );
+}
+const chronicleNode = /\.ptp-chronicle__node\s*\{[^}]*width: 12px;[^}]*border: 2px solid var\(--accent\);[^}]*background: var\(--bg-surface\);/s;
+if (!chronicleNode.test(cardsCss26)) {
+  failures.push(
+    "(cc5) .ptp-chronicle__node must be the 12px accent-ringed, surface-filled dot",
+  );
+}
+
+// ---- (mi1) THE MASTER INDEX (2.6.0) -----------------------------------------------------------
+for (const [needle, label] of [
+  ['label="Catalog categories"', "the filter tablist name"],
+  ['type CatalogCategory = "all" | "gateways" | "food" | "commerce" | "docs"', "the five category ids"],
+  ['{ id: "all", label: "All" }', "filter tab 1"],
+  ['{ id: "gateways", label: "App Gateways" }', "filter tab 2"],
+  ['{ id: "food", label: "Food & Carousels" }', "filter tab 3"],
+  ['{ id: "commerce", label: "Commerce & Profiles" }', "filter tab 4"],
+  ['{ id: "docs", label: "Docs & Chronicles" }', "filter tab 5"],
+  ['data-testid="index-gateways"', "the gateway row hook (the filter probe hides it)"],
+  ['data-testid="index-catalog"', "the commerce row hook"],
+  ['data-testid="index-food"', "the food slab hook"],
+  ['data-testid="index-chronicle"', "the chronicle slab hook"],
+  ['title: "Event & Party Planner"', "gateway door 1"],
+  ['title: "Study & Flashcard Engine"', "gateway door 2"],
+  ['title: "Party Game Arena"', "gateway door 3"],
+  ['accent: "--color-cake-primary"', "STRUCTURAL accent decision: the planner door wears Flamingo (the AccentToken union)"],
+  ['title="Birria & Street Taco Catering"', "the commerce ContentCard"],
+  ['meta={["25 MIN", "SPICY", "$14"]}', "the mono meta pills"],
+  ['tag="JSX"', "the ReferenceCard chip"],
+  ['title="The Signature Surface"', "the ReferenceCard title"],
+  ['name="Arena Pass"', "the featured TierCard"],
+  ['cta="Claim the pass"', "the TierCard CTA"],
+  ['title="Field Notes & Carousel"', "the food slab"],
+  ['label="Developer & lifestyle cards"', "the lifestyle carousel"],
+  ["The Design of Everyday Things", "carousel mini-card 1 (Books)"],
+  ["Smoked Old Fashioned", "carousel mini-card 2 (Cocktails)"],
+  ["Empty States That Sell", "carousel mini-card 3 (UI Patterns)"],
+  ["Keychron Q1 HE", "carousel mini-card 4 (Hardware)"],
+  ["Ribbon of Shame", "carousel mini-card 5 (Party Games)"],
+  ['data-testid="index-profiles"', "the 4-up profile row hook"],
+  ['name="Ana Souza"\n            role="Head of Catering"', "the ProfileCard person"],
+  ['{ label: "Rating", value: "4.9" }', "the third stat"],
+  ['data-testid="index-chronicle"', "the chronicle slab hook (wrapper div — the SurfaceCard slot stays flat-DOM)"],
+  ['title="The Chronicle"', "the chronicle slab"],
+  ['elevation="flat"', "the chronicle is the FLAT-tier probe (the archive slab)"],
+  ["<ChronicleTimeline releases={RELEASE_HISTORY} />", "the live chronicle"],
+  ["function IndexView({ onNavigate }: { onNavigate: (href: string) => void })", "the view keeps its navigation contract"],
+]) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`App.tsx must contain ${JSON.stringify(needle)} — (mi1) ${label}`);
+  }
+}
+// THE MEMORIAL PORT — exactly 23 releases, v0.1.0 first, v2.6.0 last.
+const releaseHistoryMatch = appSrc.match(/const RELEASE_HISTORY: ChronicleRelease\[\] = \[([\s\S]*?)\n\];/);
+if (releaseHistoryMatch === null) {
+  failures.push("(mi1) App.tsx must declare `const RELEASE_HISTORY: ChronicleRelease[]` — the memorial port");
+} else {
+  const tags = [...releaseHistoryMatch[1].matchAll(/tag: "(v[^"]+)"/g)].map((m) => m[1]);
+  if (tags.length !== 23) {
+    failures.push(
+      `(mi1) RELEASE_HISTORY must carry EXACTLY 23 entries (v0.1.0 → v2.6.0; the patch releases fold into their minors), found ${tags.length}`,
+    );
+  }
+  if (tags[0] !== "v0.1.0" || tags[tags.length - 1] !== "v2.6.0") {
+    failures.push(
+      `(mi1) RELEASE_HISTORY must run v0.1.0 → v2.6.0, found ${tags[0]} → ${tags[tags.length - 1]}`,
+    );
+  }
+  const memorialNeedles = [
+    ["Universal Developer Card Suite", "the v2.6.0 title"],
+    ["5 archetypes · 3 tiers · 11 accents", "the v2.6.0 stat"],
+    ["Ergonomic Form Rules", "the ported v2.5.0 release name"],
+    ["The Visual Cortex", "a ported release name"],
+  ];
+  for (const [needle, label] of memorialNeedles) {
+    if (!releaseHistoryMatch[1].includes(needle)) {
+      failures.push(`RELEASE_HISTORY must contain ${JSON.stringify(needle)} — (mi1) ${label}`);
+    }
+  }
+}
+// Filtering is CONDITIONAL RENDERING per row (documented decision): the
+// visibility booleans derive straight off the category state.
+for (const [needle, label] of [
+  ['const showGateways = category === "all" || category === "gateways";', "gateway row switch"],
+  ['const showChronicle = category === "all" || category === "docs";', "chronicle row switch"],
+  ["{showGateways && (", "conditional render: gateways"],
+  ["{showCatalog && (", "conditional render: commerce"],
+  ["{showFood && (", "conditional render: food"],
+  ["{showProfiles && (", "conditional render: profiles"],
+  ["{showChronicle && (", "conditional render: chronicle"],
+]) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`App.tsx must contain ${JSON.stringify(needle)} — (mi1) ${label}`);
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1): scaffold, wiring, pack=47 (43 + css/primitives.css + css/cards.css + react/cards.js/.d.ts), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.5.0: Eye/EyeOff/SquarePen/Shuffle join the probe), v2.4.1 safety diff empty beyond the owner-authorized 2.5.0 deltas (token, forms anatomy, primitives/cards css, whitelist 34, umbrella re-exports, v2.8 codex; viz.tsx + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + surface-scoped package shadow contract + composition button/node elevations, timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room + Master Index; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css); 2.5.0: (b12) the 12-column bento + span utilities + the 768px collapse with spans reset, (sh1) the .sig-shell column (defect #1), (ff1) the FormField top-down anatomy (desc-before-well grep order, promoted label, owning well + outline halo, chips, ptp-shake + reduced-motion kill — defect #2), (pw1) PasswordInput (meter stages peach→--party-yellow→sky→green, pills, Eye/EyeOff), (bt1) the Button family (4 variants, 3 sizes, spinner, flat package law), (cd1) the card archetypes (preserve-3d flip, details[open] chevron, 1fr auto 1fr matchup, kbd chip), (al1) the LIVE ledger alignment (numeric + align right on state-derived rows — defect #4), (af2) __row/__prefix retired for __well/__chip, (dd4) codex v2.8, (dd6) sweep +3 selectors, (showcase) bento needles + descriptions-enforced RSVP cards; negative test: breaking the banner span-12 flips (b12) FAIL, restore PASS");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1): scaffold, wiring, pack=47 (2.6.0: ZERO new files), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.6.0: Copy/Check/ArrowUpRight join the probe), v2.5.0 safety diff empty beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex; forms.tsx + viz.tsx + tokens + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4, version 2.6.0), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the 2.6.0 shadow amendment (surface.css: .sig-surface-card rules + the three [data-elevation] tier blocks + [data-accent] glow; cards.css absolute zero), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column (1520px catalog width) + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css incl. the scrollbar-free track + dot indicators); 2.5.0 gates intact (bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0: (acc1) the accent contract (data-accent + --sig-accent painted in css, PartyColorToken/AccentToken typed + compiled), (elev) the three-tier ladder (flat/raised/floating; interactive+floating lifts -4px, cards.css stays absolute zero), (pt11) the 11-token sweep (the whitelist IS the union), (cc1)-(cc5) the five universal archetypes (16/9 content, clipboard reference, featured tier, tabular profile, the flat chronicle), (mi1) the master index (filter tabs, three chromatic gateways in the balanced row, the commerce trio, the food slab + 4-up profiles, the 23-release memorial chronicle); negative test: deleting the [data-elevation=\"floating\"] tier block flips (elev)/(cc3) FAIL, restore PASS");

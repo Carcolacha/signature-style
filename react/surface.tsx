@@ -60,9 +60,7 @@ export type PartyColorToken = PartyTokenName;
  * Teal secondary). Only these two may accent structural chrome; every
  * other structural token is out (Rule of Engagement).
  */
-export type StructuralAccentToken =
-  | "--color-cake-primary"
-  | "--color-cake-secondary";
+export type StructuralAccentToken = "--color-cake-primary" | "--color-cake-secondary";
 
 /**
  * The full accent union accepted by chromatic props (`accentToken` on

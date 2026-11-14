@@ -11,7 +11,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v2.6** system prompt so AI agents can extend the
+**Dynamic Signature Engine v2.9** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -128,6 +128,89 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 2.6.0 — Universal Developer Card Suite, Chromatic Elevation & The Master Index Overhaul
+
+Zero new files — every delta grows an existing one, so `npm pack` still
+packs EXACTLY 47 files. `tokens.json` stays 1.4.0 (whitelist 34 — no new
+tokens; the 11 party tokens already exist and are now TYPED as
+`PartyColorToken`). The e1 shadow treaty is AMENDED: box-shadow is
+sanctioned in css/surface.css under `.sig-surface-card` rules, the three
+`[data-elevation="…"]` tier blocks, and the `[data-accent]` glow rules;
+css/cards.css stays absolute zero.
+
+**Chromatic elevation** — `<SurfaceCard>` grows two additive props:
+`accentToken?: AccentToken` (any of the 11 `--party-*` tokens plus the
+structural Flamingo/Teal pair) renders `data-accent` + the inline
+`--sig-accent` variable — the eyebrow and the ruled title underline take
+the accent (the underline grows to 2px solid, the GlobalNav/Tabs
+contract) and the interactive hover gains a chromatic glow; and
+`elevation?: "flat" | "raised" | "floating"` (default "raised") picks a
+shadow tier through the shared `data-elevation` ladder — flat is the
+border-only slab, raised is the historical ambient (values tuned to an
+0.06 inset highlight + 0.42 ambient), floating is the deep display
+shadow (interactive+floating lifts −4px on hover; interactive alone
+stays −2px — the reconciliation is documented in css/surface.css).
+
+**The universal card suite** — five archetypes in react/cards.tsx:
+`ContentCard` (16/9 image-or-gradient header, category PartyBadge, mono
+meta pills, accent title, package-Button footer),
+`ReferenceCard` (uppercase tag chip, inset code well, ghost Copy button
+— `navigator.clipboard.writeText` in a silent-catch try, `onCopied`
+fires after success for YOUR toast, the "Copied!" flash resets after
+2s), `TierCard` (eyebrow plan, 2rem tabular price, party-green Check
+bullets; featured → floating elevation + 2px accent border, no scale),
+`ProfileCard` (party-ringed avatar, role, 2–3 tabular stats — dev-warned
+outside the band — PartyBadge skills), and `ChronicleTimeline` (the
+"Night of Versions" memorial as an official primitive: a flat `<ol>` of
+tagged releases down a 2px hairline spine, accent-ringed 12px nodes).
+All five are token-driven, flat-DOM, `PartyColorToken`/`AccentToken`
+typed, and shadow-free (css/cards.css zero box-shadow).
+
+**Carousel polish** — the track's native scrollbar is gone
+(`scrollbar-width: none` + the webkit kill) and the Carousel grows DOT
+indicators: one button per child under the mechanics row, the active dot
+tracking the same rAF-throttled scroll index as the "n / count"
+indicator, `[data-active="true"]` painting the Flamingo 1.5rem pill,
+clickable with per-dot aria-labels. `css/forms.css`: the textarea is
+`resize: vertical` (owner mandate). Form audit: no FormField boots in an
+error state anymore — the Input Matrix's Contribution field skips
+pristine values exactly like its siblings (empty or untouched stays
+quiet; only non-empty invalid shakes).
+
+**The Master Index overhaul** — the index stops being three doors and
+becomes THE CATALOG: a filter `<Tabs>` bar (All / App Gateways / Food &
+Carousels / Commerce & Profiles / Docs & Chronicles) driving conditional
+row rendering; Row 1 the three BALANCED chromatic gateways
+(`.hub__row--3`, equal width — Event & Party Planner in Flamingo,
+Study & Flashcard Engine in lavender, Party Game Arena in peach);
+Row 2 the commerce trio (ContentCard · ReferenceCard · TierCard
+dogfooding the suite); Row 3 the food slab (a five-item Carousel of
+mini-cards + the `.hub__row--4` profile row: ProfileCard, FlipCard,
+AccordionCard, MatchupCard); Row 4 the chronicle slab — a FLAT
+SurfaceCard housing `<ChronicleTimeline>` with all 23 releases
+(v0.1.0 → v2.6.0; the patch releases fold into their minors). The shell
+widens to 1520px with a 24px padding floor. The dashboard (BentoCore)
+is untouched.
+
+| Area | Change | Where |
+|---|---|---|
+| SurfaceCard | `accentToken` + `elevation` props; data-accent/--sig-accent css contract; the 3-tier ladder | react/surface.tsx, css/surface.css |
+| Card suite | ContentCard, ReferenceCard, TierCard, ProfileCard, ChronicleTimeline | react/cards.tsx, css/cards.css |
+| Carousel | scrollbar-free track + dot indicators | react/editorial.tsx, css/editorial.css |
+| Forms | `resize: vertical` textarea; pristine-skip audit | css/forms.css, playground/App.tsx |
+| Master Index | filter tabs, chromatic balanced gateways, universal catalog, 23-release chronicle | playground/App.tsx, playground/styles.css |
+| Codex | v2.9 — six new recipes, fact-checked vs the compiled .d.ts | SYSTEM_PROMPT.md |
+| Cortex | sweep + `.ptp-carousel__dot` / `.ptp-chronicle__item`; version 2.6.0 | tools/mcp-viz/server.ts |
+
+**Signature changes** — ADDITIVE: `SurfaceCard.accentToken`,
+`SurfaceCard.elevation`, `ContentCard`/`ReferenceCard`/`TierCard`/
+`ProfileCard`/`ChronicleTimeline` (+ props types), `PartyColorToken`,
+`StructuralAccentToken`, `AccentToken`, `SurfaceElevation`,
+`Carousel` dot indicators. BEHAVIORAL (backwards compatible): the
+raised elevation default re-tunes the base card shadow by one step
+(0.05/0.40 → 0.06/0.42 — visually the same ambient, numerically on the
+ladder); the interactive hover deepens with the same values as v2.5.0.
 
 ### 2.5.0 — Ergonomic Form Rules, Button & Card Archetypes, and the 12-Column Bento
 

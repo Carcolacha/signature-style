@@ -1052,20 +1052,6 @@ const CATALOG_TABS: Array<{ id: CatalogCategory; label: string }> = [
 ];
 
 /**
- * The ReferenceCard's live snippet — a REAL 6-line SurfaceCard JSX
- * invocation (the exact contract the card suite ships), rendered as
- * text inside the code well and copied verbatim by the Copy button.
- */
-const SURFACE_SNIPPET = `<SurfaceCard
-  eyebrow="Planner"
-  meta="views/planner.tsx"
-  title="Event & Party Planner"
-  interactive accentToken="--party-lavender"
->
-  <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
-</SurfaceCard>`;
-
-/**
  * RELEASE_HISTORY — the Night of Versions memorial, ported (2.6.0).
  * All 23 releases of the engine's life, oldest first; the patch
  * releases (v0.2.1, v1.5.1, v2.4.1) fold into their minors. Tags +
@@ -1260,7 +1246,7 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
  *
  * The 2.1.0 button-not-section decision STANDS: the cards ARE
  * <button>s wearing the package's own surface classes (a <button>
- * cannot be the section-rendering <SurfaceCard>) — with data-accent,
+ * cannot be the section-rendering surface primitive) — with data-accent,
  * --sig-accent and the data-elevation ladder riding the same package
  * css since 2.6.0. Filtering is conditional rendering per row (the
  * simplest honest mechanism — no display:none ghost grid).
@@ -1379,49 +1365,50 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
       )}
 
       {showFood && (
-        <SurfaceCard
-          eyebrow="Food"
-          meta="components/editorial.tsx"
-          title="Field Notes & Carousel"
-          interactive
-          data-testid="index-food"
-        >
-          <Carousel label="Developer & lifestyle cards">
-            <CarouselItem className="hub__clipping">
-              <div className="hub__mini-card">
-                <strong>Books</strong>
-                <span>The Design of Everyday Things — affordances are promises.</span>
-              </div>
-            </CarouselItem>
-            <CarouselItem className="hub__clipping">
-              <div className="hub__mini-card">
-                <strong>Cocktails</strong>
-                <span>Smoked Old Fashioned — the cherry is not optional.</span>
-              </div>
-            </CarouselItem>
-            <CarouselItem className="hub__clipping">
-              <div className="hub__mini-card">
-                <strong>UI Patterns</strong>
-                <span>Empty States That Sell — a blank card is a sales pitch.</span>
-              </div>
-            </CarouselItem>
-            <CarouselItem className="hub__clipping">
-              <div className="hub__mini-card">
-                <strong>Hardware</strong>
-                <span>Keychron Q1 HE — the hall-effect keyboard of the shed.</span>
-              </div>
-            </CarouselItem>
-            <CarouselItem className="hub__clipping">
-              <div className="hub__mini-card">
-                <strong>Party Games</strong>
-                <span>Ribbon of Shame — the loser wears it until the next round.</span>
-              </div>
-            </CarouselItem>
-          </Carousel>
-        </SurfaceCard>
+        <div data-testid="index-food">
+          <SurfaceCard
+            eyebrow="Food"
+            meta="components/editorial.tsx"
+            title="Field Notes & Carousel"
+            interactive
+          >
+            <Carousel label="Developer & lifestyle cards">
+              <CarouselItem className="hub__clipping">
+                <div className="hub__mini-card">
+                  <strong>Books</strong>
+                  <span>The Design of Everyday Things — affordances are promises.</span>
+                </div>
+              </CarouselItem>
+              <CarouselItem className="hub__clipping">
+                <div className="hub__mini-card">
+                  <strong>Cocktails</strong>
+                  <span>Smoked Old Fashioned — the cherry is not optional.</span>
+                </div>
+              </CarouselItem>
+              <CarouselItem className="hub__clipping">
+                <div className="hub__mini-card">
+                  <strong>UI Patterns</strong>
+                  <span>Empty States That Sell — a blank card is a sales pitch.</span>
+                </div>
+              </CarouselItem>
+              <CarouselItem className="hub__clipping">
+                <div className="hub__mini-card">
+                  <strong>Hardware</strong>
+                  <span>Keychron Q1 HE — the hall-effect keyboard of the shed.</span>
+                </div>
+              </CarouselItem>
+              <CarouselItem className="hub__clipping">
+                <div className="hub__mini-card">
+                  <strong>Party Games</strong>
+                  <span>Ribbon of Shame — the loser wears it until the next round.</span>
+                </div>
+              </CarouselItem>
+            </Carousel>
+          </SurfaceCard>
+        </div>
       )}
 
-      {showProfiles && (
+            {showProfiles && (
         <div className="hub__row--4" data-testid="index-profiles">
           <ProfileCard
             name="Ana Souza"
@@ -1457,19 +1444,34 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
       )}
 
       {showChronicle && (
-        <SurfaceCard
-          eyebrow="Docs"
-          meta="components/cards.tsx"
-          title="The Chronicle"
-          elevation="flat"
-          data-testid="index-chronicle"
-        >
-          <ChronicleTimeline releases={RELEASE_HISTORY} />
-        </SurfaceCard>
+        <div data-testid="index-chronicle">
+          <SurfaceCard
+            eyebrow="Docs"
+            meta="components/cards.tsx"
+            title="The Chronicle"
+            elevation="flat"
+          >
+            <ChronicleTimeline releases={RELEASE_HISTORY} />
+          </SurfaceCard>
+        </div>
       )}
     </main>
   );
 }
+
+/**
+ * The ReferenceCard's live snippet — a REAL 6-line SurfaceCard JSX
+ * invocation (the exact contract the card suite ships), rendered as
+ * text inside the code well and copied verbatim by the Copy button.
+ */
+const SURFACE_SNIPPET = `<SurfaceCard
+  eyebrow="Planner"
+  meta="views/planner.tsx"
+  title="Event & Party Planner"
+  interactive accentToken="--party-lavender"
+>
+  <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
+</SurfaceCard>`;
 
 /**
  * THE LEDGER — the data module's table contract (2.3.0). Status cells

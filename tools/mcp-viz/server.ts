@@ -17,6 +17,10 @@
  * family), .ptp-stat-card (the KPI trio), .sig-shell (the view shell,
  * defect #1's fix) — and the server version moves to 2.5.0.
  *
+ * 2.6.0: the sweep grows the master-index contract — .ptp-carousel__dot
+ * (the dot indicators) and .ptp-chronicle__item (the release chronicle)
+ * — and the server version moves to 2.6.0.
+ *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
  * Signature Style dashboard. Two tools:
  *
@@ -71,6 +75,8 @@ const DEFAULT_SELECTORS: readonly string[] = [
   ".ptp-data-table",
   ".ptp-tabs__tab",
   ".ptp-callout",
+  ".ptp-carousel__dot",
+  ".ptp-chronicle__item",
 ];
 
 /** Settle time after networkidle, letting entry animations finish. */
@@ -211,7 +217,7 @@ async function persistPng(
 }
 
 /** The shared McpServer instance advertising the visual cortex tools. */
-const server = new McpServer({ name: "visual-cortex", version: "2.5.0" });
+const server = new McpServer({ name: "visual-cortex", version: "2.6.0" });
 
 server.registerTool(
   "inspect_layout",
