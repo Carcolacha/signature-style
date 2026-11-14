@@ -22,7 +22,11 @@
       "default": "./react/index.js"
     }
   },
+  "bin": {
+    "signature-style": "./bin/cli.mjs"
+  },
   "files": [
+    "bin",
     "css/",
     "react/",
     "tokens.json",
@@ -52,7 +56,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "cli": "node bin/cli.mjs",
     "verify": "node scripts/verify.mjs",
+    "verify:cli": "node scripts/verify-cli.mjs",
     "verify:standalone": "node scripts/verify-standalone.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
     "verify:contrast": "node playground/verify-contrast.mjs",
