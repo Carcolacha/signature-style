@@ -40,6 +40,8 @@ const TOKEN_KEYS = [
     "--font-sans",
     "--radius-ui",
     "--radius-card", /* 3.0.0 — the 12px card corner (cards > 6px controls) */
+    "--bg-canvas", /* 3.2.0 — the --bg-base alias (the owner's --bg-canvas
+        name); whitelist 50 → 51 */
     "--transition-standard",
     "--transition-transform",
     "--space-tight",
@@ -55,7 +57,8 @@ const TOKEN_KEYS = [
        CHROMATIC EXPANSION: --sig-blue RETIRES (value carried by
        --sig-cobalt — the old name is banned from css/, tokens.json and
        this whitelist), and 15 chromatic FILL/SERIES accents join. The
-       family is 26 tokens; the whitelist is 50. */
+       family is 26 tokens; the whitelist is 51 since 3.2.0 (the
+       --bg-canvas alias above). */
     "--sig-pink-bright",
     "--sig-pink-soft",
     "--sig-pink-alt",

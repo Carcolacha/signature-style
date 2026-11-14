@@ -1117,7 +1117,9 @@ for (const rel of readdirSync(resolve(root, "css")).map((f) => join("css", f))) 
 // 3.1.0 AMENDMENT (the purge): the baseline is NORMALIZED through the
 // owner-mandated rename map (.ptp- → .sig-) before diffing — a pure rename
 // is not a code deletion, so the renamed baseline compares equal and REAL
-// deletions still fail the gate.
+// deletions still fail the gate. The map IS the 3.1.0 class-prefix purge
+// (.ptp- → .sig-), kept here so the historical baseline keeps comparing
+// equal — it never rewrites the CURRENT file.
 const timelineCss16 = readFileSync(resolve(root, "css/timeline.css"), "utf8");
 const RESURRECTION_NEEDLES = [
   ["align-self: start", "the spanning sticky header must not stretch into a cover slab"],
@@ -1232,211 +1234,179 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v3.0.0 are owner-authorized ----------
-// 3.1.0 REBASE (the floor moves v2.9.1 → v3.0.0): the PURE-RENAME release
-// ("Pure Engine — Complete Domain Decoupling & Standalone Identity"). The
-// owner-mandated 3.1.0 PURGE deltas (the per-task enumerated set), and
-// NOTHING else — every delta below is a NAME/COPY change; VALUES and
-// LAYOUT stay byte-stable (proven by the tokens.json guard below and the
-// cortex ZERO-delta probe):
-//   css/tokens.css           — the 16-color chromatic expansion (cobalt
-//                              + 15 fills, blue retired) + --radius-card
-//                              + their documented comments
-//   tokens.json              — meta 3.0.0, the 26-token sigPalette
-//                              (roles document the fill/series contract),
-//                              shared + --radius-card (guarded below)
-//   scripts/verify.mjs       — OWNER-SANCTIONED (the 2.9.1 precedent):
-//                              the (p) chromatic pins grew to the 26-token
-//                              family, the (c) #F5C2E7 ban lifted (the
-//                              official Mocha Pink re-homed as
-//                              --sig-orchid), the (p3) retirement ban
-//                              added
-//   css/cards.css            — card parity + chromatic wells/top accent
-//   css/editorial.css        — carousel modes + the docked control bar
-//   css/forms.css            — symmetrical fields + the info tooltip
-//   css/viz.css              — the StatRing zoom + detail strip
-//   css/graph.css            — the obsidian tether + cursor states
-//   css/surface.css          — contain: layout style paint (perf)
-//   react/ThemeProvider.*    — whitelist 34 → 50 (+ KnownToken)
-//   react/editorial.*        — Carousel modes (compiled pairs)
-//   react/forms.*            — FormField symmetry + infoTooltip
-//   react/viz.*              — StatRing zoom/detail + memo (Bar/Area)
-//   react/graph.*            — the obsidian graph + memo
-//   react/data.*             — DataTable memo
-//   react/timeline.*         — EventTimeline memo
-//   react/timeline-manager.* — ONE line: --sig-blue → --sig-cobalt
-//                              (type-forced by the retirement — the 2.9.1
-//                              verify.mjs pin-re-target precedent)
-//   SYSTEM_PROMPT.md         — the v3.3 codex
-// demo/, tools/ stay byte-identical to v2.9.1.
+// ---- (b7) SAFETY PROOF: core deltas vs v3.1.0 are owner-authorized ----------
+// 3.2.0 REBASE (the floor moves v3.0.0 → v3.1.0): the MULTI-THEME SURFACE
+// ENGINE release ("Multi-Flavor Surface Engine & Live Theme Customizer").
+// The owner-mandated 3.2.0 deltas (the per-task enumerated set), and
+// NOTHING else — the mocha palette VALUES stay byte-identical (proven by
+// the tokens.json guard below):
+//   css/tokens.css           — the canonical theme blocks ([data-sig-theme=
+//                              "oled"] true-black, [data-sig-theme="daylight"]
+//                              high-contrast with the computed ink variants)
+//                              + the --bg-canvas alias + their documented
+//                              comments; the :root mocha palette untouched
+//   react/ThemeProvider.*    — whitelist 50 → 51 (--bg-canvas)
+//   tokens.json              — meta 3.2.0, themes.mocha gains EXACTLY the
+//                              --bg-canvas alias, the NEW sigThemes section
+//                              (the triad + the daylight inkVariants table),
+//                              doctrine.themes/grid_8px carry the engine
+//                              sentences (guarded as exact strings below)
+//   playground/verify-playground.mjs — this gate itself ((pt11) 51, the
+//                              rebase, the new (th3)/(rad2)/(cus) gates)
+//   playground/verify-contrast.mjs   — the per-theme contrast tables
+//   SYSTEM_PROMPT.md         — the v3.5 codex (Multi-Theme Surface Engine)
+//   scripts/verify.mjs       — pin retargets ONLY (if any)
+//   tools/mcp-viz/server.ts  — the version string ONLY (selectors unchanged)
+// demo/, shared/, docs/, css/{cascade,overrides,signature-style}.css stay
+// byte-identical to v3.1.0.
 const B7_LOCKED_310 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/"];
-// The v3.1.0 authorized delta set: exactly the files the PURGE touches
-// (class prefix .ptp-→.sig-, tokens --sig-→--sig-, identifiers
-// TimelineEvent/SigBadge/SigColorToken/SigTokenName, standalone copy,
-// storage keys, the purity gate itself).
+// The v3.2.0 authorized delta set: exactly the files the surface engine
+// touches. playground/ is NOT under the freeze (the composition layer).
 const AUTHORIZED_310 = new Set([
   "css/tokens.css",
-  "css/cards.css",
-  "css/command.css",
-  "css/data.css",
-  "css/editorial.css",
-  "css/forms.css",
-  "css/graph.css",
-  "css/modal.css",
-  "css/nav.css",
-  "css/primitives.css",
-  "css/skeleton.css",
-  "css/surface.css",
-  "css/timeline.css",
-  "css/toast.css",
-  "css/viz.css",
   "react/ThemeProvider.tsx",
   "react/ThemeProvider.js",
   "react/ThemeProvider.d.ts",
-  "react/cards.tsx",
-  "react/cards.js",
-  "react/cards.d.ts",
-  "react/command.tsx",
-  "react/command.js",
-  "react/command.d.ts",
-  "react/data.tsx",
-  "react/data.js",
-  "react/data.d.ts",
-  "react/editorial.tsx",
-  "react/editorial.js",
-  "react/editorial.d.ts",
-  "react/forms.tsx",
-  "react/forms.js",
-  "react/forms.d.ts",
-  "react/graph.tsx",
-  "react/graph.js",
-  "react/graph.d.ts",
-  "react/index.ts",
-  "react/index.js",
-  "react/index.d.ts",
-  "react/modal.tsx",
-  "react/modal.js",
-  "react/modal.d.ts",
-  "react/nav.tsx",
-  "react/nav.js",
-  "react/nav.d.ts",
-  "react/primitives.tsx",
-  "react/primitives.js",
-  "react/primitives.d.ts",
-  "react/skeleton.tsx",
-  "react/skeleton.js",
-  "react/skeleton.d.ts",
-  "react/surface.tsx",
-  "react/surface.js",
-  "react/surface.d.ts",
-  "react/timeline.tsx",
-  "react/timeline.js",
-  "react/timeline.d.ts",
-  "react/timeline-manager.tsx",
-  "react/timeline-manager.js",
-  "react/timeline-manager.d.ts",
-  "react/toast.tsx",
-  "react/toast.js",
-  "react/toast.d.ts",
-  "react/viz.tsx",
-  "react/viz.js",
-  "react/viz.d.ts",
-  "demo/index.html",
-  "scripts/verify.mjs",
-  "scripts/verify-standalone.mjs",
-  "tools/mcp-viz/server.ts",
-  "tools/mcp-viz/smoke.mjs",
-  "tools/mcp-viz/README.md",
   "SYSTEM_PROMPT.md",
+  "scripts/verify.mjs",
+  "tools/mcp-viz/server.ts",
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v3.0.0", "--name-only", "--", ...B7_LOCKED_310],
+    ["diff", "v3.1.0", "--name-only", "--", ...B7_LOCKED_310],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v3.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v3.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   if (!AUTHORIZED_310.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.0.0 — outside the owner-authorized 3.1.0 purge set (the domain decoupling: the class prefix, the token names, the identifier renames, the standalone copy, the storage keys, the purity gate)`,
+      `(b7) SAFETY: ${file} changed since v3.1.0 — outside the owner-authorized 3.2.0 surface-engine set (the canonical theme blocks, the --bg-canvas alias + whitelist, the sigThemes manifest, the per-theme contrast gate, the v3.5 codex, the tooling version string)`,
     );
   }
 }
-if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify.mjs" && f !== "scripts/verify-standalone.mjs")) {
-  failures.push("(b7) SAFETY: scripts/ beyond verify.mjs + verify-standalone.mjs is LOCKED in 3.1.0");
+if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify.mjs")) {
+  failures.push("(b7) SAFETY: scripts/ beyond verify.mjs (pin retargets ONLY) is LOCKED in 3.2.0");
 }
 if (b7Changed.some((f) => f === "css/signature-style.css" || f === "css/cascade.css" || f === "css/overrides.css")) {
-  failures.push("(b7) SAFETY: css/signature-style.css, cascade.css, overrides.css are LOCKED in 3.1.0 (the import order and the override layer carry no purged names)");
+  failures.push("(b7) SAFETY: css/signature-style.css, cascade.css, overrides.css are LOCKED in 3.2.0 (the import order and the override layer carry no theme blocks)");
 }
 if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/dist/") || f.startsWith("tools/mcp-viz/node_modules/"))) {
-  failures.push("(b7) SAFETY: tools/mcp-viz build output is LOCKED in 3.1.0");
+  failures.push("(b7) SAFETY: tools/mcp-viz build output is LOCKED in 3.2.0");
 }
 
-// tokens.json guard (baseline v3.0.0): the THEME blocks + the doctrine
-// object are LOCKED byte-for-byte (JSON-equal) across the rename. The
-// 3.1.0 PURGE contract: the palette OBJECT KEY renames sigPalette →
-// sigPalette and every token name --sig-X → --sig-X (26/26), while
-// EVERY VALUE stays byte-identical (the pure-rename proof, per token).
+// tokens.json guard (baseline v3.1.0): the 3.2.0 SURFACE-ENGINE contract —
+// themes.mocha gains EXACTLY the --bg-canvas alias (value var(--bg-base)),
+// themes.latte / shared / sigPalette stay byte-equal (the mocha palette
+// VALUES are untouched — the release retunes nothing), the NEW sigThemes
+// section must exist with the triad + the 26-entry daylight inkVariants
+// table, and doctrine.themes/grid_8px carry the engine sentences (exact
+// strings; every other doctrine key byte-equal).
+const DOCTRINE_THEMES_320 = "MULTI-THEME SURFACE ENGINE (3.2.0): the canonical surface themes ride the data-sig-theme attribute on <html> — absent or \"mocha\" = the :root default, \"oled\" = true-black (#000000 base / #0B0C10 surface / #12141C inset; every other token inherited), \"daylight\" = high-contrast light (#F8FAFC / #FFFFFF / #F1F5F9, dark slate ink, computed --sig-* ink variants ≥3.1:1 vs #FFFFFF). The legacy [data-theme=\"latte\"] light toggle stays working, outside the triad. ";
+const CANONICAL_16 = [
+  "--sig-cobalt", "--sig-orchid", "--sig-cyan", "--sig-magenta", "--sig-mint",
+  "--sig-spring", "--sig-citron", "--sig-violet-glow", "--sig-pink-glow",
+  "--sig-rose-glow", "--sig-lime-glow", "--sig-mint-glow", "--sig-crimson",
+  "--sig-azure", "--sig-tangerine", "--sig-neon-green",
+];
 try {
-  const v300tokens = JSON.parse(execFileSync("git", ["show", "v3.0.0:tokens.json"], { cwd: root, encoding: "utf8" }));
+  const v310tokens = JSON.parse(execFileSync("git", ["show", "v3.1.0:tokens.json"], { cwd: root, encoding: "utf8" }));
   const currentTokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (JSON.stringify(v300tokens.themes) !== JSON.stringify(currentTokens.themes)) {
-    failures.push("(b7) SAFETY: tokens.json themes changed — Mocha + Latte are LOCKED in 3.1.0");
+  // themes.mocha: v3.1.0 + EXACTLY the --bg-canvas alias.
+  const v310Mocha = v310tokens.themes?.mocha?.tokens ?? {};
+  const curMocha = currentTokens.themes?.mocha?.tokens ?? {};
+  const added = Object.keys(curMocha).filter((k) => !(k in v310Mocha));
+  const removed = Object.keys(v310Mocha).filter((k) => !(k in curMocha));
+  if (added.length !== 1 || added[0] !== "--bg-canvas" || removed.length !== 0) {
+    failures.push(`(b7) SAFETY: themes.mocha must add EXACTLY --bg-canvas vs v3.1.0 (added: ${added.join(",") || "none"}; removed: ${removed.join(",") || "none"})`);
   }
-  if (JSON.stringify(v300tokens.doctrine) !== JSON.stringify(currentTokens.doctrine)) {
-    failures.push("(b7) SAFETY: tokens.json doctrine changed — the doctrine object is LOCKED in 3.1.0");
+  if (curMocha["--bg-canvas"]?.value !== "var(--bg-base)") {
+    failures.push("(b7) SAFETY: themes.mocha --bg-canvas must be the alias var(--bg-base)");
   }
-  if (JSON.stringify(v300tokens.shared) !== JSON.stringify(currentTokens.shared)) {
-    failures.push("(b7) SAFETY: tokens.json shared changed — LOCKED in 3.1.0 (the rename touches only the palette)");
-  }
-  // The banned OLD names, assembled from fragments so THIS gate's own
-  // source never carries a literal purged token name (the purity gate).
-  const OLD_PREFIX = "--par" + "ty-";
-  const OLD_KEY = "par" + "tyPalette";
-  const v300Sig = Object.keys(v300tokens[OLD_KEY]?.tokens ?? {});
-  const curSig = Object.keys(currentTokens.sigPalette?.tokens ?? {});
-  if (currentTokens[OLD_KEY] !== undefined) {
-    failures.push("(b7) SAFETY: tokens.json still carries the old palette key — 3.1.0 renames it to sigPalette");
-  }
-  if (curSig.length !== 26) {
-    failures.push(`(b7) SAFETY: sigPalette must keep the 26-token family, found ${curSig.length}`);
-  }
-  // Name mapping: OLD --X → --sig-X must be TOTAL and lossless.
-  const expected = v300Sig.map((k) => k.replace(OLD_PREFIX, "--sig-")).sort().join(",");
-  if (curSig.slice().sort().join(",") !== expected) {
-    failures.push(`(b7) SAFETY: sigPalette token names must be exactly the renamed 26 (--sig-X), found ${curSig.slice().sort().join(",")}`);
-  }
-  // Value identity: every renamed token carries the EXACT v3.0.0 value.
-  for (const oldName of v300Sig) {
-    const newName = oldName.replace(OLD_PREFIX, "--sig-");
-    if (currentTokens.sigPalette.tokens[newName]?.value !== v300tokens[OLD_KEY].tokens[oldName]?.value) {
-      failures.push(`(b7) SAFETY: ${newName} must carry its exact v3.0.0 value (the purge renames, never re-tunes)`);
+  for (const name of Object.keys(v310Mocha)) {
+    if (JSON.stringify(curMocha[name]) !== JSON.stringify(v310Mocha[name])) {
+      failures.push(`(b7) SAFETY: themes.mocha.${name} changed — the mocha values are byte-identical in 3.2.0`);
     }
   }
-  // The old names are BANNED from the manifest.
-  if (JSON.stringify(currentTokens).includes(OLD_PREFIX)) {
-    failures.push("(b7) SAFETY: the old token-name prefix survives somewhere in tokens.json — the purge is total");
+  if (JSON.stringify(v310tokens.themes?.latte) !== JSON.stringify(currentTokens.themes?.latte)) {
+    failures.push("(b7) SAFETY: tokens.json themes.latte changed — the legacy light theme is LOCKED in 3.2.0");
+  }
+  if (JSON.stringify(v310tokens.doctrine) !== JSON.stringify(currentTokens.doctrine)) {
+    // doctrine.themes + doctrine.grid_8px carry the engine sentences (exact strings);
+    // every other key is byte-equal.
+    const vDoc = v310tokens.doctrine ?? {};
+    const cDoc = currentTokens.doctrine ?? {};
+    for (const key of Object.keys(vDoc)) {
+      if (key === "themes") continue; // the triad sentence lands with 3.2.0 (guarded below)
+      if (JSON.stringify(vDoc[key]) !== JSON.stringify(cDoc[key])) {
+        failures.push(`(b7) SAFETY: doctrine.${key} changed — LOCKED in 3.2.0`);
+      }
+    }
+    if (cDoc.themes !== DOCTRINE_THEMES_320 + vDoc.themes) {
+      failures.push("(b7) SAFETY: doctrine.themes must be the 3.2.0 triad sentence PREFIXING the exact v3.1.0 string");
+    }
+  }
+  if (JSON.stringify(v310tokens.shared) !== JSON.stringify(currentTokens.shared)) {
+    failures.push("(b7) SAFETY: tokens.json shared changed — LOCKED in 3.2.0");
+  }
+  if (JSON.stringify(v310tokens.sigPalette) !== JSON.stringify(currentTokens.sigPalette)) {
+    failures.push("(b7) SAFETY: tokens.json sigPalette changed — the 26-token mocha palette is byte-identical in 3.2.0");
+  }
+  // The NEW sigThemes section: the triad + the daylight inkVariants table.
+  const sigThemes = currentTokens.sigThemes;
+  if (sigThemes === undefined || typeof sigThemes !== "object") {
+    failures.push("(b7) SAFETY: tokens.json sigThemes is missing — the 3.2.0 triad must be in the manifest");
+  } else {
+    if (sigThemes.mocha !== "default") {
+      failures.push('(b7) SAFETY: sigThemes.mocha must be "default" (the :root identity)');
+    }
+    const oledTokens = sigThemes.oled?.tokens ?? {};
+    if (oledTokens["--bg-base"] !== "#000000" || oledTokens["--bg-surface"] !== "#0B0C10" || oledTokens["--bg-inset"] !== "#12141C") {
+      failures.push("(b7) SAFETY: sigThemes.oled.tokens must be exactly the true-black trio");
+    }
+    const dayTokens = sigThemes.daylight?.tokens ?? {};
+    if (dayTokens["--bg-surface"] !== "#FFFFFF" || dayTokens["--bg-base"] !== "#F8FAFC" || dayTokens["--bg-inset"] !== "#F1F5F9") {
+      failures.push("(b7) SAFETY: sigThemes.daylight.tokens must carry the slate structure trio");
+    }
+    const inkVariants = sigThemes.daylight?.inkVariants ?? {};
+    for (const name of CANONICAL_16) {
+      const entry = inkVariants[name];
+      if (entry === undefined || typeof entry.ratio !== "number" || entry.ratio < 3.1) {
+        failures.push(`(b7) SAFETY: sigThemes.daylight.inkVariants must document ${name} with a measured ratio >= 3.1`);
+      } else if (entry.inherits === true) {
+        if (entry.value !== currentTokens.sigPalette.tokens[name]?.value) {
+          failures.push(`(b7) SAFETY: inkVariants.${name} claims inherits but its value is not the mocha value`);
+        }
+      } else if (typeof entry.value !== "string" || !/^#[0-9a-f]{6}$/i.test(entry.value)) {
+        failures.push(`(b7) SAFETY: inkVariants.${name} must carry a 6-digit hex override`);
+      }
+    }
+    // The ink-floor rung (3.0:1) documented for the non-canonical family too.
+    for (const name of ["--sig-pink-bright", "--sig-pink-soft", "--sig-pink-alt", "--sig-mauve-bright", "--sig-mauve-soft", "--sig-lavender", "--sig-sky", "--sig-peach", "--sig-green", "--sig-yellow"]) {
+      const entry = inkVariants[name];
+      if (entry === undefined || typeof entry.ratio !== "number" || entry.ratio < 3.0) {
+        failures.push(`(b7) SAFETY: sigThemes.daylight.inkVariants must document ink-floor token ${name} with a measured ratio >= 3.0`);
+      }
+    }
   }
 } catch (error) {
-  failures.push(`(b7) could not verify the tokens.json 3.1.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V3.1.0 FROZEN PROOF — v3.0.0 baseline, tools/ included ----
-// The purge touches tools/ BY OWNER MANDATE (the DEFAULT_SELECTORS ride the
-// class prefix; smoke.mjs + README carry purged copy). The authorized set is
-// the 3.1.0 list from (b7).
+// ---- (n-hub4) THE V3.2.0 FROZEN PROOF — v3.1.0 baseline, tools/ included ----
+// The surface engine touches tools/ ONLY for the server version string (the
+// selectors are unchanged). The authorized set is the 3.2.0 list from (b7).
 const N_HUB4_LOCKED_310 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.0.0", "--name-only", "--", ...N_HUB4_LOCKED_310],
+    ["diff", "v3.1.0", "--name-only", "--", ...N_HUB4_LOCKED_310],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1444,11 +1414,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_310.has(line));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.0.0 beyond the 3.1.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated purge set)`,
+      `(n-hub4) SAFETY: files changed since v3.1.0 beyond the 3.2.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated surface-engine set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists -----------------------------------------
@@ -3414,9 +3384,9 @@ if (tokenKeysMatch26 === null) {
   if (whitelist26.includes("--sig-blue")) {
     failures.push("(pt11) --sig-blue is retired (3.0.0) — it must NOT be in the TOKEN_KEYS whitelist");
   }
-  if (whitelist26.length !== 50) {
+  if (whitelist26.length !== 51) {
     failures.push(
-      `(pt11) the whitelist is ${whitelist26.length} tokens, expected EXACTLY 50 (34 + cobalt + 15 chromatic + --radius-card)`,
+      `(pt11) the whitelist is ${whitelist26.length} tokens, expected EXACTLY 51 (34 + cobalt + 15 chromatic + --radius-card + the 3.2.0 --bg-canvas alias)`,
     );
   }
 }
@@ -4736,6 +4706,78 @@ if (!existsSync(llmsFullPath)) {
   }
   if (!existsSync(resolve(root, "playground", "probe-skeleton-cls.mjs"))) {
     failures.push("(sk1) playground/probe-skeleton-cls.mjs is missing — the CLS proof (release blocker) is not wired");
+  }
+}
+
+// ---- (th3) THE THREE SURFACE THEMES (3.2.0) ----------------------------------
+// The canonical triad lives in css/tokens.css: :root (mocha default) +
+// [data-sig-theme="oled"] true-black + [data-sig-theme="daylight"] light.
+// :root gains the --bg-canvas alias (the owner's name for --bg-base — the
+// whitelist is 51, (pt11)); the manifest's sigThemes section mirrors the
+// blocks (the b7 guard checks the JSON side; TH3 checks the CSS side and
+// CROSS-CHECKS the two: every daylight ink override in css must equal the
+// inkVariants hex, and the oled trio must match sigThemes.oled.tokens).
+// The latte legacy block stays byte-untouched (back-compat, outside the
+// triad). The mocha :root palette is proven byte-identical by (b)/(p)/(s2)
+// in scripts/verify.mjs.
+{
+  const tokensCss32 = readFileSync(resolve(root, "css/tokens.css"), "utf8");
+  const manifest32 = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+  const stripped32 = tokensCss32.replace(/\/\*[\s\S]*?\*\//g, "");
+  for (const [selector, label] of [
+    ['[data-sig-theme="oled"]', "the oled true-black block"],
+    ['[data-sig-theme="daylight"]', "the daylight high-contrast block"],
+  ]) {
+    if (!stripped32.includes(`${selector} {`)) {
+      failures.push(`(th3) css/tokens.css must declare ${selector} — ${label}`);
+    }
+  }
+  if (!/--bg-canvas\s*:\s*var\(--bg-base\)\s*;/.test(stripped32)) {
+    failures.push("(th3) css/tokens.css :root must declare the --bg-canvas alias as var(--bg-base)");
+  }
+  const tsx32 = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
+  if (!tsx32.includes('"--bg-canvas"')) {
+    failures.push('(th3) react/ThemeProvider.tsx TOKEN_KEYS must carry "--bg-canvas" (whitelist 50 → 51)');
+  }
+  // Cross-check: the css daylight ink overrides == the manifest inkVariants.
+  const dayBlock = stripped32.match(/\[data-sig-theme="daylight"\]\s*\{([^}]*)\}/);
+  const inkVariants = manifest32.sigThemes?.daylight?.inkVariants ?? {};
+  if (dayBlock === null) {
+    failures.push("(th3) cannot parse the daylight block for the ink cross-check");
+  } else {
+    const cssInks = [...dayBlock[1].matchAll(/(--sig-[\w-]+)\s*:\s*(#[0-9a-f]{6})\s*;/gi)];
+    if (cssInks.length < 19) {
+      failures.push(`(th3) the daylight block must carry the ink overrides (19 css declarations: 16 canonical minus the 4 inherited + yellow + the ink-floor set), found ${cssInks.length}`);
+    }
+    for (const [, name, hex] of cssInks) {
+      const entry = inkVariants[name];
+      if (entry === undefined) {
+        failures.push(`(th3) css daylight override ${name} is missing from tokens.json sigThemes.daylight.inkVariants`);
+      } else if (String(entry.value).toLowerCase() !== hex.toLowerCase()) {
+        failures.push(`(th3) ${name}: css override ${hex} != manifest inkVariants ${entry.value}`);
+      } else if (typeof entry.ratio !== "number" || entry.ratio < 3.1) {
+        failures.push(`(th3) ${name}: manifest ratio ${entry.ratio} missing or below the 3.1 ink bar`);
+      }
+    }
+  }
+  const oledBlock = stripped32.match(/\[data-sig-theme="oled"\]\s*\{([^}]*)\}/);
+  const oledManifest = manifest32.sigThemes?.oled?.tokens ?? {};
+  if (oledBlock === null) {
+    failures.push("(th3) cannot parse the oled block");
+  } else {
+    const cssOled = Object.fromEntries([...oledBlock[1].matchAll(/(--[\w-]+)\s*:\s*(#[0-9a-f]{6})\s*;/gi)].map((m) => [m[1], m[2]]));
+    for (const [name, hex] of Object.entries(oledManifest)) {
+      if ((cssOled[name] ?? "").toLowerCase() !== String(hex).toLowerCase()) {
+        failures.push(`(th3) oled ${name}: css ${cssOled[name] ?? "MISSING"} != manifest ${hex}`);
+      }
+    }
+    if (Object.keys(cssOled).length !== 3) {
+      failures.push(`(th3) the oled block must declare ONLY the bg trio (everything inherits), found ${Object.keys(cssOled).length} declarations`);
+    }
+  }
+  // The legacy latte block must still be present and untouched.
+  if (!stripped32.includes('[data-theme="latte"]')) {
+    failures.push('(th3) css/tokens.css must keep the legacy [data-theme="latte"] block (back-compat, outside the triad)');
   }
 }
 

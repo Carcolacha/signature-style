@@ -57,8 +57,8 @@ const whitelist = new Set([
   ...Object.keys(tokens.shared.tokens),
   ...Object.keys(tokens.sigPalette.tokens),
 ]);
-if (whitelist.size !== 50) {
-  throw new Error(`generate-llms: expected the 50-token whitelist (3.0.0: 34 + cobalt + 15 chromatic + --radius-card), found ${String(whitelist.size)}`);
+if (whitelist.size !== 51) {
+  throw new Error(`generate-llms: expected the 51-token whitelist (3.2.0: 34 + cobalt + 15 chromatic + --radius-card + the --bg-canvas alias), found ${String(whitelist.size)}`);
 }
 
 /* ---- SYSTEM_PROMPT.md — the doctrines ---------------------------------- */

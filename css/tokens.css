@@ -48,6 +48,24 @@
 
    The ONLY `:root` rule in the package lives inside this `@layer tokens`
    block — enforced by scripts/verify.mjs and by the ThemeProvider whitelist.
+
+   MULTI-THEME SURFACE ENGINE (3.2.0) — the canonical theme mechanism is the
+   `data-sig-theme` attribute on <html>: absent or "mocha" = this :root
+   default; "oled" = the true-black variant; "daylight" = the high-contrast
+   light variant. Both new blocks live BELOW, after the legacy latte block
+   (canonical blocks follow legacy so an element wearing BOTH attributes
+   resolves to the canonical theme — last declaration wins at equal
+   specificity, documented). Each theme only overrides what it must:
+   everything else — the 16 --sig-* fills INCLUDED — inherits from :root,
+   and inheritance is the correctness argument:
+     · OLED inherits every --sig-* unchanged: on #0B0C10 / #000000 the
+       chromatic ratios only INCREASE vs the mocha surfaces (worst fill:
+       crimson 3.01:1 on #313244 → 4.68:1 on #0B0C10; worst ink-floor:
+       mauve-bright 5.00:1). Measured by playground/verify-contrast.mjs
+       (per-theme tables, gates ct5/ct6).
+     · DAYLIGHT re-inks the chromatic family (see the daylight block's
+       ink-variant table — every override carries its measured WCAG ratio
+       vs #FFFFFF, the strictest daylight surface).
    ========================================================================== */
 
 @layer tokens {
@@ -55,6 +73,11 @@
     /* -- core 6: harmonized — Mocha structure + Mocha accents ---------------- */
     --bg-base: #1E1E2E;
     --bg-surface: #313244;
+    --bg-canvas: var(--bg-base); /* 3.2.0 — the owner's --bg-canvas name, one
+        ALIAS slot: --bg-canvas resolves to --bg-base in EVERY theme (oled's
+        true black included), so both names always resolve to the same paint.
+        Whitelist 50 → 51 (react/ThemeProvider TOKEN_KEYS); the manifest
+        carries it in themes.mocha so gate (a) proves the declaration. */
     --color-cake-primary: #F2CDCD;   /* signature — Mocha Flamingo */
     --color-cake-secondary: #94E2D5; /* signature — Mocha Teal */
     --text-main: #CDD6F4;
@@ -168,5 +191,94 @@
     --text-bright: #11111B;
     --color-success: #A8E6CF; /* same — works with dark text on light */
     --text-muted-soft: #8C8FA1;
+  }
+
+  /* ==========================================================================
+     MULTI-THEME SURFACE ENGINE (3.2.0) — the canonical triad
+     <html data-sig-theme="mocha|oled|daylight"> (absent = mocha = :root).
+     LEGACY: [data-theme="latte"] above is the retired light toggle — kept
+     working untouched for backward compatibility, OUTSIDE the canonical
+     triad (documented as legacy; the customizer and the manifest speak the
+     triad). Canonical blocks come AFTER it: an element wearing both
+     attributes resolves to the canonical theme (equal specificity, later
+     declaration wins).
+
+     Each block overrides ONLY what it must; every other token inherits
+     :root, and the per-theme WCAG tables (playground/verify-contrast.mjs,
+     gates ct5/ct6) prove the inheritance correct. Zero shadows anywhere
+     (the e1 treaty holds — these blocks declare colors only).
+     ========================================================================== */
+
+  /* -- OLED true-black -------------------------------------------------------
+     The owner's "--bg-canvas" surface: pure #000000 base (the alias token
+     --bg-canvas resolves here), the #0B0C10 surface family beneath it.
+     Text stays the #CDD6F4 family — it reads perfectly on true black
+     (13.52:1 on the surface, 14.52:1 on the base). Hairline borders keep
+     the existing color-mix(in srgb, var(--text-muted) 15-20%, transparent)
+     formulas inherited from the package css — on black they read crisp.
+     The 16 --sig-* fills INHERIT: every chromatic ratio only increases vs
+     the darker surfaces (worst: crimson 4.68:1 on #0B0C10 / 5.03:1 on
+     #000000 — floor 3.1; worst ink-floor: mauve-bright 5.00:1 — floor 3.0).
+     Measured: playground/verify-contrast.mjs, the OLED table. */
+  [data-sig-theme="oled"] {
+    --bg-base: #000000;   /* true black — the --bg-canvas slot under the alias */
+    --bg-surface: #0B0C10;
+    --bg-inset: #12141C;
+  }
+
+  /* -- DAYLIGHT high-contrast light ------------------------------------------
+     Slate structure: near-white base, pure white cards, light inset wells
+     (the dark-well concept inverts — wells are LIGHT panels here), dark
+     slate ink at every text rung. Cakes keep the official pastel values
+     (Mocha Flamingo/Teal inherit) and read as light fills carrying dark
+     ink: --color-on-cake stays #1E1E2E — measured 11.24:1 on #F2CDCD,
+     10.74:1 on #F5C2E7, 11.01:1 on #94E2D5.
+
+     THE 16 DAYLIGHT INK VARIANTS — every --sig-* override below is
+     computed with the WCAG 2.x engine (playground/verify-contrast.mjs,
+     the same math that gates it) to measure >= 3.1:1 against #FFFFFF,
+     the strictest daylight surface. Glows and luminous tints darken
+     substantially (lime-glow #DBFF9E 1.12:1 -> #3F6212 7.08:1); saturated
+     mids stay as-is when they already clear the bar (crimson 4.18,
+     azure 3.51, tangerine 3.43, magenta 3.21, mauve-bright 3.91,
+     lavender 3.18 — inherited, no declaration needed). Each override
+     documents its measured ratio. tokens.json themes.daylight.inkVariants
+     mirrors this table (gate ct7 cross-checks the two). */
+  [data-sig-theme="daylight"] {
+    /* -- structure -- */
+    --bg-base: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --bg-inset: #F1F5F9;   /* wells invert: LIGHT panels */
+    --text-main: #0F172A;        /* 17.85:1 on #FFFFFF */
+    --text-bright: #020617;      /* 20.17:1 on #FFFFFF */
+    --text-muted: #475569;       /* 7.58:1 on #FFFFFF */
+    --text-muted-soft: #64748B;  /* 4.76:1 on #FFFFFF */
+    /* -- ink-floor overrides (the legacy 11 that need them) ---------------- */
+    --sig-pink-bright: #A21CAF;   /* 6.32:1 (mocha #ea76cb measures 2.64:1) */
+    --sig-pink-soft: #9D174D;     /* 7.88:1 (mocha 1.58:1) */
+    --sig-pink-alt: #86198F;      /* 8.24:1 (mocha 1.64:1) */
+    --sig-mauve-soft: #7C3AED;    /* 5.70:1 (mocha 2.03:1) */
+    --sig-sky: #0369A1;           /* 5.93:1 (mocha 2.79:1) */
+    --sig-peach: #C2410C;         /* 5.18:1 (mocha 2.98:1) */
+    --sig-green: #166534;         /* 7.13:1 (mocha 1.74:1) */
+    /* -- yellow: the amber-900 family per the release spec — the meter's
+        Fair stage (#F9E2AF, 1.27:1 on white) is unreadable on daylight */
+    --sig-yellow: #A16207;        /* 4.92:1 */
+    /* -- THE 16 CHROMATIC INK VARIANTS (cobalt + the 15 fills) ------------- */
+    --sig-cobalt: #2563EB;        /* 5.17:1 (mocha 2.11:1) */
+    --sig-orchid: #DB2777;        /* 4.60:1 (mocha 1.53:1) */
+    --sig-cyan: #0E7490;          /* 5.36:1 (mocha 1.60:1) */
+    --sig-mint: #059669;          /* 3.77:1 (mocha 1.67:1) */
+    --sig-spring: #16A34A;        /* 3.30:1 (mocha 1.69:1) */
+    --sig-citron: #4D7C0F;        /* 4.99:1 (mocha 1.42:1) */
+    --sig-violet-glow: #6D28D9;   /* 7.10:1 (mocha 2.18:1) */
+    --sig-pink-glow: #C026D3;     /* 4.71:1 (mocha 1.89:1) */
+    --sig-rose-glow: #BE185D;     /* 6.04:1 (mocha 1.88:1) */
+    --sig-lime-glow: #3F6212;     /* 7.08:1 (mocha 1.12:1) */
+    --sig-mint-glow: #047857;     /* 5.48:1 (mocha 1.20:1) */
+    --sig-neon-green: #15803D;    /* 5.02:1 (mocha 1.49:1) */
+    /* crimson 4.18 / azure 3.51 / tangerine 3.43 / magenta 3.21 /
+       mauve-bright 3.91 / lavender 3.18 INHERIT — already >= 3.1 on white;
+       the strictest daylight surface is #FFFFFF, so no declaration. */
   }
 }
