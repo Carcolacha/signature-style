@@ -50,6 +50,13 @@ export {
   type SparklineProps,
   StatCard,
   type StatCardProps,
+  BarChart,
+  type BarChartProps,
+  type BarDatum,
+  AreaChart,
+  type AreaChartProps,
+  type AreaPoint,
+  smoothPath,
 } from "./viz.js";
 export {
   Input,

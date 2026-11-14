@@ -30,6 +30,16 @@
  * for the readout only; the track/fill geometry and the ARIA contract
  * are untouched.
  *
+ * 2.7.0 ANALYTICAL CHARTS — the module GROWS (ProgressBar/StatRing
+ * logic untouched above): <BarChart> (capacity tracks + party value
+ * bars + dashed 25/50/75% reference lines + hover readouts, vertical
+ * or horizontal) and <AreaChart> (a useId-gradient area under a
+ * Catmull-Rom-smoothed line + hoverable point readouts). Both stay
+ * PURE SVG over a fixed 320×200 viewBox — zero charting packages, the
+ * geometry computed in pure helpers (`smoothPath` is exported and
+ * gate-testable). Hover reveals are CLASS-driven (css/viz.css answers
+ * :hover with opacity, never inline styles).
+ *
  * Pruning Protocol: ProgressBar renders EXACTLY two elements plus the
  * optional caption (no wrappers around the track); StatRing renders
  * ONE svg with EXACTLY three circles (track + progress + boundary
@@ -40,6 +50,7 @@
  */
 
 import type { PartyTokenName } from "./primitives.js";
+import { useId } from "react";
 
 /**
  * `<ProgressBar>` — the party-colored budget bar.
@@ -419,5 +430,378 @@ export function StatCard({
         />
       )}
     </div>
+  );
+}
+
+/* ==========================================================================
+   2.7.0 ANALYTICAL CHARTS — <BarChart> + <AreaChart>. Pure SVG over a
+   fixed 320×200 viewBox: per-datum groups are the ONLY structure (no
+   wrappers, no grid divs). Every fill/stroke is a var(--token) — the
+   Rule of Engagement holds per datum; a structural token is refused
+   with the warn-and-drop philosophy (that datum simply gets no ink).
+   ========================================================================== */
+
+/** One BarChart datum. `max` extends that bar's capacity track past its value. */
+export interface BarDatum {
+  /** The axis label (mono, muted — rendered under/beside the bar). */
+  label: string;
+  /** The bar's value. */
+  value: number;
+  /** The capacity ceiling for THIS bar's track; defaults to the chart scale. */
+  max?: number;
+  /** A `--party-*` content token — this bar's ink. Default --party-sky. */
+  colorToken?: PartyTokenName;
+}
+
+export interface BarChartProps {
+  /** The data — an empty array warns and renders null (no data, no ink). */
+  data: BarDatum[];
+  /** The bars' direction. Default "vertical". */
+  orientation?: "vertical" | "horizontal";
+  /** The accessible name (role="img"); defaults to "Bar chart of N categories". */
+  label?: string;
+}
+
+/* The shared 320×200 chart box. Top pad leaves room for hover readouts;
+   the baseline strip carries the mono axis labels. */
+const CHART_WIDTH = 320;
+const CHART_HEIGHT = 200;
+const CHART_PAD_X = 8;
+const BAR_PLOT_TOP = 20;
+const BAR_BASELINE = 180;
+const BAR_LABEL_Y = 194;
+const HORIZONTAL_LABEL_X = 60;
+const HORIZONTAL_PLOT_X = 68;
+const HORIZONTAL_TOP = 12;
+const HORIZONTAL_BOTTOM = 188;
+
+/** The chart's shared scale: the largest value OR declared max (never 0). */
+function barScaleMax(data: readonly BarDatum[]): number {
+  const values = data.flatMap((datum) => [datum.value, datum.max ?? datum.value]);
+  const max = Math.max(...values);
+  return max > 0 ? max : 1;
+}
+
+/** The bar's party ink — warn-and-drop to structural Flamingo is NOT allowed
+    here (bars are content), so a structural token REFUSES the whole datum. */
+function barToken(datum: BarDatum): string | null {
+  const token = datum.colorToken ?? "--party-sky";
+  if (!token.startsWith("--party-")) {
+    console.warn(
+      `[signature-style] dropped bar "${datum.label}" — colorToken accepts --party-* tokens only (Rule of Engagement).`,
+    );
+    return null;
+  }
+  return token;
+}
+
+/** One vertical bar group: track + bar + hover value + axis label. */
+function verticalBar(datum: BarDatum, index: number, count: number, scaleMax: number) {
+  const token = barToken(datum);
+  if (token === null) return null;
+  const plotHeight = BAR_BASELINE - BAR_PLOT_TOP;
+  const band = (CHART_WIDTH - CHART_PAD_X * 2) / count;
+  const center = CHART_PAD_X + band * (index + 0.5);
+  const barWidth = band * 0.6;
+  const trackMax = datum.max ?? scaleMax;
+  const trackHeight = (trackMax / scaleMax) * plotHeight;
+  const barHeight = (datum.value / scaleMax) * plotHeight;
+  return (
+    <g className="ptp-bars__group" key={`${datum.label}-${index}`}>
+      <rect
+        className="ptp-bars__track"
+        x={center - barWidth / 2}
+        y={BAR_BASELINE - trackHeight}
+        width={barWidth}
+        height={trackHeight}
+        rx={3}
+      />
+      <rect
+        className="ptp-bars__bar"
+        x={center - barWidth / 2}
+        y={BAR_BASELINE - barHeight}
+        width={barWidth}
+        height={barHeight}
+        rx={3}
+        style={{ fill: `var(${token})` }}
+      />
+      <text className="ptp-bars__value" x={center} y={BAR_BASELINE - barHeight - 6} textAnchor="middle">
+        {datum.value}
+      </text>
+      <text className="ptp-bars__label" x={center} y={BAR_LABEL_Y} textAnchor="middle">
+        {datum.label}
+      </text>
+    </g>
+  );
+}
+
+/** One horizontal bar group — labels left, capacity tracks to the right. */
+function horizontalBar(datum: BarDatum, index: number, count: number, scaleMax: number) {
+  const token = barToken(datum);
+  if (token === null) return null;
+  const plotWidth = CHART_WIDTH - CHART_PAD_X - HORIZONTAL_PLOT_X;
+  const band = (HORIZONTAL_BOTTOM - HORIZONTAL_TOP) / count;
+  const center = HORIZONTAL_TOP + band * (index + 0.5);
+  const barHeight = band * 0.6;
+  const trackMax = datum.max ?? scaleMax;
+  const trackWidth = (trackMax / scaleMax) * plotWidth;
+  const barWidth = (datum.value / scaleMax) * plotWidth;
+  return (
+    <g className="ptp-bars__group" key={`${datum.label}-${index}`}>
+      <rect
+        className="ptp-bars__track"
+        x={HORIZONTAL_PLOT_X}
+        y={center - barHeight / 2}
+        width={trackWidth}
+        height={barHeight}
+        rx={3}
+      />
+      <rect
+        className="ptp-bars__bar"
+        x={HORIZONTAL_PLOT_X}
+        y={center - barHeight / 2}
+        width={barWidth}
+        height={barHeight}
+        rx={3}
+        style={{ fill: `var(${token})` }}
+      />
+      <text className="ptp-bars__value" x={HORIZONTAL_PLOT_X + barWidth + 6} y={center + 4}>
+        {datum.value}
+      </text>
+      <text className="ptp-bars__label" x={HORIZONTAL_LABEL_X} y={center + 4} textAnchor="end">
+        {datum.label}
+      </text>
+    </g>
+  );
+}
+
+/**
+ * `<BarChart>` — capacity tracks + party value bars + dashed reference
+ * lines (2.7.0). Every datum renders ONE group: an inset rounded track
+ * out to its capacity (`max ?? scale`), the party-colored value bar,
+ * a hover-revealed tabular value readout, and a mono axis label. Three
+ * `strokeDasharray "4 4"` reference lines mark 25/50/75% of the scale.
+ * Hover emphasis is class-driven (css/viz.css): the bar brightens and
+ * its value appears — nothing inline, no JS state.
+ *
+ * @example
+ * ```tsx
+ * <BarChart
+ *   data={[
+ *     { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
+ *     { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
+ *   ]}
+ *   label="Spending by category"
+ * />
+ * ```
+ */
+export function BarChart({ data, orientation = "vertical", label }: BarChartProps) {
+  if (data.length === 0) {
+    console.warn(
+      "[signature-style] dropped bar chart — data is empty; no data, no ink.",
+    );
+    return null;
+  }
+  const scaleMax = barScaleMax(data);
+  const plotHeight = BAR_BASELINE - BAR_PLOT_TOP;
+  const plotWidth = CHART_WIDTH - CHART_PAD_X - HORIZONTAL_PLOT_X;
+  const isVertical = orientation === "vertical";
+  const refLines = [0.25, 0.5, 0.75].map((quota) => {
+    const geometry = isVertical
+      ? {
+          x1: CHART_PAD_X,
+          x2: CHART_WIDTH - CHART_PAD_X,
+          y1: BAR_PLOT_TOP + plotHeight * (1 - quota),
+          y2: BAR_PLOT_TOP + plotHeight * (1 - quota),
+        }
+      : {
+          x1: HORIZONTAL_PLOT_X + plotWidth * quota,
+          x2: HORIZONTAL_PLOT_X + plotWidth * quota,
+          y1: HORIZONTAL_TOP,
+          y2: HORIZONTAL_BOTTOM,
+        };
+    return (
+      <line
+        key={quota}
+        className="ptp-bars__refline"
+        strokeDasharray="4 4"
+        strokeWidth={1}
+        {...geometry}
+      />
+    );
+  });
+  return (
+    <svg
+      role="img"
+      aria-label={label ?? `Bar chart of ${data.length} categories`}
+      className="ptp-bars"
+      viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
+    >
+      {refLines}
+      {data.map((datum, index) =>
+        isVertical
+          ? verticalBar(datum, index, data.length, scaleMax)
+          : horizontalBar(datum, index, data.length, scaleMax),
+      )}
+    </svg>
+  );
+}
+
+/** One AreaChart sample. The label renders under the point's x position. */
+export interface AreaPoint {
+  /** The axis label (mono, muted — rendered under the point). */
+  label: string;
+  /** The sample's value. */
+  value: number;
+}
+
+export interface AreaChartProps {
+  /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
+  points: AreaPoint[];
+  /** A `--party-*` content token. Default --party-sky. */
+  colorToken?: PartyTokenName;
+  /** The svg's rendered height in px. Default 200. */
+  height?: number;
+  /** The accessible name (role="img"); defaults to "Area chart of N points". */
+  label?: string;
+}
+
+/* The area chart's plot box inside the shared 320×200 chart. */
+const AREA_PAD_X = 16;
+const AREA_PLOT_TOP = 24;
+const AREA_PLOT_BOTTOM = 168;
+const AREA_LABEL_Y = 192;
+
+/**
+ * The PURE smoothing helper — Catmull-Rom through every point,
+ * converted to cubic-Bezier segments (control points at ±1/6 of the
+ * neighbors' span). Data in, `d` string out; gate-testable.
+ */
+export function smoothPath(coords: ReadonlyArray<{ x: number; y: number }>): string {
+  if (coords.length === 0) return "";
+  if (coords.length === 1) return `M ${coords[0]?.x} ${coords[0]?.y}`;
+  let d = `M ${coords[0]?.x} ${coords[0]?.y}`;
+  for (let i = 0; i < coords.length - 1; i += 1) {
+    const p0 = coords[i - 1] ?? coords[i] as { x: number; y: number };
+    const p1 = coords[i] as { x: number; y: number };
+    const p2 = coords[i + 1] as { x: number; y: number };
+    const p3 = coords[i + 2] ?? p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${c1x} ${c1y} ${c2x} ${c2y} ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+
+/** The plot coordinates for the series — normalized into the area box. */
+function areaCoords(points: readonly AreaPoint[]): Array<{ x: number; y: number }> {
+  const values = points.map((point) => point.value);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min;
+  const plotHeight = AREA_PLOT_BOTTOM - AREA_PLOT_TOP;
+  const plotWidth = CHART_WIDTH - AREA_PAD_X * 2;
+  return points.map((point, index) => ({
+    x: AREA_PAD_X + (index / (points.length - 1)) * plotWidth,
+    y:
+      AREA_PLOT_TOP +
+      (range === 0 ? 0.5 : (point.value - min) / range) * plotHeight,
+  }));
+}
+
+/**
+ * `<AreaChart>` — the gradient area under a smoothed line (2.7.0).
+ * ONE svg (role="img"): a `useId`-keyed linearGradient (30% token mix
+ * fading to transparent — no id collisions across instances), the
+ * Catmull-Rom-smoothed line (`smoothPath`, 2px round), the area path
+ * filled with the gradient at 50% opacity, and one hoverable group per
+ * point — the circle enlarges and a tabular readout appears (both
+ * class-driven, css/viz.css).
+ *
+ * @example
+ * ```tsx
+ * <AreaChart
+ *   points={[
+ *     { label: "W1", value: 12 }, { label: "W2", value: 18 },
+ *     { label: "W3", value: 26 }, { label: "W4", value: 41 },
+ *   ]}
+ *   colorToken="--party-sky"
+ *   label="RSVP momentum"
+ * />
+ * ```
+ */
+export function AreaChart({
+  points,
+  colorToken = "--party-sky",
+  height = 200,
+  label,
+}: AreaChartProps) {
+  if (points.length < 2) {
+    console.warn(
+      `[signature-style] dropped area chart — points needs ≥2 samples (got ${points.length}); no trend, no ink.`,
+    );
+    return null;
+  }
+  if (!colorToken.startsWith("--party-")) {
+    console.warn(
+      `[signature-style] dropped "${colorToken}" — AreaChart accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`,
+    );
+    return null;
+  }
+  // React ids carry colons — strip them so url(#id) parses everywhere.
+  const gradientId = `ptp-area${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const coords = areaCoords(points);
+  const line = smoothPath(coords);
+  const first = coords[0] as { x: number; y: number };
+  const last = coords[coords.length - 1] as { x: number; y: number };
+  const area = `${line} L ${last.x} ${AREA_PLOT_BOTTOM} L ${first.x} ${AREA_PLOT_BOTTOM} Z`;
+  return (
+    <svg
+      role="img"
+      aria-label={label ?? `Area chart of ${points.length} points`}
+      className="ptp-area"
+      viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
+      style={{ height }}
+    >
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={`color-mix(in srgb, var(${colorToken}) 30%, transparent)`} />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+      </defs>
+      <path className="ptp-area__fill" d={area} fill={`url(#${gradientId})`} />
+      <path
+        className="ptp-area__line"
+        d={line}
+        style={{ stroke: `var(${colorToken})` }}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {points.map((point, index) => {
+        const coord = coords[index];
+        if (coord === undefined) return null;
+        return (
+          <g className="ptp-area__spot" key={`${point.label}-${index}`}>
+            <circle
+              className="ptp-area__point"
+              cx={coord.x}
+              cy={coord.y}
+              r={4}
+              strokeWidth={2}
+              style={{ stroke: `var(${colorToken})` }}
+            />
+            <text className="ptp-area__readout" x={coord.x} y={coord.y - 10} textAnchor="middle">
+              {point.value}
+            </text>
+            <text className="ptp-area__xlabel" x={coord.x} y={AREA_LABEL_Y} textAnchor="middle">
+              {point.label}
+            </text>
+          </g>
+        );
+      })}
+    </svg>
   );
 }

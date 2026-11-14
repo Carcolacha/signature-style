@@ -31,6 +31,12 @@
    lives on the circles/points (the ring's boundary hairline is an SVG
    circle, not css); this file deliberately does not know they exist.
 
+   2.7.0 ANALYTICAL CHARTS — .ptp-bars / .ptp-area join (BarChart +
+   AreaChart): capacity tracks on var(--bg-inset), dashed reference
+   lines, hover readouts (class-driven opacity), the useId-gradient
+   area, point circles. STILL ZERO box-shadow, ZERO hex — chart
+   interiors stay flat (the e1 treaty).
+
    THE ONE TRANSITION is owner-mandated physics: `width 0.3s ease-out`
    on the fill. `prefers-reduced-motion` turns it off outright — motion
    is a gift, not a requirement.
@@ -115,4 +121,117 @@
 }
 .ptp-stat-card__delta--down {
   color: var(--party-peach);
+}
+
+/* ==========================================================================
+   2.7.0 ANALYTICAL CHARTS — .ptp-bars / .ptp-area (BarChart + AreaChart).
+   The e1 treaty holds: chart interiors stay FLAT — every rule below is
+   hairlines, fills and opacity, ZERO box-shadow, ZERO hex. Hover reveals
+   are CLASS-driven (the attribute/class is the state): the bar brightens
+   and the tabular readout appears on group :hover; reduced motion kills
+   the transitions outright.
+   ========================================================================== */
+
+/* The bar chart svg — fills its card, proportions pinned by the viewBox. */
+.ptp-bars {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The capacity track — inset chrome + the 20% hairline (the 2.2.0 track
+   doctrine, transplanted into SVG). */
+.ptp-bars__track {
+  fill: var(--bg-inset);
+  stroke: color-mix(in srgb, var(--text-muted) 20%, transparent);
+  stroke-width: 1;
+}
+
+/* The value bar — party ink (inline fill), one opacity step of emphasis. */
+.ptp-bars__bar {
+  opacity: 0.85;
+  transition: var(--transition-standard);
+}
+.ptp-bars__group:hover .ptp-bars__bar {
+  opacity: 1;
+}
+
+/* THE HOVER READOUT — hidden until its group is hovered; tabular digits
+   never jitter as the visitor sweeps the chart. */
+.ptp-bars__value {
+  opacity: 0;
+  fill: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: var(--transition-standard);
+}
+.ptp-bars__group:hover .ptp-bars__value {
+  opacity: 1;
+}
+
+/* Axis labels — the mono muted 0.6875rem voice (metadata, not data). */
+.ptp-bars__label {
+  fill: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.6875rem;
+}
+
+/* The dashed 25/50/75% reference lines — the ONLY grid the data-ink
+   doctrine allows (dasharray rides the SVG attribute; color here). */
+.ptp-bars__refline {
+  stroke: color-mix(in srgb, var(--text-muted) 25%, transparent);
+}
+
+/* The area chart svg — same box contract as the bars. */
+.ptp-area {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The gradient-filled area path rides the svg gradient at half opacity. */
+.ptp-area__fill {
+  opacity: 0.5;
+}
+
+/* The smoothed line — stroke color is inline (per-instance token). */
+.ptp-area__line {
+  fill: none;
+}
+
+/* The data points — surface-filled discs ringed by the series token;
+   hover enlarges the disc (SVG geometry property) and reveals the readout. */
+.ptp-area__point {
+  fill: var(--bg-surface);
+  transition: var(--transition-standard);
+}
+.ptp-area__spot:hover .ptp-area__point {
+  r: 6px;
+}
+.ptp-area__readout {
+  opacity: 0;
+  fill: var(--text-main);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: var(--transition-standard);
+}
+.ptp-area__spot:hover .ptp-area__readout {
+  opacity: 1;
+}
+.ptp-area__xlabel {
+  fill: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.6875rem;
+}
+
+/* Motion is a gift, not a requirement — the hover reveals snap instead. */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-bars__bar,
+  .ptp-bars__value,
+  .ptp-area__point,
+  .ptp-area__readout {
+    transition: none;
+  }
 }

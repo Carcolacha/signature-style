@@ -3221,6 +3221,80 @@ if (!existsSync(graphDtsPath)) {
   failures.push("(kg1) react/graph.d.ts is missing — build it: npx tsc -p tsconfig.json");
 }
 
+// ---- (vz1) ANALYTICAL CHARTS — BarChart + AreaChart (2.7.0) -------------------------
+// react/viz.tsx: the pure smoothPath export, dasharray reference lines, inset
+// track class, hover readout classes, the useId-gradient, point circles.
+// css/viz.css: .ptp-bars/.ptp-area anatomy + hover opacity rules + reduced-
+// motion guards (the e1 css/-wide scan already covers shadow/hex bans).
+const vizSrc27 = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
+const VIZ_TSX_27_REQUIREMENTS = [
+  ["export interface BarChartProps", "the BarChart contract"],
+  ["export interface BarDatum", "the datum contract (label/value/max/colorToken)"],
+  ['orientation = "vertical"', "the vertical default"],
+  ["export interface AreaChartProps", "the AreaChart contract"],
+  ["export interface AreaPoint", "the point contract (label/value)"],
+  ["export function smoothPath(", "the exported PURE Catmull-Rom helper (gate-testable)"],
+  ['strokeDasharray="4 4"', "the dashed reference lines"],
+  ['className="ptp-bars__track"', "the inset capacity track element"],
+  ['className="ptp-bars__bar"', "the party value bar element"],
+  ['className="ptp-bars__value"', "the hover value readout element"],
+  ['className="ptp-bars__refline"', "the 25/50/75% reference line element"],
+  ['className="ptp-bars__label"', "the mono axis label element"],
+  ["useId()", "the gradient id source (no collisions)"],
+  ["<linearGradient", "the svg gradient"],
+  ["color-mix(in srgb, var(${colorToken}) 30%, transparent)", "the gradient's 30% top stop"],
+  ['className="ptp-area__fill"', "the gradient area path"],
+  ['className="ptp-area__line"', "the smoothed line path"],
+  ['className="ptp-area__point"', "the data-point circles"],
+  ["r={4}", "the resting point radius"],
+  ['className="ptp-area__readout"', "the hover tabular readout"],
+  ["colorToken = \"--party-sky\"", "the sky default token (AreaChart)"],
+  ["height = 200", "the default svg height (AreaChart)"],
+  ["points.length < 2", "the ≥2-point guard (no trend, no ink)"],
+  ["data.length === 0", "the empty-data guard (no data, no ink)"],
+];
+for (const [needle, label] of VIZ_TSX_27_REQUIREMENTS) {
+  if (!vizSrc27.includes(needle)) {
+    failures.push(`(vz1) react/viz.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+const vizCss27 = readFileSync(resolve(root, "css/viz.css"), "utf8");
+const VIZ_CSS_27_REQUIREMENTS = [
+  [".ptp-bars", "the bar chart svg"],
+  [".ptp-bars__track", "the capacity track rule"],
+  ["fill: var(--bg-inset)", "the track's inset fill (the 2.2.0 track doctrine)"],
+  [".ptp-bars__value", "the hover readout rule"],
+  [".ptp-bars__group:hover .ptp-bars__value", "the hover reveal (class-driven)"],
+  ["font-variant-numeric: tabular-nums", "the readout's tabular digits"],
+  [".ptp-bars__label", "the axis label rule"],
+  ["font-size: 0.6875rem", "the mono muted axis voice"],
+  [".ptp-bars__refline", "the dashed reference line rule"],
+  ["color-mix(in srgb, var(--text-muted) 25%, transparent)", "the 25% muted refline stroke"],
+  [".ptp-area", "the area chart svg"],
+  [".ptp-area__fill", "the gradient area rule"],
+  ["opacity: 0.5", "the area's half opacity"],
+  [".ptp-area__point", "the point circle rule"],
+  [".ptp-area__spot:hover .ptp-area__point", "the hover enlarge (r: 6px)"],
+  [".ptp-area__readout", "the area readout rule"],
+  [".ptp-area__xlabel", "the axis label rule"],
+  ["prefers-reduced-motion", "the reduced-motion guard on the hover transitions"],
+];
+for (const [needle, label] of VIZ_CSS_27_REQUIREMENTS) {
+  if (!vizCss27.includes(needle)) {
+    failures.push(`(vz1) css/viz.css must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+for (const name of ["BarChart", "BarChartProps", "BarDatum", "AreaChart", "AreaChartProps", "AreaPoint", "smoothPath"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${name} — (vz1)`);
+  }
+}
+for (const name of ["BarChart", "AreaChart", "smoothPath"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${name} — (vz1)`);
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");

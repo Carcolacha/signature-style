@@ -30,6 +30,16 @@
  * for the readout only; the track/fill geometry and the ARIA contract
  * are untouched.
  *
+ * 2.7.0 ANALYTICAL CHARTS — the module GROWS (ProgressBar/StatRing
+ * logic untouched above): <BarChart> (capacity tracks + party value
+ * bars + dashed 25/50/75% reference lines + hover readouts, vertical
+ * or horizontal) and <AreaChart> (a useId-gradient area under a
+ * Catmull-Rom-smoothed line + hoverable point readouts). Both stay
+ * PURE SVG over a fixed 320×200 viewBox — zero charting packages, the
+ * geometry computed in pure helpers (`smoothPath` is exported and
+ * gate-testable). Hover reveals are CLASS-driven (css/viz.css answers
+ * :hover with opacity, never inline styles).
+ *
  * Pruning Protocol: ProgressBar renders EXACTLY two elements plus the
  * optional caption (no wrappers around the track); StatRing renders
  * ONE svg with EXACTLY three circles (track + progress + boundary
@@ -205,3 +215,91 @@ export interface StatCardProps {
  * ```
  */
 export declare function StatCard({ label, value, delta, deltaDirection, sparklineData, colorToken, }: StatCardProps): import("react").JSX.Element;
+/** One BarChart datum. `max` extends that bar's capacity track past its value. */
+export interface BarDatum {
+    /** The axis label (mono, muted — rendered under/beside the bar). */
+    label: string;
+    /** The bar's value. */
+    value: number;
+    /** The capacity ceiling for THIS bar's track; defaults to the chart scale. */
+    max?: number;
+    /** A `--party-*` content token — this bar's ink. Default --party-sky. */
+    colorToken?: PartyTokenName;
+}
+export interface BarChartProps {
+    /** The data — an empty array warns and renders null (no data, no ink). */
+    data: BarDatum[];
+    /** The bars' direction. Default "vertical". */
+    orientation?: "vertical" | "horizontal";
+    /** The accessible name (role="img"); defaults to "Bar chart of N categories". */
+    label?: string;
+}
+/**
+ * `<BarChart>` — capacity tracks + party value bars + dashed reference
+ * lines (2.7.0). Every datum renders ONE group: an inset rounded track
+ * out to its capacity (`max ?? scale`), the party-colored value bar,
+ * a hover-revealed tabular value readout, and a mono axis label. Three
+ * `strokeDasharray "4 4"` reference lines mark 25/50/75% of the scale.
+ * Hover emphasis is class-driven (css/viz.css): the bar brightens and
+ * its value appears — nothing inline, no JS state.
+ *
+ * @example
+ * ```tsx
+ * <BarChart
+ *   data={[
+ *     { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
+ *     { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
+ *   ]}
+ *   label="Spending by category"
+ * />
+ * ```
+ */
+export declare function BarChart({ data, orientation, label }: BarChartProps): import("react").JSX.Element | null;
+/** One AreaChart sample. The label renders under the point's x position. */
+export interface AreaPoint {
+    /** The axis label (mono, muted — rendered under the point). */
+    label: string;
+    /** The sample's value. */
+    value: number;
+}
+export interface AreaChartProps {
+    /** The series — ≥2 points (fewer warns and renders null: no trend, no ink). */
+    points: AreaPoint[];
+    /** A `--party-*` content token. Default --party-sky. */
+    colorToken?: PartyTokenName;
+    /** The svg's rendered height in px. Default 200. */
+    height?: number;
+    /** The accessible name (role="img"); defaults to "Area chart of N points". */
+    label?: string;
+}
+/**
+ * The PURE smoothing helper — Catmull-Rom through every point,
+ * converted to cubic-Bezier segments (control points at ±1/6 of the
+ * neighbors' span). Data in, `d` string out; gate-testable.
+ */
+export declare function smoothPath(coords: ReadonlyArray<{
+    x: number;
+    y: number;
+}>): string;
+/**
+ * `<AreaChart>` — the gradient area under a smoothed line (2.7.0).
+ * ONE svg (role="img"): a `useId`-keyed linearGradient (30% token mix
+ * fading to transparent — no id collisions across instances), the
+ * Catmull-Rom-smoothed line (`smoothPath`, 2px round), the area path
+ * filled with the gradient at 50% opacity, and one hoverable group per
+ * point — the circle enlarges and a tabular readout appears (both
+ * class-driven, css/viz.css).
+ *
+ * @example
+ * ```tsx
+ * <AreaChart
+ *   points={[
+ *     { label: "W1", value: 12 }, { label: "W2", value: 18 },
+ *     { label: "W3", value: 26 }, { label: "W4", value: 41 },
+ *   ]}
+ *   colorToken="--party-sky"
+ *   label="RSVP momentum"
+ * />
+ * ```
+ */
+export declare function AreaChart({ points, colorToken, height, label, }: AreaChartProps): import("react").JSX.Element | null;
