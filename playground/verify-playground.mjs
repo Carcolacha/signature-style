@@ -634,6 +634,47 @@
  *         HTML tab renders the documented variant; Chronicle 23 nodes;
  *         Codex 22 swatches → clipboard var name; /llms.txt HTTP 200.
  *
+ * 2.9.1 gates ("Zero Contrast Debt & Live Skeleton Trigger" — the patch:
+ * two token VALUES change, the skeletons get a live trigger, one new
+ * playground gate script; pack stays 58, zero new shipped files):
+ *   (b3)  npm pack stays EXACTLY 58 — the contrast gate + the CLS probe
+ *         live in playground/ (files-array excluded); the shipped
+ *         tarball's file LIST is unchanged (css/tokens.css content
+ *         evolves, no new files).
+ *   (ct1) THE CONTRAST GATE — playground/verify-contrast.mjs exists and
+ *         is wired (scripts["verify:contrast"]); css/tokens.css carries
+ *         the two fixed hexes (--party-mauve-bright #9e5ff2 — the
+ *         minimal in-family lightness step H266°/S85% L58→66%, measured
+ *         3.22:1 on surface / 4.20:1 on base, was #8839ef @ 2.32:1;
+ *         --party-blue #89b4fa — official Catppuccin Mocha Blue, the
+ *         v3.0.0 --party-cobalt convergence, 5.97:1 / 7.79:1, was
+ *         #1e66f5 @ 2.56:1); and the gate itself RUNS green (all 11
+ *         party tokens ≥3.0:1 vs surface AND base, the fixed pair
+ *         ≥3.1:1). Negative test (falsifiability, restore-verified):
+ *         reverting --party-blue to #1e66f5 flips verify:contrast to
+ *         FAIL with the measured 2.559:1 ratio + the (ct3) pin refusal;
+ *         restore → PASS (git-verified byte-identical).
+ *   (sk1 AMENDMENT)  the LIVE TRIGGER wiring joins the package skeleton
+ *         gate: the palette command (label "Simulate Async Load (800ms)",
+ *         keywords skeleton/loading/async/cls, Hourglass — a probed
+ *         lucide key), the Input Matrix button (btn-simulate-load), the
+ *         800ms constant, SimSlot (the measured height lock) and the
+ *         SkeletonTableRow columns={3} × current-rows ledger swap.
+ *         CLS proof: playground/probe-skeleton-cls.mjs (release
+ *         blocker, run against the dev server) — every .bento12 child's
+ *         rect identical ±1px BEFORE/DURING/AFTER.
+ *   (b7)/(n-hub4)  REBASED to the v2.9.0 baseline. The owner-authorized
+ *         2.9.1 deltas, and NOTHING else: css/tokens.css (the two party
+ *         values + their fix comments), tokens.json (the two values +
+ *         descriptions + meta.version), scripts/verify.mjs (the two (p)
+ *         pin re-targets — OWNER-SANCTIONED: the frozen gate pinned the
+ *         exact old hexes in BOTH css and manifest, which a legitimate
+ *         value change makes unsatisfiable; the floor rebases with the
+ *         release, the b7 discipline). react/, demo/, SYSTEM_PROMPT.md,
+ *         tools/ stay byte-identical. The tokens.json guard neutralizes
+ *         meta.version AND the two authorized token deltas (value +
+ *         description) — everything else must deep-equal v2.9.0.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -713,9 +754,12 @@ if (v140pkg !== null) {
   }
 }
 
-// ---- (b3) npm pack grows 52 → 58 files (2.9.0: css/command.css +
-// css/skeleton.css + react/command.{js,d.ts} + react/skeleton.{js,d.ts};
-// playground/ and tools/ stay excluded by the files array) ----
+// ---- (b3) npm pack stays EXACTLY 58 files (2.9.1: zero new shipped
+// files — the contrast gate + the CLS probe live in playground/, which
+// the files array excludes wholesale; css/tokens.css evolves in place).
+// 2.9.0 history: 52 → 58 (css/command.css + css/skeleton.css +
+// react/command.{js,d.ts} + react/skeleton.{js,d.ts}); playground/ and
+// tools/ stay excluded by the files array. ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -736,7 +780,7 @@ if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
 } else if (totalFiles[1] !== "58") {
   failures.push(
-    `(b3) npm pack must yield exactly 58 files (52 + css/command.css + css/skeleton.css + react/command.{js,d.ts} + react/skeleton.{js,d.ts}; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must stay at exactly 58 files (2.9.1 adds ZERO shipped files — the gates live in playground/, files-array excluded), found ${totalFiles[1]}`,
   );
 }
 
@@ -1126,117 +1170,109 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v2.8.0 are owner-authorized ----------
-// 2.9.0 REBASE (the floor moves v2.7.0 → v2.8.0): this release EVOLVES the
-// package on purpose (container queries + power-user primitives). The
-// owner-authorized 2.9.0 deltas, and NOTHING else:
-//   css/cards.css            — 2.9.0 CONTAINER REFLOWS (matchup stack,
-//                              content/profile media-object blocks + header)
-//   css/viz.css              — 2.9.0 CONTAINER REFLOWS (stat-card dock block)
-//   css/forms.css            — 2.9.0 CONTAINER REFLOWS (radio-row collapse)
-//   css/nav.css              — 2.9.0 Breadcrumbs anatomy (Phase 2)
-//   css/command.css          — NEW (2.9.0 CommandPalette — Phase 2, FLAT)
-//   css/skeleton.css         — NEW (2.9.0 skeletons — Phase 2, FLAT)
-//   css/signature-style.css  — the layered imports for the two new files
-//   react/nav.{tsx,js,d.ts}  — Breadcrumbs (Phase 2)
-//   react/command.{tsx,js,d.ts}   — NEW (Phase 2)
-//   react/skeleton.{tsx,js,d.ts}  — NEW (Phase 2)
-//   react/index.{ts,js,d.ts} — umbrella re-exports (Phase 2)
-//   SYSTEM_PROMPT.md         — the v3.2 codex + the self-audit log (Phase 5)
-//   tokens.json              — META-ONLY (meta.version → 2.9.0), deep-equal
-//                              guarded below.
-// demo/ and scripts/ are LOCKED (zero deltas). scripts/verify.mjs stays
-// BYTE-FROZEN. tools/ is LOCKED via (n-hub4).
-const B7_LOCKED_290 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
-const AUTHORIZED_290 = new Set([
-  "css/cards.css",
-  "css/viz.css",
-  "css/forms.css",
-  "css/nav.css",
-  "css/command.css",
-  "css/skeleton.css",
-  "css/signature-style.css",
-  "react/nav.tsx",
-  "react/nav.js",
-  "react/nav.d.ts",
-  "react/command.tsx",
-  "react/command.js",
-  "react/command.d.ts",
-  "react/skeleton.tsx",
-  "react/skeleton.js",
-  "react/skeleton.d.ts",
-  "react/index.ts",
-  "react/index.js",
-  "react/index.d.ts",
-  "SYSTEM_PROMPT.md",
+// ---- (b7) SAFETY PROOF: core deltas vs v2.9.0 are owner-authorized ----------
+// 2.9.1 REBASE (the floor moves v2.8.0 → v2.9.0): the contrast patch. The
+// owner-authorized 2.9.1 deltas, and NOTHING else:
+//   css/tokens.css           — the TWO party token values + fix comments
+//                              (--party-mauve-bright → #9e5ff2,
+//                              --party-blue → #89b4fa; zero contrast debt)
+//   tokens.json              — the same two values + their documented
+//                              descriptions + meta.version → 2.9.1
+//                              (deep-equal guarded below)
+//   scripts/verify.mjs       — the two (p) pin re-targets. OWNER-SANCTIONED
+//                              this release: the frozen gate pinned the exact
+//                              old hexes against BOTH css/tokens.css and
+//                              tokens.json, and a legitimate value change
+//                              makes that unsatisfiable (the manifest must
+//                              carry the real value — the duplicate-
+//                              declaration CSS escape still fails the
+//                              manifest check). The floor rebases with the
+//                              release — the same discipline the (b7) gate
+//                              itself carries ("each release that
+//                              legitimately touches core rebases the floor").
+// react/, demo/, SYSTEM_PROMPT.md, tools/ stay byte-identical to v2.9.0.
+const B7_LOCKED_291 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
+const AUTHORIZED_291 = new Set([
+  "css/tokens.css",
   "tokens.json",
+  "scripts/verify.mjs",
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v2.8.0", "--name-only", "--", ...B7_LOCKED_290],
+    ["diff", "v2.9.0", "--name-only", "--", ...B7_LOCKED_291],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
-  if (!AUTHORIZED_290.has(file)) {
+  if (!AUTHORIZED_291.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v2.8.0 — outside the owner-authorized 2.9.0 delta set (css container-reflow blocks, the new command/skeleton files + bundle imports, react/nav Breadcrumbs, umbrella re-exports, SYSTEM_PROMPT.md, tokens.json meta-only)`,
+      `(b7) SAFETY: ${file} changed since v2.9.0 — outside the owner-authorized 2.9.1 delta set (css/tokens.css two party values, tokens.json values+descriptions+meta, scripts/verify.mjs the two (p) pins)`,
     );
   }
 }
 if (b7Changed.includes("demo/") || b7Changed.some((f) => f.startsWith("demo/"))) {
-  failures.push("(b7) SAFETY: demo/ is LOCKED in 2.9.0");
+  failures.push("(b7) SAFETY: demo/ is LOCKED in 2.9.1");
 }
-if (b7Changed.some((f) => f.startsWith("scripts/"))) {
-  failures.push("(b7) SAFETY: scripts/ is LOCKED in 2.9.0 — scripts/verify.mjs stays byte-frozen");
+if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify.mjs")) {
+  failures.push("(b7) SAFETY: scripts/ is LOCKED in 2.9.1 beyond the sanctioned verify.mjs pin re-targets");
 }
 
-// tokens.json META-ONLY guard (baseline v2.8.0): identical after
-// neutralizing meta.version.
+// tokens.json guard (baseline v2.9.0): identical after neutralizing
+// meta.version AND the two authorized party deltas (value + description —
+// the descriptions carry the fix provenance). Everything else — the
+// 34-token whitelist, themes, shared tokens, the doctrines — is LOCKED.
 try {
-  const v280tokens = JSON.parse(execFileSync("git", ["show", "v2.8.0:tokens.json"], { cwd: root, encoding: "utf8" }));
+  const v290tokens = JSON.parse(execFileSync("git", ["show", "v2.9.0:tokens.json"], { cwd: root, encoding: "utf8" }));
   const currentTokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+  const AUTHORIZED_PARTY_291 = new Set(["--party-mauve-bright", "--party-blue"]);
   const neutralize = (manifest) => {
     const clone = structuredClone(manifest);
     delete clone.meta.version;
+    for (const [name, entry] of Object.entries(clone.partyPalette?.tokens ?? {})) {
+      if (AUTHORIZED_PARTY_291.has(name)) {
+        delete entry.value;
+        delete entry.description;
+      }
+    }
     return JSON.stringify(clone);
   };
-  if (neutralize(v280tokens) !== neutralize(currentTokens)) {
+  if (neutralize(v290tokens) !== neutralize(currentTokens)) {
     failures.push(
-      "(b7) SAFETY: tokens.json changed beyond meta.version — the 34-token whitelist, themes, shared tokens, the Party Palette and the doctrines are LOCKED in 2.9.0",
+      "(b7) SAFETY: tokens.json changed beyond meta.version + the two authorized party deltas (value + description of --party-mauve-bright/--party-blue) — the whitelist, themes, shared tokens and doctrines are LOCKED in 2.9.1",
     );
   }
 } catch (error) {
-  failures.push(`(b7) could not verify the tokens.json meta-only delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not verify the tokens.json 2.9.1 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V2.9.0 FROZEN PROOF — v2.8.0 baseline, tools/ included ----
+// ---- (n-hub4) THE V2.9.1 FROZEN PROOF — v2.9.0 baseline, tools/ included ----
 // tools/ takes ZERO deltas this release (the probes ride the playground's
-// own playwright scripts + custom selectors; server.ts is untouched).
-const N_HUB4_LOCKED_290 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
+// own playwright scripts + custom selectors; server.ts is untouched). The
+// authorized set is the 2.9.1 trio from (b7).
+const N_HUB4_LOCKED_291 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.8.0", "--name-only", "--", ...N_HUB4_LOCKED_290],
+    ["diff", "v2.9.0", "--name-only", "--", ...N_HUB4_LOCKED_291],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line !== "" && !AUTHORIZED_290.has(line));
+    .filter((line) => line !== "" && !AUTHORIZED_291.has(line));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v2.8.0 beyond the 2.9.0 authorization — ${v2SafetyDiff.join(", ")} (tools/, demo/ and scripts/ are LOCKED; css/react deltas must be in the authorized set)`,
+      `(n-hub4) SAFETY: files changed since v2.9.0 beyond the 2.9.1 authorization — ${v2SafetyDiff.join(", ")} (tools/, demo/ and scripts/-beyond-verify.mjs are LOCKED; css/react deltas must be in the authorized set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists -----------------------------------------
@@ -3892,7 +3928,8 @@ if (!existsSync(llmsFullPath)) {
   }
 }
 // public/ must NOT ship: the files array excludes playground/ wholesale (b2 pins
-// it); this gate documents the pack proof — 52 files, zero public/ entries.
+// it); this gate documents the pack proof — 58 files since 2.9.0, zero public/
+// entries.
 
 // ---- (cq1) THE CONTAINER-QUERY REFLOWS (2.9.0, Phase 1) ----------------------
 // The portability layer: playground/styles.css declares `.sig-cell`
@@ -4147,6 +4184,78 @@ if (!existsSync(llmsFullPath)) {
       failures.push(`react/index.js must re-export ${name} — (sk1)`);
     }
   }
+  // 2.9.1 AMENDMENT — THE LIVE TRIGGER: the skeletons are not just
+  // shippable, they are runnable. The palette command + the Input Matrix
+  // button land on ONE registered runner; SimSlot height-locks the swap
+  // so the CLS probe can hold the line.
+  const SK_APP_291 = [
+    ['label: "Simulate Async Load (800ms)"', "the palette command"],
+    ['keywords: "skeleton loading async cls placeholder simulate"', "the command's type-to-filter keywords"],
+    ['id: "simulate-async-load"', "the command's stable id"],
+    ['icon: "Hourglass"', "the command icon (live-map-probed by (b6))"],
+    ['data-testid="btn-simulate-load"', "the Input Matrix button hook (the documented manual door)"],
+    ["leftIcon=\"Hourglass\"", "the button's icon"],
+    ["const SIM_LOADING_MS = 800", "the 800ms window constant"],
+    ["function SimSlot(", "the height-lock slot wrapper"],
+    ['data-sim-slot={id}', "the slot's probe attribute"],
+    ["startAsyncSim", "the measuring runner"],
+    ["registerSimRunner", "the Shell-side registry wiring"],
+    ["getBoundingClientRect().height", "the BEFORE-swap footprint measurement"],
+    ["<SkeletonTableRow key={guest.id} columns={3} />", "the ledger swap — skeleton rows × current-rows"],
+    ["{simLoading ? (\n            <SkeletonCard />\n          ) : (", "the card-body swap ternary"],
+  ];
+  for (const [needle, label] of SK_APP_291) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(sk1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // The swap count: SIX card-body ternaries (checkin/chronology/telemetry/
+  // deck/palette/matchup — all seven bento SurfaceCards swap except the
+  // ledger, which swaps to skeleton ROWS instead of a SkeletonCard). The
+  // check-in slot is the one-liner form; the rest are multi-line.
+  const swapCount = (appSrc.match(/simLoading \? (?:\(\s*)?<SkeletonCard \/>/g) ?? []).length;
+  if (swapCount !== 6) {
+    failures.push(`(sk1) exactly 6 bento cards must swap their bodies to <SkeletonCard />, found ${swapCount} (the ledger swaps to SkeletonTableRow rows instead)`);
+  }
+  if (!existsSync(resolve(root, "playground", "probe-skeleton-cls.mjs"))) {
+    failures.push("(sk1) playground/probe-skeleton-cls.mjs is missing — the CLS proof (release blocker) is not wired");
+  }
+}
+
+// ---- (ct1) THE CONTRAST GATE (2.9.1) ------------------------------------------
+// Zero contrast debt, enforced: the gate script must exist, be wired, the
+// two fixed hexes must sit in css/tokens.css, and the gate itself must run
+// green (all 11 party tokens ≥3.0:1 on surface AND base; the fixed pair
+// ≥3.1:1). Negative test documented in the header: revert the blue hex →
+// FAIL with the measured ratio → restore → PASS.
+{
+  const contrastScriptPath = resolve(root, "playground", "verify-contrast.mjs");
+  if (!existsSync(contrastScriptPath)) {
+    failures.push("(ct1) playground/verify-contrast.mjs is missing — the zero-contrast-debt gate");
+  }
+  if (pkg.scripts?.["verify:contrast"] !== "node playground/verify-contrast.mjs") {
+    failures.push(
+      '(ct1) package.json scripts["verify:contrast"] must be "node playground/verify-contrast.mjs" — the gate must be runnable',
+    );
+  }
+  const tokensCss291 = readFileSync(resolve(root, "css/tokens.css"), "utf8");
+  if (!/--party-mauve-bright:\s*#9e5ff2/i.test(tokensCss291)) {
+    failures.push(
+      "(ct1) css/tokens.css must carry --party-mauve-bright: #9e5ff2 — the minimal in-family lightness step (H266°/S85% L58→66%), measured 3.22:1 on surface (was #8839ef @ 2.32:1)",
+    );
+  }
+  if (!/--party-blue:\s*#89b4fa/i.test(tokensCss291)) {
+    failures.push(
+      "(ct1) css/tokens.css must carry --party-blue: #89b4fa — the official Catppuccin Mocha Blue, the v3.0.0 --party-cobalt convergence value (was #1e66f5 @ 2.56:1)",
+    );
+  }
+  if (existsSync(contrastScriptPath)) {
+    const ran = spawnSync("node", [contrastScriptPath], { cwd: root, encoding: "utf8" });
+    if (ran.status !== 0) {
+      const output = `${ran.stdout ?? ""}${ran.stderr ?? ""}`;
+      failures.push(`(ct1) verify:contrast FAILED — ${output.split("\n").filter((l) => l.includes("- (ct")).join(" | ") || output.slice(0, 200)}`);
+    }
+  }
 }
 
 // ---- (bc1) THE BREADCRUMBS (2.9.0, Phase 2) ------------------------------------
@@ -4219,4 +4328,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms): scaffold, wiring, pack stays EXACTLY 52 (playground/public NOT shipped — files array excludes playground/), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons probe, v2.7.0 safety diff EMPTY on css/ react/ SYSTEM_PROMPT.md demo/ scripts/ (b7) AND tools/ byte-identical (n-hub4) with the tokens.json META-ONLY guard (themes/shared/partyPalette/doctrine deep-equal after neutralizing meta.version), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the surface.css sanction (e1: the 2.8.0 studio/codex/frame css stays FLAT), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks, shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.5.0 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0 gates intact (accent contract, elevation ladder, 11-token sweep, five archetypes, master index); 2.8.0: (nav5) the five REAL views (dashboard/studio/index/chronicle/codex — the placeholder trio is a negative needle), (ps-studio) PatternFrame data-sig-set/data-sig-component + aria-pressed Preview|JSX|HTML tabs + the flat frame anatomy + EVERY SNIPPETS key mounted with a live preview + the honest 22-swatch codex census ('the whitelist is 34') + z-ladder DataTable + 8px scale bars, (ps-copy) clipboard → Copied! 2s → toast with the cleanup + error path, (ps-llms) llms.txt + llms-full.txt carrying every SNIPPETS key + all 34 whitelist tokens, generated drift-proof by npm run llms; negative test: deleting data-sig-set={setId} from PatternFrame.tsx flips (ps-studio) FAIL, restore PASS");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (2.9.1 adds zero shipped files — playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons probe, v2.9.0-baseline safety diff (b7/n-hub4: css/tokens.css two party values + tokens.json values/descriptions/meta + the owner-sanctioned verify.mjs (p) pin re-targets ONLY; react/ demo/ SYSTEM_PROMPT.md tools/ byte-identical) with the tokens.json 2.9.1 guard (deep-equal after neutralizing meta.version + the two authorized party deltas), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the surface.css sanction, timeline resurrection needles, cortex dist + smoke wiring + live-state hooks, shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.5.0 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0 gates intact (accent contract, elevation ladder, 11-token sweep, five archetypes, master index); 2.8.0 five REAL views + studio/copy/llms gates; 2.9.0 container queries + CommandPalette + skeletons + Breadcrumbs; 2.9.1: (ct1) the contrast gate exists, wired, hexes pinned #9e5ff2/#89b4fa and RUNNING green (all 11 party tokens ≥3.0:1 on surface AND base — zero contrast debt), (sk1) the live trigger wiring (palette command + Input Matrix button + SimSlot height locks + 6 body swaps + the SkeletonTableRow ledger swap + the CLS probe on disk); negative test: reverting --party-blue to #1e66f5 flips verify:contrast FAIL (measured 2.559:1 + the ct3 pin refusal), restore → PASS (git-verified byte-identical)");

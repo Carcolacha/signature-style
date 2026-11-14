@@ -129,6 +129,74 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 2.9.1 — Zero Contrast Debt & Live Skeleton Trigger
+
+The patch that pays the contrast bill the 2.9.0 hostile audit ran up
+(its (a4) spot-check flagged two party tokens under WCAG 3:1) and makes
+the skeletons *runnable*:
+
+- **Zero contrast debt** — two `--party-*` values are lightened at the
+  SOURCE so **every party token now measures ≥ 3.1:1 on the Mocha
+  surface** (and ≥ 3.0:1 on base), computed per WCAG 2.x relative
+  luminance. Both fixes stay in-hue; theme-independence is untouched
+  (the tokens stay defined once in `:root`):
+
+  | Token | BEFORE | vs surface / base | AFTER | vs surface / base | Rationale |
+  |---|---|---|---|---|---|
+  | `--party-mauve-bright` | `#8839ef` | 2.32:1 / 3.03:1 | `#9e5ff2` | **3.22:1 / 4.20:1** | the MINIMAL lightness increase in the violet family — H266°/S85% preserved, L 58%→66%, the first rung measuring ≥ 3.1:1 |
+  | `--party-blue` | `#1e66f5` | 2.56:1 / 3.34:1 | `#89b4fa` | **5.97:1 / 7.79:1** | the official Catppuccin Mocha Blue — the exact value v3.0.0's planned `--party-cobalt` retires it into, so the patch converges with the planned major |
+
+  The other nine party tokens already measured 3.95:1–9.89:1 on surface
+  and are untouched. Full before/after ratio table: `npm run
+  verify:contrast` (new script, below).
+
+- **`verify:contrast` — the automated contrast gate** — new
+  `playground/verify-contrast.mjs` wired as `npm run verify:contrast`
+  and re-asserted inside `verify:playground`'s new (ct1) gate: reads the
+  live `:root` block, computes WCAG 2.x relative-luminance ratios, and
+  asserts all 11 party tokens ≥ 3.0:1 against **both** `--bg-surface`
+  and `--bg-base`, with the two fixed pair at ≥ 3.1:1 and their hexes
+  pinned — prints the full ratio table. Negative test (falsifiability,
+  restore-verified): reverting `--party-blue` to `#1e66f5` flips the
+  gate to FAIL with the measured 2.559:1 ratio; restore → PASS,
+  byte-identical.
+
+- **`scripts/verify.mjs` floor rebase (owner-sanctioned)** — the frozen
+  `(p)` gate pinned the exact old hexes against BOTH `css/tokens.css`
+  and `tokens.json`; a legitimate value change makes that
+  unsatisfiable (the manifest must carry the real value). The two pins
+  re-target (#9e5ff2 / #89b4fa) — the same "each release that
+  legitimately touches core rebases the floor" discipline the (b7)
+  gate already carries. Every other `scripts/` byte stays frozen.
+
+- **The live skeleton trigger** — the 2.9.0 skeletons are now
+  *runnable*: the command palette grows **"Simulate Async Load (800ms)"**
+  (keywords: skeleton / loading / async / cls) and the dashboard's
+  Form & Input Matrix card grows a matching **Simulate Async Load**
+  button (`data-testid="btn-simulate-load"` — the documented
+  most-natural spot: cause and effect share the view; the palette
+  command covers cross-view runs). For 800ms the Core Dashboard's six
+  bento card bodies swap to `<SkeletonCard />` and the ledger DataTable
+  swaps to `<SkeletonTableRow columns={3} />` × current-rows — then
+  everything restores. No toast, on purpose: the skeleton IS the
+  feedback.
+
+- **CLS = 0, proven (release blocker)** — the swap is height-locked by
+  construction: `SimSlot` measures each card body's exact footprint
+  BEFORE the swap and renders the skeleton inside that explicit height
+  during the window (no css-side min-heights needed). The proof,
+  `playground/probe-skeleton-cls.mjs`, fires the palette command in a
+  real browser and measures every `.bento12` child's bounding rect
+  BEFORE / DURING (mid-skeleton) / AFTER: **all deltas 0.00px**
+  (±1px tolerance), 6 skeleton cards + 5 ledger rows live mid-window,
+  DataTable restored, zero console errors.
+
+- **Pack stays EXACTLY 58** — zero new shipped files: both the gate and
+  the probe live in `playground/` (files-array excluded). `tokens.json`
+  meta → 2.9.1; the two token descriptions carry the fix provenance
+  (before/after hexes + measured ratios), regenerated into
+  `llms-full.txt` via `npm run llms`.
+
 ### 2.9.0 — Autonomous Optimization Sprint: CSS Container Queries, Power-User Utilities, Humanized Craft & Full Self-Audit
 
 The release that makes the components **truly portable**: they now answer
@@ -1952,11 +2020,11 @@ Packaging, CI and docs only.
   | `--party-pink-bright` | `#ea76cb` | badges, tag fills, event highlights |
   | `--party-pink-soft` | `#f5bde6` | tag surfaces, avatar rings, soft calendar fills |
   | `--party-pink-alt` | `#f4b8e4` | alternate pink for content categories |
-  | `--party-mauve-bright` | `#8839ef` | chart series, bold tags |
+  | `--party-mauve-bright` | `#9e5ff2` | chart series, bold tags |
   | `--party-mauve-soft` | `#cba6f7` | avatar dots, calendar blocks |
   | `--party-lavender` | `#7287fd` | content links, calendar themes, data-viz series |
   | `--party-sky` | `#04a5e5` | informational tags, data-viz series |
-  | `--party-blue` | `#1e66f5` | data-viz series, event themes |
+  | `--party-blue` | `#89b4fa` | data-viz series, event themes |
   | `--party-peach` | `#fe640b` | calendar block edges, attention tags |
   | `--party-green` | `#a6d189` | status tags, positive data-viz series |
 
