@@ -454,3 +454,54 @@ export interface RadioCardGroupProps {
  * ```
  */
 export declare function RadioCardGroup({ name, options, value, onChange, label }: RadioCardGroupProps): import("react").JSX.Element;
+/**
+ * Props for `<PasswordInput>` — a CONTROLLED value: the consumer owns
+ * the string, the component renders its live strength read-out from it.
+ */
+export interface PasswordInputProps {
+    /** The visible label text above the well (optional but expected). */
+    label?: string;
+    /** The controlled password value. */
+    value: string;
+    /** Called with the NEXT value on every keystroke. */
+    onChange?: (value: string) => void;
+}
+/**
+ * `<PasswordInput>` — the password well with the live strength meter
+ * (2.5.0).
+ *
+ * Anatomy, top-down inside the FormField scaffold:
+ *
+ *   1. The label + the fixed format description ("8+ chars · mix
+ *      cases, numbers, symbols") — the 2.5.0 description-above
+ *      contract, shipped by `<FormField>`.
+ *   2. The `.ptp-form-field__well.ptp-password` — a bare
+ *      `type={show ? "text" : "password"}` input (the well owns the
+ *      border; the scoped kill strips the field chrome) + the
+ *      `.ptp-password__toggle` eye button (aria-label + aria-pressed;
+ *      Icon "Eye"/"EyeOff" — both gate-probed against the live lucide
+ *      map).
+ *   3. The `.ptp-password__meter` — ONE `<div role="progressbar">`
+ *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
+ *      segments and the `data-score` attribute. The css paints the
+ *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
+ *      token this release exists for), 3 → sky, 4 → green.
+ *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
+ *   5. Four `.ptp-password__pill` condition spans ("8+ chars",
+ *      "Uppercase", "Number", "Symbol") — `data-satisfied` flips them
+ *      to the 20% party-green wash.
+ *
+ * THE SCORE IS HONEST BY CONSTRUCTION: it is the count of satisfied
+ * rules — nothing tuned, nothing weighted. Unlike every other control
+ * here, this component DOES render an id it can verify: it owns both
+ * the label and the input, so `useId()` wires them legitimately (the
+ * FormField "consumer wires ids" doctrine applies to fields whose
+ * children the package cannot see — this one is all package).
+ *
+ * @example
+ * ```tsx
+ * const [pw, setPw] = useState("");
+ * <PasswordInput label="Password" value={pw} onChange={setPw} />
+ * ```
+ */
+export declare function PasswordInput({ label, value, onChange }: PasswordInputProps): import("react").JSX.Element;

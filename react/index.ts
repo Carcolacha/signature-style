@@ -67,6 +67,8 @@ export {
   RadioCardGroup,
   type RadioCardGroupProps,
   type RadioCardOption,
+  PasswordInput,
+  type PasswordInputProps,
 } from "./forms.js";
 export {
   ToastProvider,

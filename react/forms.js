@@ -1,4 +1,56 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+/**
+ * forms — input & feedback primitives (1.4.0 "Input & Feedback Layer";
+ * 2.3.0 grows Select / Checkbox / Avatar; 2.4.0 "Form Wrappers &
+ * Editorial Primitives" grows FormField / RadioCardGroup; 2.4.1
+ * "Intuitive Form Anatomy & Alignment Fix" grows FormField.required /
+ * FormField.prefix and the visible switch label; 2.5.0 "Ergonomic Form
+ * Rules" REWORKS FormField into the top-down anatomy (description above
+ * the input, prefix/suffix chips in the owning well, validMessage slot,
+ * the error shake) and grows PasswordInput).
+ *
+ * Nine controls + the accessible wrapper, wired to the form styles in
+ * css/forms.css: `<FormField>`, `<Input>`, `<TextArea>`,
+ * `<ToggleSwitch>`, `<Select>`, `<Checkbox>`, `<Avatar>`,
+ * `<RadioCardGroup>`, `<PasswordInput>`.
+ *
+ * THE ERROR FLAG: `error` is a STATE FLAG, never rendered as text.
+ * `<Input error>` / `<TextArea error>` only flip the DOM attribute
+ * `aria-invalid="true"` (css/forms.css paints the --party-peach border —
+ * the owner-spec'd error state, attribute-driven like the nav's
+ * aria-current). Consumers render their own error message next to the
+ * field, where they control its id/aria-describedby wiring. This keeps
+ * the components flat: ONE element, no message slot, no wrapper.
+ *
+ * 2.4.0 — THE WRAPPER ARRIVES: `<FormField>` is the ACCESSIBLE wrapper
+ * for the bare controls (label + control + hint/error slot). The v1.4.0
+ * doctrine still holds — the CONTROL stays wrapper-free — but the
+ * around-the-control scaffold (label element, hint, role="alert" error)
+ * is now one import. THE CONSUMER WIRES id/htmlFor: pass the same id to
+ * the control and htmlFor to the field; the package renders no ids it
+ * cannot verify. `<RadioCardGroup>` is the card-metaphor radio: a
+ * native input per option (keyboard + forms for free), visually hidden,
+ * with the LABEL as the card — `:has()` paints the focus ring and the
+ * selected state (css/forms.css documents the no-:has degrade).
+ *
+ * PEAK PRUNING, EVOLVED (2.4.1): `<ToggleSwitch>` still renders the
+ * pill as ONE element — a `<button role="switch">` whose knob is the
+ * CSS ::before pseudo-element (css/forms.css). What changed is the
+ * label contract: `label` used to be aria-label ONLY (orphaned
+ * switches — a mute decoration floating in the card with no visible
+ * name). Now a present `label` ALSO renders as visible text: the
+ * pill (`.ptp-switch__pill`, every selector migrated off the old
+ * `.ptp-switch` name) + a `.ptp-switch__text` span inside the
+ * `.ptp-switch` wrapper. THE WRAPPER IS JUSTIFIED — it is the
+ * pill + visible-text composition (the same sanction as
+ * `.ptp-select`'s chevron anchor), NOT decoration: without it the
+ * flex pairing of control and caption is impossible. Only the pill
+ * is interactive; the text is visual (the button keeps aria-label so
+ * the accessible name survives regardless of the text span).
+ * The visual state is the attribute: aria-checked drives both the
+ * Teal track and the knob travel.
+ */
+import { useId, useState } from "react";
 import { Icon } from "./primitives.js";
 /**
  * `<Input>` — the inset-well text field.
@@ -234,7 +286,69 @@ export function FormField({ label, htmlFor, description, hint, error, validMessa
  * ```
  */
 export function RadioCardGroup({ name, options, value, onChange, label }) {
-    return (_jsx("div", { role: "radiogroup", "aria-label": label, className: "ptp-radio-cards", children: options.map((option) => (_jsxs("label", { className: value === option.value
-                ? "ptp-radio-card ptp-radio-card--selected"
-                : "ptp-radio-card", children: [_jsx("input", { type: "radio", className: "ptp-radio-card__input", name: name, value: option.value, checked: value === option.value, onChange: () => onChange(option.value) }), _jsxs("span", { className: "ptp-radio-card__body", children: [_jsx("span", { className: "ptp-radio-card__label", children: option.label }), option.description !== undefined && (_jsx("span", { className: "ptp-radio-card__desc", children: option.description }))] })] }, option.value))) }));
+    return (_jsx("div", { role: "radiogroup", "aria-label": label, className: "ptp-radio-cards", children: options.map((option) => {
+            // 2.5.0 — descriptions ENFORCED at runtime: a description-less
+            // card renders as a label-only stub and breaks the balanced
+            // grid read. The type stays optional (no semver break in a
+            // minor release); JS consumers get the dev-time warning.
+            if (option.description === undefined) {
+                console.warn(`[signature-style] RadioCardGroup option "${option.label}" has no description — cards read as stubs without their second line; pass a description for every option.`);
+            }
+            return (_jsxs("label", { className: value === option.value
+                    ? "ptp-radio-card ptp-radio-card--selected"
+                    : "ptp-radio-card", children: [_jsx("input", { type: "radio", className: "ptp-radio-card__input", name: name, value: option.value, checked: value === option.value, onChange: () => onChange(option.value) }), _jsxs("span", { className: "ptp-radio-card__body", children: [_jsx("span", { className: "ptp-radio-card__label", children: option.label }), option.description !== undefined && (_jsx("span", { className: "ptp-radio-card__desc", children: option.description }))] })] }, option.value));
+        }) }));
+}
+/** The four strength stages, index = score − 1 (score 0 shows none). */
+const PASSWORD_STAGES = ["Weak", "Fair", "Good", "Strong"];
+/**
+ * `<PasswordInput>` — the password well with the live strength meter
+ * (2.5.0).
+ *
+ * Anatomy, top-down inside the FormField scaffold:
+ *
+ *   1. The label + the fixed format description ("8+ chars · mix
+ *      cases, numbers, symbols") — the 2.5.0 description-above
+ *      contract, shipped by `<FormField>`.
+ *   2. The `.ptp-form-field__well.ptp-password` — a bare
+ *      `type={show ? "text" : "password"}` input (the well owns the
+ *      border; the scoped kill strips the field chrome) + the
+ *      `.ptp-password__toggle` eye button (aria-label + aria-pressed;
+ *      Icon "Eye"/"EyeOff" — both gate-probed against the live lucide
+ *      map).
+ *   3. The `.ptp-password__meter` — ONE `<div role="progressbar">`
+ *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
+ *      segments and the `data-score` attribute. The css paints the
+ *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
+ *      token this release exists for), 3 → sky, 4 → green.
+ *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
+ *   5. Four `.ptp-password__pill` condition spans ("8+ chars",
+ *      "Uppercase", "Number", "Symbol") — `data-satisfied` flips them
+ *      to the 20% party-green wash.
+ *
+ * THE SCORE IS HONEST BY CONSTRUCTION: it is the count of satisfied
+ * rules — nothing tuned, nothing weighted. Unlike every other control
+ * here, this component DOES render an id it can verify: it owns both
+ * the label and the input, so `useId()` wires them legitimately (the
+ * FormField "consumer wires ids" doctrine applies to fields whose
+ * children the package cannot see — this one is all package).
+ *
+ * @example
+ * ```tsx
+ * const [pw, setPw] = useState("");
+ * <PasswordInput label="Password" value={pw} onChange={setPw} />
+ * ```
+ */
+export function PasswordInput({ label = "Password", value, onChange }) {
+    const id = useId();
+    const [show, setShow] = useState(false);
+    const rules = [
+        { label: "8+ chars", satisfied: value.length >= 8 },
+        { label: "Uppercase", satisfied: /[A-Z]/.test(value) },
+        { label: "Number", satisfied: /\d/.test(value) },
+        { label: "Symbol", satisfied: /[^A-Za-z0-9]/.test(value) },
+    ];
+    const score = rules.filter((rule) => rule.satisfied).length;
+    const stage = score === 0 ? "" : (PASSWORD_STAGES[score - 1] ?? "");
+    return (_jsxs(FormField, { label: label, htmlFor: id, description: "8+ chars \u00B7 mix cases, numbers, symbols", children: [_jsxs("span", { className: "ptp-form-field__well ptp-password", children: [_jsx("input", { id: id, type: show ? "text" : "password", className: "ptp-password__native", value: value, onChange: (event) => onChange?.(event.target.value) }), _jsx("button", { type: "button", className: "ptp-password__toggle", "aria-label": show ? "Hide password" : "Show password", "aria-pressed": show, onClick: () => setShow((current) => !current), children: _jsx(Icon, { name: show ? "EyeOff" : "Eye", "aria-hidden": true }) })] }), _jsxs("span", { className: "ptp-password__meter-row", children: [_jsxs("span", { className: "ptp-password__meter", role: "progressbar", "aria-label": "Password strength", "aria-valuemin": 0, "aria-valuemax": 4, "aria-valuenow": score, "data-score": score, children: [_jsx("span", {}), _jsx("span", {}), _jsx("span", {}), _jsx("span", {})] }), _jsx("span", { className: "ptp-password__stage", "data-score": score, children: stage })] }), _jsx("span", { className: "ptp-password__pills", children: rules.map((rule) => (_jsx("span", { className: "ptp-password__pill", ...(rule.satisfied ? { "data-satisfied": true } : {}), children: rule.label }, rule.label))) })] }));
 }

@@ -50,6 +50,7 @@
  * Teal track and the knob travel.
  */
 
+import { useId, useState } from "react";
 import type {
   CSSProperties,
   InputHTMLAttributes,
@@ -630,31 +631,165 @@ export interface RadioCardGroupProps {
 export function RadioCardGroup({ name, options, value, onChange, label }: RadioCardGroupProps) {
   return (
     <div role="radiogroup" aria-label={label} className="ptp-radio-cards">
-      {options.map((option) => (
-        <label
-          key={option.value}
-          className={
-            value === option.value
-              ? "ptp-radio-card ptp-radio-card--selected"
-              : "ptp-radio-card"
-          }
-        >
-          <input
-            type="radio"
-            className="ptp-radio-card__input"
-            name={name}
-            value={option.value}
-            checked={value === option.value}
-            onChange={() => onChange(option.value)}
-          />
-          <span className="ptp-radio-card__body">
-            <span className="ptp-radio-card__label">{option.label}</span>
-            {option.description !== undefined && (
-              <span className="ptp-radio-card__desc">{option.description}</span>
-            )}
-          </span>
-        </label>
-      ))}
+      {options.map((option) => {
+        // 2.5.0 — descriptions ENFORCED at runtime: a description-less
+        // card renders as a label-only stub and breaks the balanced
+        // grid read. The type stays optional (no semver break in a
+        // minor release); JS consumers get the dev-time warning.
+        if (option.description === undefined) {
+          console.warn(
+            `[signature-style] RadioCardGroup option "${option.label}" has no description — cards read as stubs without their second line; pass a description for every option.`,
+          );
+        }
+        return (
+          <label
+            key={option.value}
+            className={
+              value === option.value
+                ? "ptp-radio-card ptp-radio-card--selected"
+                : "ptp-radio-card"
+            }
+          >
+            <input
+              type="radio"
+              className="ptp-radio-card__input"
+              name={name}
+              value={option.value}
+              checked={value === option.value}
+              onChange={() => onChange(option.value)}
+            />
+            <span className="ptp-radio-card__body">
+              <span className="ptp-radio-card__label">{option.label}</span>
+              {option.description !== undefined && (
+                <span className="ptp-radio-card__desc">{option.description}</span>
+              )}
+            </span>
+          </label>
+        );
+      })}
     </div>
+  );
+}
+
+/**
+ * Props for `<PasswordInput>` — a CONTROLLED value: the consumer owns
+ * the string, the component renders its live strength read-out from it.
+ */
+export interface PasswordInputProps {
+  /** The visible label text above the well (optional but expected). */
+  label?: string;
+  /** The controlled password value. */
+  value: string;
+  /** Called with the NEXT value on every keystroke. */
+  onChange?: (value: string) => void;
+}
+
+/** The four strength stages, index = score − 1 (score 0 shows none). */
+const PASSWORD_STAGES = ["Weak", "Fair", "Good", "Strong"] as const;
+
+/**
+ * `<PasswordInput>` — the password well with the live strength meter
+ * (2.5.0).
+ *
+ * Anatomy, top-down inside the FormField scaffold:
+ *
+ *   1. The label + the fixed format description ("8+ chars · mix
+ *      cases, numbers, symbols") — the 2.5.0 description-above
+ *      contract, shipped by `<FormField>`.
+ *   2. The `.ptp-form-field__well.ptp-password` — a bare
+ *      `type={show ? "text" : "password"}` input (the well owns the
+ *      border; the scoped kill strips the field chrome) + the
+ *      `.ptp-password__toggle` eye button (aria-label + aria-pressed;
+ *      Icon "Eye"/"EyeOff" — both gate-probed against the live lucide
+ *      map).
+ *   3. The `.ptp-password__meter` — ONE `<div role="progressbar">`
+ *      (aria-valuemin 0 / max 4 / now score) carrying four `<span>`
+ *      segments and the `data-score` attribute. The css paints the
+ *      filled prefix: 1 → peach, 2 → yellow (--party-yellow, the
+ *      token this release exists for), 3 → sky, 4 → green.
+ *   4. The stage label (Weak/Fair/Good/Strong), colored to match.
+ *   5. Four `.ptp-password__pill` condition spans ("8+ chars",
+ *      "Uppercase", "Number", "Symbol") — `data-satisfied` flips them
+ *      to the 20% party-green wash.
+ *
+ * THE SCORE IS HONEST BY CONSTRUCTION: it is the count of satisfied
+ * rules — nothing tuned, nothing weighted. Unlike every other control
+ * here, this component DOES render an id it can verify: it owns both
+ * the label and the input, so `useId()` wires them legitimately (the
+ * FormField "consumer wires ids" doctrine applies to fields whose
+ * children the package cannot see — this one is all package).
+ *
+ * @example
+ * ```tsx
+ * const [pw, setPw] = useState("");
+ * <PasswordInput label="Password" value={pw} onChange={setPw} />
+ * ```
+ */
+export function PasswordInput({ label = "Password", value, onChange }: PasswordInputProps) {
+  const id = useId();
+  const [show, setShow] = useState(false);
+  const rules: Array<{ label: string; satisfied: boolean }> = [
+    { label: "8+ chars", satisfied: value.length >= 8 },
+    { label: "Uppercase", satisfied: /[A-Z]/.test(value) },
+    { label: "Number", satisfied: /\d/.test(value) },
+    { label: "Symbol", satisfied: /[^A-Za-z0-9]/.test(value) },
+  ];
+  const score = rules.filter((rule) => rule.satisfied).length;
+  const stage = score === 0 ? "" : (PASSWORD_STAGES[score - 1] ?? "");
+  return (
+    <FormField
+      label={label}
+      htmlFor={id}
+      description="8+ chars · mix cases, numbers, symbols"
+    >
+      <span className="ptp-form-field__well ptp-password">
+        <input
+          id={id}
+          type={show ? "text" : "password"}
+          className="ptp-password__native"
+          value={value}
+          onChange={(event) => onChange?.(event.target.value)}
+        />
+        <button
+          type="button"
+          className="ptp-password__toggle"
+          aria-label={show ? "Hide password" : "Show password"}
+          aria-pressed={show}
+          onClick={() => setShow((current) => !current)}
+        >
+          <Icon name={show ? "EyeOff" : "Eye"} aria-hidden />
+        </button>
+      </span>
+      <span className="ptp-password__meter-row">
+        <span
+          className="ptp-password__meter"
+          role="progressbar"
+          aria-label="Password strength"
+          aria-valuemin={0}
+          aria-valuemax={4}
+          aria-valuenow={score}
+          data-score={score}
+        >
+          <span />
+          <span />
+          <span />
+          <span />
+        </span>
+        <span className="ptp-password__stage" data-score={score}>
+          {stage}
+        </span>
+      </span>
+      <span className="ptp-password__pills">
+        {rules.map((rule) => (
+          <span
+            key={rule.label}
+            className="ptp-password__pill"
+            {...(rule.satisfied ? { "data-satisfied": true } : {})}
+          >
+            {rule.label}
+          </span>
+        ))}
+      </span>
+    </FormField>
   );
 }
