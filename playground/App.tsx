@@ -2,6 +2,25 @@
  * App — THE ENGINE + THE MASTER INDEX (2.6.0 "Universal Developer Card
  * Suite, Chromatic Elevation & The Master Index Overhaul").
  *
+ * 2.7.0 — THE GRAPHS & PLANNER MODULE + THE PERSISTENCE ADDENDUM. The
+ * dashboard's module Tabs grow a fourth door: "Graphs & Planner"
+ * (GraphPlannerModule, defined below FormsModule like every other
+ * module — the b5 audit slice stays 7 cards). Four cards: The Knowledge
+ * Graph (<KnowledgeGraph addOn> — deterministic radial SVG, focus
+ * dimming, Add & Link), Spending by Category (<BarChart>, four bars
+ * with per-bar capacity maxes), RSVP Momentum (<AreaChart>, 8 weekly
+ * points, sky), and the Milestone Manager (<TimelineManager> fully
+ * wired — composer, filter pills, settle toggles, deletes, inspect →
+ * EventModal). THE PERSISTENCE STORY (the Excalidraw/tldraw pattern):
+ * the graph and the milestones mirror into localStorage through
+ * usePersistentState (playground/persistence.ts, versioned keys
+ * sig.v27.graph / sig.v27.timeline), so a reload restores your work;
+ * the Milestone Manager card's toolbar exports/imports both arrays as
+ * signature-snapshot.json and the danger Reset button wipes the keys
+ * back to the seeds. THE PROOF (release blocker): playwright adds a
+ * "Persistence proof" node, RELOADS the page, and asserts the node is
+ * still there; Export fires a download; Reset restores the seeds.
+ *
  * 2.6.0 — THE MASTER INDEX OVERHAUL. The index stops being three doors
  * and becomes THE CATALOG: a filter <Tabs> bar (all / gateways / food /
  * commerce / docs), Row 1 the three BALANCED chromatic gateways
@@ -153,24 +172,32 @@ import {
   TierCard,
   ProfileCard,
   ChronicleTimeline,
+  KnowledgeGraph,
+  BarChart,
+  AreaChart,
+  TimelineManager,
   type NavItem,
   type PtpEvent,
   type DataTableColumn,
   type PartyTokenName,
   type AccentToken,
   type ChronicleRelease,
+  type GraphNode,
+  type TimelineItem,
 } from "@edwyn/signature-style/react";
+import { usePersistentState } from "./persistence.js";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract). */
 type View = "dashboard" | "index" | "events" | "guests" | "budget";
 
 /** The dashboard's Tabs modules (2.3.0) — id union + the Tabs contract. */
-type ModuleId = "core" | "data" | "forms";
+type ModuleId = "core" | "data" | "forms" | "graph";
 
 const MODULE_TABS: Array<{ id: ModuleId; label: string }> = [
   { id: "core", label: "Core Dashboard" },
   { id: "data", label: "Data & Tables" },
   { id: "forms", label: "Form & Input Matrix" },
+  { id: "graph", label: "Graphs & Planner" },
 ];
 
 /** The workshop modules — nav destinations without a view yet (2.1.0). */
@@ -423,6 +450,11 @@ export const events: PtpEvent[] = mockEvents.map((e) => ({
    it, and every live read (ledger rows, Confirmed Guests StatCard, the
    RSVP ring, the budget bars) is a useMemo derivative. STATE → DERIVED
    → WIRING lives in DashboardView → BentoCore below.
+
+   2.7.0 PERSISTENCE SEEDS — the Graphs & Planner module's two
+   usePersistentState arrays (the Excalidraw/tldraw pattern: the seed
+   is the FIRST state; localStorage mirrors it; reload restores it;
+   Reset removes the keys and the seeds return).
    ========================================================================== */
 
 /** One guest in the live ledger. RSVP is the three-word contract. */
@@ -445,6 +477,105 @@ const SEED_GUESTS: Guest[] = [
 /** The party's two fixed denominators (the metrics' limit captions). */
 const TOTAL_BUDGET = 2000;
 const GUEST_CAPACITY = 200;
+
+/**
+ * SEED_GRAPH (2.7.0) — the knowledge graph's opening shape: the root
+ * plus three connected workstream notes. Every node carries a note so
+ * the footer inspect strip has something to say.
+ */
+const SEED_GRAPH: GraphNode[] = [
+  {
+    id: "kg-root",
+    label: "Party Planning",
+    categoryToken: "--party-lavender",
+    note: "The root of the plan — every branch is one workstream.",
+  },
+  {
+    id: "kg-venue",
+    label: "Venue",
+    parentId: "kg-root",
+    categoryToken: "--party-mauve-soft",
+    note: "Shortlist three venues; the walkthrough is on the timeline.",
+  },
+  {
+    id: "kg-catering",
+    label: "Catering",
+    parentId: "kg-root",
+    categoryToken: "--party-peach",
+    note: "Tasting scheduled — the vegan plate must travel well.",
+  },
+  {
+    id: "kg-invites",
+    label: "Invites",
+    parentId: "kg-root",
+    categoryToken: "--party-sky",
+    note: "Paper for family, digital for everyone else.",
+  },
+];
+
+/**
+ * SEED_TIMELINE (2.7.0) — the milestone manager's opening five, two of
+ * them settled (the counter reads "2 / 5 Settled" on first paint).
+ */
+const SEED_TIMELINE: TimelineItem[] = [
+  {
+    id: "tm-001",
+    date: "November 2026",
+    title: "Book the venue",
+    category: "--party-mauve-bright",
+    categoryLabel: "Venue",
+    settled: true,
+  },
+  {
+    id: "tm-002",
+    date: "November 2026",
+    title: "Lock the catering menu",
+    category: "--party-peach",
+    categoryLabel: "Catering",
+    settled: true,
+  },
+  {
+    id: "tm-003",
+    date: "December 2026",
+    title: "Send invitations",
+    category: "--party-pink-bright",
+    categoryLabel: "Invites",
+  },
+  {
+    id: "tm-004",
+    date: "December 2026",
+    title: "Order the cake",
+    category: "--party-lavender",
+    categoryLabel: "Ceremony",
+  },
+  {
+    id: "tm-005",
+    date: "January 2027",
+    title: "Final headcount",
+    category: "--party-green",
+    categoryLabel: "RSVP",
+  },
+];
+
+/** The Spending by Category bars — four bars, per-bar capacity maxes. */
+const SPENDING_BARS = [
+  { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
+  { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
+  { label: "Invites", value: 240, max: 400, colorToken: "--party-pink-bright" },
+  { label: "Music", value: 450, max: 600, colorToken: "--party-sky" },
+] as const;
+
+/** The RSVP Momentum series — eight weekly samples, sky. */
+const RSVP_MOMENTUM = [
+  { label: "W1", value: 12 },
+  { label: "W2", value: 18 },
+  { label: "W3", value: 26 },
+  { label: "W4", value: 41 },
+  { label: "W5", value: 55 },
+  { label: "W6", value: 82 },
+  { label: "W7", value: 104 },
+  { label: "W8", value: 128 },
+] as const;
 
 /** RSVP value → ledger word (the RadioCardGroup submits the left key). */
 const RSVP_TO_STATE: Record<string, Guest["rsvp"]> = {
@@ -569,6 +700,10 @@ function DashboardView() {
         <div className="hub__tabs-content">
           <FormsModule />
         </div>
+      ) : moduleId === "graph" ? (
+        <div className="hub__tabs-content" data-testid="module-graph">
+          <GraphPlannerModule />
+        </div>
       ) : (
         <div className="hub__tabs-content">
           <BentoCore guests={guests} onCheckIn={checkIn} />
@@ -641,7 +776,7 @@ function BentoCore({
             onDismiss={() => setBannerVisible(false)}
           >
             <span data-testid="banner-release">
-              v2.6.0 — live state mode: check in a guest and watch the
+              v2.7.0 — live state mode: check in a guest and watch the
               ledger, ring, and toast react.
             </span>
           </AnnouncementBanner>
@@ -1771,6 +1906,252 @@ function FormsModule() {
         ]}
       />
     </SurfaceCard>
+  );
+}
+
+/* ==========================================================================
+   THE GRAPHS & PLANNER MODULE (2.7.0) — the persistence addendum's home.
+   Two usePersistentState arrays (sig.v27.graph / sig.v27.timeline —
+   reload survives, Reset restores the seeds), the snapshot toolbar
+   (Export JSON / Import JSON / Reset), and four cards: The Knowledge
+   Graph (addOn), Spending by Category (BarChart, per-bar maxes),
+   RSVP Momentum (AreaChart, 8 points, sky), and the Milestone Manager
+   (TimelineManager fully wired; inspect composes the EventModal).
+   ========================================================================== */
+
+/** Shallow shape guards for the snapshot import (trust, but verify). */
+function isGraphNodeish(value: unknown): boolean {
+  if (typeof value !== "object" || value === null) return false;
+  const node = value as Partial<GraphNode>;
+  return typeof node.id === "string" && typeof node.label === "string";
+}
+
+function isTimelineItemish(value: unknown): boolean {
+  if (typeof value !== "object" || value === null) return false;
+  const item = value as Partial<TimelineItem>;
+  return (
+    typeof item.id === "string" &&
+    typeof item.title === "string" &&
+    typeof item.date === "string" &&
+    typeof item.category === "string"
+  );
+}
+
+function GraphPlannerModule() {
+  const toast = useToast();
+  const modal = useModal<TimelineItem>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // THE PERSISTENCE CONTRACT — versioned keys, seeds as fallbacks.
+  const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>(
+    "sig.v27.graph",
+    SEED_GRAPH,
+  );
+  const [timeline, setTimeline, resetTimeline] = usePersistentState<TimelineItem[]>(
+    "sig.v27.timeline",
+    SEED_TIMELINE,
+  );
+
+  const addNode = useCallback(
+    (node: Omit<GraphNode, "id">) => {
+      setGraph((current) => [
+        ...current,
+        { ...node, id: `kg-${Date.now().toString(36)}` },
+      ]);
+      toast("success", `Node "${node.label}" added and linked.`);
+    },
+    [setGraph, toast],
+  );
+
+  const addMilestone = useCallback(
+    (item: Omit<TimelineItem, "id">) => {
+      setTimeline((current) => [
+        ...current,
+        { ...item, id: `tm-${Date.now().toString(36)}` },
+      ]);
+    },
+    [setTimeline],
+  );
+
+  const toggleSettled = useCallback(
+    (id: string) => {
+      setTimeline((current) =>
+        current.map((item) =>
+          item.id === id ? { ...item, settled: item.settled !== true } : item,
+        ),
+      );
+    },
+    [setTimeline],
+  );
+
+  const deleteMilestone = useCallback(
+    (id: string) => {
+      setTimeline((current) => current.filter((item) => item.id !== id));
+      // ToastStatus is success | "error" — the peach strip IS the
+      // attention voice; a destructive action earns it (the reset too).
+      toast("error", "Milestone deleted.");
+    },
+    [setTimeline, toast],
+  );
+
+  const exportSnapshot = useCallback(() => {
+    const payload = { version: "sig.v27", graph, timeline };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = "signature-snapshot.json";
+    anchor.click();
+    URL.revokeObjectURL(url);
+    toast("success", "Snapshot exported — signature-snapshot.json.");
+  }, [graph, timeline, toast]);
+
+  const importSnapshot = useCallback(
+    (file: File) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(String(reader.result)) as {
+            graph?: unknown;
+            timeline?: unknown;
+          };
+          const graphOk =
+            Array.isArray(data.graph) && data.graph.every(isGraphNodeish);
+          const timelineOk =
+            Array.isArray(data.timeline) &&
+            data.timeline.every(isTimelineItemish);
+          if (!graphOk || !timelineOk) {
+            toast("error", "Invalid snapshot structure");
+            return;
+          }
+          setGraph(data.graph as GraphNode[]);
+          setTimeline(data.timeline as TimelineItem[]);
+          toast("success", "Snapshot imported — graph + timeline restored.");
+        } catch {
+          toast("error", "Invalid snapshot structure");
+        }
+      };
+      reader.readAsText(file);
+    },
+    [setGraph, setTimeline, toast],
+  );
+
+  const resetAll = useCallback(() => {
+    resetGraph();
+    resetTimeline();
+    toast("error", "Local state reset");
+  }, [resetGraph, resetTimeline, toast]);
+
+  return (
+    <>
+      <SurfaceCard
+        eyebrow="Graph"
+        meta="components/graph.tsx"
+        title="The Knowledge Graph"
+        interactive
+      >
+        <div data-testid="knowledge-graph">
+          <KnowledgeGraph
+            nodes={graph}
+            onAddNode={addNode}
+            addOn
+            label="Party planning knowledge graph"
+          />
+        </div>
+      </SurfaceCard>
+      <div className="hub__row--2">
+        <SurfaceCard
+          eyebrow="Charts"
+          meta="components/viz.tsx"
+          title="Spending by Category"
+          interactive
+        >
+          <div data-testid="spending-bars">
+            <BarChart data={[...SPENDING_BARS]} label="Spending by category" />
+          </div>
+        </SurfaceCard>
+        <SurfaceCard
+          eyebrow="Charts"
+          meta="components/viz.tsx"
+          title="RSVP Momentum"
+          interactive
+        >
+          <div data-testid="rsvp-area">
+            <AreaChart
+              points={[...RSVP_MOMENTUM]}
+              colorToken="--party-sky"
+              label="RSVP momentum"
+            />
+          </div>
+        </SurfaceCard>
+      </div>
+      <SurfaceCard
+        eyebrow="Planner"
+        meta="components/timeline-manager.tsx"
+        title="Milestone Manager"
+        interactive
+      >
+        <div className="hub__snapshot" role="toolbar" aria-label="Snapshot tools">
+          <Button
+            size="sm"
+            variant="secondary"
+            leftIcon="Download"
+            data-testid="snapshot-export"
+            onClick={exportSnapshot}
+          >
+            Export JSON
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            leftIcon="Upload"
+            data-testid="snapshot-import"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Import JSON
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            hidden
+            aria-hidden="true"
+            tabIndex={-1}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file !== undefined) importSnapshot(file);
+              event.target.value = "";
+            }}
+          />
+          <Button
+            size="sm"
+            variant="danger"
+            data-testid="snapshot-reset"
+            onClick={resetAll}
+          >
+            Reset
+          </Button>
+        </div>
+        <div data-testid="milestone-manager">
+          <TimelineManager
+            items={timeline}
+            onAdd={addMilestone}
+            onToggleSettled={toggleSettled}
+            onDelete={deleteMilestone}
+            onInspect={modal.open}
+            label="Milestone manager"
+          />
+        </div>
+        {modal.selectedEvent !== null && (
+          <EventModal
+            event={modal.selectedEvent}
+            open={modal.isOpen}
+            onClose={modal.close}
+          />
+        )}
+      </SurfaceCard>
+    </>
   );
 }
 

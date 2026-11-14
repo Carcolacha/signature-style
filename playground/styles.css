@@ -362,6 +362,31 @@
   }
 }
 
+/* 2.7.0 — the Graphs & Planner module. The charts row is the balanced
+   2-up grid (same gap rhythm as rows 3/4, same single-column collapse),
+   and the snapshot toolbar is one 8px flex row inside the Milestone
+   Manager card. Token-driven, zero hex, zero shadows (the composition
+   layer keeps only the elevations it already owns). */
+.hub__row--2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .hub__row--2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hub__snapshot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+  margin-bottom: var(--space-standard);
+}
+
 .hub__card--gateway {
   cursor: pointer;
   text-align: left;

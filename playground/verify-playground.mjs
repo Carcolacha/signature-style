@@ -2016,6 +2016,9 @@ try {
     // lucide-react 1.72.0 keys — the AudioLines/Music precedent again).
     "Trash",
     "Funnel",
+    // 2.7.0: the snapshot toolbar icons (Download/Upload ARE keys — probed).
+    "Download",
+    "Upload",
     // 2.6.0: the ReferenceCard copy/link icons + the TierCard Check bullet.
     "Copy",
     "Check",
@@ -3407,6 +3410,117 @@ if (!existsSync(tmJsPath)) {
 }
 if (!existsSync(tmDtsPath)) {
   failures.push("(tm1) react/timeline-manager.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+
+// ---- (ps1) THE PERSISTENCE ADDENDUM (2.7.0) ----------------------------------------
+// playground/persistence.ts: the zero-dependency usePersistentState hook with
+// the try/catch localStorage posture + reset. App.tsx: the versioned keys, the
+// two seeded arrays, the snapshot toolbar (Export/Import/Reset) with the
+// Blob → objectURL → revoke dance, the FileReader validation, and the
+// signature-snapshot.json filename.
+const persistencePath = resolve(root, "playground", "persistence.ts");
+if (!existsSync(persistencePath)) {
+  failures.push("(ps1) playground/persistence.ts is missing — the persistence hook");
+} else {
+  const persistenceSrc = readFileSync(persistencePath, "utf8");
+  const PS_REQUIREMENTS = [
+    ["export function usePersistentState<T>", "the generic hook"],
+    ["key: string", "the storage key parameter"],
+    ["fallback: T", "the fallback parameter"],
+    ['[T, (value: T | ((previous: T) => T)) => void, () => void]', "the [value, setValue, reset] triple"],
+    ["localStorage.getItem", "the lazy read"],
+    ["JSON.parse", "the stored-JSON parse"],
+    ["localStorage.setItem", "the mirror write"],
+    ["JSON.stringify", "the serialize"],
+    ["localStorage.removeItem", "the reset's key removal"],
+    ["try {", "the try/catch posture (corrupt JSON → fallback; quota → memory)"],
+  ];
+  for (const [needle, label] of PS_REQUIREMENTS) {
+    if (!persistenceSrc.includes(needle)) {
+      failures.push(`(ps1) playground/persistence.ts must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+const PS_APP_REQUIREMENTS = [
+  ['usePersistentState<GraphNode[]>(\n    "sig.v27.graph",', "the graph array under its versioned key"],
+  ['usePersistentState<TimelineItem[]>(\n    "sig.v27.timeline",', "the timeline array under its versioned key"],
+  ["SEED_GRAPH", "the graph's seed fallback"],
+  ["SEED_TIMELINE", "the timeline's seed fallback"],
+  ['{ version: "sig.v27", graph, timeline }', "the snapshot payload"],
+  ["signature-snapshot.json", "the download filename"],
+  ["URL.createObjectURL", "the download dance, step 1"],
+  ["URL.revokeObjectURL", "the download dance, step 3 — revoke immediately"],
+  ["FileReader", "the import's reader"],
+  ["Array.isArray(data.graph)", "the import's graph shape gate"],
+  ["Array.isArray(data.timeline)", "the import's timeline shape gate"],
+  ['toast("error", "Invalid snapshot structure")', "the invalid-snapshot refusal"],
+  ['toast("error", "Local state reset")', "the reset toast (peach attention strip — ToastStatus is success|error, the documented mapping)"],
+  ['leftIcon="Download"', "the Export button icon (live-map-probed)"],
+  ['leftIcon="Upload"', "the Import button icon (live-map-probed)"],
+  ['variant="danger"', "the Reset button's attention variant"],
+  ["Export JSON", "the export label"],
+  ["Import JSON", "the import label"],
+  ["Reset\n          </Button>", "the reset label"],
+  ['accept=".json"', "the hidden file input's filter"],
+  ["type=\"file\"", "the hidden import input"],
+];
+for (const [needle, label] of PS_APP_REQUIREMENTS) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(ps1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+
+// ---- (gp1) THE GRAPHS & PLANNER MODULE (2.7.0) -------------------------------------
+// The fourth module tab + the four-card assembly + the probe hooks + the
+// playground-local 2-up chart row.
+const GP_REQUIREMENTS = [
+  ['type ModuleId = "core" | "data" | "forms" | "graph"', "the fourth module id"],
+  ['{ id: "graph", label: "Graphs & Planner" }', "the tab entry"],
+  ['moduleId === "graph"', "the tab's render branch"],
+  ["function GraphPlannerModule", "the module component (defined AFTER IndexView — the b5 audit slice stays 7 cards)"],
+  ["usePersistentState", "the persistence hook drives the module state"],
+  ['title="The Knowledge Graph"', "card 1"],
+  ["<KnowledgeGraph", "the graph primitive"],
+  ["addOn", "the graph's Add & Link toolbar"],
+  ['title="Spending by Category"', "card 2"],
+  ["<BarChart", "the bar chart primitive"],
+  ['{ label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" }', "a per-bar capacity max"],
+  ['title="RSVP Momentum"', "card 3"],
+  ["<AreaChart", "the area chart primitive"],
+  ['colorToken="--party-sky"', "the sky series token"],
+  ['title="Milestone Manager"', "card 4"],
+  ["<TimelineManager", "the manager primitive"],
+  ["onInspect={modal.open}", "inspect composes the EventModal"],
+  ['label="Milestone manager"', "the manager's accessible name"],
+  ['data-testid="module-graph"', "the module probe hook"],
+  ['data-testid="knowledge-graph"', "the graph probe hook"],
+  ['data-testid="spending-bars"', "the bars probe hook"],
+  ['data-testid="rsvp-area"', "the area probe hook"],
+  ['data-testid="milestone-manager"', "the manager probe hook"],
+  ['data-testid="snapshot-export"', "the export probe hook"],
+  ['data-testid="snapshot-import"', "the import probe hook"],
+  ['data-testid="snapshot-reset"', "the reset probe hook"],
+];
+for (const [needle, label] of GP_REQUIREMENTS) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(gp1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+const GP_STYLES_REQUIREMENTS = [
+  [".hub__row--2", "the 2-up charts row"],
+  ["grid-template-columns: repeat(2, 1fr)", "the balanced columns"],
+  [".hub__snapshot", "the snapshot toolbar row"],
+];
+for (const [needle, label] of GP_STYLES_REQUIREMENTS) {
+  if (!stylesCss.includes(needle)) {
+    failures.push(`(gp1) styles.css must contain ${needle} — ${label}`);
+  }
+}
+const row2Collapse = /@media \(max-width: 768px\)\s*\{[^@]*\.hub__row--2\s*\{[^}]*grid-template-columns: 1fr;/s;
+if (!row2Collapse.test(stylesCss)) {
+  failures.push(
+    "(gp1) .hub__row--2 must collapse to one column at max-width: 768px (Pillar 2)",
+  );
 }
 
 // ---- verdict ----------------------------------------------------------------------
