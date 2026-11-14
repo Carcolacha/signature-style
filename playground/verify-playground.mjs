@@ -1701,10 +1701,44 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.9")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.0")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.9 (the 2.6.0 codex: SurfaceCard chromatic params, ContentCard, ReferenceCard, TierCard, ProfileCard, ChronicleTimeline)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.0 (the 2.7.0 codex: KnowledgeGraph, BarChart, AreaChart, TimelineManager, the Local Persistence & JSON Snapshot Pattern)",
   );
+}
+
+// ---- (sm3) THE V3.0 CODEX — the 2.7.0 recipes + the persistence pattern ----------
+const SM3_REQUIREMENTS = [
+  ["### <KnowledgeGraph>", "the KnowledgeGraph recipe exists"],
+  ["layoutGraph", "the codex documents the deterministic layout helper"],
+  ["cubicBezierEdge", "the codex documents the bezier edge helper"],
+  ["Add & Link", "the codex documents the add-and-link toolbar"],
+  ["### <BarChart>", "the BarChart recipe exists"],
+  ['strokeDasharray "4 4"', "the codex documents the dashed reference lines"],
+  ["orientation", "the codex shows the orientation prop"],
+  ["### <AreaChart>", "the AreaChart recipe exists"],
+  ["useId", "the codex documents the collision-free gradient id"],
+  ["smoothPath", "the codex documents the Catmull-Rom helper"],
+  ["### <TimelineManager>", "the TimelineManager recipe exists"],
+  ["settled?: boolean", "the codex shows the settle state"],
+  ["onToggleSettled", "the codex shows the controlled callbacks"],
+  ["Trash", "the codex names the live-map-valid delete icon"],
+  ["Funnel", "the codex names the live-map-valid filter icon"],
+  ["### The Local Persistence & JSON Snapshot Pattern (2.7.0)", "the persistence subsection exists"],
+  ["usePersistentState", "the codex shows the persistence hook"],
+  ["sig.v27.graph", "the codex pins the graph storage key"],
+  ["sig.v27.timeline", "the codex pins the timeline storage key"],
+  ["sig.v28.*", "the codex documents the key-bump migration contract"],
+  ["signature-snapshot.json", "the codex shows the snapshot filename"],
+  ["URL.createObjectURL", "the codex shows the export dance"],
+  ["URL.revokeObjectURL", "the codex shows the revoke"],
+  ["Array.isArray(data.graph)", "the codex shows the import shape gate"],
+  ["Excalidraw", "the codex credits the pattern"],
+];
+for (const [needle, label] of SM3_REQUIREMENTS) {
+  if (!systemPrompt.includes(needle)) {
+    failures.push(`SYSTEM_PROMPT.md must contain ${JSON.stringify(needle)} — (sm3) the v3.0 codex ${label}`);
+  }
 }
 
 // ---- (dd5) THE TABS SHOWCASE — the playground data/forms modules (2.3.0) ---------
@@ -1749,16 +1783,16 @@ for (const [needle, label] of TABS_REQUIREMENTS) {
 // 2.5.0 AMENDMENT: the sweep grows .ptp-btn / .ptp-stat-card / .sig-shell
 // and the server version moves to 2.5.0.
 const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
-for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card", ".ptp-btn", ".ptp-stat-card", ".sig-shell", ".ptp-carousel__dot", ".ptp-chronicle__item"]) {
+for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card", ".ptp-btn", ".ptp-stat-card", ".sig-shell", ".ptp-carousel__dot", ".ptp-chronicle__item", ".ptp-graph__node", ".ptp-bars__bar", ".ptp-tmanager__count"]) {
   if (!mcpServerSrc.includes(`"${selector}"`)) {
     failures.push(
-      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index (2.6.0: dots + chronicle)`,
+      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index + the Graphs & Planner module (2.7.0: graph nodes, bar ink, milestone counter)`,
     );
   }
 }
-if (!mcpServerSrc.includes('version: "2.6.0"')) {
+if (!mcpServerSrc.includes('version: "2.7.0"')) {
   failures.push(
-    'tools/mcp-viz/server.ts server version string must be 2.6.0 (tooling-only bump)',
+    'tools/mcp-viz/server.ts server version string must be 2.7.0 (tooling-only bump)',
   );
 }
 

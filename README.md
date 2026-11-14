@@ -11,7 +11,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v2.9** system prompt so AI agents can extend the
+**Dynamic Signature Engine v3.0** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -128,6 +128,108 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 2.7.0 — Interactive Knowledge Graph, Analytical SVG Charts & Manageable Timeline
+
+`npm pack` grows 47 → EXACTLY 52 files (47 + css/graph.css +
+react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts} — the
+negations precedent adds "!react/graph.tsx" and
+"!react/timeline-manager.tsx"). `tokens.json` and `tokens.css` are
+UNTOUCHED (whitelist 34 — zero new tokens). The e1 shadow treaty holds
+without amendment: chart interiors and the graph canvas stay FLAT —
+css/graph.css and the viz.css growth declare zero box-shadow and zero
+hex; elevation still lives only in css/surface.css's sanctioned blocks.
+`<EventTimeline>` is byte-identical (backward compatibility is the
+release's hard line — the TimelineManager styles APPEND to
+css/timeline.css under the `.ptp-tmanager` namespace, and the (e2)
+deletion guard proves the file only grows).
+
+**KnowledgeGraph** (react/graph.tsx + css/graph.css, layered after
+cards.css) — an interactive node-link graph in ONE pure-SVG
+`<svg role="application">` (viewBox 0 0 640 320): zero charting
+packages, the Pruning Protocol intact. The layout is DETERMINISTIC —
+`layoutGraph` (an exported, gate-tested pure helper) sorts by id hash
+before BFS, centers the roots, rides each BFS depth up a ring
+(radius 90 + depth·110, projected elliptically + clamped into the
+box), and fans each parent's children across an angular span around
+the parent's angle — the same node set always yields the same
+coordinates, in any input order. Edges are one cubic-Bezier
+(`cubicBezierEdge`, control points 60% along the radial) per
+node-with-parent. Selection dims everything non-adjacent to opacity
+0.25 (class-driven `.ptp-graph--focused` + `data-dim`), flips the
+selected ring to structural Flamingo at width 3, and the footer strip
+inspects the node's label + note. `addOn` renders the "Add & Link"
+toolbar: a new lavender node parents to the SELECTION (else the root;
+with no nodes at all it becomes the root).
+
+**BarChart + AreaChart** (react/viz.tsx + css/viz.css GROW —
+ProgressBar/StatRing logic untouched) — pure SVG analytics over a
+320×200 viewBox. `<BarChart>`: per-datum capacity tracks (inset
+rounded rects out to `max ?? scale`), party value bars, dashed
+`"4 4"` reference lines at 25/50/75% of the scale, mono axis labels,
+and class-driven hover readouts (bar brightens, the tabular value
+appears); `orientation` flips vertical/horizontal. `<AreaChart>`: a
+`useId`-keyed linearGradient (30% token mix → transparent, no id
+collisions) under a Catmull-Rom-smoothed line (`smoothPath`, the
+exported pure helper, 2px round) at 50% opacity, with hoverable point
+circles (r 4 → 6) and tabular readouts.
+
+**TimelineManager** (react/timeline-manager.tsx; styles appended to
+css/timeline.css) — the CONTROLLED working half of the EventTimeline
+contract: `TimelineItem extends PtpEvent { settled?: boolean }`. The
+composer (package Input + month/category Selects + the primary sm
+"Settle Item" Button; empty titles warn and are ignored), the filter
+pills (All/Pending/Settled, attribute-driven `aria-pressed` answering
+with the Flamingo underline — the Tabs contract) plus the tabular
+`{settled} / {total} Settled` counter, per-item rows (the
+`aria-pressed` settle toggle filling party-green, the body button
+firing `onInspect` — pass `modal.open` to compose the EventModal —
+and the delete button), and the EmptyState edge when the current
+filter matches nothing. LIVE-MAP PROBE: the installed lucide-react
+1.72.0 icons map has NO "Trash2" and NO "Filter" key — the manager
+renders the live-map-valid "Trash" and "Funnel" (the AudioLines/Music
+precedent, gate-probed).
+
+**Persistence & JSON portability** (playground/persistence.ts +
+playground/App.tsx) — the Excalidraw/tldraw pattern: your work
+survives a reload. `usePersistentState<T>(key, fallback)` mirrors
+state into localStorage through try/catch on every boundary (corrupt
+JSON → fallback; quota/private-mode → memory keeps working) with a
+`reset()` that removes the key and restores the seed. The new
+"Graphs & Planner" module tab keys BOTH stores under the versioned
+contract — `sig.v27.graph` / `sig.v27.timeline` (bump the prefix when
+a stored shape breaks; never store new shapes under an old prefix) —
+seeded with a Party Planning root graph (4 nodes) and a five-milestone
+timeline (2 settled). The Milestone Manager card's toolbar is the
+portability hatch: **Export JSON** (a Blob → objectURL → temp-anchor
+→ immediate revoke dance downloading `signature-snapshot.json`),
+**Import JSON** (hidden file input → FileReader → `Array.isArray`
+shape checks on both arrays → set both + success toast, else the
+"Invalid snapshot structure" refusal), and **Reset** (danger variant
+→ both keys wiped → seeds restored). THE PROOF (release blocker,
+playwright): add a "Persistence proof" node, RELOAD the page, assert
+the node is still there; Export fires the `signature-snapshot.json`
+download; Reset restores the seeds.
+
+| Area | Change | Where |
+|---|---|---|
+| KnowledgeGraph | deterministic radial SVG graph, focus dimming, Add & Link | react/graph.tsx, css/graph.css |
+| BarChart | capacity tracks, dashed reflines, hover readouts, orientation | react/viz.tsx, css/viz.css |
+| AreaChart | useId gradient, smoothPath (Catmull-Rom), point readouts | react/viz.tsx, css/viz.css |
+| TimelineManager | composer, filter pills, settle/delete, EmptyState edge | react/timeline-manager.tsx, css/timeline.css |
+| Persistence | usePersistentState + export/import/reset, `sig.v27.*` keys | playground/persistence.ts, playground/App.tsx |
+| Codex | v3.0 — four new recipes + the Local Persistence & JSON Snapshot Pattern | SYSTEM_PROMPT.md |
+| Cortex | sweep + `.ptp-graph__node` / `.ptp-bars__bar` / `.ptp-tmanager__count`; version 2.7.0 | tools/mcp-viz/server.ts |
+
+**Signature changes** — ADDITIVE: `KnowledgeGraph`
+(`GraphNode`, `KnowledgeGraphProps`, `GraphPosition`, `layoutGraph`,
+`cubicBezierEdge`), `BarChart` (`BarChartProps`, `BarDatum`),
+`AreaChart` (`AreaChartProps`, `AreaPoint`, `smoothPath`),
+`TimelineManager` (`TimelineManagerProps`, `TimelineItem`), and
+`css/graph.css` joined the bundle after cards.css. BEHAVIORAL: none —
+every existing prop contract is byte-identical (viz.tsx's
+ProgressBar/StatRing/Sparkline/StatCard logic untouched;
+EventTimeline untouched; zero token changes).
 
 ### 2.6.0 — Universal Developer Card Suite, Chromatic Elevation & The Master Index Overhaul
 

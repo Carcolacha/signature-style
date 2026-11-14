@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v2.9
+# System Instruction: The Dynamic Signature Engine v3.0
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -79,7 +79,7 @@ When you ship React, prefer the official primitives in this package — `<Icon>`
 
 ## Universal AI Replication Contract:
 
-Any AI consuming `@edwyn/signature-style@2.5.0` can reproduce this signature verbatim — these snippets are the law. Every exported component, its exact props, one import, no invented props: read the snippet, copy the snippet.
+Any AI consuming `@edwyn/signature-style@2.7.0` can reproduce this signature verbatim — these snippets are the law. Every exported component, its exact props, one import, no invented props: read the snippet, copy the snippet.
 
 ### The sig-shell layout (2.5.0)
 
@@ -565,6 +565,111 @@ The release chronicle (2.6.0) — ONE `<ol class="ptp-chronicle">`: a 2px hairli
     { tag: "v2.6.0", title: "Universal Developer Card Suite", stat: "5 archetypes · 3 tiers · 11 accents", accentToken: "--party-yellow" },
   ]}
 />
+```
+
+### <KnowledgeGraph>
+
+The interactive node-link graph (2.7.0) — ONE pure-SVG `<svg role="application">` (viewBox 0 0 640 320), ZERO charting packages. The layout is DETERMINISTIC (`layoutGraph`, an exported pure helper: roots centered, BFS depth rings at radius 90 + depth·110 projected into the box, children fanning around their parent's angle, ties broken by id hash — same node set, same coordinates, always). One cubic-Bezier edge per node-with-parent (`cubicBezierEdge`, control points 60% along the radial); clicking a node selects it — the ring flips to structural Flamingo at width 3 and everything NOT adjacent dims to opacity 0.25 (class-driven: `.ptp-graph--focused` + `data-dim`); the footer strip inspects the selection's label + note; `addOn` renders the toolbar whose "Add & Link" parents a new lavender node to the SELECTION (else the root; with no nodes at all it becomes the root):
+
+```tsx
+import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
+
+const nodes: GraphNode[] = [
+  { id: "root", label: "Party Planning", categoryToken: "--party-lavender", note: "Every branch is one workstream." },
+  { id: "venue", label: "Venue", parentId: "root", categoryToken: "--party-mauve-soft" },
+];
+
+<KnowledgeGraph
+  nodes={nodes}
+  addOn
+  onAddNode={(node) => addNode(node)}
+  onSelectNode={(node) => inspect(node)}
+  label="Party planning graph"
+  height={320}
+/>
+```
+
+### <BarChart>
+
+The capacity bar chart (2.7.0) — pure SVG, one group per datum: an inset rounded track out to the datum's `max` (default: the chart scale), the party value bar, a hover-revealed tabular readout, the mono axis label, and dashed `strokeDasharray "4 4"` reference lines at 25/50/75% of the scale. `orientation` flips the bars (`"vertical"` default | `"horizontal"`):
+
+```tsx
+<BarChart
+  data={[
+    { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
+    { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
+    { label: "Invites", value: 240, max: 400, colorToken: "--party-pink-bright" },
+  ]}
+  orientation="vertical"
+  label="Spending by category"
+/>
+```
+
+### <AreaChart>
+
+The gradient area (2.7.0) — pure SVG: a `useId`-keyed linearGradient (30% token mix fading to transparent, no id collisions), the Catmull-Rom-smoothed line (`smoothPath`, the exported pure helper), the area path filled with the gradient at 50% opacity, and one hoverable circle per point (r 4 → 6 on hover, a tabular readout appears):
+
+```tsx
+<AreaChart
+  points={[
+    { label: "W1", value: 12 }, { label: "W2", value: 18 },
+    { label: "W3", value: 26 }, { label: "W4", value: 41 },
+  ]}
+  colorToken="--party-sky"
+  height={200}
+  label="RSVP momentum"
+/>
+```
+
+### <TimelineManager>
+
+The CONTROLLED milestone manager (2.7.0) — `TimelineItem extends PtpEvent { settled?: boolean }`; the component owns NO items. Composer (package Input + month Select + category Select + the primary sm "Settle Item" Button; empty titles warn and are ignored), filter pills (All/Pending/Settled, attribute-driven `aria-pressed`, the Flamingo active underline) + the tabular `{settled} / {total} Settled` counter, per-item rows (settle toggle with `aria-pressed` → party-green Check · body button → `onInspect` (pass `modal.open` to compose `<EventModal>`) · delete button → `onDelete`), and the EmptyState edge when the CURRENT filter matches nothing. Icon note (live-map-probed): lucide 1.72.0 has NO "Trash2"/"Filter" keys — the manager renders "Trash"/"Funnel" (the AudioLines/Music precedent):
+
+```tsx
+import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react";
+
+<TimelineManager
+  items={items}
+  onAdd={(item) => setItems((cur) => [...cur, { ...item, id: nextId() }])}
+  onToggleSettled={(id) => toggle(id)}
+  onDelete={(id) => remove(id)}
+  onInspect={(item) => modal.open(item)}
+  label="Milestone manager"
+/>
+```
+
+### The Local Persistence & JSON Snapshot Pattern (2.7.0)
+
+The Excalidraw/tldraw pattern: user state mirrors into localStorage so a reload restores the work, and exports/imports as JSON so it can travel. ONE zero-dependency hook — lazy init parses inside try/catch (corrupt → fallback), the setter stringifies inside try/catch (quota/private-mode safe), `reset()` removes the key and restores the fallback:
+
+```ts
+import { usePersistentState } from "./persistence";
+
+const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>("sig.v27.graph", SEED_GRAPH);
+const [timeline, setTimeline, resetTimeline] = usePersistentState<TimelineItem[]>("sig.v27.timeline", SEED_TIMELINE);
+```
+
+THE STORAGE-KEY CONTRACT: keys are versioned with the release that introduced the shape — `sig.v27.*`. When a stored SHAPE breaks, bump the prefix (`sig.v28.*`) and migrate by reading the old key once; never store new shapes under an old prefix. The portability hatch — export the whole workspace as one pretty JSON blob, import it back behind shape checks:
+
+```ts
+function exportSnapshot(graph: GraphNode[], timeline: TimelineItem[]): void {
+  const payload = { version: "sig.v27", graph, timeline };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "signature-snapshot.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+function importSnapshot(text: string): boolean {
+  const data = JSON.parse(text);
+  const ok = Array.isArray(data.graph) && Array.isArray(data.timeline);
+  if (ok) { setGraph(data.graph); setTimeline(data.timeline); }
+  return ok;
+}
+
+function resetAll(): void { resetGraph(); resetTimeline(); }
 ```
 
 The three doctrines, one line each: **Token Cascade** — every state derives from the core tokens via color-mix()/transforms, never hand-authored; **Override Protocol** — scoped utility classes alter one element, the global variables never move; **Rule of Engagement** — `--party-*` is content-only, Flamingo/Teal is structural-only, the families never cross. Never invent tokens; never hardcode hex.

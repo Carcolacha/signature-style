@@ -21,6 +21,13 @@
  * (the dot indicators) and .ptp-chronicle__item (the release chronicle)
  * — and the server version moves to 2.6.0.
  *
+ * 2.7.0: the sweep grows the Graphs & Planner contract — .ptp-graph__node
+ * (the knowledge-graph nodes), .ptp-bars__bar (the analytical bar ink)
+ * and .ptp-tmanager__count (the milestone counter) — and the server
+ * version moves to 2.7.0. (The owner spec wrote ".ptp-bars__" as a
+ * PREFIX; the concrete `.ptp-bars__bar` class is what querySelector can
+ * actually sweep — the documented specialization.)
+ *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
  * Signature Style dashboard. Two tools:
  *
@@ -77,6 +84,9 @@ const DEFAULT_SELECTORS: readonly string[] = [
   ".ptp-callout",
   ".ptp-carousel__dot",
   ".ptp-chronicle__item",
+  ".ptp-graph__node",
+  ".ptp-bars__bar",
+  ".ptp-tmanager__count",
 ];
 
 /** Settle time after networkidle, letting entry animations finish. */
@@ -217,7 +227,7 @@ async function persistPng(
 }
 
 /** The shared McpServer instance advertising the visual cortex tools. */
-const server = new McpServer({ name: "visual-cortex", version: "2.6.0" });
+const server = new McpServer({ name: "visual-cortex", version: "2.7.0" });
 
 server.registerTool(
   "inspect_layout",
