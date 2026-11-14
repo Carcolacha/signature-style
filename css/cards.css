@@ -44,6 +44,28 @@
       12px accent-ringed nodes parked over it, mono accent tags. The
       "Night of Versions" memorial, official.
 
+   2.9.0 CONTAINER REFLOWS — true portability via CSS container queries.
+   The authoring pattern (documented for every future card): the BASE
+   rule keeps the component's historical layout (so consumers without a
+   container ancestor keep today's rendering — zero regression), and
+   @container queries REFINES it only when an outer wrapper opts in.
+   The wrapper is the playground's `.sig-cell { container-type:
+   inline-size; }` class — containment NEVER goes on the queried
+   element itself (circular sizing). Reflow table:
+     - .ptp-matchup        @container (max-width: 380px)  → sides stack
+                           vertically (1fr), the VS pill becomes a
+                           horizontal hairline divider; ≥ 380px → the
+                           historical 1fr auto 1fr side-by-side (base).
+     - .sig-content-card   @container (min-width: 440px)  → media-object:
+                           the 16/9 visual docks beside the text
+                           (grid, 40% / 1fr), roomier 24px padding;
+                           below → the historical vertical stack (base).
+     - .sig-profile-card   @container (min-width: 440px)  → the avatar
+                           docks beside name/role; stats + skills span
+                           the full width; below → vertical stack (base).
+   Media queries are NOT used here — the card answers its CONTAINER,
+   not the viewport (two cards in one row can reflow differently).
+
    DOCTRINE: cards are structure — separation is hairlines, NEVER
    shadows (the e1 scope: ZERO box-shadow in this file, featured tier
    included — its shadow is the shared [data-elevation] ladder in
@@ -259,6 +281,33 @@
     color: var(--text-muted);
   }
 
+  /* 2.9.0 CONTAINER REFLOW — narrow cells (< 380px) stack the sides
+     vertically and turn the VS pill into a horizontal divider (a flex
+     row of hairlines around the mono text). No container ancestor →
+     the query never matches → the historical side-by-side grid above
+     keeps rendering (zero regression for non-container consumers). */
+  @container (max-width: 380px) {
+    .ptp-matchup {
+      grid-template-columns: 1fr;
+      gap: var(--space-tight);
+    }
+    .ptp-matchup__vs {
+      justify-self: stretch;
+      display: flex;
+      align-items: center;
+      gap: var(--space-tight);
+      background: transparent;
+      padding: 0;
+    }
+    .ptp-matchup__vs::before,
+    .ptp-matchup__vs::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: color-mix(in srgb, var(--text-muted) 20%, transparent);
+    }
+  }
+
   /* -- ContentCard (2.6.0) ----------------------------------------------------- */
   .sig-content-card {
     display: flex;
@@ -321,6 +370,34 @@
   .sig-content-card__footer {
     margin-top: auto;
     padding-top: var(--space-tight);
+  }
+
+  /* 2.9.0 CONTAINER REFLOW — roomy cells (≥ 440px) grow the media-object:
+     the 16/9 visual docks in a 40% left column, meta/title/desc/footer
+     stack in the right column, padding steps up 16 → 24px. Narrow cells
+     (and container-less consumers) keep the historical vertical stack. */
+  @container (min-width: 440px) {
+    .sig-content-card {
+      display: grid;
+      grid-template-columns: minmax(0, 40%) minmax(0, 1fr);
+      column-gap: var(--space-standard);
+      row-gap: var(--space-tight);
+      align-items: start;
+      padding: calc(var(--space-standard) + var(--space-tight));
+    }
+    .sig-content-card__visual {
+      grid-column: 1;
+      grid-row: 1 / span 4;
+    }
+    .sig-content-card__meta,
+    .sig-content-card__title,
+    .sig-content-card__desc,
+    .sig-content-card__footer {
+      grid-column: 2;
+    }
+    .sig-content-card__meta {
+      margin-top: 0;
+    }
   }
 
   /* -- ReferenceCard (2.6.0) ---------------------------------------------------- */
@@ -537,6 +614,31 @@
     flex-wrap: wrap;
     gap: var(--space-tight);
     margin-top: var(--space-tight);
+  }
+
+  /* 2.9.0 CONTAINER REFLOW — roomy cells (≥ 440px) grow the media-object:
+     the avatar docks beside the name/role block, stats + skills span the
+     full width below. Narrow cells (and container-less consumers) keep
+     the historical vertical stack. */
+  @container (min-width: 440px) {
+    .sig-profile-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      column-gap: var(--space-standard);
+      align-items: center;
+    }
+    .sig-profile-card > .ptp-avatar {
+      grid-column: 1;
+      grid-row: 1 / span 3;
+    }
+    .sig-profile-card__id {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .sig-profile-card__stats,
+    .sig-profile-card__skills {
+      grid-column: 1 / -1;
+    }
   }
 
   /* -- ChronicleTimeline (2.6.0) — the Night of Versions memorial ------------- */

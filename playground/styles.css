@@ -44,6 +44,19 @@
  * probe-verified — unchanged, composed on the hub__card--timeline
  * modifier that now rides <SurfaceCard className>), the metric rows,
  * the gateway buttons, the 900px index column.
+ *
+ * 2.9.0 — THE CONTAINER CELL + POWER-USER CHROME. `.sig-cell` is the
+ * playground's container-query wrapper: `container-type: inline-size`
+ * on OUTER cells only (bento cells, index/profile rows, the form
+ * matrix row, the studio preview stages — NEVER the queried element,
+ * that would be circular sizing). The package css answers these
+ * containers (cards.css matchup/content/profile, viz.css stat-card,
+ * forms.css radio rows); the composition layer adds its own
+ * @container collapse for the form matrix. Plus: the `[data-motion=
+ * "reduced"]` PREVIEW override (the command palette's preview toggle —
+ * distinct from the user's OS setting), the hub__topbar (breadcrumbs +
+ * the ⌘K trigger), and the hidden cq-probe fixture (the container-
+ * query proof stage: the SAME cards at 280px and 900px).
  */
 
 /* ---- THE SHELL (2.5.0, defect #1; 2.6.0 WIDENED) --------------------------
@@ -840,6 +853,162 @@
     flex-direction: row;
     flex-wrap: wrap;
   }
+}
+
+/* ---- 2.9.0 THE CONTAINER CELL ----------------------------------------------
+   The portability primitive: `container-type: inline-size` on OUTER
+   wrappers only — bento cells (.sig-span-*), the index/profile row
+   cells, the form-matrix row, the studio preview stages. Containment
+   never lands on the queried element (a container cannot measure
+   itself); the package css (cards/viz/forms, 2.9.0 blocks) answers
+   these containers with @container reflows. Applied in App.tsx /
+   PatternFrame.tsx as a plain class on existing or minimal wrappers. */
+.sig-cell {
+  container-type: inline-size;
+}
+
+/* The form-matrix row: the playground's own multi-column FormField row
+   answers its container — below 480px the 2-3 column row stacks. (The
+   package's radio rows collapse via css/forms.css's own block.) */
+@container (max-width: 480px) {
+  .hub__form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- 2.9.0 REDUCED-MOTION PREVIEW OVERRIDE (the command palette) ---------
+   A PREVIEW switch, not an accessibility state: the palette's "Toggle
+   Reduced Motion Preview" sets data-motion="reduced" on
+   documentElement and every transition/animation collapses to the
+   no-preference floor — letting the owner FEEL the reduced-motion
+   experience without touching their OS setting. The user's real
+   prefers-reduced-motion guards (every package file + the base layer)
+   stay untouched and keep winning where they already apply. */
+[data-motion="reduced"] * {
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
+}
+
+/* ---- 2.9.0 THE HUB TOPBAR (breadcrumbs + the ⌘K trigger) ------------------
+   One playground-local bar between the GlobalNav and the hero: the
+   Shed-style mono breadcrumb path on the left, the command-palette
+   trigger on the right. Flat: hairline only (e1), zero hex (b4). */
+.hub__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+  padding-bottom: var(--space-standard);
+  margin-bottom: var(--space-standard);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+}
+
+.hub__cmdbar-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-tight) var(--space-standard);
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+  transition: var(--transition-standard);
+}
+
+.hub__cmdbar-trigger:hover {
+  color: var(--text-main);
+  border-color: var(--color-cake-secondary);
+}
+
+.hub__cmdbar-trigger:active {
+  transform: scale(0.97);
+}
+
+.hub__cmdbar-trigger:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub__cmdbar-trigger {
+    transition: none;
+  }
+}
+
+/* ---- 2.9.0 THE CQ-PROBE FIXTURE (the container-query proof stage) --------
+   Hidden from users (off-screen, aria-hidden in App.tsx) but LAID OUT:
+   the same MatchupCard / StatCard / ContentCard rendered inside a
+   280px .sig-cell and a 900px .sig-cell, so the release probe can
+   assert the computed layouts genuinely differ (container queries at
+   work). display:none would kill the container sizing — off-screen
+   positioning keeps the boxes real. */
+.hub__cq-probe {
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  display: flex;
+  gap: var(--space-section);
+}
+
+.hub__cq-narrow {
+  width: 280px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+.hub__cq-wide {
+  width: 900px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+/* ---- 2.9.0 THE KEYBOARD-SHORTCUTS DIALOG ----------------------------------
+   The palette's "Open Keyboard Shortcuts" dialog card: the modal
+   anatomy's conventions (fixed + over-constrained centering, surface,
+   hairline, radius, the modal z-rung) reused at a compact width.
+   FLAT — zero shadows (e1). The close button is the package's own
+   .ptp-modal-close (reused, not reimplemented). */
+.hub__shortcuts-card {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(26rem, calc(100% - var(--space-section) * 2));
+  height: fit-content;
+  padding: var(--space-section);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  z-index: var(--z-modal, 50);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+.hub__shortcuts-card h2 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.hub__shortcuts-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-standard);
+}
+
+.hub__shortcuts-row span {
+  font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
 /* ---- 2.8.0 THE AI CODEX (tokens, rules, ladder) ---------------------------

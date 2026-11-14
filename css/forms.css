@@ -116,6 +116,14 @@
 
    COLOR DOCTRINE: zero hex, zero box-shadow. Focus rings are the
    doctrine ring (2px solid --color-cake-primary, offset 2px).
+
+   2.9.0 CONTAINER REFLOW — FormField multi-column rows answer their
+   CONTAINER, not the viewport: inside an inline-size container (the
+   playground's `.sig-cell` wrapper) narrower than 480px, the radio
+   card grid (the package's own multi-column field row) collapses to a
+   1fr stack; wider containers keep the auto-fit packing. Container
+   queries, never media queries — a field beside a wide sibling keeps
+   its row while a narrow one stacks.
    ========================================================================== */
 
 @layer cascade {
@@ -486,6 +494,14 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: var(--space-tight);
+  }
+  /* 2.9.0 CONTAINER REFLOW — narrow containers (< 480px) stack the card
+     row to a single column. No container ancestor → the query never
+     matches → auto-fit packing keeps rendering (zero regression). */
+  @container (max-width: 480px) {
+    .ptp-radio-cards {
+      grid-template-columns: 1fr;
+    }
   }
   .ptp-radio-card {
     position: relative;

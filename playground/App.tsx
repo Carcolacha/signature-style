@@ -675,6 +675,57 @@ function Shell() {
           <CodexView />
         )}
       </div>
+      {/* 2.9.0 — THE CONTAINER-QUERY PROOF FIXTURE (the release blocker's
+          stage, off-screen but LAID OUT). The SAME MatchupCard, StatCard
+          and ContentCard render inside a 280px .sig-cell and a 900px
+          .sig-cell; the release probe asserts the computed layouts
+          genuinely differ (matchup grid-template-columns, stat-card
+          display, content-card column count). aria-hidden: it is a
+          measuring instrument, not content. */}
+      <div className="hub__cq-probe" aria-hidden="true" data-testid="cq-probe">
+        <div className="hub__cq-narrow sig-cell">
+          <MatchupCard
+            left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
+            right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+          />
+          <StatCard
+            label="Confirmed Guests"
+            value="170"
+            sparklineData={[118, 126, 132, 141, 158, 170]}
+            colorToken="--party-sky"
+          />
+          <ContentCard
+            category="Catering"
+            categoryToken="--party-peach"
+            meta={["25 MIN", "SPICY", "$14"]}
+            accentToken="--party-yellow"
+            title="Birria & Street Taco Catering"
+            description="Slow-braised birria, consomé on the side."
+            action={{ label: "Book the taco cart" }}
+          />
+        </div>
+        <div className="hub__cq-wide sig-cell">
+          <MatchupCard
+            left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
+            right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+          />
+          <StatCard
+            label="Confirmed Guests"
+            value="170"
+            sparklineData={[118, 126, 132, 141, 158, 170]}
+            colorToken="--party-sky"
+          />
+          <ContentCard
+            category="Catering"
+            categoryToken="--party-peach"
+            meta={["25 MIN", "SPICY", "$14"]}
+            accentToken="--party-yellow"
+            title="Birria & Street Taco Catering"
+            description="Slow-braised birria, consomé on the side."
+            action={{ label: "Book the taco cart" }}
+          />
+        </div>
+      </div>
     </>
   );
 }
@@ -809,8 +860,10 @@ function BentoCore({
       )}
 
       {/* span 4 ×3 — the KPI trio (the middle cell carries the trio's
-          cortex hook; its value is LIVE) */}
-      <div className="sig-span-4">
+          cortex hook; its value is LIVE). 2.9.0: every bento cell is a
+          .sig-cell container — the StatCards dock their sparklines
+          beside the metrics when the cell is ≥ 360px wide. */}
+      <div className="sig-span-4 sig-cell">
         <StatCard
           label="Total Budget"
           value={`$${TOTAL_BUDGET.toLocaleString("en-US")}`}
@@ -820,7 +873,7 @@ function BentoCore({
           colorToken="--party-green"
         />
       </div>
-      <div className="sig-span-4" data-testid="kpi-trio">
+      <div className="sig-span-4 sig-cell" data-testid="kpi-trio">
         <StatCard
           label="Confirmed Guests"
           value={String(derived.confirmedCount)}
@@ -829,7 +882,7 @@ function BentoCore({
           colorToken="--party-sky"
         />
       </div>
-      <div className="sig-span-4">
+      <div className="sig-span-4 sig-cell">
         <StatCard
           label="Active Game Rooms"
           value="6"
@@ -846,7 +899,7 @@ function BentoCore({
         meta="components/forms.tsx"
         title="Quick Guest Check-In"
         interactive
-        className="sig-span-5"
+        className="sig-span-5 sig-cell"
       >
         <CheckInForm onCheckIn={onCheckIn} />
       </SurfaceCard>
@@ -875,7 +928,7 @@ function BentoCore({
         meta="components/viz.tsx"
         title="Budget & RSVP Telemetry"
         interactive
-        className="sig-span-3"
+        className="sig-span-3 sig-cell"
       >
         <div className="hub__metric" data-testid="metric-guests">
           <span className="hub__metric-label">Guests confirmed</span>
@@ -926,7 +979,7 @@ function BentoCore({
         meta="components/cards.tsx"
         title="Interactive Deck & Rules"
         interactive
-        className="sig-span-5"
+        className="sig-span-5 sig-cell"
       >
         <FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />
         <AccordionCard title="House Rules">
@@ -970,7 +1023,7 @@ function BentoCore({
         meta="components/primitives.tsx"
         title="The Party Palette"
         interactive
-        className="sig-span-3"
+        className="sig-span-3 sig-cell"
       >
         <div className="hub__palette">
           {PALETTE.map(({ token, label }) => (
@@ -985,7 +1038,7 @@ function BentoCore({
         meta="components/data.tsx"
         title="Guest & Budget Ledger"
         interactive
-        className="sig-span-7"
+        className="sig-span-7 sig-cell"
       >
         <div data-testid="ledger-table">
           <DataTable
@@ -1005,7 +1058,7 @@ function BentoCore({
         meta="components/cards.tsx"
         title="1v1 Game Matchup & Editorial"
         interactive
-        className="sig-span-5"
+        className="sig-span-5 sig-cell"
       >
         <MatchupCard
           left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
@@ -1488,39 +1541,48 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
         </div>
       )}
 
+      {/* 2.9.0: the commerce trio rides .sig-cell containers — the
+          ContentCard grows its media-object layout when its cell is
+          ≥ 440px wide (per-card, not per-viewport). */}
       {showCatalog && (
         <div className="hub__row--3" data-testid="index-catalog">
-          <ContentCard
-            category="Catering"
-            categoryToken="--party-peach"
-            meta={["25 MIN", "SPICY", "$14"]}
-            accentToken="--party-yellow"
-            title="Birria & Street Taco Catering"
-            description="Slow-braised birria, consomé on the side, the salsa roja that silences the table. The taco cart parks at your gate and feeds the line until the last guest waves the white flag."
-            action={{ label: "Book the taco cart" }}
-          />
-          <ReferenceCard
-            tag="JSX"
-            title="The Signature Surface"
-            accentToken="--party-sky"
-            code={SURFACE_SNIPPET}
-            link="#/index"
-            onCopied={() => toast("success", "Snippet copied — paste it anywhere.")}
-          />
-          <TierCard
-            name="Arena Pass"
-            price="$49"
-            featured
-            accentToken="--party-mauve-soft"
-            features={[
-              "All 40 game modules",
-              "1v1 & 2v2 brackets",
-              "Spectator betting pot",
-              "Priority seating",
-            ]}
-            cta="Claim the pass"
-            onCta={() => toast("success", "The Arena Pass is on the roadmap.")}
-          />
+          <div className="sig-cell">
+            <ContentCard
+              category="Catering"
+              categoryToken="--party-peach"
+              meta={["25 MIN", "SPICY", "$14"]}
+              accentToken="--party-yellow"
+              title="Birria & Street Taco Catering"
+              description="Slow-braised birria, consomé on the side, the salsa roja that silences the table. The taco cart parks at your gate and feeds the line until the last guest waves the white flag."
+              action={{ label: "Book the taco cart" }}
+            />
+          </div>
+          <div className="sig-cell">
+            <ReferenceCard
+              tag="JSX"
+              title="The Signature Surface"
+              accentToken="--party-sky"
+              code={SURFACE_SNIPPET}
+              link="#/index"
+              onCopied={() => toast("success", "Snippet copied — paste it anywhere.")}
+            />
+          </div>
+          <div className="sig-cell">
+            <TierCard
+              name="Arena Pass"
+              price="$49"
+              featured
+              accentToken="--party-mauve-soft"
+              features={[
+                "All 40 game modules",
+                "1v1 & 2v2 brackets",
+                "Spectator betting pot",
+                "Priority seating",
+              ]}
+              cta="Claim the pass"
+              onCta={() => toast("success", "The Arena Pass is on the roadmap.")}
+            />
+          </div>
         </div>
       )}
 
@@ -1568,38 +1630,48 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
         </div>
       )}
 
-            {showProfiles && (
+            {/* 2.9.0: the profile row rides .sig-cell containers — ProfileCard
+          and MatchupCard reflow per cell (media-object / stacked VS). */}
+      {showProfiles && (
         <div className="hub__row--4" data-testid="index-profiles">
-          <ProfileCard
-            name="Ana Souza"
-            role="Head of Catering"
-            accentToken="--party-peach"
-            stats={[
-              { label: "Events", value: "24" },
-              { label: "Guests", value: "412" },
-              { label: "Rating", value: "4.9" },
-            ]}
-            skills={[
-              { colorToken: "--party-peach", label: "Catering" },
-              { colorToken: "--party-green", label: "Logistics" },
-            ]}
-          />
-          <FlipCard front="Dare: karaoke the chorus" back="…or forfeit 10 points" />
-          <AccordionCard title="House Rules">
-            <p>
-              Best of one decides every matchup; ties resolve to
-              rock-paper-scissors and the loser of THAT brings ice.
-            </p>
-            <p>
-              No take-backs after the ring sounds — the bracket is a
-              promise everyone accepts.
-            </p>
-          </AccordionCard>
-          <MatchupCard
-            left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
-            right={{ name: "Leo Martins", ringToken: "--party-sky" }}
-            stakes="Winner picks the venue — loser brings ice."
-          />
+          <div className="sig-cell">
+            <ProfileCard
+              name="Ana Souza"
+              role="Head of Catering"
+              accentToken="--party-peach"
+              stats={[
+                { label: "Events", value: "24" },
+                { label: "Guests", value: "412" },
+                { label: "Rating", value: "4.9" },
+              ]}
+              skills={[
+                { colorToken: "--party-peach", label: "Catering" },
+                { colorToken: "--party-green", label: "Logistics" },
+              ]}
+            />
+          </div>
+          <div className="sig-cell">
+            <FlipCard front="Dare: karaoke the chorus" back="…or forfeit 10 points" />
+          </div>
+          <div className="sig-cell">
+            <AccordionCard title="House Rules">
+              <p>
+                Best of one decides every matchup; ties resolve to
+                rock-paper-scissors and the loser of THAT brings ice.
+              </p>
+              <p>
+                No take-backs after the ring sounds — the bracket is a
+                promise everyone accepts.
+              </p>
+            </AccordionCard>
+          </div>
+          <div className="sig-cell">
+            <MatchupCard
+              left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
+              right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+              stakes="Winner picks the venue — loser brings ice."
+            />
+          </div>
         </div>
       )}
 
@@ -1706,31 +1778,39 @@ function DataModule() {
           </span>
         </AnnouncementBanner>
       )}
+      {/* 2.9.0: each KPI rides its own .sig-cell container — three cards
+          in one row can answer three different cell widths. */}
       <div className="hub__kpis" data-testid="kpi-trio">
-        <StatCard
-          label="Total Budget"
-          value="$2,000"
-          delta="+$440"
-          deltaDirection="up"
-          sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
-          colorToken="--party-green"
-        />
-        <StatCard
-          label="Confirmed Guests"
-          value="170"
-          delta="+12"
-          deltaDirection="up"
-          sparklineData={[118, 126, 132, 141, 158, 170]}
-          colorToken="--party-sky"
-        />
-        <StatCard
-          label="Active Game Rooms"
-          value="6"
-          delta="+2"
-          deltaDirection="up"
-          sparklineData={[2, 3, 3, 4, 4, 6]}
-          colorToken="--party-mauve-soft"
-        />
+        <div className="sig-cell">
+          <StatCard
+            label="Total Budget"
+            value="$2,000"
+            delta="+$440"
+            deltaDirection="up"
+            sparklineData={[1200, 1450, 1380, 1600, 1780, 2000]}
+            colorToken="--party-green"
+          />
+        </div>
+        <div className="sig-cell">
+          <StatCard
+            label="Confirmed Guests"
+            value="170"
+            delta="+12"
+            deltaDirection="up"
+            sparklineData={[118, 126, 132, 141, 158, 170]}
+            colorToken="--party-sky"
+          />
+        </div>
+        <div className="sig-cell">
+          <StatCard
+            label="Active Game Rooms"
+            value="6"
+            delta="+2"
+            deltaDirection="up"
+            sparklineData={[2, 3, 3, 4, 4, 6]}
+            colorToken="--party-mauve-soft"
+          />
+        </div>
       </div>
       <SurfaceCard
         eyebrow="Data"
@@ -1842,62 +1922,67 @@ function FormsModule() {
       title="The Input Matrix"
       interactive
     >
-      <div className="hub__form-grid">
-        <FormField
-          label="Name"
-          htmlFor="matrix-name"
-          hint="As it appears on the invite"
-        >
-          <Input
-            id="matrix-name"
-            placeholder="Guest name"
-            value={guestName}
-            onChange={(event) => setGuestName(event.target.value)}
-          />
-        </FormField>
-        {/* 2.4.1: label="Contribution" + prefix="$" — the adornment
-            composition demo (the dollar sign moved OUT of the label and
-            INTO the mono chip, flush with the cursor in the well).
-            2.5.0: the field rides the well — the Input is bare, the
-            well owns the border. 2.6.0 audit: the field no longer BOOTS
-            in the error state — empty stays pristine-quiet, valid values
-            earn the validMessage, only non-empty invalid input shakes. */}
-        <FormField
-          label="Contribution"
-          htmlFor="matrix-share"
-          prefix="$"
-          description="Numbers only · e.g., 120"
-          validMessage={contributionValid ? "Valid amount" : undefined}
-          error={contributionError}
-        >
-          <Input
-            id="matrix-share"
-            placeholder="120"
-            inputMode="numeric"
-            aria-invalid={!!contributionError || undefined}
-            value={contribution}
-            onChange={(event) => setContribution(event.target.value)}
-          />
-        </FormField>
-        {/* 2.5.0: the Postal Code demo — description ABOVE the input
-            (format rules live with the title), live validation with the
-            validMessage/error priority in the bottom slot. */}
-        <FormField
-          label="Postal Code"
-          htmlFor="matrix-postal"
-          description="5 numbers only · e.g., 79901"
-          validMessage={postalValid ? "Valid ZIP" : undefined}
-          error={postalError}
-        >
-          <Input
-            id="matrix-postal"
-            placeholder="79901"
-            inputMode="numeric"
-            aria-invalid={!!postalError || undefined}
-            value={postal}
-            onChange={(event) => setPostal(event.target.value)}
-          />
-        </FormField>
+      {/* 2.9.0: the multi-column row is ONE .sig-cell container — the
+          @container (max-width: 480px) collapse in styles.css stacks the
+          2-3 column row when the row's own width runs out. */}
+      <div className="sig-cell">
+        <div className="hub__form-grid">
+          <FormField
+            label="Name"
+            htmlFor="matrix-name"
+            hint="As it appears on the invite"
+          >
+            <Input
+              id="matrix-name"
+              placeholder="Guest name"
+              value={guestName}
+              onChange={(event) => setGuestName(event.target.value)}
+            />
+          </FormField>
+          {/* 2.4.1: label="Contribution" + prefix="$" — the adornment
+              composition demo (the dollar sign moved OUT of the label and
+              INTO the mono chip, flush with the cursor in the well).
+              2.5.0: the field rides the well — the Input is bare, the
+              well owns the border. 2.6.0 audit: the field no longer BOOTS
+              in the error state — empty stays pristine-quiet, valid values
+              earn the validMessage, only non-empty invalid input shakes. */}
+          <FormField
+            label="Contribution"
+            htmlFor="matrix-share"
+            prefix="$"
+            description="Numbers only · e.g., 120"
+            validMessage={contributionValid ? "Valid amount" : undefined}
+            error={contributionError}
+          >
+            <Input
+              id="matrix-share"
+              placeholder="120"
+              inputMode="numeric"
+              aria-invalid={!!contributionError || undefined}
+              value={contribution}
+              onChange={(event) => setContribution(event.target.value)}
+            />
+          </FormField>
+          {/* 2.5.0: the Postal Code demo — description ABOVE the input
+              (format rules live with the title), live validation with the
+              validMessage/error priority in the bottom slot. */}
+          <FormField
+            label="Postal Code"
+            htmlFor="matrix-postal"
+            description="5 numbers only · e.g., 79901"
+            validMessage={postalValid ? "Valid ZIP" : undefined}
+            error={postalError}
+          >
+            <Input
+              id="matrix-postal"
+              placeholder="79901"
+              inputMode="numeric"
+              aria-invalid={!!postalError || undefined}
+              value={postal}
+              onChange={(event) => setPostal(event.target.value)}
+            />
+          </FormField>
+        </div>
       </div>
       <TextArea placeholder="Notes for the host…" rows={3} aria-label="Notes" />
       <Select

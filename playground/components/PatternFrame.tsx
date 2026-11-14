@@ -147,7 +147,10 @@ export function PatternFrame({
         </div>
       </header>
       <div className="pattern-frame__body">
-        {tab === "preview" && <div className="pattern-frame__preview">{children}</div>}
+        {/* 2.9.0: the preview stage is a .sig-cell container — every live
+            preview answers its own stage width (container queries, not
+            media queries). */}
+        {tab === "preview" && <div className="pattern-frame__preview sig-cell">{children}</div>}
         {tab === "jsx" && (
           <pre className="pattern-frame__code">
             <code>{snippet.jsx}</code>

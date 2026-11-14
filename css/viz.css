@@ -41,6 +41,14 @@
    on the fill. `prefers-reduced-motion` turns it off outright — motion
    is a gift, not a requirement.
 
+   2.9.0 CONTAINER REFLOW — `.ptp-stat-card` inside an inline-size
+   container (the playground's `.sig-cell` wrapper) at ≥ 360px docks
+   the sparkline BESIDE the metric (grid: metric column + 96px trend
+   column, the value type scales 1.5 → 1.75rem); narrower containers —
+   and container-less consumers — keep the historical stacked column.
+   Container queries, never media queries: two stat cards in one row
+   can answer their own cells.
+
    COLOR DOCTRINE: zero hex, zero box-shadow.
    ========================================================================== */
 
@@ -121,6 +129,37 @@
 }
 .ptp-stat-card__delta--down {
   color: var(--party-peach);
+}
+
+/* 2.9.0 CONTAINER REFLOW — the docked trend. ≥ 360px containers grow a
+   two-column grid: label/value/delta stay the metric column, the
+   sparkline svg (the card's only svg child) docks right, centered,
+   capped at 96px; the KPI value scales one step (1.5 → 1.75rem, both
+   8px-grid friendly). The sparkline's preserveAspectRatio="none"
+   stretch fills the docked box. */
+@container (min-width: 360px) {
+  .ptp-stat-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-standard);
+    align-items: center;
+  }
+  .ptp-stat-card > svg {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    width: 96px;
+    align-self: center;
+  }
+  .ptp-stat-card__label {
+    grid-column: 1;
+  }
+  .ptp-stat-card__value {
+    grid-column: 1;
+    font-size: 1.75rem;
+  }
+  .ptp-stat-card__delta {
+    grid-column: 1;
+  }
 }
 
 /* ==========================================================================

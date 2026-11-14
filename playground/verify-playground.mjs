@@ -1124,72 +1124,117 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.7.0 ------------------------
-// 2.8.0 REBASE (the floor moves v2.6.0 → v2.7.0; css/ react/ took ZERO deltas
-// this release). The owner-authorized 2.8.0 deltas, and NOTHING else:
-//   playground/**                    — the Signature Pattern Website (NOT a
-//                                      locked path — the composition layer)
-//   README.md + package.json + package-lock.json — release plumbing
-//   tokens.json                      — META-ONLY (meta.version → 2.8.0),
-//                                      guarded by a deep-equal check that
-//                                      neutralizes meta.version: themes,
-//                                      shared, partyPalette and doctrine must
-//                                      stay byte-equal after JSON round-trip.
-// css/, react/, SYSTEM_PROMPT.md, demo/, scripts/ are LOCKED and EMPTY-diffed
-// against v2.7.0. scripts/verify.mjs stays BYTE-FROZEN.
-const B7_LOCKED_280 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
-let safetyDiff = "";
+// ---- (b7) SAFETY PROOF: core deltas vs v2.8.0 are owner-authorized ----------
+// 2.9.0 REBASE (the floor moves v2.7.0 → v2.8.0): this release EVOLVES the
+// package on purpose (container queries + power-user primitives). The
+// owner-authorized 2.9.0 deltas, and NOTHING else:
+//   css/cards.css            — 2.9.0 CONTAINER REFLOWS (matchup stack,
+//                              content/profile media-object blocks + header)
+//   css/viz.css              — 2.9.0 CONTAINER REFLOWS (stat-card dock block)
+//   css/forms.css            — 2.9.0 CONTAINER REFLOWS (radio-row collapse)
+//   css/nav.css              — 2.9.0 Breadcrumbs anatomy (Phase 2)
+//   css/command.css          — NEW (2.9.0 CommandPalette — Phase 2, FLAT)
+//   css/skeleton.css         — NEW (2.9.0 skeletons — Phase 2, FLAT)
+//   css/signature-style.css  — the layered imports for the two new files
+//   react/nav.{tsx,js,d.ts}  — Breadcrumbs (Phase 2)
+//   react/command.{tsx,js,d.ts}   — NEW (Phase 2)
+//   react/skeleton.{tsx,js,d.ts}  — NEW (Phase 2)
+//   react/index.{ts,js,d.ts} — umbrella re-exports (Phase 2)
+//   SYSTEM_PROMPT.md         — the v3.2 codex + the self-audit log (Phase 5)
+//   tokens.json              — META-ONLY (meta.version → 2.9.0), deep-equal
+//                              guarded below.
+// demo/ and scripts/ are LOCKED (zero deltas). scripts/verify.mjs stays
+// BYTE-FROZEN. tools/ is LOCKED via (n-hub4).
+const B7_LOCKED_290 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
+const AUTHORIZED_290 = new Set([
+  "css/cards.css",
+  "css/viz.css",
+  "css/forms.css",
+  "css/nav.css",
+  "css/command.css",
+  "css/skeleton.css",
+  "css/signature-style.css",
+  "react/nav.tsx",
+  "react/nav.js",
+  "react/nav.d.ts",
+  "react/command.tsx",
+  "react/command.js",
+  "react/command.d.ts",
+  "react/skeleton.tsx",
+  "react/skeleton.js",
+  "react/skeleton.d.ts",
+  "react/index.ts",
+  "react/index.js",
+  "react/index.d.ts",
+  "SYSTEM_PROMPT.md",
+  "tokens.json",
+]);
+let b7Changed = [];
 try {
-  safetyDiff = execFileSync(
+  b7Changed = execFileSync(
     "git",
-    ["diff", "v2.7.0", "--", ...B7_LOCKED_280],
+    ["diff", "v2.8.0", "--name-only", "--", ...B7_LOCKED_290],
     { cwd: root, encoding: "utf8" },
-  );
+  )
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
-if (safetyDiff.trim() !== "") {
-  failures.push(
-    "(b7) SAFETY: core package files changed since v2.7.0 — css/, react/, SYSTEM_PROMPT.md, demo/ and scripts/ are LOCKED in 2.8.0 (the release grows the playground composition layer + manifests only)",
-  );
+for (const file of b7Changed) {
+  if (!AUTHORIZED_290.has(file)) {
+    failures.push(
+      `(b7) SAFETY: ${file} changed since v2.8.0 — outside the owner-authorized 2.9.0 delta set (css container-reflow blocks, the new command/skeleton files + bundle imports, react/nav Breadcrumbs, umbrella re-exports, SYSTEM_PROMPT.md, tokens.json meta-only)`,
+    );
+  }
+}
+if (b7Changed.includes("demo/") || b7Changed.some((f) => f.startsWith("demo/"))) {
+  failures.push("(b7) SAFETY: demo/ is LOCKED in 2.9.0");
+}
+if (b7Changed.some((f) => f.startsWith("scripts/"))) {
+  failures.push("(b7) SAFETY: scripts/ is LOCKED in 2.9.0 — scripts/verify.mjs stays byte-frozen");
 }
 
-// tokens.json META-ONLY guard: identical after neutralizing meta.version.
+// tokens.json META-ONLY guard (baseline v2.8.0): identical after
+// neutralizing meta.version.
 try {
-  const v270tokens = JSON.parse(execFileSync("git", ["show", "v2.7.0:tokens.json"], { cwd: root, encoding: "utf8" }));
+  const v280tokens = JSON.parse(execFileSync("git", ["show", "v2.8.0:tokens.json"], { cwd: root, encoding: "utf8" }));
   const currentTokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
   const neutralize = (manifest) => {
     const clone = structuredClone(manifest);
     delete clone.meta.version;
     return JSON.stringify(clone);
   };
-  if (neutralize(v270tokens) !== neutralize(currentTokens)) {
+  if (neutralize(v280tokens) !== neutralize(currentTokens)) {
     failures.push(
-      "(b7) SAFETY: tokens.json changed beyond meta.version — the 34-token whitelist, themes, shared tokens, the Party Palette and the doctrines are LOCKED in 2.8.0",
+      "(b7) SAFETY: tokens.json changed beyond meta.version — the 34-token whitelist, themes, shared tokens, the Party Palette and the doctrines are LOCKED in 2.9.0",
     );
   }
 } catch (error) {
   failures.push(`(b7) could not verify the tokens.json meta-only delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V2.8.0 FROZEN PROOF — v2.7.0 baseline, tools/ included ---------
-// tools/ takes ZERO deltas this release (server.ts untouched — the probes ride
-// custom selectors). tokens.json joins with the same meta-only authorization.
-const N_HUB4_LOCKED_280 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
-let v2SafetyDiff = "";
+// ---- (n-hub4) THE V2.9.0 FROZEN PROOF — v2.8.0 baseline, tools/ included ----
+// tools/ takes ZERO deltas this release (the probes ride the playground's
+// own playwright scripts + custom selectors; server.ts is untouched).
+const N_HUB4_LOCKED_290 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 try {
-  v2SafetyDiff = execFileSync(
+  const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.7.0", "--", ...N_HUB4_LOCKED_280],
+    ["diff", "v2.8.0", "--name-only", "--", ...N_HUB4_LOCKED_290],
     { cwd: root, encoding: "utf8" },
-  );
+  )
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line !== "" && !AUTHORIZED_290.has(line));
+  if (v2SafetyDiff.length > 0) {
+    failures.push(
+      `(n-hub4) SAFETY: files changed since v2.8.0 beyond the 2.9.0 authorization — ${v2SafetyDiff.join(", ")} (tools/, demo/ and scripts/ are LOCKED; css/react deltas must be in the authorized set)`,
+    );
+  }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
-}
-if (v2SafetyDiff.trim() !== "") {
-  failures.push(
-    "(n-hub4) SAFETY: files changed since v2.7.0 beyond the 2.8.0 authorization — css/, react/, demo/, scripts/ AND tools/ are LOCKED (tokens.json carries the meta-only delta, guarded above)",
-  );
+  failures.push(`(n-hub4) could not diff against v2.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists -----------------------------------------
@@ -3136,7 +3181,7 @@ for (const [needle, label] of [
   ["Keychron Q1 HE", "carousel mini-card 4 (Hardware)"],
   ["Ribbon of Shame", "carousel mini-card 5 (Party Games)"],
   ['data-testid="index-profiles"', "the 4-up profile row hook"],
-  ['name="Ana Souza"\n            role="Head of Catering"', "the ProfileCard person"],
+  ['name="Ana Souza"\n              role="Head of Catering"', "the ProfileCard person (2.9.0: rides a .sig-cell container)"],
   ['{ label: "Rating", value: "4.9" }', "the third stat"],
   ['data-testid="index-chronicle"', "the chronicle slab hook (wrapper div — the SurfaceCard slot stays flat-DOM)"],
   ['title="The Chronicle"', "the chronicle slab"],
@@ -3846,6 +3891,57 @@ if (!existsSync(llmsFullPath)) {
 }
 // public/ must NOT ship: the files array excludes playground/ wholesale (b2 pins
 // it); this gate documents the pack proof — 52 files, zero public/ entries.
+
+// ---- (cq1) THE CONTAINER-QUERY REFLOWS (2.9.0, Phase 1) ----------------------
+// The portability layer: playground/styles.css declares `.sig-cell`
+// (container-type: inline-size on OUTER cells only) and the package css
+// answers with @container reflows — cards.css (matchup stack < 380px;
+// content/profile media-object ≥ 440px), viz.css (stat-card dock ≥ 360px),
+// forms.css (radio-row collapse < 480px). The composition layer adds its
+// own form-matrix collapse + the [data-motion="reduced"] preview override.
+// Container queries, never media queries; zero new shadows anywhere (the
+// (e1) scan above keeps enforcing that on the new blocks).
+{
+  const cardsCss29 = readFileSync(resolve(root, "css/cards.css"), "utf8");
+  const vizCss29 = readFileSync(resolve(root, "css/viz.css"), "utf8");
+  const formsCss29 = readFileSync(resolve(root, "css/forms.css"), "utf8");
+  const stylesCss29 = stylesCss;
+  const CQ_REQUIREMENTS = [
+    [cardsCss29, "@container (max-width: 380px)", "css/cards.css: the matchup stacks below a 380px container"],
+    [cardsCss29, ".ptp-matchup__vs::before", "css/cards.css: the VS pill grows hairline dividers when stacked"],
+    [cardsCss29, "@container (min-width: 440px)", "css/cards.css: the content/profile media-object reflow at 440px"],
+    [cardsCss29, ".sig-content-card__visual {\n      grid-column: 1;", "css/cards.css: the 16/9 visual docks in the 40% column"],
+    [cardsCss29, ".sig-profile-card > .ptp-avatar {\n      grid-column: 1;", "css/cards.css: the avatar docks beside the name block"],
+    [vizCss29, "@container (min-width: 360px)", "css/viz.css: the stat-card dock at 360px"],
+    [vizCss29, ".ptp-stat-card > svg {\n    grid-column: 2;", "css/viz.css: the sparkline docks in column 2"],
+    [formsCss29, "@container (max-width: 480px)", "css/forms.css: the radio-card row collapses below 480px"],
+    [stylesCss29, ".sig-cell {\n  container-type: inline-size;\n}", "styles.css: the .sig-cell container wrapper (OUTER cells only)"],
+    [stylesCss29, "@container (max-width: 480px) {\n  .hub__form-grid {\n    grid-template-columns: 1fr;\n  }\n}", "styles.css: the form-matrix row stacks in narrow containers"],
+    [stylesCss29, '[data-motion="reduced"] * {', "styles.css: the reduced-motion PREVIEW override (the command palette's toggle)"],
+    [appSrc, '"sig-span-4 sig-cell"', "App.tsx: the bento KPI cells are containers"],
+    [appSrc, '"sig-span-5 sig-cell"', "App.tsx: the check-in/deck/games cells are containers"],
+    [readFileSync(resolve(root, "playground/components/PatternFrame.tsx"), "utf8"), 'className="pattern-frame__preview sig-cell"', "PatternFrame.tsx: the preview stage is a container"],
+    [appSrc, 'data-testid="cq-probe"', "App.tsx: the container-query proof fixture exists"],
+  ];
+  for (const [source, needle, label] of CQ_REQUIREMENTS) {
+    if (!source.includes(needle)) {
+      failures.push(`(cq1) must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // Containment NEVER lands on the queried element (circular sizing):
+  // the package css must not set container-type on .ptp-matchup,
+  // .ptp-stat-card, .sig-content-card or .sig-profile-card themselves.
+  for (const [source, queried] of [
+    [cardsCss29, ".ptp-matchup"],
+    [cardsCss29, ".sig-content-card"],
+    [cardsCss29, ".sig-profile-card"],
+    [vizCss29, ".ptp-stat-card"],
+  ]) {
+    if (new RegExp(`${queried.replace(/-/g, "\\-")}\\s*\\{[^}]*container-type:`, "s").test(source)) {
+      failures.push(`(cq1) container-type must NOT land on ${queried} itself (circular sizing) — containment goes on the OUTER .sig-cell only`);
+    }
+  }
+}
 
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
