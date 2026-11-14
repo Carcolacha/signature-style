@@ -242,7 +242,7 @@ When you ship React, prefer the official primitives in this package — `<Icon>`
 
 ## The 6-Set Taxonomy — every component, copy-paste
 
-Registry: 50 entries, one per value export of react/index.d.ts. Every snippet is compile-plausible documentation — one import, no invented props.
+Registry: 56 entries, one per value export of react/index.d.ts. Every snippet is compile-plausible documentation — one import, no invented props.
 
 ### Set 01 — Shell & Navigation
 
@@ -1939,6 +1939,153 @@ export declare function ToastProvider({ children }: {
  * ```
  */
 export declare function useToast(): ToastFn;
+```
+
+### Set 07 — Web Components (zero-react)
+
+The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @edwyn/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @edwyn/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.
+
+#### sig-surface-card (SigWcSurfaceCard)
+
+Copy-paste JSX:
+
+```tsx
+<!-- Prerequisite: import "@edwyn/signature-style/wc" + link the css once -->
+<sig-surface-card
+  eyebrow="Telemetry"
+  meta="wc/elements.ts"
+  title="Attendance Pulse"
+  accent-token="--sig-peach"
+  elevation="floating"
+  interactive
+>
+  <p>Shadow-DOM body content rides the default slot.</p>
+</sig-surface-card>
+```
+
+HTML variant (no React — real package classes/inline styles):
+
+```html
+<sig-surface-card
+  eyebrow="Telemetry"
+  meta="wc/elements.ts"
+  title="Attendance Pulse"
+  accent-token="--sig-peach"
+  elevation="floating"
+  interactive
+>
+  <p>Shadow-DOM body content rides the default slot.</p>
+</sig-surface-card>
+```
+
+#### sig-badge (SigWcBadge)
+
+Copy-paste JSX:
+
+```tsx
+<sig-badge label="Confirmed" variant="green"></sig-badge>
+<sig-badge label="Info" accent-token="--sig-sky"></sig-badge>
+```
+
+HTML variant (no React — real package classes/inline styles):
+
+```html
+<sig-badge label="Confirmed" variant="green"></sig-badge>
+<sig-badge label="Info" accent-token="--sig-sky"></sig-badge>
+```
+
+#### sig-progress-bar (SigWcProgressBar)
+
+Copy-paste JSX:
+
+```tsx
+<sig-progress-bar
+  value="70"
+  max="100"
+  label="Budget remaining"
+  limit-text="70 / 100"
+  accent-token="--sig-cobalt"
+></sig-progress-bar>
+```
+
+HTML variant (no React — real package classes/inline styles):
+
+```html
+<sig-progress-bar
+  value="70"
+  max="100"
+  label="Budget remaining"
+  limit-text="70 / 100"
+  accent-token="--sig-cobalt"
+></sig-progress-bar>
+```
+
+#### sig-stat-ring (SigWcStatRing)
+
+Copy-paste JSX:
+
+```tsx
+<sig-stat-ring
+  value="85"
+  size="120"
+  accent-token="--sig-cobalt"
+  show-value="true"
+></sig-stat-ring>
+
+<!-- setAttribute("value", "40") animates stroke-dashoffset -->
+<!-- total + unit: <sig-stat-ring value="170" total="200" unit="%"> -->
+```
+
+HTML variant (no React — real package classes/inline styles):
+
+```html
+<sig-stat-ring
+  value="85"
+  size="120"
+  accent-token="--sig-cobalt"
+  show-value="true"
+></sig-stat-ring>
+```
+
+#### sig-callout (SigWcCallout)
+
+Copy-paste JSX:
+
+```tsx
+<sig-callout status="warning">3 pending responses close Friday.</sig-callout>
+<sig-callout status="success">All 200 seats confirmed.</sig-callout>
+```
+
+HTML variant (no React — real package classes/inline styles):
+
+```html
+<sig-callout status="warning">3 pending responses close Friday.</sig-callout>
+<sig-callout status="success">All 200 seats confirmed.</sig-callout>
+```
+
+#### sig-carousel (SigWcCarousel)
+
+Copy-paste JSX:
+
+```tsx
+<sig-carousel mode="paged">
+  <div>Slide one</div>
+  <div>Slide two</div>
+  <div>Slide three</div>
+</sig-carousel>
+
+<!-- mode="free" (default): Prev/Next advance one item; paged: one track width -->
+<!-- N grows from the slotchange count — dots + "1 / N" are automatic -->
+```
+
+HTML variant (no React — real package classes/inline styles):
+
+```html
+<sig-carousel mode="paged">
+  <div>Slide one</div>
+  <div>Slide two</div>
+  <div>Slide three</div>
+</sig-carousel>
 ```
 
 ## The Universal AI Replication Contract (source of truth)

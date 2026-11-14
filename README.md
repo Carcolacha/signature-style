@@ -109,6 +109,57 @@ ledger badge labels (`Confirmed/Pending/Declined`) are unchanged.
 | `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest (AI tooling core) | never |
 | `@edwyn/signature-style/css` | `css/signature-style.css` — the compiled bundle: tokens, base, cascade (timeline + modal + nav included), overrides | never |
 | `@edwyn/signature-style/react` | umbrella `react/index.js` — `ThemeProvider`, `Icon`, `EmptyState`, `SigBadge`, `EventTimeline`, `EventModal`, `useModal`, `GlobalNav`, `ProgressBar`, `StatRing` | `react` + `react-dom`; `lucide-react` optional |
+| `@edwyn/signature-style/wc` | `dist/wc/signature-wc.es.js` — the six zero-react custom elements (`sig-surface-card`, `sig-badge`, `sig-progress-bar`, `sig-stat-ring`, `sig-callout`, `sig-carousel`) + `dist/wc/index.d.ts` types | never (link the css once for the tokens) |
+
+## Web Components usage — zero-react (v3.4.0)
+
+One module import registers all six elements; one stylesheet link themes
+them (the `--sig-*` custom properties inherit through shadow DOM):
+
+```html
+<link rel="stylesheet" href="node_modules/@edwyn/signature-style/css/signature-style.css" />
+<script type="module">
+  import "@edwyn/signature-style/wc";
+</script>
+
+<sig-surface-card eyebrow="Telemetry" meta="wc/elements.ts" title="Attendance Pulse"
+                  accent-token="--sig-peach" elevation="floating" interactive>
+  <p>Shadow-DOM body content rides the default slot.</p>
+</sig-surface-card>
+
+<sig-badge label="Confirmed" variant="green"></sig-badge>
+
+<sig-progress-bar value="70" max="100" label="Budget remaining"
+                  limit-text="70 / 100" accent-token="--sig-cobalt"></sig-progress-bar>
+
+<sig-stat-ring value="85" size="120" accent-token="--sig-cobalt" show-value="true"></sig-stat-ring>
+
+<sig-callout status="warning">3 pending responses close Friday.</sig-callout>
+
+<sig-carousel mode="paged">
+  <div>Slide one</div>
+  <div>Slide two</div>
+  <div>Slide three</div>
+</sig-carousel>
+```
+
+Attribute reference (the React prop twin in parentheses):
+
+| Element | Attributes | React twin |
+|---|---|---|
+| `sig-surface-card` | `eyebrow` · `meta` · `title` · `accent-token` · `elevation="flat\|raised\|floating"` (default raised) · `interactive` | `<SurfaceCard>` |
+| `sig-badge` | `label` · `variant="peach\|sky\|green\|cobalt\|lavender\|mauve-soft\|pink-bright\|yellow\|orchid"` · `accent-token` (wins) | `<SigBadge>` |
+| `sig-progress-bar` | `value` · `max` (default 100) · `label` (→ aria-label) · `limit-text` · `accent-token` | `<ProgressBar>` |
+| `sig-stat-ring` | `value` · `total` · `unit` (default "%") · `size` (default 120) · `accent-token` · `show-value` | `<StatRing>` |
+| `sig-callout` | `status="info\|success\|warning"` (default info → sky/green/peach strip) | `<Callout>` |
+| `sig-carousel` | `mode="free\|paged"` (default free) · `label` — children slot in; dots + "1 / N" grow from the slotchange count | `<Carousel>` |
+
+Imperative use works too — the module exports the classes:
+
+```js
+import { SigStatRing } from "@edwyn/signature-style/wc";
+document.querySelector("sig-stat-ring").setAttribute("value", "40"); // arc animates
+```
 
 ## CSS usage — one import
 
@@ -240,6 +291,61 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 3.4.0 — Zero-React Native Web Components (`@edwyn/signature-style/wc`)
+
+Milestone 3 of the ecosystem roadmap. The Signature Style escapes React:
+**six framework-free custom elements** — `<sig-surface-card>`,
+`<sig-badge>`, `<sig-progress-bar>`, `<sig-stat-ring>`, `<sig-callout>`,
+`<sig-carousel>` — for Vue, Svelte, plain HTML, and any-stack developers
+(and AI agents generating vanilla code). Plain TypeScript `HTMLElement`
+subclasses with **zero runtime dependencies** (no React, no Lit — the
+settled shadow-DOM API only), shipped as one auditable, unminified ESM
+bundle.
+
+- **One import, all six:** `import "@edwyn/signature-style/wc";` —
+  the module registers every element (guarded: an already-registered
+  name is skipped, hot-reload safe) and exports the classes + types.
+  Exports map: `./wc` → `dist/wc/signature-wc.es.js` + the tsc-honest
+  `dist/wc/index.d.ts` (per-module declarations: base + elements).
+- **Tokens are the ONLY prerequisite:** the elements ship NO colors —
+  link `@edwyn/signature-style/css` once and the `--sig-*` custom
+  properties **inherit through every shadow-DOM boundary** (custom
+  properties inherit; shadows don't block them), so
+  `<html data-sig-theme="daylight">` re-inks all six elements with zero
+  per-element wiring.
+- **Attribute-driven, shadow-domed:** every element is the attribute
+  twin of its React counterpart (see the usage section below); the
+  shadow style strings mirror the package css/ anatomy — same tokens,
+  same 8px grid, same z-ladder-free flatness — and the **e1 treaty is
+  mirrored inside the shadows**: the sanctioned ambient elevation
+  shadows appear ONLY on the surface-card's inner `.card` element,
+  everything else stays flat.
+- **Reactive by attribute:** `sig-progress-bar` recomputes the fill
+  width + `aria-valuenow` on every `value` change;
+  `sig-stat-ring` animates `stroke-dashoffset` (smooth transition in
+  the shadow sheet, `prefers-reduced-motion` escape honored INSIDE the
+  shadow styles); `sig-carousel` counts its items from the `slotchange`
+  event and rebuilds its dots + "1 / N" indicator.
+- **Proven twice:** `npm run verify:wc` greps the bundle + sources for
+  react/react-dom (must find ZERO), resolves the exports map, counts
+  the six `customElements.define` names in dist, packs the tarball —
+  then generates a vanilla HTML fixture page in /tmp (no build step)
+  and drives it with headless Chromium: all six elements must upgrade,
+  the ring readout must change "85%" → "40%" on `setAttribute` with the
+  transition present, and the screenshot lands at
+  `/tmp/visual-cortex/wc-proof.png`. And the Pattern Studio grows
+  **SET 07 · Web Components (zero-react)** — six PatternFrames mounting
+  the REAL elements inside the vite app (the wc bundle is imported and
+  the elements register in-app), ring preview driven live by
+  `setAttribute`.
+- **Pack grows 60 → 64** — the dist/wc quartet ships (bundle + three
+  .d.ts); the wc/src sources stay out of the tarball exactly like the
+  react .tsx sources do.
+- **Untouched by design:** css/, react/, demo/ are byte-identical to
+  3.3.0; tokens.json changes ONLY `meta.version` (NO token changes —
+  the 50-key whitelist is byte-stable); the e1 surface.css sanction is
+  mirrored, not edited.
 
 ### 3.3.0 — Zero-Dependency npx CLI Scaffolder
 

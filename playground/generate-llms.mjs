@@ -36,7 +36,7 @@ const root = resolve(here, "..");
 const publicDir = resolve(here, "public");
 mkdirSync(publicDir, { recursive: true });
 
-const SET_ORDER = ["01", "02", "03", "04", "05", "06"];
+const SET_ORDER = ["01", "02", "03", "04", "05", "06", "07"];
 
 /** Registry key → the d.ts symbol carrying its prop/type surface. */
 const PROP_SYMBOLS = {

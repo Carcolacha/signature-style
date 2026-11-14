@@ -137,8 +137,9 @@
  *         group's header→first-node gap ≥ 16px (was −1px OVERLAP: the
  *         package reserves 68px but its slab renders 69px).
  *   (ix1) THE VIEW SWITCHER — App.tsx declares `type View` with the
- *         default `useState<View>("dashboard")` (the cortex smoke must
- *         find the timeline on load), the HubLink renderer with
+ *         3.4.0 deep-link bootstrap (hash first, dashboard default —
+ *         the cortex smoke still finds the timeline on the bare root
+ *         URL), the HubLink renderer with
  *         `event.preventDefault()` (no full-reload anchor — the
  *         negative-test target), the `as={navLink}` factory wiring into
  *         GlobalNav, and the <EmptyState> placeholder dogfood
@@ -1770,7 +1771,7 @@ if (!nodeClearance.test(stylesCss)) {
 // still lives: the package TimelineManager edge + the Set 06 studio frame).
 const INDEX_REQUIREMENTS = [
   ['type View = "dashboard" | "studio" | "index" | "chronicle" | "codex"', "the 2.8.0 five-real-view union"],
-  ['useState<View>("dashboard")', 'the default view stays "dashboard" — the cortex smoke must find the timeline on load'],
+  ['HREF_TO_VIEW[window.location.hash] ?? "dashboard"', 'the 3.4.0 deep-link bootstrap — hash first, dashboard default (the cortex smoke still finds the timeline on the bare root URL: empty hash → "dashboard")'],
   ["function HubLink(", "the playground's link renderer for GlobalNav's as prop"],
   ["onNavigate: (href: string) => void", "the navigation callback contract"],
   ["event.preventDefault()", "no full-reload anchor navigation (negative-test target)"],
@@ -2032,9 +2033,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.5")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.6")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.5 (the 3.2.0 codex: the Multi-Theme Surface Engine — the canonical data-sig-theme triad, the daylight ink variants, the data-sig-radius geometry presets, the live customizer)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.6 (3.4.0: the title steps to v3.6 with the Web Components (Zero-React Surface) subsection — the codex grows the six sig-* elements, the attribute tables, and the tokens-prerequisite note)",
   );
 }
 
@@ -2168,17 +2169,20 @@ for (const [needle, label] of TABS_REQUIREMENTS) {
 // the data-module contract and the server version moves to 2.3.0.
 // 2.5.0 AMENDMENT: the sweep grows .sig-btn / .sig-stat-card / .sig-shell
 // and the server version moves to 2.5.0.
+// 3.4.0 AMENDMENT: the sweep grows the ZERO-REACT SURFACE — the six sig-*
+// custom element tags join (the studio mounts them; the cortex must see
+// them) and the server version moves to 3.4.0.
 const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
-for (const selector of [".sig-data-table", ".sig-tabs__tab", ".sig-callout", ".sig-surface-card", ".sig-btn", ".sig-stat-card", ".sig-shell", ".sig-carousel__dot", ".sig-chronicle__item", ".sig-graph__node", ".sig-bars__bar", ".sig-tmanager__count"]) {
+for (const selector of [".sig-data-table", ".sig-tabs__tab", ".sig-callout", ".sig-surface-card", ".sig-btn", ".sig-stat-card", ".sig-shell", ".sig-carousel__dot", ".sig-chronicle__item", ".sig-graph__node", ".sig-bars__bar", ".sig-tmanager__count", "sig-surface-card", "sig-badge", "sig-progress-bar", "sig-stat-ring", "sig-callout", "sig-carousel"]) {
   if (!mcpServerSrc.includes(`"${selector}"`)) {
     failures.push(
-      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index + the Graphs & Planner module (2.7.0: graph nodes, bar ink, milestone counter)`,
+      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index + the Graphs & Planner module (2.7.0: graph nodes, bar ink, milestone counter; 3.4.0: the six zero-react custom elements)`,
     );
   }
 }
-if (!mcpServerSrc.includes('version: "3.2.0"')) {
+if (!mcpServerSrc.includes('version: "3.4.0"')) {
   failures.push(
-    'tools/mcp-viz/server.ts server version string must be 3.2.0 (the surface-engine tooling bump; selectors unchanged)',
+    'tools/mcp-viz/server.ts server version string must be 3.4.0 (the zero-react WC tooling bump; the sweep grows the six sig-* tags)',
   );
 }
 
@@ -4235,7 +4239,7 @@ const NAV5_REQUIREMENTS = [
   ['view === "chronicle" ? (', "the chronicle branch renders"],
   ["function ChronicleView", "the chronicle view component"],
   ["title: \"THE PATTERN STUDIO\"", "the studio hero"],
-  ["six sets · fifty patterns · one-click copy", "the studio hero subtitle"],
+  ["seven sets · fifty-six patterns · one-click copy", "the studio hero subtitle (3.4.0: Set 07 joins)"],
 ];
 for (const [needle, label] of NAV5_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
@@ -4416,6 +4420,49 @@ if (existsSync(framePath)) {
     if (!copySrc.includes(needle)) {
       failures.push(`(ps-copy) PatternFrame.tsx must contain ${JSON.stringify(needle)} — ${label}`);
     }
+  }
+}
+
+// ---- (wc-studio) THE ZERO-REACT STUDIO INTEGRATION (3.4.0) -------------------------
+// The studio mounts the SIX REAL custom elements (Set 07): the module-level
+// import "@edwyn/signature-style/wc" registers them INSIDE the vite app (the
+// committed dist/wc bundle resolves through the exports map), and the frames
+// are live previews — the in-app proof that the wc build works. The (ps-studio)
+// coverage check above already forces every SNIPPETS key (the six SigWc* keys)
+// into SET_FRAMES + PREVIEWS; THIS gate pins the integration plumbing:
+{
+  const studioWcSrc = readFileSync(resolve(root, "playground/components/PatternStudio.tsx"), "utf8");
+  const WC_STUDIO_REQUIREMENTS = [
+    ['import "@edwyn/signature-style/wc";', "the registration import — the package exports map resolves dist/wc"],
+    ['"07": [', "Set 07 declared in SET_FRAMES (the sidebar counts derive from it)"],
+    ["SigWcStatRingPreview", "the reactive ring preview (setAttribute drives the arc)"],
+    ["setAttribute(", "the ring preview touches the ATTRIBUTE API — no props, the wc contract"],
+  ];
+  for (const [needle, label] of WC_STUDIO_REQUIREMENTS) {
+    if (!studioWcSrc.includes(needle)) {
+      failures.push(`(wc-studio) PatternStudio.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const appWcSrc = appSrc;
+  if (!appWcSrc.includes('"01", "02", "03", "04", "05", "06", "07"')) {
+    failures.push('(wc-studio) App.tsx SET_ORDER must carry "07" — the command palette jumps into the WC set');
+  }
+  const snippetsWcSrc = readFileSync(resolve(root, "playground/snippets.ts"), "utf8");
+  if (!snippetsWcSrc.includes('"01" | "02" | "03" | "04" | "05" | "06" | "07"')) {
+    failures.push("(wc-studio) snippets.ts SetId must widen to \"07\" — the WC mini-set rides the 6-Set taxonomy machinery");
+  }
+  // The dist/wc quartet must be COMMITTED (the studio imports the bundle;
+  // an ignored/untracked artifact would break a fresh clone).
+  try {
+    const tracked = execFileSync("git", ["ls-files", "dist/wc/"], { cwd: root, encoding: "utf8" })
+      .split("\n").map((l) => l.trim()).filter((l) => l !== "");
+    for (const required of ["dist/wc/signature-wc.es.js", "dist/wc/index.d.ts", "dist/wc/base.d.ts", "dist/wc/elements.d.ts"]) {
+      if (!tracked.includes(required)) {
+        failures.push(`(wc-studio) ${required} must be git-tracked — the studio imports the committed bundle`);
+      }
+    }
+  } catch (error) {
+    failures.push(`(wc-studio) cannot list tracked dist/wc files — ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

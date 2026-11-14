@@ -307,7 +307,7 @@ const HERO_COPY: Record<View, { title: string; sub: string }> = {
   },
   studio: {
     title: "THE PATTERN STUDIO",
-    sub: "six sets · fifty patterns · one-click copy",
+    sub: "seven sets · fifty-six patterns · one-click copy",
   },
   index: {
     title: "THE MASTER INDEX",
@@ -389,11 +389,12 @@ function createHubLink(onNavigate: (href: string) => void, activeHref: string) {
 }
 
 /**
- * The taxonomy display order (2.9.0) — the command palette's six
- * studio jump commands map over it; PatternStudio keeps its own copy
- * for the sidebar (same ids, same order).
+ * The taxonomy display order (2.9.0) — the command palette's studio
+ * jump commands map over it; PatternStudio keeps its own copy
+ * for the sidebar (same ids, same order). 3.4.0: Set 07 joins — the
+ * Web Components (zero-react) mini-set.
  */
-const SET_ORDER: ReadonlyArray<SetId> = ["01", "02", "03", "04", "05", "06"];
+const SET_ORDER: ReadonlyArray<SetId> = ["01", "02", "03", "04", "05", "06", "07"];
 
 /**
  * downloadJson — the workspace-snapshot download dance (the v2.7.0
@@ -843,7 +844,14 @@ export default function App() {
  */
 function Shell() {
   const toast = useToast();
-  const [view, setView] = useState<View>("dashboard");
+  // 3.4.0 — DEEP-LINK BOOTSTRAP: a cold load HONORS the location hash, so
+  // the cortex (and any consumer) can land straight on a view — #/studio
+  // mounts the Pattern Studio with the zero-react Set 07 frames. The
+  // in-app switch stays STATE-ONLY (the HubLink preventDefault contract
+  // is untouched) — only this INITIAL state reads the hash.
+  const [view, setView] = useState<View>(
+    () => HREF_TO_VIEW[window.location.hash] ?? "dashboard",
+  );
   // 3.2.0 — THE LIVE THEME STATE: one useSigTheme owns the surface theme +
   // radius (documentElement mirror + persistence + the contrast badges).
   // The customizer panel (Pattern Studio) and the palette commands below

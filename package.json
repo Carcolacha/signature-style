@@ -1,7 +1,7 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "3.3.0",
-  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init` scaffolds resolved theme tokens + a framework-adaptive bento starter into any project).",
+  "version": "3.4.0",
+  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.4.0 Zero-React Native Web Components: SIX framework-free custom elements — sig-surface-card, sig-badge, sig-progress-bar, sig-stat-ring, sig-callout, sig-carousel — driven entirely by the --sig-* tokens via import \"@edwyn/signature-style/wc\"; 3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init`).",
   "type": "module",
   "license": "MIT",
   "author": "edwyn",
@@ -78,9 +78,9 @@
     "playground:build": "vite build --config playground/vite.config.ts"
   },
   "peerDependencies": {
-    "lucide-react": ">=0.400.0",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "lucide-react": ">=0.400.0"
   },
   "peerDependenciesMeta": {
     "lucide-react": {

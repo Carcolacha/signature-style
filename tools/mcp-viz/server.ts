@@ -32,6 +32,12 @@
  * the Multi-Theme Surface Engine release; the SELECTORS are unchanged,
  * the sweep measures any surface theme).
  *
+ * 3.4.0: the sweep grows the ZERO-REACT SURFACE — the six sig-* custom
+ * element tags (sig-surface-card, sig-badge, sig-progress-bar,
+ * sig-stat-ring, sig-callout, sig-carousel) join DEFAULT_SELECTORS so
+ * the cortex can measure the studio's Web Components set, and the
+ * server version string moves to 3.4.0.
+ *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
  * Signature Style dashboard. Two tools:
  *
@@ -91,6 +97,14 @@ const DEFAULT_SELECTORS: readonly string[] = [
   ".sig-graph__node",
   ".sig-bars__bar",
   ".sig-tmanager__count",
+  // 3.4.0 — THE ZERO-REACT SURFACE: the six sig-* custom elements (the
+  // studio's Set 07 mounts them; the cortex must see the shadow hosts).
+  "sig-surface-card",
+  "sig-badge",
+  "sig-progress-bar",
+  "sig-stat-ring",
+  "sig-callout",
+  "sig-carousel",
 ];
 
 /** Settle time after networkidle, letting entry animations finish. */
@@ -231,7 +245,7 @@ async function persistPng(
 }
 
 /** The shared McpServer instance advertising the visual cortex tools. */
-const server = new McpServer({ name: "visual-cortex", version: "3.2.0" });
+const server = new McpServer({ name: "visual-cortex", version: "3.4.0" });
 
 server.registerTool(
   "inspect_layout",

@@ -121,6 +121,28 @@ try {
   assert(nodeHits.length > 0, "no .sig-timeline__node hits at all");
   assert(aliveNodes.length > 0, "no .sig-timeline__node with width>0 && height>0");
 
+  // (s2b) 3.4.0 — THE ZERO-REACT STUDIO PROOF: the Pattern Studio mounts
+  // the six sig-* custom elements; inspecting #/studio must return REAL
+  // hits (alive rects) for every wc selector — the studio wc integration
+  // measured by the cortex itself (the selector sweep grew in 3.4.0).
+  const studioLayout = await rpc.call("tools/call", {
+    name: "inspect_layout",
+    arguments: { url: `${URL_TO_INSPECT}/#/studio` },
+  });
+  assert(studioLayout.isError !== true, `studio inspect_layout errored: ${JSON.stringify(studioLayout.content)}`);
+  const studioPayload = JSON.parse(studioLayout.content[0].text);
+  const WC_SELECTORS = ["sig-surface-card", "sig-badge", "sig-progress-bar", "sig-stat-ring", "sig-callout", "sig-carousel"];
+  const wcReport = {};
+  for (const selector of WC_SELECTORS) {
+    const hits = studioPayload.hits.filter((h) => h.selector === selector);
+    const alive = hits.filter((h) => h.rect.width > 0 && h.rect.height > 0);
+    wcReport[selector] = { hits: hits.length, alive: alive.length };
+    assert(hits.length > 0, `studio wc proof: no ${selector} hits — the studio Set 07 frames are not mounting the custom elements`);
+    assert(alive.length > 0, `studio wc proof: no ${selector} with a real (width>0 && height>0) rect`);
+  }
+  const wcAliveTotal = WC_SELECTORS.reduce((sum, s) => sum + wcReport[s].alive, 0);
+  console.log(`studio wc hits: ${WC_SELECTORS.map((s) => `${s}=${wcReport[s].alive} alive`).join(" · ")} (total ${wcAliveTotal})`);
+
   // (s3) capture_screenshot — non-empty base64.
   const shot = await rpc.call("tools/call", {
     name: "capture_screenshot",

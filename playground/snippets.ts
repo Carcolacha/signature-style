@@ -26,8 +26,13 @@
  * non-export layout notes (sig-shell) ride Set 01 as documentation.
  */
 
-/** The 6-Set Taxonomy id — zero-padded for the SET 0N ruled headers. */
-export type SetId = "01" | "02" | "03" | "04" | "05" | "06";
+/** The 6-Set Taxonomy id — zero-padded for the SET 0N ruled headers.
+ *
+ * 3.4.0: the taxonomy grows one MINI-SET — "07" is the Web Components
+ * (zero-react) group: the six custom elements, each entry's "jsx" being
+ * the plain HTML usage (a custom element IS valid JSX — no import, no
+ * props, attributes only). */
+export type SetId = "01" | "02" | "03" | "04" | "05" | "06" | "07";
 
 /** One registry entry — the Copy Card's payload. */
 export interface SnippetEntry {
@@ -49,6 +54,7 @@ export const SET_NAMES: Record<SetId, string> = {
   "04": "Analytical Telemetry & Graphs",
   "05": "Chronology & Planners",
   "06": "Data, Editorial & Feedback",
+  "07": "Web Components (zero-react)",
 };
 
 /** Set order + the one-to-two-sentence human explanation per set. */
@@ -65,6 +71,8 @@ export const SET_BLURBS: Record<SetId, string> = {
     "Time made visible: the alternating chronology for reading, the controlled manager for working, the flat release chronicle for remembering.",
   "06":
     "The working set: ledgers that scroll instead of breaking, notes that persist, toasts that resolve, prose that reads, and the honest empty state. When an outcome lands it pushes a toast; when the context matters it stays in a callout.",
+  "07":
+    "The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @edwyn/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @edwyn/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.",
 };
 
 export const SNIPPETS: Record<string, SnippetEntry> = {
@@ -669,5 +677,106 @@ const modal = useModal<TimelineEvent>();
 // inside <AttendanceForm>, beneath the provider:
 const toast = useToast();
 toast("success", "Attendance saved — see you there 🎉");`,
+  },
+
+  // ---------------------------------------------------------------- Set 07
+  // 3.4.0 — THE ZERO-REACT SURFACE: the six custom elements. The "jsx"
+  // strings ARE the plain-HTML usage (a custom element is valid JSX —
+  // attributes only, no imports, no props); "html" carries the same
+  // usage with the tokens-prerequisite note for the HTML tab.
+  SigWcSurfaceCard: {
+    set: "07",
+    componentName: "sig-surface-card",
+    jsx: `<!-- Prerequisite: import "@edwyn/signature-style/wc" + link the css once -->
+<sig-surface-card
+  eyebrow="Telemetry"
+  meta="wc/elements.ts"
+  title="Attendance Pulse"
+  accent-token="--sig-peach"
+  elevation="floating"
+  interactive
+>
+  <p>Shadow-DOM body content rides the default slot.</p>
+</sig-surface-card>`,
+    html: `<sig-surface-card
+  eyebrow="Telemetry"
+  meta="wc/elements.ts"
+  title="Attendance Pulse"
+  accent-token="--sig-peach"
+  elevation="floating"
+  interactive
+>
+  <p>Shadow-DOM body content rides the default slot.</p>
+</sig-surface-card>`,
+  },
+  SigWcBadge: {
+    set: "07",
+    componentName: "sig-badge",
+    jsx: `<sig-badge label="Confirmed" variant="green"></sig-badge>
+<sig-badge label="Info" accent-token="--sig-sky"></sig-badge>`,
+    html: `<sig-badge label="Confirmed" variant="green"></sig-badge>
+<sig-badge label="Info" accent-token="--sig-sky"></sig-badge>`,
+  },
+  SigWcProgressBar: {
+    set: "07",
+    componentName: "sig-progress-bar",
+    jsx: `<sig-progress-bar
+  value="70"
+  max="100"
+  label="Budget remaining"
+  limit-text="70 / 100"
+  accent-token="--sig-cobalt"
+></sig-progress-bar>`,
+    html: `<sig-progress-bar
+  value="70"
+  max="100"
+  label="Budget remaining"
+  limit-text="70 / 100"
+  accent-token="--sig-cobalt"
+></sig-progress-bar>`,
+  },
+  SigWcStatRing: {
+    set: "07",
+    componentName: "sig-stat-ring",
+    jsx: `<sig-stat-ring
+  value="85"
+  size="120"
+  accent-token="--sig-cobalt"
+  show-value="true"
+></sig-stat-ring>
+
+<!-- setAttribute("value", "40") animates stroke-dashoffset -->
+<!-- total + unit: <sig-stat-ring value="170" total="200" unit="%"> -->`,
+    html: `<sig-stat-ring
+  value="85"
+  size="120"
+  accent-token="--sig-cobalt"
+  show-value="true"
+></sig-stat-ring>`,
+  },
+  SigWcCallout: {
+    set: "07",
+    componentName: "sig-callout",
+    jsx: `<sig-callout status="warning">3 pending responses close Friday.</sig-callout>
+<sig-callout status="success">All 200 seats confirmed.</sig-callout>`,
+    html: `<sig-callout status="warning">3 pending responses close Friday.</sig-callout>
+<sig-callout status="success">All 200 seats confirmed.</sig-callout>`,
+  },
+  SigWcCarousel: {
+    set: "07",
+    componentName: "sig-carousel",
+    jsx: `<sig-carousel mode="paged">
+  <div>Slide one</div>
+  <div>Slide two</div>
+  <div>Slide three</div>
+</sig-carousel>
+
+<!-- mode="free" (default): Prev/Next advance one item; paged: one track width -->
+<!-- N grows from the slotchange count — dots + "1 / N" are automatic -->`,
+    html: `<sig-carousel mode="paged">
+  <div>Slide one</div>
+  <div>Slide two</div>
+  <div>Slide three</div>
+</sig-carousel>`,
   },
 };

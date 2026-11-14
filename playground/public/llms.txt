@@ -18,7 +18,7 @@ The official machine-readable index for AI agents. Full self-contained version: 
 
 ## Component Sets
 
-The 6-Set Taxonomy — 50 documented exports, one copy-paste snippet each:
+The 6-Set Taxonomy — 56 documented exports, one copy-paste snippet each:
 
 - [Set 01 — Shell & Navigation](llms-full.txt): ThemeProvider, GlobalNav, Tabs, SigShell (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 02 — Surface & Card Archetypes](llms-full.txt): SurfaceCard, PageHero, Icon, Avatar, SigBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard (live demos + copy-paste in the playground's Pattern Studio)
@@ -26,6 +26,7 @@ The 6-Set Taxonomy — 50 documented exports, one copy-paste snippet each:
 - [Set 04 — Analytical Telemetry & Graphs](llms-full.txt): ProgressBar, StatRing, StatCard, Sparkline, BarChart, AreaChart, KnowledgeGraph, smoothPath, layoutGraph, cubicBezierEdge (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 05 — Chronology & Planners](llms-full.txt): EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 06 — Data, Editorial & Feedback](llms-full.txt): DataTable, Callout, Carousel, CarouselItem, ProseBlock, AnnouncementBanner, EmptyState, ToastProvider, useToast (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 07 — Web Components (zero-react)](llms-full.txt): SigWcSurfaceCard, SigWcBadge, SigWcProgressBar, SigWcStatRing, SigWcCallout, SigWcCarousel (live demos + copy-paste in the playground's Pattern Studio)
 
 ## Recipes
 

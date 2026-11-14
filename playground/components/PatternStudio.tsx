@@ -14,8 +14,14 @@
  * previews are compact studio-local compositions defined below; state
  * is frame-local so frames never leak into each other.
  */
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
+// 3.4.0 — THE ZERO-REACT SURFACE: this side-effect import registers the
+// six sig-* custom elements through the package exports map
+// ("@edwyn/signature-style/wc" → the committed dist/wc bundle). The
+// frames below mount the REAL elements — the studio is the in-vite
+// proof that the wc build works inside the app too.
+import "@edwyn/signature-style/wc";
 import {
   ThemeProvider,
   GlobalNav,
@@ -77,7 +83,7 @@ import { SNIPPETS, SET_NAMES, SET_BLURBS } from "../snippets.js";
 import type { SetId } from "../snippets.js";
 
 /** The taxonomy display order — SET 01 → SET 06. */
-const SET_ORDER: ReadonlyArray<SetId> = ["01", "02", "03", "04", "05", "06"];
+const SET_ORDER: ReadonlyArray<SetId> = ["01", "02", "03", "04", "05", "06", "07"];
 
 /* ------------------------------------------------------------------ */
 /* Set 01 previews — Shell & Navigation                                */
@@ -828,6 +834,116 @@ function UseToastPreview() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Set 07 previews — Web Components (zero-react)                       */
+/*                                                                    */
+/* The REAL custom elements mounted live (registered by the module-    */
+/* level `import "@edwyn/signature-style/wc"` above). Custom elements  */
+/* are valid JSX: attributes only, no imports, no props. The ring      */
+/* preview is REACTIVE — a button drives setAttribute("value", …) so   */
+/* the stroke-dashoffset transition plays right in the studio.         */
+/* ------------------------------------------------------------------ */
+
+/** The surface-card twin: eyebrow + ruled title + accent + slot body. */
+function SigWcSurfaceCardPreview() {
+  return (
+    <sig-surface-card
+      eyebrow="Telemetry"
+      meta="wc/elements.ts"
+      title="Attendance Pulse"
+      accent-token="--sig-peach"
+      elevation="floating"
+      interactive
+    >
+      <p style={{ margin: 0 }}>Shadow-DOM body content rides the default slot.</p>
+    </sig-surface-card>
+  );
+}
+
+/** The badge pill twins: variant + accent-token spellings. */
+function SigWcBadgePreview() {
+  return (
+    <div className="studio__inline-row">
+      <sig-badge label="Confirmed" variant="green"></sig-badge>
+      <sig-badge label="Info" accent-token="--sig-sky"></sig-badge>
+      <sig-badge label="Neutral"></sig-badge>
+    </div>
+  );
+}
+
+/** The progress track: 70% cobalt, tabular caption. */
+function SigWcProgressBarPreview() {
+  return (
+    <sig-progress-bar
+      value={70}
+      max={100}
+      label="Budget remaining"
+      limit-text="70 / 100"
+      accent-token="--sig-cobalt"
+    ></sig-progress-bar>
+  );
+}
+
+/** The ring twin, LIVE-REACTIVE: the button drives setAttribute and the
+    arc animates (stroke-dashoffset transition in the shadow sheet). */
+function SigWcStatRingPreview() {
+  const ringRef = useRef<HTMLDivElement | null>(null);
+  const [ringValue, setRingValue] = useState(85);
+  const crank = (): void => {
+    const next = ringValue >= 85 ? 40 : 85;
+    ringRef.current?.setAttribute("value", String(next));
+    setRingValue(next);
+  };
+  return (
+    <div className="studio__inline-row">
+      {/* The cast is the honest bridge: sig-stat-ring is HTMLElement +
+          setAttribute — the ref only ever touches the ATTRIBUTE API. */}
+      <sig-stat-ring
+        ref={ringRef as never}
+        value={ringValue}
+        size={120}
+        accent-token="--sig-cobalt"
+        show-value="true"
+      ></sig-stat-ring>
+      <Button size="sm" variant="secondary" onClick={crank}>
+        setAttribute(&quot;value&quot;, &quot;{ringValue >= 85 ? 40 : 85}&quot;)
+      </Button>
+    </div>
+  );
+}
+
+/** The persistent note twins: all three statuses. */
+function SigWcCalloutPreview() {
+  return (
+    <div className="studio__stack">
+      <sig-callout status="info">The workspace snapshot syncs every 30s.</sig-callout>
+      <sig-callout status="success">All 200 seats confirmed.</sig-callout>
+      <sig-callout status="warning">3 pending responses close Friday.</sig-callout>
+    </div>
+  );
+}
+
+/** The scroll strip: paged mode, three slotted snap units. */
+function SigWcCarouselPreview() {
+  return (
+    <sig-carousel mode="paged">
+      {["Slide one", "Slide two", "Slide three"].map((label) => (
+        <div
+          key={label}
+          style={{
+            minWidth: 200,
+            padding: "var(--space-standard)",
+            background: "var(--bg-surface)",
+            border: "1px solid color-mix(in srgb, var(--text-muted) 15%, transparent)",
+          }}
+        >
+          {label}
+        </div>
+      ))}
+    </sig-carousel>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* The frame registry — SNIPPETS key → its live preview                */
 /* ------------------------------------------------------------------ */
 
@@ -891,6 +1007,13 @@ const PREVIEWS: Record<string, ReactNode> = {
   EmptyState: <EmptyStatePreview />,
   ToastProvider: <ToastProviderPreview />,
   useToast: <UseToastPreview />,
+  // Set 07 — the zero-react custom elements, mounted LIVE.
+  SigWcSurfaceCard: <SigWcSurfaceCardPreview />,
+  SigWcBadge: <SigWcBadgePreview />,
+  SigWcProgressBar: <SigWcProgressBarPreview />,
+  SigWcStatRing: <SigWcStatRingPreview />,
+  SigWcCallout: <SigWcCalloutPreview />,
+  SigWcCarousel: <SigWcCarouselPreview />,
 };
 
 /** The components of each set, in the documented taxonomy order. */
@@ -913,6 +1036,10 @@ const SET_FRAMES: Record<SetId, ReadonlyArray<string>> = {
   "06": [
     "DataTable", "Callout", "Carousel", "CarouselItem", "ProseBlock",
     "AnnouncementBanner", "EmptyState", "ToastProvider", "useToast",
+  ],
+  "07": [
+    "SigWcSurfaceCard", "SigWcBadge", "SigWcProgressBar", "SigWcStatRing",
+    "SigWcCallout", "SigWcCarousel",
   ],
 };
 

@@ -187,7 +187,7 @@ export function PatternFrame({
 /** The set accent riding the header badge — chromatic tokens only (RoE:
     the SigBadge runtime guard DROPS structural tokens, so every set
     wears a content color; Set 01 takes lavender, the calm structural-
-    adjacent). */
+    adjacent; 3.4.0 Set 07 takes cyan, the zero-react set's ink). */
 const SET_ACCENTS: Record<SetId, Parameters<typeof SigBadge>[0]["colorToken"]> = {
   "01": "--sig-lavender",
   "02": "--sig-pink-bright",
@@ -195,4 +195,5 @@ const SET_ACCENTS: Record<SetId, Parameters<typeof SigBadge>[0]["colorToken"]> =
   "04": "--sig-sky",
   "05": "--sig-mauve-soft",
   "06": "--sig-yellow",
+  "07": "--sig-cyan",
 };
