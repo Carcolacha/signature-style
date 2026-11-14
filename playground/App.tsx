@@ -1908,6 +1908,9 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
 function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
   const toast = useToast();
   const [category, setCategory] = useState<CatalogCategory>("all");
+  // 3.0.0 — the Field Notes Carousel's mode (default free-scroll = the
+  // historical behavior; the toggle pill flips it live).
+  const [carouselMode, setCarouselMode] = useState<"paged-3" | "free-scroll">("free-scroll");
   const gateways: Gateway[] = [
     {
       label: "PLANNER",
@@ -2034,8 +2037,35 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
             meta="components/editorial.tsx"
             title="Field Notes & Carousel"
             interactive
+            className="sig-cell"
           >
-            <Carousel label="Developer & lifestyle cards">
+            {/* 3.0.0 — THE LIVE MODE TOGGLE PILL (two-button segmented,
+                aria-pressed IS the state, the tabs/nav contract): flips
+                the Field Notes Carousel between paged-3 (3-up pages,
+                page-striding chevrons, per-page dots) and free-scroll
+                (the historical snap strip, IO-synced dots). */}
+            <div
+              className="hub__mode-toggle"
+              role="group"
+              aria-label="Carousel mode"
+              data-testid="carousel-mode-toggle"
+            >
+              <button
+                type="button"
+                aria-pressed={carouselMode === "paged-3"}
+                onClick={() => setCarouselMode("paged-3")}
+              >
+                3-up pages
+              </button>
+              <button
+                type="button"
+                aria-pressed={carouselMode === "free-scroll"}
+                onClick={() => setCarouselMode("free-scroll")}
+              >
+                Free scroll
+              </button>
+            </div>
+            <Carousel label="Developer & lifestyle cards" mode={carouselMode}>
               <CarouselItem className="hub__clipping">
                 <div className="hub__mini-card">
                   <strong>Books</strong>

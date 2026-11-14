@@ -68,40 +68,64 @@ export declare function CarouselItem({ className, children }: CarouselItemProps)
 export interface CarouselProps {
     /** The accessible name for the scroll region (role="region"). */
     label?: string;
+    /**
+     * 3.0.0 — THE MODE. "free-scroll" (default) is the historical snap
+     * strip: every child is a content-width snap unit, Prev/Next advance
+     * ONE ITEM, dots are one per child, and the active index syncs
+     * through an IntersectionObserver (majority-visible item = active —
+     * 3.0.0 replaces the old scrollLeft/itemWidth scroll math). "paged-3"
+     * chunks the children into pages of THREE (pure math: ceil(n / 3))
+     * and renders each page as ONE snap unit — a `repeat(3, 1fr)` grid
+     * with the 16px gap (css: .ptp-carousel__page); Prev/Next advance
+     * ±1 PAGE, dots are one per PAGE, the indicator reads "p / P".
+     */
+    mode?: "paged-3" | "free-scroll";
     /** The items — must already be `<CarouselItem>` elements. */
     children?: ReactNode;
 }
 /**
- * `<Carousel>` — the horizontal scroll strip.
+ * `<Carousel>` — the horizontal scroll strip (3.0.0: TWO MODES).
  *
- * The mechanics row (2.4.1) + the DOT INDICATORS (2.6.0): a fragment of
- * TWO siblings — `<div class="ptp-carousel">` (the previous button →
- * the `<div class="ptp-carousel__track" tabIndex={0} role="region"
- * aria-label={label}>` scroll container → the `<span
- * class="ptp-carousel__indicator" aria-live="polite">` "n / count"
- * readout → the next button) and, when children exist, `<div
- * class="ptp-carousel__dots">` below the row: one button per child,
- * the active dot tracking the SAME rAF-throttled scroll index as the
- * indicator, `[data-active="true"]` painting the Flamingo pill.
- * Dots are clickable — `scrollTo({ left: index * itemWidth })` — with
- * per-dot aria-labels ("Go to item n"). Buttons scroll by ONE ITEM
- * WIDTH via ref (`scrollBy({ left: ±itemWidth, behavior })`); css
- * scroll-snap-type: x mandatory re-snaps to the nearest item start, so
- * the stride is exact. Reduced motion → `behavior: "auto"` (matchMedia
- * read once). The indicator + dots track the native scroll event,
- * rAF-throttled (one state write per frame), with the owner-spec'd
- * index formula `Math.round(scrollLeft / itemWidth) + 1`. The track's
- * scrollbar is hidden (css: scrollbar-width none + webkit display
- * none) — the dots ARE the position affordance.
+ * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
+ * track rides on top (full width, never squeezed between buttons), and
+ * BELOW it one `.ptp-carousel__controls` flex row: prev · dots ·
+ * indicator ("1 / N", aria-live polite) · next. The readout never
+ * overlaps card content — it lives in its own bar.
+ *
+ * free-scroll (DEFAULT — the historical behavior): every child is a
+ * content-width snap unit (`flex: 0 0 auto` + scroll-snap-align), the
+ * chevrons scrollBy ±ONE ITEM WIDTH, dots are one per child and
+ * clickable (`scrollTo({ left: index * itemWidth })`). 3.0.0 UPGRADE:
+ * the active-index sync is an IntersectionObserver — the track's items
+ * are observed and the MAJORITY-VISIBLE item (intersectionRatio ≥ 0.5,
+ * highest wins) is the active dot. The old per-pixel scroll math is
+ * gone; the track's scroll handler now only drives the paged mode.
+ *
+ * paged-3: the children are chunked into PAGES OF THREE (pure math:
+ * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
+ * — a `.ptp-carousel__page` slide wearing the 100% width and the
+ * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
+ * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
+ * dots are one per page, and the indicator reads "p / P" (pages). The
+ * active page syncs from the track's scroll event, rAF-throttled (one
+ * state write per frame), with the page formula
+ * `Math.round(scrollLeft / track.clientWidth) + 1`.
+ *
+ * ZERO-DEPENDENCY MOTION: scrolling uses `behavior: "smooth"` unless
+ * the visitor prefers reduced motion — matchMedia is read ONCE per
+ * component instance. The IO is disconnected on unmount; the pending
+ * rAF frame is cancelled on unmount.
  *
  * @example
  * ```tsx
- * <Carousel label="Palette clippings">
+ * <Carousel label="Palette clippings" mode="paged-3">
+ *   <CarouselItem>…</CarouselItem>
+ *   <CarouselItem>…</CarouselItem>
  *   <CarouselItem>…</CarouselItem>
  * </Carousel>
  * ```
  */
-export declare function Carousel({ label, children }: CarouselProps): import("react").JSX.Element;
+export declare function Carousel({ label, mode, children }: CarouselProps): import("react").JSX.Element;
 export interface ProseBlockProps {
     /** Passthrough for composing on the container. */
     className?: string;

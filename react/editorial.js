@@ -1,4 +1,4 @@
-import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
  * editorial — editorial primitives (2.4.0 "Form Wrappers & Editorial
  * Primitives"; 2.4.1 grows the banner variant/action API, the prose
@@ -57,79 +57,121 @@ export function CarouselItem({ className, children }) {
     return (_jsx("div", { className: className !== undefined ? `ptp-carousel__item ${className}` : "ptp-carousel__item", children: children }));
 }
 /**
- * `<Carousel>` — the horizontal scroll strip.
+ * `<Carousel>` — the horizontal scroll strip (3.0.0: TWO MODES).
  *
- * The mechanics row (2.4.1) + the DOT INDICATORS (2.6.0): a fragment of
- * TWO siblings — `<div class="ptp-carousel">` (the previous button →
- * the `<div class="ptp-carousel__track" tabIndex={0} role="region"
- * aria-label={label}>` scroll container → the `<span
- * class="ptp-carousel__indicator" aria-live="polite">` "n / count"
- * readout → the next button) and, when children exist, `<div
- * class="ptp-carousel__dots">` below the row: one button per child,
- * the active dot tracking the SAME rAF-throttled scroll index as the
- * indicator, `[data-active="true"]` painting the Flamingo pill.
- * Dots are clickable — `scrollTo({ left: index * itemWidth })` — with
- * per-dot aria-labels ("Go to item n"). Buttons scroll by ONE ITEM
- * WIDTH via ref (`scrollBy({ left: ±itemWidth, behavior })`); css
- * scroll-snap-type: x mandatory re-snaps to the nearest item start, so
- * the stride is exact. Reduced motion → `behavior: "auto"` (matchMedia
- * read once). The indicator + dots track the native scroll event,
- * rAF-throttled (one state write per frame), with the owner-spec'd
- * index formula `Math.round(scrollLeft / itemWidth) + 1`. The track's
- * scrollbar is hidden (css: scrollbar-width none + webkit display
- * none) — the dots ARE the position affordance.
+ * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
+ * track rides on top (full width, never squeezed between buttons), and
+ * BELOW it one `.ptp-carousel__controls` flex row: prev · dots ·
+ * indicator ("1 / N", aria-live polite) · next. The readout never
+ * overlaps card content — it lives in its own bar.
+ *
+ * free-scroll (DEFAULT — the historical behavior): every child is a
+ * content-width snap unit (`flex: 0 0 auto` + scroll-snap-align), the
+ * chevrons scrollBy ±ONE ITEM WIDTH, dots are one per child and
+ * clickable (`scrollTo({ left: index * itemWidth })`). 3.0.0 UPGRADE:
+ * the active-index sync is an IntersectionObserver — the track's items
+ * are observed and the MAJORITY-VISIBLE item (intersectionRatio ≥ 0.5,
+ * highest wins) is the active dot. The old per-pixel scroll math is
+ * gone; the track's scroll handler now only drives the paged mode.
+ *
+ * paged-3: the children are chunked into PAGES OF THREE (pure math:
+ * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
+ * — a `.ptp-carousel__page` slide wearing the 100% width and the
+ * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
+ * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
+ * dots are one per page, and the indicator reads "p / P" (pages). The
+ * active page syncs from the track's scroll event, rAF-throttled (one
+ * state write per frame), with the page formula
+ * `Math.round(scrollLeft / track.clientWidth) + 1`.
+ *
+ * ZERO-DEPENDENCY MOTION: scrolling uses `behavior: "smooth"` unless
+ * the visitor prefers reduced motion — matchMedia is read ONCE per
+ * component instance. The IO is disconnected on unmount; the pending
+ * rAF frame is cancelled on unmount.
  *
  * @example
  * ```tsx
- * <Carousel label="Palette clippings">
+ * <Carousel label="Palette clippings" mode="paged-3">
+ *   <CarouselItem>…</CarouselItem>
+ *   <CarouselItem>…</CarouselItem>
  *   <CarouselItem>…</CarouselItem>
  * </Carousel>
  * ```
  */
-export function Carousel({ label, children }) {
+export function Carousel({ label, mode = "free-scroll", children }) {
     const trackRef = useRef(null);
     const frameRef = useRef(null);
     const [page, setPage] = useState(1);
     // Read ONCE per instance — no listener, no re-render churn.
     const reduceMotion = useRef(typeof window !== "undefined" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    const count = Children.count(children);
+    const items = Children.toArray(children);
+    const paged = mode === "paged-3";
+    const stride = paged ? 3 : 1;
+    const pageCount = Math.max(1, Math.ceil(items.length / stride));
     useEffect(() => {
         return () => {
             if (frameRef.current !== null)
                 cancelAnimationFrame(frameRef.current);
         };
     }, []);
+    // THE INTERSECTION OBSERVER (3.0.0, free-scroll): observe the items,
+    // majority-visible wins. Ratios land in a Map keyed by item index;
+    // each callback picks the highest ≥ 0.5. This replaces the scroll
+    // math the indicator used to run — the track's own scroll handler
+    // only serves paged-3's page sync now.
+    useEffect(() => {
+        if (paged || typeof IntersectionObserver === "undefined")
+            return;
+        const track = trackRef.current;
+        if (track === null)
+            return;
+        const ratios = new Map();
+        const itemElements = Array.from(track.querySelectorAll(":scope > .ptp-carousel__item"));
+        const observer = new IntersectionObserver((entries) => {
+            for (const entry of entries) {
+                const index = itemElements.indexOf(entry.target);
+                if (index !== -1)
+                    ratios.set(index, entry.intersectionRatio);
+            }
+            let best = -1;
+            let bestRatio = 0;
+            for (const [index, ratio] of ratios) {
+                if (ratio >= 0.5 && ratio > bestRatio) {
+                    best = index;
+                    bestRatio = ratio;
+                }
+            }
+            if (best !== -1)
+                setPage(best + 1);
+        }, { root: track, threshold: [0.5, 0.75, 1] });
+        for (const el of itemElements)
+            observer.observe(el);
+        return () => observer.disconnect();
+    }, [paged, items.length]);
     const itemWidthOf = (track) => {
         const first = track.firstElementChild;
         const width = first instanceof HTMLElement ? first.getBoundingClientRect().width : 0;
         return width > 0 ? width : track.clientWidth;
     };
-    const scrollByItem = (direction) => {
-        const track = trackRef.current;
-        if (track === null)
-            return;
-        track.scrollBy({
-            left: direction * itemWidthOf(track),
-            behavior: reduceMotion.current ? "auto" : "smooth",
-        });
-    };
-    // DOT CLICK (2.6.0): scroll straight to the item's snap offset — the
-    // same reduced-motion fallback as the chevrons.
     const scrollToIndex = (index) => {
         const track = trackRef.current;
         if (track === null)
             return;
-        track.scrollTo({
-            left: index * itemWidthOf(track),
-            behavior: reduceMotion.current ? "auto" : "smooth",
-        });
+        const left = paged ? index * track.clientWidth : index * itemWidthOf(track);
+        track.scrollTo({ left, behavior: reduceMotion.current ? "auto" : "smooth" });
     };
-    // THE INDICATOR TRACKER (2.4.1) — rAF-throttled: coalesce the
-    // per-pixel scroll events into one state write per frame. The index
-    // formula is the owner spec: Math.round(scrollLeft / itemWidth) + 1.
-    // 2.6.0: the dot indicators read the SAME page state (1-based).
+    const scrollByItem = (direction) => {
+        // paged-3 strides PAGE-wise; free-scroll strides item-wise.
+        const next = Math.min(pageCount, Math.max(1, page + direction));
+        scrollToIndex(next - 1);
+    };
+    // THE PAGE TRACKER (paged-3) — rAF-throttled: coalesce the per-pixel
+    // scroll events into one state write per frame. The page formula is
+    // stride math: Math.round(scrollLeft / track.clientWidth) + 1.
     const handleScroll = () => {
+        if (!paged)
+            return;
         if (frameRef.current !== null)
             return;
         frameRef.current = requestAnimationFrame(() => {
@@ -137,10 +179,14 @@ export function Carousel({ label, children }) {
             const track = trackRef.current;
             if (track === null)
                 return;
-            setPage(Math.round(track.scrollLeft / itemWidthOf(track)) + 1);
+            setPage(Math.min(pageCount, Math.round(track.scrollLeft / track.clientWidth) + 1));
         });
     };
-    return (_jsxs(_Fragment, { children: [_jsxs("div", { className: "ptp-carousel", children: [_jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Previous", onClick: () => scrollByItem(-1), children: _jsx(Icon, { name: "ChevronLeft", "aria-hidden": true }) }), _jsx("div", { className: "ptp-carousel__track", ref: trackRef, tabIndex: 0, role: "region", "aria-label": label, onScroll: handleScroll, children: children }), _jsxs("span", { className: "ptp-carousel__indicator", "aria-live": "polite", children: [page, " / ", count] }), _jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Next", onClick: () => scrollByItem(1), children: _jsx(Icon, { name: "ChevronRight", "aria-hidden": true }) })] }), count > 0 && (_jsx("div", { className: "ptp-carousel__dots", children: Array.from({ length: count }, (_, index) => (_jsx("button", { type: "button", className: "ptp-carousel__dot", "data-active": index === page - 1 ? "true" : "false", "aria-label": `Go to item ${index + 1}`, onClick: () => scrollToIndex(index) }, index))) }))] }));
+    return (_jsxs("div", { className: paged ? "ptp-carousel ptp-carousel--paged" : "ptp-carousel", children: [_jsx("div", { className: "ptp-carousel__track", ref: trackRef, tabIndex: 0, role: "region", "aria-label": label, onScroll: handleScroll, children: paged
+                    ? // Pages of three: chunk ONCE, render each page as ONE snap
+                        // slide (width 100%); the page owns the 3-up grid + gap.
+                        Array.from({ length: pageCount }, (_, pageIdx) => (_jsx("div", { className: "ptp-carousel__page", style: { flex: "0 0 100%" }, children: items.slice(pageIdx * 3, pageIdx * 3 + 3) }, pageIdx)))
+                    : children }), _jsxs("div", { className: "ptp-carousel__controls", children: [_jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Previous", onClick: () => scrollByItem(-1), children: _jsx(Icon, { name: "ChevronLeft", "aria-hidden": true }) }), items.length > 0 && (_jsx("div", { className: "ptp-carousel__dots", children: Array.from({ length: pageCount }, (_, index) => (_jsx("button", { type: "button", className: "ptp-carousel__dot", "data-active": index === page - 1 ? "true" : "false", "aria-label": paged ? `Go to page ${index + 1}` : `Go to item ${index + 1}`, onClick: () => scrollToIndex(index) }, index))) })), _jsxs("span", { className: "ptp-carousel__indicator", "aria-live": "polite", children: [page, " / ", pageCount] }), _jsx("button", { type: "button", className: "ptp-carousel__btn", "aria-label": "Next", onClick: () => scrollByItem(1), children: _jsx(Icon, { name: "ChevronRight", "aria-hidden": true }) })] })] }));
 }
 /**
  * `<ProseBlock>` — the editorial slot (2.4.0).

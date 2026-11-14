@@ -1164,3 +1164,99 @@
   color: var(--text-muted);
   font-size: 0.75rem;
 }
+
+/* ---- 3.0.0 THE CAROUSEL MODE TOGGLE PILL (the Field Notes card) -----------
+   A two-button segmented pill: aria-pressed IS the state (the tabs/nav
+   contract — no .is-active class). Inset track + hairline, the active
+   segment wears the Flamingo underline + main ink. Flat (e1), zero hex. */
+.hub__mode-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  align-self: flex-start;
+}
+
+.hub__mode-toggle button {
+  padding: var(--space-tight) var(--space-standard);
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+}
+
+.hub__mode-toggle button:hover {
+  color: var(--text-main);
+}
+
+.hub__mode-toggle button[aria-pressed="true"] {
+  color: var(--text-main);
+  font-weight: 500;
+  border-bottom-color: var(--color-cake-primary);
+}
+
+.hub__mode-toggle button:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+/* ---- 3.0.0 THE PALETTE SWATCH GRID (the bento Party Palette card) ---------
+   The 26-token family as a compact grid: each swatch is the PartyBadge
+   plus its ink/fill role tag; the chromatic sixteen wear the "new" badge. */
+.hub__palette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-tight);
+}
+
+.hub__palette-swatch {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  padding: var(--space-tight);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.hub__palette-swatch:hover {
+  border-color: var(--color-cake-secondary);
+}
+
+.hub__palette-swatch:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.hub__palette-swatch-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  min-width: 0;
+}
+
+.hub__palette-role {
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hub__palette-new {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--color-cake-secondary);
+  border: 1px solid color-mix(in srgb, var(--color-cake-secondary) 45%, transparent);
+  border-radius: 999px;
+  padding: 0 0.25rem;
+}

@@ -1875,6 +1875,61 @@ for (const [needle, label] of SM3_REQUIREMENTS) {
   }
 }
 
+// ---- (car3) CAROUSEL MODES (3.0.0) ------------------------------------------------
+// css/editorial.css: the docked control bar (prev · dots · indicator · next),
+// the full-width track, the paged-3 snap slide (repeat(3, 1fr) + 16px gap),
+// the zero-gap paged track, the container collapse. react/editorial.tsx side
+// is needled by (af3)'s amended list above; the showcase toggle pill is
+// needled here against App.tsx.
+{
+  const editorialCss30 = readFileSync(resolve(root, "css/editorial.css"), "utf8");
+  const CAR3_CSS = [
+    [".ptp-carousel__controls", "the docked control bar"],
+    [".ptp-carousel--paged .ptp-carousel__track", "the paged track (zero inter-page gap)"],
+    [".ptp-carousel__page", "the page slide"],
+    ["grid-template-columns: repeat(3, 1fr)", "the 3-up page grid"],
+    ["gap: var(--space-standard)", "the page's 16px internal gap"],
+    ["scroll-snap-align: start", "each page is a snap unit"],
+    ["@container (max-width: 640px)", "the narrow-cell page collapse"],
+    [".ptp-carousel__indicator", "the bar-docked readout"],
+    [".ptp-carousel__dots", "the dots (docked in the bar)"],
+  ];
+  for (const [needle, label] of CAR3_CSS) {
+    if (!editorialCss30.includes(needle)) {
+      failures.push(`(car3) css/editorial.css must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const controlsRow = /\.ptp-carousel__controls\s*\{[^}]*display: flex;[^}]*align-items: center;/s;
+  if (!controlsRow.test(editorialCss30)) {
+    failures.push(
+      "(car3) .ptp-carousel__controls must be the flex control bar (prev · dots · indicator · next)",
+    );
+  }
+  const pageGrid = /\.ptp-carousel__page\s*\{[^}]*flex: 0 0 100%;[^}]*grid-template-columns: repeat\(3, 1fr\);/s;
+  if (!pageGrid.test(editorialCss30)) {
+    failures.push(
+      "(car3) .ptp-carousel__page must be flex: 0 0 100% + repeat(3, 1fr) — ONE snap unit per page of three",
+    );
+  }
+  const pagedGap = /\.ptp-carousel--paged \.ptp-carousel__track\s*\{[^}]*gap: 0;/s;
+  if (!pagedGap.test(editorialCss30)) {
+    failures.push(
+      "(car3) the paged track must zero its own gap (the page owns the 16px internal gap) — scroll math depends on width-only strides",
+    );
+  }
+  for (const [needle, label] of [
+    ['data-testid="carousel-mode-toggle"', "the showcase toggle pill hook"],
+    ['aria-pressed={carouselMode === "paged-3"}', "the paged-3 pill state"],
+    ['aria-pressed={carouselMode === "free-scroll"}', "the free-scroll pill state"],
+    ['useState<"paged-3" | "free-scroll">("free-scroll")', "the toggle's state (default free-scroll)"],
+    ['mode={carouselMode}', "the mode flows into <Carousel>"],
+  ]) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(car3) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+
 // ---- (dd5) THE TABS SHOWCASE — the playground data/forms modules (2.3.0) ---------
 const TABS_REQUIREMENTS = [
   ['label="Dashboard modules"', 'the tablist accessible name'],
@@ -2479,10 +2534,21 @@ for (const [needle, label] of [
   ["action?: AnnouncementBannerAction", "the call-to-action slot"],
   ['className="ptp-announcement__action"', "the ghost action button render"],
   ["aria-live=\"polite\"", "the indicator announces page turns politely"],
-  ["Math.round(track.scrollLeft / itemWidthOf(track)) + 1", "the owner-spec'd active index formula"],
-  ["onScroll={handleScroll}", "the indicator tracks the native scroll event"],
+  // 3.0.0 (car3) AMENDMENT: the owner-spec'd scrollLeft/itemWidth formula is
+  // REPLACED by the IntersectionObserver sync (free-scroll) + the page math
+  // (paged-3). The rAF throttle + onScroll needles survive (the paged mode's
+  // page sync still rides one state write per frame).
+  ["mode?: \"paged-3\" | \"free-scroll\"", "the 3.0.0 mode prop (default free-scroll)"],
+  ["IntersectionObserver", "the free-scroll active-index sync (majority-visible wins)"],
+  ["intersectionRatio >= 0.5", "the majority-visible threshold"],
+  ["observer.disconnect()", "the IO cleanup on unmount"],
+  ["Math.round(track.scrollLeft / track.clientWidth) + 1", "the paged-3 page formula (scrollLeft / track width)"],
+  ["onScroll={handleScroll}", "the paged page-sync rides the native scroll event"],
   ["requestAnimationFrame", "the rAF throttle — one state write per frame"],
   ["cancelAnimationFrame", "the pending frame is cleaned up on unmount"],
+  ['"ptp-carousel__controls"', "the docked control bar (prev · dots · indicator · next)"],
+  ['"ptp-carousel__page"', "the paged-3 snap slide"],
+  ["Math.ceil(items.length / stride)", "the pure page-count math"],
 ]) {
   if (!editorialSrcAf.includes(needle)) {
     failures.push(`react/editorial.tsx must contain ${JSON.stringify(needle)} — (af3) ${label}`);
