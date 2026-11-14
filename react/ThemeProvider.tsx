@@ -46,6 +46,7 @@ const TOKEN_KEYS = [
   "--color-on-cake",
   "--font-sans",
   "--radius-ui",
+  "--radius-card", /* 3.0.0 — the 12px card corner (cards > 6px controls) */
   "--transition-standard",
   "--transition-transform",
   "--space-tight",
@@ -57,9 +58,11 @@ const TOKEN_KEYS = [
   "--z-overlay",
   "--z-modal",
   "--z-toast",
-  /* party palette — CONTENT-only tokens (0.4.0); never for structural chrome.
-     2.5.0 adds --party-yellow: the strength meter's Fair stage (feedback
-     meter stages join the content reservation, the peach-error precedent). */
+  /* party palette — CONTENT-only tokens (0.4.0). 3.0.0 THE 16-COLOR
+     CHROMATIC EXPANSION: --party-blue RETIRES (value carried by
+     --party-cobalt — the old name is banned from css/, tokens.json and
+     this whitelist), and 15 chromatic FILL/SERIES accents join. The
+     family is 26 tokens; the whitelist is 50. */
   "--party-pink-bright",
   "--party-pink-soft",
   "--party-pink-alt",
@@ -67,10 +70,27 @@ const TOKEN_KEYS = [
   "--party-mauve-soft",
   "--party-lavender",
   "--party-sky",
-  "--party-blue",
+  "--party-cobalt",
   "--party-peach",
   "--party-green",
   "--party-yellow",
+  /* 3.0.0 chromatic sixteen — cobalt above + these 15 FILL/SERIES accents
+     (bars, node rings, borders, tinted wells — never body-text ink). */
+  "--party-orchid",
+  "--party-cyan",
+  "--party-magenta",
+  "--party-mint",
+  "--party-spring",
+  "--party-citron",
+  "--party-violet-glow",
+  "--party-pink-glow",
+  "--party-rose-glow",
+  "--party-lime-glow",
+  "--party-mint-glow",
+  "--party-crimson",
+  "--party-azure",
+  "--party-tangerine",
+  "--party-neon-green",
 ] as const;
 
 /** A token name known to Signature Style. */

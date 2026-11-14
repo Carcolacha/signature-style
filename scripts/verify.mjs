@@ -236,10 +236,15 @@ for (const [blockName, declarations] of [
 }
 
 // ---- (c) retired hexes appear nowhere -----------------------------------------
-// #F5C2E7 / #A6E3A1: the retired Catppuccin Pink/Green accents (banned since
-// 0.2.1). #FFB7B2 / #E2F0CB: the retired custom cake hexes (banned since
-// 0.3.0) — even in comments, nowhere in css/ or tokens.json.
-const RETIRED_HEXES = ["#F5C2E7", "#A6E3A1", "#FFB7B2", "#E2F0CB"];
+// #A6E3A1: the retired Catppuccin Green accent. #FFB7B2 / #E2F0CB: the retired
+// custom cake hexes (banned since 0.3.0) — even in comments, nowhere in css/
+// or tokens.json.
+// 3.0.0 OWNER-SANCTIONED AMENDMENT: #F5C2E7 LEAVES this list — the official
+// Catppuccin Mocha Pink is re-homed as --party-orchid (Task 1 of the 16-color
+// chromatic expansion; the same convergence move 2.9.1 made for the blue).
+// The ban list below is the owner's frozen floor; each release that
+// legitimately re-homes a value re-pins the floor (the (b7) discipline).
+const RETIRED_HEXES = ["#A6E3A1", "#FFB7B2", "#E2F0CB"];
 const scannedPaths = [
   ...readdirSync(resolve(root, "css")).map((f) => join("css", f)),
   "tokens.json",
@@ -309,6 +314,12 @@ if (rootDeclarations === null) {
 // RULE OF ENGAGEMENT: --party-* tokens are reserved EXCLUSIVELY for content
 // (badges, tags, avatars, event theme overrides, calendar blocks, data-viz).
 // The Engine keeps Flamingo/Teal for ALL structural UI. Never crossed.
+// 3.0.0 OWNER-SANCTIONED AMENDMENT (the 16-color chromatic expansion, the
+// 2.9.1 re-pin precedent): --party-blue RETIRES (the name — its value lives
+// on as --party-cobalt, same hex), 15 chromatic FILL/SERIES accents join,
+// and the family is 26. The legacy 10 + cobalt keep the content-only role;
+// the chromatic fifteen carry the DECLARED fill/series role (visibility
+// floor 2.0:1 vs surface — measured by playground/verify-contrast.mjs).
 const PARTY_TOKENS = [
   ["--party-pink-bright", "#ea76cb"],
   ["--party-pink-soft", "#f5bde6"],
@@ -320,12 +331,49 @@ const PARTY_TOKENS = [
   ["--party-mauve-soft", "#cba6f7"],
   ["--party-lavender", "#7287fd"],
   ["--party-sky", "#04a5e5"],
-  ["--party-blue", "#89b4fa"], /* 2.9.1 ZERO CONTRAST DEBT — re-pinned from #1e66f5:
-     now the official Catppuccin Mocha Blue (5.97:1 on surface), the exact value
-     v3.0.0's planned --party-cobalt retires it into (owner-sanctioned). */
+  ["--party-cobalt", "#89b4fa"], /* 3.0.0: --party-blue RETIRED — the name,
+     not the value: the official Catppuccin Mocha Blue (5.97:1 on surface)
+     continues under --party-cobalt. The old name is banned. */
   ["--party-peach", "#fe640b"],
   ["--party-green", "#a6d189"],
+  /* 3.0.0 CHROMATIC SIXTEEN (cobalt above + these 15) — DECLARED FILL/SERIES
+     accents: bars, node rings, borders, tinted wells — never body-text ink. */
+  ["--party-orchid", "#F5C2E7"],
+  ["--party-cyan", "#64DFDF"],
+  ["--party-magenta", "#CF64DF"],
+  ["--party-mint", "#64DF99"],
+  ["--party-spring", "#6EDF64"],
+  ["--party-citron", "#DBDF64"],
+  ["--party-violet-glow", "#C29EFF"],
+  ["--party-pink-glow", "#F29EFF"],
+  ["--party-rose-glow", "#FF9EDB"],
+  ["--party-lime-glow", "#DBFF9E"],
+  ["--party-mint-glow", "#9EFFC2"],
+  ["--party-crimson", "#F22222"],
+  ["--party-azure", "#228AF2"],
+  ["--party-tangerine", "#F25622"],
+  ["--party-neon-green", "#56F222"],
 ];
+const CONTENT_ONLY_ROLE = "content only: tags/avatars/calendar/data-viz";
+const FILL_SERIES_ROLE =
+  "fill/series accent: bars, node rings, borders, tinted wells — never body-text ink";
+const CHROMATIC_FILL_SERIES = new Set([
+  "--party-orchid",
+  "--party-cyan",
+  "--party-magenta",
+  "--party-mint",
+  "--party-spring",
+  "--party-citron",
+  "--party-violet-glow",
+  "--party-pink-glow",
+  "--party-rose-glow",
+  "--party-lime-glow",
+  "--party-mint-glow",
+  "--party-crimson",
+  "--party-azure",
+  "--party-tangerine",
+  "--party-neon-green",
+]);
 if (rootDeclarations === null) {
   failures.push("cannot check party palette — no :root block found");
 } else {
@@ -333,7 +381,7 @@ if (rootDeclarations === null) {
     const pattern = new RegExp(`${name}\\s*:\\s*${hex}`, "i");
     if (!pattern.test(rootDeclarations)) {
       failures.push(
-        `party token ${name} must be ${hex} in the css/tokens.css :root block — the Party Palette is exact and content-reserved (0.4.0)`,
+        `party token ${name} must be ${hex} in the css/tokens.css :root block — the Party Palette is exact and content-reserved (0.4.0; 3.0.0 chromatic expansion)`,
       );
     }
   }
@@ -353,9 +401,12 @@ for (const [name, hex] of PARTY_TOKENS) {
       `tokens.json partyPalette.${name} must be ${hex}, found ${entry.value}`,
     );
   }
-  if (entry.role !== "content only: tags/avatars/calendar/data-viz") {
+  const expectedRole = CHROMATIC_FILL_SERIES.has(name)
+    ? FILL_SERIES_ROLE
+    : CONTENT_ONLY_ROLE;
+  if (entry.role !== expectedRole) {
     failures.push(
-      `tokens.json partyPalette.${name} role must be the content-only role, found ${JSON.stringify(entry.role)}`,
+      `tokens.json partyPalette.${name} role must be "${expectedRole}", found ${JSON.stringify(entry.role)}`,
     );
   }
   if (entry.reserved !== true) {
@@ -363,7 +414,7 @@ for (const [name, hex] of PARTY_TOKENS) {
   }
 }
 
-// ---- (p2) party whitelist parity: all 10 party names in TOKEN_KEYS -----------
+// (p2) party whitelist parity: all 26 party names in TOKEN_KEYS -----------
 if (whitelist !== null) {
   const missingParty = PARTY_TOKENS.map(([name]) => name).filter(
     (name) => !whitelist.includes(name),
@@ -373,6 +424,38 @@ if (whitelist !== null) {
       `party palette tokens missing from the ThemeProvider TOKEN_KEYS whitelist: ${missingParty.join(", ")}`,
     );
   }
+  // 3.0.0 (chrom) companion: the RETIRED name is banned from the whitelist.
+  if (whitelist.includes("--party-blue")) {
+    failures.push(
+      "--party-blue must NOT be in the TOKEN_KEYS whitelist — the name retired in 3.0.0 (the value lives on as --party-cobalt)",
+    );
+  }
+}
+
+// (p3) 3.0.0 (chrom): the retired name is banned from css/ + tokens.json
+// (DECLARED names only — retirement prose in comments is legitimate), and
+// the new --radius-card token exists with its exact value.
+const tokensCssStripped = css.replace(/\/\*[\s\S]*?\*\//g, "");
+if (/(^|[^-\w])--party-blue\s*:/.test(tokensCssStripped)) {
+  failures.push(
+    "--party-blue is DECLARED in css/tokens.css — the name retired in 3.0.0 (the value lives on as --party-cobalt)",
+  );
+}
+if (Object.keys(partyManifest.partyPalette?.tokens ?? {}).includes("--party-blue")) {
+  failures.push(
+    "tokens.json partyPalette still declares --party-blue — the name retired in 3.0.0 (the value lives on as --party-cobalt)",
+  );
+}
+const radiusCardJson = partyManifest.shared?.tokens?.["--radius-card"];
+if (radiusCardJson === undefined || String(radiusCardJson.value) !== "12px") {
+  failures.push(
+    'tokens.json shared.tokens["--radius-card"] must exist with the exact value "12px" (3.0.0: cards earn rounder corners than 6px controls)',
+  );
+}
+if (rootDeclarations !== null && !/--radius-card\s*:\s*12px\s*;/.test(rootDeclarations)) {
+  failures.push(
+    "--radius-card must be declared as 12px in the css/tokens.css :root block (3.0.0)",
+  );
 }
 
 // ---- (s) structural freeze: v0.3.0 structural UI is LOCKED -------------------

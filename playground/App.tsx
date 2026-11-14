@@ -554,7 +554,7 @@ const CATEGORY_LABELS: Record<PtpEvent["category"], string> = {
   "--party-mauve-soft": "Admin",
   "--party-lavender": "Ceremony",
   "--party-sky": "Music",
-  "--party-blue": "Logistics",
+  "--party-cobalt": "Logistics", /* 3.0.0: blue retired — cobalt carries the value */
   "--party-peach": "Catering",
   "--party-green": "RSVP",
   "--party-yellow": "Meter",
@@ -778,7 +778,7 @@ const PALETTE: ReadonlyArray<{ token: PtpEvent["category"]; label: string }> = [
   { token: "--party-mauve-soft", label: "Soft mauve" },
   { token: "--party-lavender", label: "Lavender" },
   { token: "--party-sky", label: "Sky" },
-  { token: "--party-blue", label: "Blue" },
+  { token: "--party-cobalt", label: "Cobalt" },
   { token: "--party-peach", label: "Peach" },
   { token: "--party-green", label: "Green" },
 ];
@@ -1725,7 +1725,7 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
     title: "Catppuccin Edition",
     story: "The palette went 100% official Catppuccin — every color mapped, nothing invented.",
     stat: "mocha + latte",
-    accentToken: "--party-blue",
+    accentToken: "--party-cobalt",
   },
   {
     tag: "v0.3.0",
@@ -1816,7 +1816,7 @@ const RELEASE_HISTORY: ChronicleRelease[] = [
     title: "The Visual Cortex",
     story: "The MCP server: layout sweeps + screenshots as release-blocker proof.",
     stat: "2 tools",
-    accentToken: "--party-blue",
+    accentToken: "--party-cobalt",
   },
   {
     tag: "v1.8.0",

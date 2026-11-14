@@ -41,7 +41,7 @@ const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core"
   { token: "--party-mauve-soft", label: "Mauve soft", family: "party" },
   { token: "--party-lavender", label: "Lavender", family: "party" },
   { token: "--party-sky", label: "Sky", family: "party" },
-  { token: "--party-blue", label: "Blue", family: "party" },
+  { token: "--party-cobalt", label: "Cobalt", family: "party" },
   { token: "--party-peach", label: "Peach", family: "party" },
   { token: "--party-green", label: "Green", family: "party" },
   { token: "--party-yellow", label: "Yellow", family: "party" },

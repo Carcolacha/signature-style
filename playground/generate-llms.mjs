@@ -18,7 +18,7 @@
  *
  * Sources (regeneration = one command — `npm run llms`):
  *   - playground/snippets.ts        (the copy-paste contracts)
- *   - tokens.json                   (the 34-token whitelist, verbatim)
+ *   - tokens.json                   (the 50-token whitelist, verbatim)
  *   - SYSTEM_PROMPT.md v3.0         (the doctrines, verbatim-in-spirit)
  *   - react/*.d.ts                  (the shipped prop surfaces)
  *
@@ -46,7 +46,7 @@ const PROP_SYMBOLS = {
   ToastProvider: null,
 };
 
-/* ---- tokens.json — the 34-token whitelist, verbatim ------------------- */
+/* ---- tokens.json — the 50-token whitelist, verbatim ------------------- */
 const tokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
 const mocha = Object.values(tokens.themes.mocha.tokens);
 const latte = Object.values(tokens.themes.latte.tokens);
@@ -57,8 +57,8 @@ const whitelist = new Set([
   ...Object.keys(tokens.shared.tokens),
   ...Object.keys(tokens.partyPalette.tokens),
 ]);
-if (whitelist.size !== 34) {
-  throw new Error(`generate-llms: expected the 34-token whitelist, found ${String(whitelist.size)}`);
+if (whitelist.size !== 50) {
+  throw new Error(`generate-llms: expected the 50-token whitelist (3.0.0: 34 + cobalt + 15 chromatic + --radius-card), found ${String(whitelist.size)}`);
 }
 
 /* ---- SYSTEM_PROMPT.md — the doctrines ---------------------------------- */
@@ -125,7 +125,7 @@ lines.push(
 );
 lines.push("");
 
-lines.push("## The 34-Token Whitelist");
+lines.push("## The 50-Token Whitelist");
 lines.push("");
 lines.push("### Mocha (dark default — theme tokens; Latte swaps the values by `[data-theme=\"latte\"]`, same names)");
 lines.push("");
@@ -222,9 +222,9 @@ The official machine-readable index for AI agents. Full self-contained version: 
 
 ## Tokens
 
-- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 34-token whitelist, Mocha + Latte themes, shared tokens, the Party Palette, the doctrine objects
-- [llms-full.txt — The 34-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json
-- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — 22 colors + 12 spatial/z/type/motion tokens in @layer tokens
+- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 50-token whitelist, Mocha + Latte themes, shared tokens, the Party Palette, the doctrine objects
+- [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json
+- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
 
 ## Rules
 

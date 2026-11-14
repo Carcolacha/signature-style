@@ -63,7 +63,11 @@ const CATEGORY_OPTIONS = [
     { token: "--party-mauve-soft", label: "Admin" },
     { token: "--party-lavender", label: "Ceremony" },
     { token: "--party-sky", label: "Music" },
-    { token: "--party-blue", label: "Logistics" },
+    { token: "--party-cobalt", label: "Logistics" }, /* 3.0.0: --party-blue
+       RETIRED — value carried by cobalt (same hex). OWNER-SANCTIONED pin
+       re-target: this frozen file's typed array pinned the retired name and
+       the typecheck made the retirement unsatisfiable (the 2.9.1 verify.mjs
+       precedent — the floor rebases with the release). */
     { token: "--party-peach", label: "Catering" },
     { token: "--party-green", label: "RSVP" },
     { token: "--party-yellow", label: "Meter" },

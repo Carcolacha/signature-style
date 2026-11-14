@@ -70,6 +70,10 @@
     --color-on-cake: #1E1E2E;
     --font-sans: "Inter", system-ui, sans-serif;
     --radius-ui: 6px;
+    --radius-card: 12px; /* 3.0.0 — cards earn rounder corners than 6px controls.
+        The control radius (--radius-ui) stays 6px; container cards (the
+        archetype surfaces) reference var(--radius-card). Same token
+        cascade, one step up the grid (12px = 6px × 2). */
     --transition-standard: all 0.15s ease-out;
     --transition-transform: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     --space-tight: 0.5rem;
@@ -83,17 +87,26 @@
     --z-modal: 50;
     --z-toast: 60;   /* toasts — the zenith: above modals */
 
-    /* -- PARTY PALETTE (0.4.0) — content-only tokens --------------------------
-       Theme-independent BY DESIGN: defined ONCE here in :root and inherited
-       by [data-theme="latte"] untouched, so content wears the same party
-       colors on both sides of the toggle.
+    /* -- PARTY PALETTE (0.4.0; 3.0.0 THE 16-COLOR CHROMATIC EXPANSION) --------
+        Theme-independent BY DESIGN: defined ONCE here in :root and inherited
+        by [data-theme="latte"] untouched, so content wears the same party
+        colors on both sides of the toggle.
 
-       RULE OF ENGAGEMENT — --party-* tokens are reserved EXCLUSIVELY for
-       CONTENT: badges, tags, avatars, event theme overrides, calendar
-       blocks, data visualization. The Engine continues using Flamingo/Teal
-       for ALL structural UI actions (buttons, inputs, focus rings).
-       Never use --party-* for structural chrome; never use Flamingo/Teal
-       for content categories. ------------------------------------------------- */
+        3.0.0 — the family grows 11 → 26: --party-blue RETIRES (its name,
+        not its value — the official Mocha Blue survives as --party-cobalt,
+        the same #89b4fa under its own name), and 15 CHROMATIC tokens join.
+        The chromatic set is DECLARED FILL/SERIES accents: bars, node rings,
+        borders, tinted wells — never body-text ink (contrast documented in
+        tokens.json + measured by verify:contrast at a 2.0:1 visibility
+        floor vs surface; every value clears it, the lowest is crimson at
+        3.01:1).
+
+        RULE OF ENGAGEMENT — --party-* tokens are reserved EXCLUSIVELY for
+        CONTENT: badges, tags, avatars, event theme overrides, calendar
+        blocks, data visualization. The Engine continues using Flamingo/Teal
+        for ALL structural UI actions (buttons, inputs, focus rings).
+        Never use --party-* for structural chrome; never use Flamingo/Teal
+        for content categories. ------------------------------------------------- */
     --party-pink-bright: #ea76cb;
     --party-pink-soft: #f5bde6;
     --party-pink-alt: #f4b8e4;
@@ -104,14 +117,37 @@
     --party-mauve-soft: #cba6f7;
     --party-lavender: #7287fd;
     --party-sky: #04a5e5;
-    --party-blue: #89b4fa; /* 2.9.1 ZERO CONTRAST DEBT — was #1e66f5 (2.56:1 on
-       --bg-surface, sub-3.0 FAIL). Now the OFFICIAL Catppuccin Mocha Blue —
-       the exact value v3.0.0's planned --party-cobalt retires it into, so
-       this patch converges with the planned major. 5.97:1 on surface /
-       7.79:1 on base. Gate: verify:contrast. */
+    --party-cobalt: #89b4fa; /* 3.0.0 — --party-blue RETIRED, value carried:
+       the official Catppuccin Mocha Blue under its own name (the same hex
+       2.9.1 shipped as the blue fix — 5.97:1 on surface / 7.79:1 on base).
+       The old name is BANNED from css/, tokens.json and the TOKEN_KEYS
+       whitelist (gate: (chrom) + (ct1)). */
     --party-peach: #fe640b;
     --party-green: #a6d189;
     --party-yellow: #F9E2AF; /* strength-meter Fair stage, owner v2.5.0 */
+
+    /* -- 3.0.0 CHROMATIC SIXTEEN (15 new + cobalt above) — FILL/SERIES accents
+        Bars, graph node rings, borders, tinted wells. NOT body-text ink.
+        Measured vs --bg-surface #313244 (verify:contrast, 2.0:1 floor —
+        every token clears it): orchid 8.23 · cyan 7.88 · magenta 3.92 ·
+        mint 7.52 · spring 7.43 · citron 8.83 · violet-glow 5.76 ·
+        pink-glow 6.65 · rose-glow 6.68 · lime-glow 11.26 · mint-glow 10.50 ·
+        crimson 3.01 · azure 3.58 · tangerine 3.67 · neon-green 8.45. */
+    --party-orchid: #F5C2E7;
+    --party-cyan: #64DFDF;
+    --party-magenta: #CF64DF;
+    --party-mint: #64DF99;
+    --party-spring: #6EDF64;
+    --party-citron: #DBDF64;
+    --party-violet-glow: #C29EFF;
+    --party-pink-glow: #F29EFF;
+    --party-rose-glow: #FF9EDB;
+    --party-lime-glow: #DBFF9E;
+    --party-mint-glow: #9EFFC2;
+    --party-crimson: #F22222;
+    --party-azure: #228AF2;
+    --party-tangerine: #F25622;
+    --party-neon-green: #56F222;
   }
 
   /* -- the white version: 100% official Catppuccin Latte --------------------- */
