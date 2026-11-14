@@ -528,3 +528,123 @@
 .ptp-btn--primary {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
+
+/* ---- 2.8.0 THE PATTERN FRAME (the Copy Studio card) -----------------------
+    The Signature Pattern Website's unit card: header bar (name + set
+    badge + view tabs + Copy Card) over a body that renders the live
+    preview, the formatted JSX, or the HTML variant. THE E1 TREATY: this
+    anatomy is FLAT — surface bg + glass hairline + radius only, zero
+    box-shadow. 100% var()/color-mix, zero hex (b4). */
+.pattern-frame {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+  padding: var(--space-standard);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.pattern-frame__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-tight);
+  padding-bottom: var(--space-tight);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+}
+
+.pattern-frame__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+}
+
+.pattern-frame__title h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.pattern-frame__tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+}
+
+/* The segmented mini-tabs — attribute-driven state (aria-pressed IS the
+   active state; the Tabs/GlobalNav contract, no .is-active classes).
+   The active underline is the 2px Flamingo rule. */
+.pattern-frame__tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.pattern-frame__tab {
+  padding: var(--space-tight) var(--space-tight);
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+}
+
+.pattern-frame__tab:hover {
+  color: var(--text-main);
+}
+
+.pattern-frame__tab[aria-pressed="true"] {
+  color: var(--text-main);
+  font-weight: 500;
+  border-bottom-color: var(--color-cake-primary);
+}
+
+.pattern-frame__tab:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+/* The code well: inset ground, hairline, mono 0.8125rem, horizontal
+   scroll — the ReferenceCard's inset pre/code anatomy, reused. */
+.pattern-frame__code {
+  margin: 0;
+  padding: var(--space-standard);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  overflow-x: auto;
+}
+
+.pattern-frame__code code {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-main);
+}
+
+.pattern-frame__note {
+  margin: 0;
+  padding: var(--space-standard);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* The live preview strip — the inset ground gives interactive demos a
+   stage without owning any shadows. */
+.pattern-frame__preview {
+  padding: var(--space-standard);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
