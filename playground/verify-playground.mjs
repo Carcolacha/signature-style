@@ -377,6 +377,91 @@
  *         css/data.css flips (af1) to FAIL; restore → PASS
  *         (git-verified byte-identical).
  *
+ * 2.5.0 gates ("Ergonomic Form Rules, Button & Card Archetypes, and
+ * the 12-Column Bento" — built backwards from the owner's five
+ * defects):
+ *   (b2 AMENDMENT)  the frozen files array evolves ONE more step:
+ *         v1.4.0 + the three prior negations + "!react/cards.tsx" (the
+ *         negations precedent — the cards source never ships, its
+ *         compiled .js/.d.ts do).
+ *   (b3)  npm pack now packs EXACTLY 47 files (43 + css/primitives.css
+ *         + css/cards.css + react/cards.js + react/cards.d.ts).
+ *   (b7)  SAFETY PROOF REBASED to the v2.4.1 baseline (each release
+ *         that legitimately touches core rebases the floor): diff vs
+ *         v2.4.1 over css/ react/ tokens.json SYSTEM_PROMPT.md demo/
+ *         scripts/ must be EMPTY except the owner-authorized 2.5.0
+ *         deltas — css/tokens.css (+ --party-yellow), tokens.json
+ *         (token + meta 2.5.0), css/forms.css (FormField anatomy +
+ *         PasswordInput), css/primitives.css + css/cards.css (NEW),
+ *         css/signature-style.css (the two layered imports),
+ *         react/ThemeProvider.{tsx,js,d.ts} (whitelist 34),
+ *         react/primitives.{tsx,js,d.ts} (Button), react/forms.{tsx,
+ *         js,d.ts} (FormField rework + PasswordInput),
+ *         react/cards.{tsx,js,d.ts} (NEW), react/index.{ts,js,d.ts}
+ *         (re-exports), SYSTEM_PROMPT.md (the v2.8 codex).
+ *         scripts/verify.mjs stays BYTE-FROZEN. react/viz.tsx and the
+ *         frozen css files stay byte-identical.
+ *   (n-hub4)  V2.5.0 FROZEN PROOF, rebased to v2.4.1 incl tools/: the
+ *         ONLY tools/ delta authorized is tools/mcp-viz/server.ts
+ *         (owner-editable: DEFAULT_SELECTORS += .ptp-btn,
+ *         .ptp-stat-card, .sig-shell; version 2.5.0).
+ *   (m3)  the 2.5.0 hooks join: data-testid="guest-form",
+ *         "ledger-table", "ring-rsvp" (the live-state probes); the
+ *         metric/button/tab/banner/carousel/kpi hooks stay.
+ *   (b12) THE 12-COLUMN BENTO — styles.css declares .bento12
+ *         (repeat(12, 1fr), section gap) + the span utilities
+ *         (.sig-span-12/7/5/4/3, .sig-row-2) + the 768px single-column
+ *         collapse with ALL spans reset; App.tsx renders
+ *         <main className="bento12"> and uses every span class.
+ *   (sh1) THE SHELL (defect #1's tombstone) — .sig-shell carries
+ *         max-width 1400px + clamp(20px, 4vw, 48px) side padding +
+ *         64px bottom air; App.tsx wraps EVERY view's content in it.
+ *   (ff1) FORMFIELD TOP-DOWN ANATOMY (defect #2) — forms.tsx renders
+ *         __desc BEFORE the well (grep order) and the validation zone
+ *         after it; css/forms.css carries the promoted label
+ *         (text-main 0.875rem/500), __desc, the owning well
+ *         (focus-within Flamingo ring, [data-invalid] peach),
+ *         the chips (hairline-separated), the scoped bare-input kill,
+ *         @keyframes ptp-shake + the reduced-motion kill.
+ *   (pw1) PASSWORDINPUT — forms.tsx: the Eye/EyeOff toggle
+ *         (live-map-probed), the role="progressbar" meter (0..4, now
+ *         score), data-score, the four rules + Weak/Fair/Good/Strong,
+ *         data-satisfied pills; css: the 4-segment meter with the
+ *         --party-yellow stage-2 fill and the green satisfied pills.
+ *   (bt1) THE BUTTON FAMILY — primitives.tsx: 4 variants, 3 sizes,
+ *         leftIcon/rightIcon, loading (spinner replaces icons, aria-busy
+ *         + disabled); css/primitives.css: the 4 variant classes, 2
+ *         size classes, @keyframes ptp-spin, :active scale(0.97), the
+ *         Flamingo focus ring, ZERO hex + ZERO box-shadow (the flat
+ *         primary is package law); bundle membership after data.css;
+ *         umbrella re-export.
+ *   (cd1) THE CARD ARCHETYPES — css/cards.css: preserve-3d +
+ *         backface-visibility + the rotateY flip, details[open]
+ *         chevron, the matchup 1fr auto 1fr grid, the standalone kbd
+ *         chip, the reduced-motion opacity swap; react/cards.tsx: the
+ *         aria-pressed flip button, the details/summary accordion, the
+ *         40px avatars; zero hex + zero shadow; bundle membership
+ *         after primitives.css; umbrella re-exports.
+ *   (al1) THE LIVE LEDGER ALIGNMENT (defect #4) — App.tsx's
+ *         BENTO_LEDGER_COLUMNS sets header "Contribution" numeric +
+ *         align right; the ledger-table testid wraps it.
+ *   (af2 AMENDMENT)  the 2.4.1 __row/__prefix needles retire — the
+ *         adornment composition is the __well/__chip now (gate ff1
+ *         carries the contract); __required, the switch migration and
+ *         the radio lift needles stay.
+ *   (dd4 AMENDMENT)  the codex title needle moves to v2.8.
+ *   (dd6 AMENDMENT)  the cortex sweep grows .ptp-btn / .ptp-stat-card
+ *         / .sig-shell; the server version moves to 2.5.0.
+ *   (showcase AMENDMENT)  the bento needles: Postal Code +
+ *         descriptions + validMessage + PasswordInput + the archetypes
+ *         + the v2.5.0 banner copy; RSVP options ALL carry
+ *         descriptions.
+ *   (h1 AMENDMENT)  the stagger retargets to the bento cells
+ *         (.bento12 > *), 11 cells at 50ms steps, the MANDATORY
+ *         reduced-motion escape follows.
+ *   Negative test (falsifiability, restore-verified): breaking the
+ *         banner's span-12 class flips (b12) to FAIL; restore → PASS.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -424,8 +509,10 @@ if (!selfWired) {
 // its compiled .js/.d.ts do) — asserted as the ONLY allowed deltas.
 // 2.4.0 AMENDMENT: the editorial promotion adds the third
 // ("!react/editorial.tsx"), same precedent.
+// 2.5.0 AMENDMENT: the cards promotion adds the fourth
+// ("!react/cards.tsx"), same precedent.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
-const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -448,7 +535,8 @@ if (v140pkg !== null) {
   }
 }
 
-// ---- (b3) npm pack still exactly 43 files (2.4.0: 40 + editorial.css/js/d.ts) ----
+// ---- (b3) npm pack still exactly 47 files (2.5.0: 43 + primitives.css +
+// cards.css + cards.js + cards.d.ts) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -467,9 +555,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "43") {
+} else if (totalFiles[1] !== "47") {
   failures.push(
-    `(b3) npm pack must yield exactly 43 files (2.4.0 = 40 + css/editorial.css + react/editorial.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 47 files (2.5.0 = 43 + css/primitives.css + css/cards.css + react/cards.js/.d.ts; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -504,33 +592,42 @@ const APP_REQUIREMENTS = [
   ["<PageHero title={hero.title} subtitle={hero.sub} />", "the announcing hero renders through the package primitive (n-hub2, 2.2.0)"],
   ['title: "THE ENGINE"', "the hero announces THE ENGINE (n-hub2, per-view HERO_COPY)"],
   ["every primitive, one dashboard · live showcase", "the dashboard hero subtitle string (n-hub2)"],
-  ['className="hub"', "the single hub grid container"],
-  ['eyebrow="Forms"', "card 1 — the teal eyebrow (n-hub3 anatomy, package-owned)"],
-  ['eyebrow="Timeline"', "card 2 — the teal eyebrow"],
-  ['eyebrow="Telemetry"', "card 3 — the teal eyebrow"],
-  ['eyebrow="Palette"', "card 4 — the teal eyebrow"],
-  ['meta="components/forms.tsx"', "card 1 declares its source path"],
-  ['meta="components/timeline.tsx"', "card 2 declares its source path"],
-  ['meta="components/viz.tsx"', "card 3 declares its source path"],
-  ['meta="components/primitives.tsx"', "card 4 declares its source path"],
-  ['title="Form Controls"', "card 1's ruled title"],
-  ['title="The Chronology"', "card 2's ruled title"],
-  ['className="hub__card--timeline"', "card 2 keeps the playground grid-span modifier (composed ON the primitive)"],
-  ['title="Budget & RSVP"', "card 3's ruled title"],
-  ['title="The Party Palette"', "card 4's ruled title"],
-  ['className="hub__btn"', "the primary action echoes btn-primary"],
-  ["PartyBadge", "the palette card renders party badges"],
-  ["StatRing", "the telemetry card renders the ring"],
+  ['className="sig-shell"', "THE SHELL (2.5.0 sh1) — every view's content renders inside it (defect #1)"],
+  ['<main className="bento12">', "the core dashboard IS the 12-column bento (2.5.0 b12)"],
+  ['eyebrow="Forms"', "the check-in card — the teal eyebrow (n-hub3 anatomy, package-owned)"],
+  ['eyebrow="Timeline"', "the chronology card — the teal eyebrow"],
+  ['eyebrow="Telemetry"', "the telemetry card — the teal eyebrow"],
+  ['eyebrow="Palette"', "the palette card — the teal eyebrow"],
+  ['eyebrow="Deck"', "the deck card — the teal eyebrow (2.5.0 archetypes)"],
+  ['eyebrow="Data"', "the live ledger card — the teal eyebrow"],
+  ['eyebrow="Games"', "the matchup card — the teal eyebrow"],
+  ['meta="components/forms.tsx"', "the forms card declares its source path"],
+  ['meta="components/timeline.tsx"', "the timeline card declares its source path"],
+  ['meta="components/viz.tsx"', "the telemetry card declares its source path"],
+  ['meta="components/primitives.tsx"', "the palette card declares its source path"],
+  ['meta="components/cards.tsx"', "the cards declare their source path (2.5.0)"],
+  ['title="Quick Guest Check-In"', "the live-validation form card (2.5.0 defect #5)"],
+  ['title="The Chronology"', "the chronology card's ruled title"],
+  ['className="sig-span-4 sig-row-2 hub__card--timeline"', "the chronology: span 4 + ROW-SPAN 2 + the timeline modifier (sp1 overrides ride it)"],
+  ['title="Budget & RSVP Telemetry"', "the telemetry card's ruled title"],
+  ['title="Interactive Deck & Rules"', "the archetypes card's ruled title (2.5.0)"],
+  ['title="1v1 Game Matchup & Editorial"', "the matchup card's ruled title (2.5.0)"],
+  ['title="The Party Palette"', "the palette card's ruled title"],
+  ['title="The Input Matrix"', "the forms-module matrix card's ruled title"],
+  ["PartyBadge", "the palette + ledger render party badges"],
+  ["StatRing", "the telemetry card renders the live ring"],
   ["onEventSelect={modal.open}", "timeline nodes open the modal"],
+  ["SEED_GUESTS", "the live ledger's typed seed (2.5.0 live state)"],
+  ["const derived = useMemo(", "the DERIVED layer — every live read is a useMemo of guests"],
 ];
 for (const [needle, label] of APP_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
     failures.push(`(b5) App.tsx must contain ${needle} — ${label}`);
   }
 }
-// 2.2.0: the 4-card audit counts <SurfaceCard INSIDE the dashboard branch
-// only — the view switcher legitimately renders SurfaceCards elsewhere
-// (the placeholder modules).
+// 2.2.0: the 4-card audit counted SurfaceCards INSIDE the dashboard
+// branch. 2.5.0: the bento renders SEVEN — check-in, chronology,
+// telemetry, deck, palette, ledger, matchup — all interactive.
 const dashStart = appSrc.indexOf("function DashboardView");
 const dashEnd = appSrc.indexOf("function IndexView");
 if (dashStart === -1 || dashEnd === -1 || dashEnd < dashStart) {
@@ -538,12 +635,25 @@ if (dashStart === -1 || dashEnd === -1 || dashEnd < dashStart) {
 } else {
   const dashSlice = appSrc.slice(dashStart, dashEnd);
   const surfaceCount = (dashSlice.match(/<SurfaceCard/g) ?? []).length;
-  if (surfaceCount !== 4) {
-    failures.push(`(b5) the dashboard branch must render exactly 4 SurfaceCards, found ${surfaceCount}`);
+  if (surfaceCount !== 7) {
+    failures.push(`(b5) the dashboard branch must render exactly 7 SurfaceCards (the bento assembly), found ${surfaceCount}`);
   }
   const interactiveCount = (dashSlice.match(/interactive\s*(\/?>|className)/g) ?? []).length;
-  if (interactiveCount !== 4) {
-    failures.push(`(b5) all four dashboard cards must be interactive hover modules, found interactive on ${interactiveCount}`);
+  if (interactiveCount !== 7) {
+    failures.push(`(b5) all seven bento cards must be interactive hover modules, found interactive on ${interactiveCount}`);
+  }
+  const liveNeedles = [
+    ["useState<Guest[]>(SEED_GUESTS)", "the guests state seeds from SEED_GUESTS"],
+    ["const checkIn = useCallback(", "the append handler flows to the form"],
+    ["derived.ledgerRows", "the ledger rows derive from state"],
+    ["derived.ringValue", "the ring value derives from state"],
+    ["derived.spentPct", "the budget bars derive from state"],
+    ["RSVP_TO_STATE", "the radio value maps to the ledger RSVP"],
+  ];
+  for (const [needle, label] of liveNeedles) {
+    if (!dashSlice.includes(needle)) {
+      failures.push(`(b5) the live-state wiring is missing ${needle} — ${label}`);
+    }
   }
 }
 
@@ -566,32 +676,34 @@ if (iconNames.length === 0) {
 
 // ---- (h1) staggered load-in + reduced-motion escape + ruled headers --------------
 // 2.2.0 RETARGET: the stagger animates the package's .sig-surface-card
-// primitives (entry choreography is per-page); the ruled headers are
+// primitives. 2.5.0 RETARGET: the stagger animates the BENTO CELLS
+// (.bento12 > *, 11 cells at 50ms steps) — the 12-column grid's direct
+// children (banner, KPI cells, cards); the ruled headers are
 // package-owned now (css/surface.css .sig-surface-card__title).
 if (!stylesCss.includes("@keyframes slideUpFade")) {
   failures.push("(h1) styles.css must declare @keyframes slideUpFade");
 }
 if (!stylesCss.includes("animation: slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards")) {
   failures.push(
-    "(h1) .sig-surface-card must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
+    "(h1) the bento cells must animate slideUpFade 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards",
   );
 }
-if (!/\.sig-surface-card\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
-  failures.push("(h1) .sig-surface-card needs the opacity: 0 animation base");
+if (!/\.bento12 > \*\s*\{[^}]*opacity: 0;/s.test(stylesCss)) {
+  failures.push("(h1) .bento12 > * needs the opacity: 0 animation base");
 }
-for (const [child, delay] of [[1, "0.1s"], [2, "0.2s"], [3, "0.3s"], [4, "0.4s"]]) {
+for (const [child, delay] of [[1, "0.05s"], [2, "0.1s"], [5, "0.25s"], [11, "0.55s"]]) {
   const stagger = new RegExp(
-    `\\.sig-surface-card:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
+    `\\.bento12 > \\*:nth-child\\(${child}\\)\\s*\\{[^}]*animation-delay: ${delay.replace(".", "\\.")};`,
     "s",
   );
   if (!stagger.test(stylesCss)) {
-    failures.push(`(h1) .sig-surface-card:nth-child(${child}) must stagger at animation-delay: ${delay}`);
+    failures.push(`(h1) .bento12 > *:nth-child(${child}) must stagger at animation-delay: ${delay}`);
   }
 }
-const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.sig-surface-card\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
+const reduceEscape = /@media \(prefers-reduced-motion: reduce\)\s*\{[^}]*\.bento12 > \*\s*\{[^}]*animation: none;[^}]*opacity: 1;/s;
 if (!reduceEscape.test(stylesCss)) {
   failures.push(
-    "(h1) MANDATORY prefers-reduced-motion: reduce escape missing — without animation: none + opacity: 1, reduced-motion users get permanently invisible cards",
+    "(h1) MANDATORY prefers-reduced-motion: reduce escape missing — without animation: none + opacity: 1, reduced-motion users get permanently invisible bento cells",
   );
 }
 // The ruled headers live in the package (css/surface.css) since 2.2.0 —
@@ -821,40 +933,47 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.4.0 ------------------------
-// 2.4.1 REBASE (the release that legitimately touches core rebases the floor —
-// v2.3.0 → v2.4.0). The owner-authorized 2.4.1 deltas, and NOTHING else:
-//   css/data.css                      — grows: __align-* utilities (af1)
-//   css/forms.css                     — grows: required/prefix, switch wrapper,
-//                                       radio lift (af2)
-//   css/editorial.css                 — grows: mauve bar, h3, kbd/code,
-//                                       indicator, action (af3)
-//   react/data.{tsx,js,d.ts}          — grow: DataTableColumn.align + compiled
-//   react/forms.{tsx,js,d.ts}         — grow: required/prefix, visible switch
-//                                       label + compiled
-//   react/editorial.{tsx,js,d.ts}     — grow: banner variant/action, carousel
-//                                       indicator + compiled
-//   react/index.{ts,js,d.ts}          — the umbrella re-exports (type rename
-//                                       AnnouncementStatus → AnnouncementVariant)
-// css/viz.css and css/signature-style.css are NOT excluded this release —
-// both must stay byte-identical to v2.4.0 (patch release: no new files, no
-// new imports). scripts/verify.mjs stays BYTE-FROZEN. Everything else must
-// be byte-identical to v2.4.0.
+// ---- (b7) SAFETY PROOF: core files untouched since v2.4.1 ------------------------
+// 2.5.0 REBASE (the release that legitimately touches core rebases the floor —
+// v2.4.0 → v2.4.1). The owner-authorized 2.5.0 deltas, and NOTHING else:
+//   css/tokens.css                    — grows: --party-yellow (whitelist 34)
+//   tokens.json                       — grows: the token + meta 2.5.0
+//   css/forms.css                     — grows: FormField anatomy + PasswordInput
+//   css/primitives.css                — NEW: the Button family (flat, e1 law)
+//   css/cards.css                     — NEW: the card archetypes
+//   css/signature-style.css           — the two layered imports (after data.css)
+//   react/ThemeProvider.{tsx,js,d.ts} — the whitelist 33 → 34
+//   react/primitives.{tsx,js,d.ts}    — grow: Button + ButtonProps
+//   react/forms.{tsx,js,d.ts}         — grow: FormField rework + PasswordInput
+//   react/cards.{tsx,js,d.ts}         — NEW: the archetypes
+//   react/index.{ts,js,d.ts}          — the umbrella re-exports
+//   SYSTEM_PROMPT.md                  — the v2.8 codex
+// css/cascade.css, overrides, timeline, modal, nav, viz.css, surface, toast,
+// data.css, editorial.css + their react sources stay byte-identical to
+// v2.4.1 (react/viz.tsx UNTOUCHED — the ring animates from the playground).
+// scripts/verify.mjs stays BYTE-FROZEN. Everything else must be
+// byte-identical to v2.4.1.
 const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 const B7_AUTHORIZED = [
   ":(exclude)css/timeline.css",
-  ":(exclude)css/data.css",
+  ":(exclude)css/tokens.css",
+  ":(exclude)tokens.json",
   ":(exclude)css/forms.css",
-  ":(exclude)css/editorial.css",
-  ":(exclude)react/data.tsx",
-  ":(exclude)react/data.js",
-  ":(exclude)react/data.d.ts",
+  ":(exclude)css/primitives.css",
+  ":(exclude)css/cards.css",
+  ":(exclude)css/signature-style.css",
+  ":(exclude)react/ThemeProvider.tsx",
+  ":(exclude)react/ThemeProvider.js",
+  ":(exclude)react/ThemeProvider.d.ts",
+  ":(exclude)react/primitives.tsx",
+  ":(exclude)react/primitives.js",
+  ":(exclude)react/primitives.d.ts",
   ":(exclude)react/forms.tsx",
   ":(exclude)react/forms.js",
   ":(exclude)react/forms.d.ts",
-  ":(exclude)react/editorial.tsx",
-  ":(exclude)react/editorial.js",
-  ":(exclude)react/editorial.d.ts",
+  ":(exclude)react/cards.tsx",
+  ":(exclude)react/cards.js",
+  ":(exclude)react/cards.d.ts",
   ":(exclude)react/index.ts",
   ":(exclude)react/index.js",
   ":(exclude)react/index.d.ts",
@@ -864,39 +983,39 @@ let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.4.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.4.1", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.4.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.4.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.4.0 beyond the owner-authorized 2.4.1 deltas (data/forms/editorial growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.4.1 beyond the owner-authorized 2.5.0 deltas (token, forms anatomy, primitives/cards/css, whitelist, umbrella re-exports, codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
   );
 }
 
-// ---- (n-hub4) THE V2.4.1 FROZEN PROOF — v2.4.0 baseline, tools/ included ---------
-// Rebased v2.3.0 → v2.4.0 for 2.4.1. tools/ is UNTOUCHED this release — the
-// cortex sweep's class targets are unchanged (all 2.4.1 classes keep the
-// ptp- prefix and none joins DEFAULT_SELECTORS), so NO tools exclusion is
-// authorized: any tools/ diff now fails. Everything under the locked paths
-// beyond the (b7) deltas must stay byte-identical to v2.4.0.
+// ---- (n-hub4) THE V2.5.0 FROZEN PROOF — v2.4.1 baseline, tools/ included ---------
+// Rebased v2.4.0 → v2.4.1 for 2.5.0. tools/ gets exactly ONE authorized delta:
+// tools/mcp-viz/server.ts (owner-editable: DEFAULT_SELECTORS grows
+// .ptp-btn / .ptp-stat-card / .sig-shell; version 2.5.0; the compiled
+// dist/ is gitignored). Everything else under the locked paths beyond the
+// (b7) deltas must stay byte-identical to v2.4.1.
 const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
-const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED];
+const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED, ":(exclude)tools/mcp-viz/server.ts"];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.4.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.4.1", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.4.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.4.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.4.0 beyond the owner-authorized 2.4.1 deltas (data/forms/editorial growth, umbrella re-exports) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.4.1 beyond the owner-authorized 2.5.0 deltas (token, forms anatomy, primitives/cards css, whitelist, umbrella re-exports, codex, mcp server selectors) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
   );
 }
 
@@ -946,36 +1065,41 @@ const TESTID_NEEDLES = [
   ['data-testid="metric-rsvp"', "the rsvp metric hook"],
   ['data-testid="btn-toast"', "the primary toast button hook"],
   ['data-testid="tabs-module"', "the 2.3.0 module-switcher hook"],
-  ['data-testid="data-table-ledger"', "the 2.3.0 ledger-table hook"],
+  ['data-testid="data-table-ledger"', "the 2.3.0 data-module ledger hook"],
   ['data-testid="kpi-trio"', "the 2.4.0 StatCard KPI trio hook"],
   ['data-testid="banner-release"', "the 2.4.0 announcement banner hook"],
   ['data-testid="carousel-clippings"', "the 2.4.0 palette clippings carousel hook"],
+  ['data-testid="guest-form"', "the 2.5.0 live check-in form hook (defect #5)"],
+  ['data-testid="ledger-table"', "the 2.5.0 LIVE ledger hook (the bento's span-7 card)"],
+  ['data-testid="ring-rsvp"', "the 2.5.0 live RSVP ring hook"],
 ];
 for (const [needle, label] of TESTID_NEEDLES) {
   if (!appSrc.includes(needle)) {
     failures.push(`(m3) App.tsx must carry ${needle} — ${label}`);
   }
 }
-// The bento era must be gone from the DOM CONTRACT — classes and testids.
-// Comments may still tell the migration story (App.tsx's header does).
-if (/(className|data-testid)="[^"]*bento/.test(appSrc)) {
-  failures.push("(m3) App.tsx still wires bento-era classes/testids — the hub migration must be complete");
+// The retired-hub era must be gone from the DOM CONTRACT — classes and
+// testids. ("bento12"/"sig-span-*" are the OWNER's 2.5.0 vocabulary, not
+// the retired hub-era bento__* classes; the scan targets those.)
+if (/(className|data-testid)="[^"]*(bento__|bento-card)/.test(appSrc)) {
+  failures.push("(m3) App.tsx still wires retired hub-era classes/testids — the migration must be complete");
 }
 
-// ---- (n-hub1) THE CONSTRAINED COLUMN — the 2.0.0 hub grid ------------------------
-// max-width 1400px, centered; auto-fit minmax(400px, 1fr) packs the cards —
-// the 1.8.0 hand-placed asymmetric stage is retired. The 768px collapse and
-// the stagger stay pinned by (b4)/(h1).
-const hubContainer = /^\.hub \{[^}]*max-width: 1400px;[^}]*grid-template-columns: repeat\(auto-fit, minmax\(400px, 1fr\)\);/sm;
+// ---- (n-hub1) THE CONSTRAINED COLUMN — 2.0.0 hub grid, 2.5.0 rebased ------
+// The SHELL (.sig-shell, gate sh1) owns the 1400px column now; .hub is
+// ONLY the auto-fit packing grid for the master index and the workshop
+// placeholders. The 768px collapse and the stagger stay pinned by
+// (b4)/(h1).
+const hubContainer = /^\.hub \{[^}]*grid-template-columns: repeat\(auto-fit, minmax\(400px, 1fr\)\);/sm;
 if (!hubContainer.test(stylesCss)) {
   failures.push(
-    "(n-hub1) styles.css must declare the constrained hub column — .hub { max-width: 1400px; … grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }",
+    "(n-hub1) styles.css must declare the auto-fit hub packing grid — .hub { … grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); } (the column constraint moved to .sig-shell in 2.5.0)",
   );
 }
 const hubSpan = /\.hub__card--timeline\s*\{[^}]*grid-row: span 2;/s;
 if (!hubSpan.test(stylesCss)) {
   failures.push(
-    "(n-hub1) .hub__card--timeline must span two rows (grid-row: span 2) — cortex-probed: the single auto-fit void equals one card's area, so the owner fallback does NOT trigger",
+    "(n-hub1) .hub__card--timeline must span two rows (grid-row: span 2) — the bento's .sig-row-2 mirrors it; the modifier keeps the breathing-room overrides attached",
   );
 }
 
@@ -1409,9 +1533,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.7")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v2.8")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.7 (the 2.4.1 codex refresh: required/prefix, align, visible switch labels, banner variants, mauve/kbd prose, the carousel indicator)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v2.8 (the 2.5.0 codex: Button, FormField anatomy, PasswordInput, the four card archetypes, the sig-shell layout)",
   );
 }
 
@@ -1454,17 +1578,19 @@ for (const [needle, label] of TABS_REQUIREMENTS) {
 // ---- (dd6) CORTEX SWEEP — the data-module selectors + version (2.3.0) ------------
 // tools/ is owner-editable tooling (noted in the changelog); the sweep grows
 // the data-module contract and the server version moves to 2.3.0.
+// 2.5.0 AMENDMENT: the sweep grows .ptp-btn / .ptp-stat-card / .sig-shell
+// and the server version moves to 2.5.0.
 const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
-for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card"]) {
+for (const selector of [".ptp-data-table", ".ptp-tabs__tab", ".ptp-callout", ".sig-surface-card", ".ptp-btn", ".ptp-stat-card", ".sig-shell"]) {
   if (!mcpServerSrc.includes(`"${selector}"`)) {
     failures.push(
-      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module`,
+      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento`,
     );
   }
 }
-if (!mcpServerSrc.includes('version: "2.3.0"')) {
+if (!mcpServerSrc.includes('version: "2.5.0"')) {
   failures.push(
-    'tools/mcp-viz/server.ts server version string must be 2.3.0 (tooling-only bump; tokens.json stays 1.4.0)',
+    'tools/mcp-viz/server.ts server version string must be 2.5.0 (tooling-only bump)',
   );
 }
 
@@ -1705,9 +1831,14 @@ try {
     "X",
     "Info",
     "TriangleExclamationPoint",
+    // 2.5.0: the password toggle, the accordion chevron, the deck tiles.
+    "Eye",
+    "EyeOff",
+    "SquarePen",
+    "Shuffle",
   ]) {
     if (!(name in icons)) {
-      failures.push(`(icons) icon "${name}" does not exist in the lucide-react icons map — editorial.tsx would render a blank square`);
+      failures.push(`(icons) icon "${name}" does not exist in the lucide-react icons map — a package source would render a blank square`);
     }
   }
   if ("TriangleAlert" in icons === false) {
@@ -1722,23 +1853,31 @@ try {
 }
 
 // ---- (showcase) THE EDITORIAL SHOWCASE — the playground wiring (2.4.0) ------------
+// 2.5.0 AMENDMENT: the needles re-aim at the bento — Postal Code +
+// descriptions-above + validMessage + PasswordInput + the archetypes +
+// the v2.5.0 banner copy; every RSVP card carries a description.
 const SHOWCASE_REQUIREMENTS = [
   ["<FormField", "the accessible wrapper in the matrix"],
   ['label="Name"', "the Name field"],
   ['label="Contribution"', "the Contribution field (2.4.1 — the dollar sign moved OUT of the label)"],
   ['prefix="$"', "the 2.4.1 prefix adornment on the money field"],
+  ['label="Postal Code"', "the 2.5.0 Postal Code field (both modules)"],
+  ['description="5 numbers only · e.g., 79901"', "the format rule ABOVE the input (defect #2)"],
+  ['description="Numbers only · e.g., 120"', "the money field's format rule"],
+  ["validMessage={postalValid", "the live-validation success slot"],
   ['htmlFor="matrix-name"', "the consumer-wired label association (field 1)"],
   ['htmlFor="matrix-share"', "the consumer-wired label association (field 2)"],
   ["hint=\"As it appears on the invite\"", "the hint slot demoed"],
+  ["<PasswordInput", "the 2.5.0 password well (meter + pills)"],
   ["<RadioCardGroup", "the card radios in the matrix"],
   ['name="rsvp"', "the radio group name"],
   ['{ value: "attending", label: "Attending", description: "See you there" }', "RSVP option 1 (with description)"],
-  ['{ value: "maybe", label: "Maybe" }', "RSVP option 2"],
-  ['{ value: "declined", label: "Can\'t make it" }', "RSVP option 3"],
-  ["<AnnouncementBanner", "the banner at the top of the Data view"],
+  ['{ value: "maybe", label: "Maybe", description: "Leaning yes — will confirm" }', "RSVP option 2 — descriptions ENFORCED (2.5.0)"],
+  ['{ value: "declined", label: "Can\'t make it", description: "Sorry — next time" }', "RSVP option 3 — descriptions ENFORCED (2.5.0)"],
+  ["<AnnouncementBanner", "the banner at the top of the bento"],
   ['variant="announcement"', "the 2.4.1 variant API (Flamingo banner default)"],
   ['label: "See what shipped"', "the 2.4.1 action slot demoed"],
-  ["v2.4.1 — intuitive form anatomy &amp; the alignment fix shipped.", "the release banner copy"],
+  ["live state mode: check in a guest and watch", "the v2.5.0 banner copy"],
   ["<StatCard", "the KPI trio"],
   ['label="Total Budget"', "KPI 1"],
   ['label="Confirmed Guests"', "KPI 2"],
@@ -1749,6 +1888,15 @@ const SHOWCASE_REQUIREMENTS = [
   ["<Carousel", "the palette clippings strip"],
   ["<CarouselItem", "the snap slots"],
   ["className=\"hub__clipping\"", "the composed min-width clipping modifier"],
+  ["<Button", "the Button family migrated (2.5.0 defect #5)"],
+  ['variant="primary" size="md" type="submit" loading={submitting}', "the check-in submit rides the package Button (loading demoed)"],
+  ["<FlipCard", "the flip archetype"],
+  ["<AccordionCard", "the accordion archetype"],
+  ["<MatchupCard", "the matchup archetype"],
+  ["<ActionTile", "the action-tile archetype"],
+  ['kbdShortcut="D"', "the shortcut chip demoed"],
+  ['label="Add to game rotation"', "the visible switch label exercised (defect #3)"],
+  ["ToggleSwitch", "the switch renders in the matrix + the check-in"],
 ];
 for (const [needle, label] of SHOWCASE_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
@@ -1823,10 +1971,12 @@ if (!appSrc.includes('numeric: true, align: "right"')) {
 const formsCssAf = readFileSync(resolve(root, "css/forms.css"), "utf8");
 const formsSrcAf = readFileSync(resolve(root, "react/forms.tsx"), "utf8");
 const formsDtsAf = readFileSync(resolve(root, "react/forms.d.ts"), "utf8");
+// 2.5.0 AMENDMENT: the 2.4.1 __row/__prefix needles RETIRED — the
+// adornment composition is the __well/__chip now (the contract lives in
+// gate ff1 below). __required, the switch migration and the radio lift
+// stay pinned here.
 for (const [needle, label] of [
   [".ptp-form-field__required", "the peach required asterisk slot"],
-  [".ptp-form-field__row", "the justified prefix-adornment flex row"],
-  [".ptp-form-field__prefix", "the mono muted prefix span"],
   [".ptp-switch", "the switch wrapper (pill + visible text composition)"],
   [".ptp-switch__pill", "the migrated pill (every pill selector renamed)"],
   [".ptp-switch__text", "the visible label text"],
@@ -1835,16 +1985,16 @@ for (const [needle, label] of [
     failures.push(`(af2) css/forms.css must contain ${needle} — ${label}`);
   }
 }
-const rowRule = /\.ptp-form-field__row\s*\{[^}]*display: flex;[^}]*align-items: center;[^}]*gap: var\(--space-tight\);/s;
+const rowRule = /\.ptp-form-field__well\s*\{[^}]*display: flex;[^}]*align-items: center;/s;
 if (!rowRule.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-form-field__row must be flex + align-items: center + gap: var(--space-tight) (the justified adornment wrapper)",
+    "(af2) .ptp-form-field__well must be flex + align-items: center (the 2.5.0 successor of the justified adornment wrapper)",
   );
 }
-const prefixRule = /\.ptp-form-field__prefix\s*\{[^}]*var\(--font-mono,[^}]*font-weight: 600;/s;
+const prefixRule = /\.ptp-form-field__chip\s*\{[^}]*var\(--font-mono,[^}]*font-weight: 600;/s;
 if (!prefixRule.test(formsCssAf)) {
   failures.push(
-    "(af2) .ptp-form-field__prefix must be mono + weight 600 (the adornment voice)",
+    "(af2) .ptp-form-field__chip must be mono + weight 600 (the adornment voice)",
   );
 }
 const requiredRule = /\.ptp-form-field__required\s*\{[^}]*color: var\(--party-peach\);/s;
@@ -1893,8 +2043,8 @@ if (!radioLift.test(formsCssAf)) {
 for (const [needle, label] of [
   ["required?: boolean", "the FormField required prop"],
   ["prefix?: string", "the FormField prefix prop"],
-  ['className="ptp-form-field__row"', "the row wraps children ONLY when prefix is present"],
-  ['className="ptp-form-field__prefix"', "the prefix renders BEFORE the children"],
+  ['className="ptp-form-field__well"', "the well wraps children ONLY when prefix/suffix is present"],
+  ['className="ptp-form-field__chip"', "the chip renders as the adornment (prefix before, suffix after)"],
   ['className="ptp-form-field__required"', "the asterisk span on the label"],
   ['aria-hidden="true"', "the asterisk is VISUAL — screen readers get aria-required from the control, never from the wrapper"],
   ['className="ptp-switch"', "the justified switch wrapper"],
@@ -2010,11 +2160,387 @@ for (const [needle, label] of [
   ["--party-mauve", "the codex documents the mauve quote bar"],
   ["### <Carousel>", "the Carousel recipe exists"],
   ["indicator", "the codex documents the page indicator"],
+  // 2.5.0 — the v2.8 codex recipes.
+  ["### <Button>", "the Button recipe exists (2.5.0)"],
+  ["--party-yellow", "the codex documents the meter's Fair stage token"],
+  ["### <PasswordInput>", "the PasswordInput recipe exists (2.5.0)"],
+  ["### <ActionTile>", "the ActionTile recipe exists (2.5.0)"],
+  ["### <FlipCard>", "the FlipCard recipe exists (2.5.0)"],
+  ["### <AccordionCard>", "the AccordionCard recipe exists (2.5.0)"],
+  ["### <MatchupCard>", "the MatchupCard recipe exists (2.5.0)"],
+  ["### <StatCard> + <Sparkline>", "the KPI recipe exists (2.5.0)"],
+  ["### The sig-shell layout (2.5.0)", "the sig-shell layout snippet exists"],
+  ["description", "the codex documents the description-above contract"],
+  ["validMessage", "the codex shows the live-validation success slot"],
 ]) {
   const found = needle instanceof RegExp ? needle.test(systemPrompt) : systemPrompt.includes(needle);
   if (!found) {
     failures.push(`SYSTEM_PROMPT.md must contain ${String(needle)} — (af3) the v2.7 codex ${label}`);
   }
+}
+
+// ---- (b12) THE 12-COLUMN BENTO (2.5.0, defect #5) --------------------------------
+// styles.css declares the 12-col grid + the span utilities + the 768px
+// collapse with ALL spans reset; App.tsx renders the bento and uses every
+// span class (the assembly: banner 12 / StatCards 4×3 / check-in 5 /
+// chronology 4×2rows / telemetry 3 / deck 5 / palette 3 / ledger 7 /
+// matchup 5).
+const bentoGrid = /\.bento12\s*\{[^}]*grid-template-columns: repeat\(12, 1fr\);[^}]*gap: var\(--space-section\);/s;
+if (!bentoGrid.test(stylesCss)) {
+  failures.push(
+    "(b12) styles.css must declare .bento12 { grid-template-columns: repeat(12, 1fr); gap: var(--space-section); }",
+  );
+}
+for (const span of ["12", "7", "5", "4", "3"]) {
+  const spanRule = new RegExp(`\\.bento12 > \\.sig-span-${span}\\s*\\{[^}]*grid-column: span ${span};`, "s");
+  if (!spanRule.test(stylesCss)) {
+    failures.push(`(b12) styles.css must declare the span utility — .bento12 > .sig-span-${span} { grid-column: span ${span}; }`);
+  }
+}
+if (!/\.bento12 > \.sig-row-2\s*\{[^}]*grid-row: span 2;/s.test(stylesCss)) {
+  failures.push("(b12) styles.css must declare .bento12 > .sig-row-2 { grid-row: span 2; } (the chronology's double row)");
+}
+if (!/@media \(max-width: 768px\)\s*\{[^@]*\.bento12\s*\{[^}]*grid-template-columns: 1fr;/s.test(stylesCss)) {
+  failures.push(
+    "(b12) the bento must collapse to ONE column at max-width: 768px (Pillar 2 + the 768px proof)",
+  );
+}
+const bentoReset = /@media \(max-width: 768px\)\s*\{[^@]*\.bento12 > \.sig-span-12,[^}]*grid-column: auto;[^}]*grid-row: auto;/s;
+if (!bentoReset.test(stylesCss)) {
+  failures.push(
+    "(b12) the 768px collapse must reset EVERY span — .sig-span-12/7/5/4/3 + .sig-row-2 → grid-column: auto; grid-row: auto;",
+  );
+}
+for (const usage of ["sig-span-12", "sig-span-7", "sig-span-5", "sig-span-4", "sig-span-3", "sig-row-2"]) {
+  if (!appSrc.includes(usage)) {
+    failures.push(`(b12) App.tsx must USE the span class ${usage} in the bento assembly`);
+  }
+}
+
+// ---- (sh1) THE SHELL (2.5.0, defect #1) ------------------------------------------
+// .sig-shell: max-width 1400px, centered, clamp(20px, 4vw, 48px) side
+// padding (≥20px viewport margins at every width — the cortex proof
+// measures it on all three tabs), 64px bottom air. App.tsx wraps every
+// view's content in it.
+const shellRule = /\.sig-shell\s*\{[^}]*max-width: 1400px;[^}]*padding-inline: clamp\(20px, 4vw, 48px\);[^}]*padding-bottom: 64px;/s;
+if (!shellRule.test(stylesCss)) {
+  failures.push(
+    "(sh1) styles.css must declare .sig-shell { max-width: 1400px; margin-inline: auto; padding-inline: clamp(20px, 4vw, 48px); padding-bottom: 64px; }",
+  );
+}
+if (!appSrc.includes('<div className="sig-shell">')) {
+  failures.push("(sh1) App.tsx must wrap every view's content in <div className=\"sig-shell\"> — GlobalNav stays outside");
+}
+
+// ---- (ff1) FORMFIELD TOP-DOWN ANATOMY (2.5.0, defect #2) -------------------------
+// DOM ORDER IS THE LAW: label → description → control (well when
+// prefix/suffix) → validation. The proof greps FormField's OWN function
+// body: the __desc span renders BEFORE `{control}` (the well rides
+// inside it), and the validation zone renders AFTER the control.
+const formFieldSrc = formsSrcAf.slice(
+  formsSrcAf.indexOf("export function FormField"),
+  formsSrcAf.indexOf("export function PasswordInput"),
+);
+const descIdx = formFieldSrc.indexOf('className="ptp-form-field__desc"');
+const controlRenderIdx = formFieldSrc.indexOf("{control}");
+const wellDefIdx = formFieldSrc.indexOf('className="ptp-form-field__well"');
+const alertIdx = formFieldSrc.indexOf('className="ptp-form-field__error" role="alert"');
+const validIdx = formFieldSrc.indexOf('className="ptp-form-field__valid"');
+if (descIdx === -1 || controlRenderIdx === -1 || descIdx > controlRenderIdx) {
+  failures.push(
+    "(ff1) FormField must render .ptp-form-field__desc BEFORE the control zone — the format rule lives ABOVE the input (the v2.4.1 defect)",
+  );
+}
+if (wellDefIdx === -1 || alertIdx === -1 || controlRenderIdx > alertIdx) {
+  failures.push(
+    "(ff1) FormField must render the validation zone AFTER the control zone — label → description → control → error/valid/hint",
+  );
+}
+if (validIdx === -1) {
+  failures.push('(ff1) FormField must render the .ptp-form-field__valid slot (the validMessage line)');
+}
+for (const [needle, label] of [
+  ["description?: string", "the description prop (format rules ABOVE the input)"],
+  ["validMessage?: string", "the validMessage prop (the live-validation success line)"],
+  ["suffix?: string", "the suffix prop (the right chip)"],
+  ['data-invalid={!!error || undefined}', "the well's error attribute drives the shake + peach border"],
+  ['className="ptp-form-field__chip ptp-form-field__chip--right"', "the suffix chip carries the right modifier"],
+]) {
+  if (!formsSrcAf.includes(needle)) {
+    failures.push(`react/forms.tsx must contain ${JSON.stringify(needle)} — (ff1) ${label}`);
+  }
+}
+for (const [needle, label] of [
+  [".ptp-form-field__desc", "the format-line slot (muted 0.75rem, ABOVE the control)"],
+  [".ptp-form-field__valid", "the success line slot (party-green)"],
+  [".ptp-form-field__well:focus-within", "the well OWNS the focus treatment"],
+  [".ptp-form-field__well > .ptp-input,\n  .ptp-form-field__well > input", "the scoped kill — prefix/suffix children must be BARE inputs"],
+  [".ptp-form-field__chip:first-child", "the LEFT chip's cursor-side hairline (border-right)"],
+  ["@keyframes ptp-shake", "the error shake keyframes"],
+  ["animation: ptp-shake 0.3s ease-out", "the shake rides [data-invalid]"],
+]) {
+  if (!formsCssAf.includes(needle)) {
+    failures.push(`css/forms.css must contain ${JSON.stringify(needle)} — (ff1) ${label}`);
+  }
+}
+const promotedLabel = /\.ptp-form-field__label\s*\{[^}]*color: var\(--text-main\);[^}]*font-size: 0\.875rem;[^}]*font-weight: 500;/s;
+if (!promotedLabel.test(formsCssAf)) {
+  failures.push(
+    "(ff1) the field label is PROMOTED — .ptp-form-field__label { color: var(--text-main); font-size: 0.875rem; font-weight: 500; } (the title is the headline, not a caption)",
+  );
+}
+const wellFocus = /\.ptp-form-field__well:focus-within\s*\{[^}]*border-color: var\(--color-cake-primary\);[^}]*outline: 3px solid color-mix\(in srgb, var\(--color-cake-primary\) 25%, transparent\);/s;
+if (!wellFocus.test(formsCssAf)) {
+  failures.push(
+    "(ff1) the well focus halo — border-color Flamingo + the 3px translucent Flamingo OUTLINE (the box-shadow spelling is banned by the frozen (f1) gate; documented decision)",
+  );
+}
+const shakeKill = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.ptp-form-field__well\[data-invalid\]\s*\{[^}]*animation: none;/s;
+if (!shakeKill.test(formsCssAf)) {
+  failures.push(
+    "(ff1) the reduced-motion guard must kill the shake — .ptp-form-field__well[data-invalid] { animation: none; } inside prefers-reduced-motion",
+  );
+}
+
+// ---- (pw1) PASSWORDINPUT (2.5.0) ---------------------------------------------------
+for (const [needle, label] of [
+  ['name={show ? "EyeOff" : "Eye"}', "the eye toggle (both names live-map-probed by (icons))"],
+  ['aria-label={show ? "Hide password" : "Show password"}', "the toggle's accessible name flips"],
+  ["aria-pressed={show}", "the toggle's state attribute"],
+  ['role="progressbar"', "the meter is a progressbar"],
+  ["aria-valuemin={0}", "the meter floor"],
+  ["aria-valuemax={4}", "the meter ceiling (4 rules)"],
+  ["aria-valuenow={score}", "the meter's live value"],
+  ["data-score={score}", "the css state hook (the segment fill prefix)"],
+  ["data-satisfied", "the pill state attribute"],
+  ['label: "8+ chars"', "rule 1"],
+  ['label: "Uppercase"', "rule 2"],
+  ['label: "Number"', "rule 3"],
+  ['label: "Symbol"', "rule 4"],
+  ['["Weak", "Fair", "Good", "Strong"]', "the four stages"],
+  ['description="8+ chars · mix cases, numbers, symbols"', "the format description rides FormField (the 2.5.0 anatomy)"],
+]) {
+  if (!formsSrcAf.includes(needle)) {
+    failures.push(`react/forms.tsx must contain ${JSON.stringify(needle)} — (pw1) ${label}`);
+  }
+}
+for (const [needle, label] of [
+  [".ptp-password__meter", "the meter"],
+  [".ptp-password__meter span", "the four segments"],
+  ['[data-score="1"] span:nth-child(1)', "stage 1 — peach"],
+  ['[data-score="2"] span:nth-child(-n + 2)', "stage 2 — the --party-yellow release token"],
+  ['[data-score="3"] span:nth-child(-n + 3)', "stage 3 — sky"],
+  ['[data-score="4"] span:nth-child(-n + 4)', "stage 4 — green"],
+  [".ptp-password__stage", "the stage label"],
+  [".ptp-password__pill", "the condition pills"],
+  [".ptp-password__pill[data-satisfied]", "the satisfied pill fill"],
+  [".ptp-password__toggle", "the eye button"],
+  ["color-mix(in srgb, var(--party-green) 20%, transparent)", "the satisfied pill's wash"],
+]) {
+  if (!formsCssAf.includes(needle)) {
+    failures.push(`css/forms.css must contain ${JSON.stringify(needle)} — (pw1) ${label}`);
+  }
+}
+const yellowStage = /\[data-score="2"\] span:nth-child\(-n \+ 2\)\s*\{[^}]*background: var\(--party-yellow\);/s;
+if (!yellowStage.test(formsCssAf)) {
+  failures.push(
+    '(pw1) the meter\'s stage 2 must fill with the release token — [data-score="2"] span:nth-child(-n + 2) { background: var(--party-yellow); }',
+  );
+}
+for (const check of [["PasswordInput", "value"], ["PasswordInputProps", "type"]]) {
+  // Type-only names elide from the compiled JS — the .d.ts is their surface.
+  if (!new RegExp(`\\b${check[0]}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${check[0]} — (pw1) ${check[1]}`);
+  }
+  if (check[1] === "value" && !new RegExp(`\\b${check[0]}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${check[0]} — (pw1) ${check[1]}`);
+  }
+}
+
+// ---- (bt1) THE BUTTON FAMILY (2.5.0) ----------------------------------------------
+const primitivesSrc = readFileSync(resolve(root, "react/primitives.tsx"), "utf8");
+const primitivesCssPath = resolve(root, "css/primitives.css");
+if (!existsSync(primitivesCssPath)) {
+  failures.push("(bt1) css/primitives.css is missing — the Button family ships its own stylesheet");
+} else {
+  const primitivesCss = readFileSync(primitivesCssPath, "utf8");
+  const BT1_CSS = [
+    [".ptp-btn--primary", "the Flamingo fill variant"],
+    [".ptp-btn--secondary", "the surface + hairline variant"],
+    [".ptp-btn--ghost", "the transparent variant"],
+    [".ptp-btn--danger", "the peach attention variant"],
+    [".ptp-btn--sm", "the small size"],
+    [".ptp-btn--lg", "the large size"],
+    [".ptp-btn__spinner", "the loading spinner"],
+    ["@keyframes ptp-spin", "the spin physics"],
+    ["scale(0.97)", "the doctrine press"],
+    ["outline: 2px solid var(--color-cake-primary)", "the Flamingo focus ring"],
+    ["prefers-reduced-motion", "the reduced-motion guard"],
+    ["border-top-color: transparent", "the spinner's arc"],
+    ["font-weight: 600", "the primary's hierarchy pop (typographic — the flat primary is package law)"],
+  ];
+  for (const [needle, label] of BT1_CSS) {
+    if (!primitivesCss.includes(needle)) {
+      failures.push(`css/primitives.css must contain ${JSON.stringify(needle)} — (bt1) ${label}`);
+    }
+  }
+  // The package law: primitives.css is ZERO-shadow and ZERO-hex.
+  const primShadows = primitivesCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (primShadows !== null) {
+    failures.push(
+      `(bt1) css/primitives.css declares a box-shadow (${primShadows.join(" ")}) — the flat primary is package law; elevation is a composition-layer decision`,
+    );
+  }
+  const primHexes = primitivesCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (primHexes !== null) {
+    failures.push(
+      `(bt1) css/primitives.css contains hex literal(s) ${[...new Set(primHexes)].join(", ")} — token-driven only`,
+    );
+  }
+  const primImportIndex = bundleCss.indexOf('@import "./primitives.css" layer(cascade);');
+  if (primImportIndex === -1) {
+    failures.push(
+      'css/signature-style.css must import "./primitives.css" layer(cascade) — cascade membership is the layered-import doctrine',
+    );
+  } else {
+    const dataImportForPrim = bundleCss.indexOf('@import "./data.css" layer(cascade);');
+    if (dataImportForPrim !== -1 && primImportIndex < dataImportForPrim) {
+      failures.push("css/signature-style.css must import ./primitives.css AFTER ./data.css (data styles load first)");
+    }
+  }
+}
+for (const [needle, label] of [
+  ['variant?: "primary" | "secondary" | "ghost" | "danger"', "the 4-variant union"],
+  ['size?: "sm" | "md" | "lg"', "the 3-size union"],
+  ["leftIcon?: IconName", "the leading icon (strict IconName)"],
+  ["rightIcon?: IconName", "the trailing icon"],
+  ["loading?: boolean", "the busy state"],
+  ['className="ptp-btn__spinner"', "the spinner replaces the icons"],
+  ["aria-busy={loading || undefined}", "the busy attribute"],
+  ["disabled={loading || disabled}", "a loading button cannot be re-submitted"],
+  ['className={`ptp-btn ptp-btn--${variant}${sizeClass}', "ONE button with the composed classes"],
+]) {
+  if (!primitivesSrc.includes(needle)) {
+    failures.push(`react/primitives.tsx must contain ${JSON.stringify(needle)} — (bt1) ${label}`);
+  }
+}
+for (const check of [["Button", "value"], ["ButtonProps", "type"]]) {
+  // Type-only names elide from the compiled JS — the .d.ts is their surface.
+  if (!new RegExp(`\\b${check[0]}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${check[0]} — (bt1)`);
+  }
+  if (check[1] === "value" && !new RegExp(`\\b${check[0]}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${check[0]} — (bt1)`);
+  }
+}
+if (!/export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>/.test(primitivesSrc)) {
+  failures.push("(bt1) ButtonProps must extend ButtonHTMLAttributes<HTMLButtonElement> — native attrs flow through");
+}
+
+// ---- (cd1) THE CARD ARCHETYPES (2.5.0) --------------------------------------------
+const cardsSrcPath = resolve(root, "react/cards.tsx");
+if (!existsSync(cardsSrcPath)) {
+  failures.push("(cd1) react/cards.tsx is missing — the archetypes are a new module");
+}
+const cardsJsPath = resolve(root, "react/cards.js");
+const cardsDtsPath = resolve(root, "react/cards.d.ts");
+if (!existsSync(cardsJsPath)) {
+  failures.push("(cd1) react/cards.js is missing — build it: npx tsc -p tsconfig.json");
+}
+if (!existsSync(cardsDtsPath)) {
+  failures.push("(cd1) react/cards.d.ts is missing — build it: npx tsc -p tsconfig.json");
+}
+const cardsCssPath = resolve(root, "css/cards.css");
+if (!existsSync(cardsCssPath)) {
+  failures.push("(cd1) css/cards.css is missing — the archetypes ship their own stylesheet");
+} else {
+  const cardsCss = readFileSync(cardsCssPath, "utf8");
+  const CD1_CSS = [
+    ["transform-style: preserve-3d", "the flip's 3d stage"],
+    ["backface-visibility: hidden", "the faces hide their backs"],
+    ["rotateY(180deg)", "the flip mechanics (inner + pre-rotated back)"],
+    [".ptp-accordion[open] .ptp-accordion__chevron", "the attribute IS the state — details[open] rotates the chevron"],
+    ["grid-template-columns: 1fr auto 1fr", "the matchup grid"],
+    [".ptp-action-tile__kbd", "the standalone shortcut chip"],
+    [".ptp-flip-card[aria-pressed=\"true\"]", "the flip state rides aria-pressed"],
+    ["::-webkit-details-marker", "the UA marker stripped (plus list-style: none)"],
+    ["prefers-reduced-motion", "the reduced-motion guard (the opacity swap)"],
+    ["min-height: 9rem", "the flip button owns its box (faces are absolute)"],
+  ];
+  for (const [needle, label] of CD1_CSS) {
+    if (!cardsCss.includes(needle)) {
+      failures.push(`css/cards.css must contain ${JSON.stringify(needle)} — (cd1) ${label}`);
+    }
+  }
+  const cardsShadows = cardsCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (cardsShadows !== null) {
+    failures.push(
+      `(cd1) css/cards.css declares a box-shadow (${cardsShadows.join(" ")}) — cards are structure: hairlines, never shadows`,
+    );
+  }
+  const cardsHexes = cardsCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (cardsHexes !== null) {
+    failures.push(
+      `(cd1) css/cards.css contains hex literal(s) ${[...new Set(cardsHexes)].join(", ")} — token-driven only`,
+    );
+  }
+  const cardsImportIndex = bundleCss.indexOf('@import "./cards.css" layer(cascade);');
+  if (cardsImportIndex === -1) {
+    failures.push(
+      'css/signature-style.css must import "./cards.css" layer(cascade) — cascade membership is the layered-import doctrine',
+    );
+  } else {
+    const primImportForCards = bundleCss.indexOf('@import "./primitives.css" layer(cascade);');
+    if (primImportForCards !== -1 && cardsImportIndex < primImportForCards) {
+      failures.push("css/signature-style.css must import ./cards.css AFTER ./primitives.css (primitives load first)");
+    }
+  }
+}
+for (const [needle, label] of [
+  ["aria-pressed={flipped}", "the flip state is aria-pressed (button semantics carry Space/Enter)"],
+  ['className="ptp-flip-card"', "the flip root"],
+  ['<details className="ptp-accordion">', "the ZERO-JS accordion"],
+  ['className="ptp-accordion__summary"', "the summary line"],
+  ['<Icon name="ChevronDown" className="ptp-accordion__chevron"', "the token chevron"],
+  ["size={40}", "the matchup avatars ride the grid-perfect diameter"],
+  ['className="ptp-matchup__vs"', "the VS pill"],
+  ['className="ptp-matchup__stakes"', "the stakes footer"],
+  ["useState(false)", "the flip's INTERNAL state (uncontrolled default)"],
+]) {
+  const cardsSrc = readFileSync(cardsSrcPath, "utf8");
+  if (!cardsSrc.includes(needle)) {
+    failures.push(`react/cards.tsx must contain ${JSON.stringify(needle)} — (cd1) ${label}`);
+  }
+}
+for (const name of ["ActionTile", "FlipCard", "AccordionCard", "MatchupCard"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+    failures.push(`react/index.d.ts must re-export ${name} — (cd1)`);
+  }
+  if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
+    failures.push(`react/index.js must re-export ${name} — (cd1)`);
+  }
+}
+
+// ---- (al1) THE LIVE LEDGER ALIGNMENT (2.5.0, defect #4) ---------------------------
+// The bento's span-7 ledger derives from state; its Contribution column
+// carries numeric + align right (the (af1) package contract, exercised
+// LIVE). The probe measures th/td right edges within ±2px.
+const bentoLedgerCols = appSrc.indexOf("BENTO_LEDGER_COLUMNS");
+if (bentoLedgerCols === -1) {
+  failures.push("(al1) App.tsx must declare BENTO_LEDGER_COLUMNS — the live ledger's contract");
+} else {
+  const colSlice = appSrc.slice(bentoLedgerCols, bentoLedgerCols + 400);
+  if (!colSlice.includes('{ key: "share", header: "Contribution", numeric: true, align: "right" }')) {
+    failures.push(
+      '(al1) BENTO_LEDGER_COLUMNS must set { key: "share", header: "Contribution", numeric: true, align: "right" } — the header flushes over the live $ values',
+    );
+  }
+}
+if (!appSrc.includes('data-testid="ledger-table"')) {
+  failures.push('(al1) the live ledger must carry data-testid="ledger-table" — the probe hooks it');
+}
+if (!appSrc.includes("rows={derived.ledgerRows}")) {
+  failures.push("(al1) the live ledger must render rows={derived.ledgerRows} — LIVE from state, not a const");
 }
 
 // ---- verdict ----------------------------------------------------------------------
@@ -2023,4 +2549,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3): scaffold, wiring, pack=43 (UNCHANGED — the 2.4.1 patch adds zero new files), zero hex + 768px collapse, hub shape + hero + shed anatomy (4 cards audited INSIDE the dashboard branch), icons, v2.4.0 safety diff empty beyond the owner-authorized 2.4.1 deltas (data/forms/editorial growth + compiled pairs, umbrella re-exports; viz.css + signature-style.css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ fully frozen (n-hub4), stagger + reduced-motion escape, mockEvents hydration + mapping, live-map icon probes (2.4.1: Info/TriangleExclamationPoint — NO TriangleAlert key in lucide 1.72.0, the AudioLines precedent), ambient-elevation markers + surface-scoped package shadow contract + composition button/node elevations, timeline resurrection needles + EMPTY v2.0.0 allowlist vs v1.8.0, visual cortex dist + smoke wiring + hub testid hooks, constrained hub column + timeline span + announced hero + teal/mono anatomy + hover lift + metric air mandate + glass header/node-elevation doctrine boundary + telemetry spacing, MEASURED header breathing room and the Master Index; 2.2.0: promoted surface anatomy (s1) + umbrella SurfaceCard/PageHero (s2) + living telemetry-limits gate (v22); 2.3.0: (dd1) data.css anatomy, (dd2) umbrella re-exports, (dd3) forms additions, (dd4) the codex (title now v2.7), (dd5) the tabs showcase, (dd6) the cortex sweep; 2.4.0: (ed1) editorial.css anatomy (quote rule now MAUVE per the 2.4.1 owner override), (ed2) umbrella re-exports (AnnouncementVariant + AnnouncementBannerAction now), (ed3) forms additions (selected card now lifts to var(--bg-surface)), (ed4) Sparkline/StatCard, (showcase) banner variant=announcement + action + Contribution/prefix=$ + v2.4.1 copy; 2.4.1: (af1) DataTable align — ancestor-scoped .ptp-data-table__align-* utilities ((0,2,0) beats thead th (0,1,2): the header flushes over its values at last), align flows to BOTH th and td, compiled .d.ts factual, ledger numeric+align:right; (af2) FormField required (peach, visual-only, aria-hidden) + prefix (the justified __row/__prefix adornment composition), the visible switch label (.ptp-switch wrapper + .ptp-switch__pill migration audited: no pill property left on the bare wrapper, no aria-checked outside the pill, reduced-motion follows, __text text-main 0.875rem/500), the selected radio lift to var(--bg-surface) with the 2px Flamingo border kept; (af3) editorial deltas — mauve quote rule, h3 0.9375rem/600, kbd/code inline chip, tabular-nums indicator (rAF-throttled, owner formula), Teal-hover action button, variant/icon/action API factual in the compiled .d.ts, and the v2.7 codex needles (FormField/RadioCardGroup/ToggleSwitch/AnnouncementBanner/ProseBlock/Carousel recipes with align/lift/mauve/variant/prefix facts)");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1): scaffold, wiring, pack=47 (43 + css/primitives.css + css/cards.css + react/cards.js/.d.ts), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.5.0: Eye/EyeOff/SquarePen/Shuffle join the probe), v2.4.1 safety diff empty beyond the owner-authorized 2.5.0 deltas (token, forms anatomy, primitives/cards css, whitelist 34, umbrella re-exports, v2.8 codex; viz.tsx + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + surface-scoped package shadow contract + composition button/node elevations, timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room + Master Index; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css); 2.5.0: (b12) the 12-column bento + span utilities + the 768px collapse with spans reset, (sh1) the .sig-shell column (defect #1), (ff1) the FormField top-down anatomy (desc-before-well grep order, promoted label, owning well + outline halo, chips, ptp-shake + reduced-motion kill — defect #2), (pw1) PasswordInput (meter stages peach→--party-yellow→sky→green, pills, Eye/EyeOff), (bt1) the Button family (4 variants, 3 sizes, spinner, flat package law), (cd1) the card archetypes (preserve-3d flip, details[open] chevron, 1fr auto 1fr matchup, kbd chip), (al1) the LIVE ledger alignment (numeric + align right on state-derived rows — defect #4), (af2) __row/__prefix retired for __well/__chip, (dd4) codex v2.8, (dd6) sweep +3 selectors, (showcase) bento needles + descriptions-enforced RSVP cards; negative test: breaking the banner span-12 flips (b12) FAIL, restore PASS");

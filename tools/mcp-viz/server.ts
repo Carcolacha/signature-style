@@ -13,6 +13,10 @@
  * .ptp-tabs__tab, .ptp-callout — and the server version moves to 2.3.0
  * (same owner-editable tooling note).
  *
+ * 2.5.0: the sweep grows the bento contract — .ptp-btn (the Button
+ * family), .ptp-stat-card (the KPI trio), .sig-shell (the view shell,
+ * defect #1's fix) — and the server version moves to 2.5.0.
+ *
  * An MCP stdio server giving AI sessions spatial awareness of the rendered
  * Signature Style dashboard. Two tools:
  *
@@ -59,6 +63,9 @@ const DEFAULT_SELECTORS: readonly string[] = [
   ".ptp-progress",
   ".ptp-progress__fill",
   ".sig-surface-card",
+  ".sig-shell",
+  ".ptp-btn",
+  ".ptp-stat-card",
   ".hub__metric",
   ".hub__btn",
   ".ptp-data-table",
@@ -204,7 +211,7 @@ async function persistPng(
 }
 
 /** The shared McpServer instance advertising the visual cortex tools. */
-const server = new McpServer({ name: "visual-cortex", version: "2.3.0" });
+const server = new McpServer({ name: "visual-cortex", version: "2.5.0" });
 
 server.registerTool(
   "inspect_layout",
