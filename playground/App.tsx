@@ -1,6 +1,22 @@
 /**
- * App — THE ENGINE + THE MASTER INDEX (2.5.0 "Ergonomic Form Rules,
- * Button & Card Archetypes, and the 12-Column Bento").
+ * App — THE ENGINE + THE MASTER INDEX (2.6.0 "Universal Developer Card
+ * Suite, Chromatic Elevation & The Master Index Overhaul").
+ *
+ * 2.6.0 — THE MASTER INDEX OVERHAUL. The index stops being three doors
+ * and becomes THE CATALOG: a filter <Tabs> bar (all / gateways / food /
+ * commerce / docs), Row 1 the three BALANCED chromatic gateways
+ * (.hub__row--3, equal width, accent-underlined — Flamingo/lavender/
+ * peach through the package's data-accent contract), Row 2 the
+ * commerce trio (ContentCard · ReferenceCard · TierCard — the new
+ * universal archetypes, dogfooded), Row 3 the food slab (a dot-
+ * indicator Carousel of five mini-cards + the 4-up profile row), and
+ * Row 4 the live chronicle — <ChronicleTimeline> rendering all 23
+ * releases of the engine's life (v0.1.0 → v2.6.0; the patch releases
+ * fold into their minors). Filtering is CONDITIONAL RENDERING per row:
+ * `category` state switches whole rows in and out (all → everything;
+ * gateways → row 1; commerce → row 2 + the profile row; food → the
+ * food slab; docs → the reference card + the chronicle). The
+ * dashboard view (BentoCore) is UNTOUCHED — the 12-column board stays.
  *
  * 2.5.0 — LIVE STATE MODE + THE 12-COLUMN BENTO. The core dashboard
  * stops being a static board: `SEED_GUESTS` seeds a `Guest[]` state,
@@ -95,7 +111,7 @@
  * timeline). The mapping layer below is why the nodes are alive.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent, MouseEvent, ReactNode } from "react";
+import type { CSSProperties, FormEvent, MouseEvent, ReactNode } from "react";
 import {
   ThemeProvider,
   ToastProvider,
@@ -132,10 +148,17 @@ import {
   AccordionCard,
   FlipCard,
   MatchupCard,
+  ContentCard,
+  ReferenceCard,
+  TierCard,
+  ProfileCard,
+  ChronicleTimeline,
   type NavItem,
   type PtpEvent,
   type DataTableColumn,
   type PartyTokenName,
+  type AccentToken,
+  type ChronicleRelease,
 } from "@edwyn/signature-style/react";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract). */
@@ -190,7 +213,7 @@ const HERO_COPY: Record<View, { title: string; sub: string }> = {
   },
   index: {
     title: "THE MASTER INDEX",
-    sub: "three doors · one engine · zero dead ends",
+    sub: "every archetype · one catalog · zero dead ends",
   },
   events: {
     title: "THE WORKSHOP",
@@ -618,7 +641,7 @@ function BentoCore({
             onDismiss={() => setBannerVisible(false)}
           >
             <span data-testid="banner-release">
-              v2.5.0 — live state mode: check in a guest and watch the
+              v2.6.0 — live state mode: check in a guest and watch the
               ledger, ring, and toast react.
             </span>
           </AnnouncementBanner>
@@ -998,76 +1021,452 @@ function CheckInForm({
   );
 }
 
-/** One gateway card in THE MASTER INDEX — a door to a module. */
+/**
+ * One gateway card in THE MASTER INDEX — a door to a module. 2.6.0: the
+ * door gains its chromatic accent (Flamingo for the structural planner
+ * door, party tokens for the content doors).
+ */
 interface Gateway {
   label: string;
   path: string;
   title: string;
   description: string;
+  accent: AccentToken;
   action: () => void;
 }
 
 /**
- * THE MASTER INDEX — three gateway cards. The v2.1.0 decision stands:
- * the cards ARE <button>s (free keyboard/press semantics), kept LOCAL —
- * a <button> cannot be the package's <section>-rendering SurfaceCard.
- * So the buttons WEAR the package's own surface classes instead
- * (.sig-surface-card + the --interactive modifier): the surface look,
- * the elevation and the hover lift ride the package css, and this layer
- * keeps only the button neutralization (cursor/text/font/color) + the
- * description paragraph. The PLANNER door is a REAL gateway (it
- * navigates); STUDY and GAMES are roadmap doors — DECISION (documented,
- * 2.1.0): clicking fires a success toast ("on the roadmap") instead of
- * routing to an EmptyState view. The meta row / ruled title inside each
- * button are the package's OWN classes (sig-surface-card__*), styled by
- * css/surface.css — the anatomy renders identically on a button.
+ * THE CATALOG FILTER (2.6.0) — the category ids double as the row
+ * visibility switches: `all` shows everything, `gateways` only row 1,
+ * `food` the food slab, `commerce` row 2 + the profile row, `docs` the
+ * reference card + the chronicle.
+ */
+type CatalogCategory = "all" | "gateways" | "food" | "commerce" | "docs";
+
+const CATALOG_TABS: Array<{ id: CatalogCategory; label: string }> = [
+  { id: "all", label: "All" },
+  { id: "gateways", label: "App Gateways" },
+  { id: "food", label: "Food & Carousels" },
+  { id: "commerce", label: "Commerce & Profiles" },
+  { id: "docs", label: "Docs & Chronicles" },
+];
+
+/**
+ * The ReferenceCard's live snippet — a REAL 6-line SurfaceCard JSX
+ * invocation (the exact contract the card suite ships), rendered as
+ * text inside the code well and copied verbatim by the Copy button.
+ */
+const SURFACE_SNIPPET = `<SurfaceCard
+  eyebrow="Planner"
+  meta="views/planner.tsx"
+  title="Event & Party Planner"
+  interactive accentToken="--party-lavender"
+>
+  <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
+</SurfaceCard>`;
+
+/**
+ * RELEASE_HISTORY — the Night of Versions memorial, ported (2.6.0).
+ * All 23 releases of the engine's life, oldest first; the patch
+ * releases (v0.2.1, v1.5.1, v2.4.1) fold into their minors. Tags +
+ * names from the README changelog; one story line and one stat each;
+ * the milestone accents cycle the party palette.
+ */
+const RELEASE_HISTORY: ChronicleRelease[] = [
+  {
+    tag: "v0.1.0",
+    title: "The Token Foundation",
+    story: "Linux-terminal palette, Token Cascade, Override Protocol, hardened ThemeProvider.",
+    stat: "34 tokens · 1 demo",
+    accentToken: "--party-lavender",
+  },
+  {
+    tag: "v0.2.0",
+    title: "Catppuccin Edition",
+    story: "The palette went 100% official Catppuccin — every color mapped, nothing invented.",
+    stat: "mocha + latte",
+    accentToken: "--party-blue",
+  },
+  {
+    tag: "v0.3.0",
+    title: "Harmonized Catppuccin",
+    story: "Per-theme Flamingo/Teal signatures; the retired accents banned everywhere.",
+    stat: "structural UI locked",
+    accentToken: "--party-sky",
+  },
+  {
+    tag: "v0.4.0",
+    title: "Party Palette",
+    story: "Ten content-only tokens — the Rule of Engagement draws the chrome/content line.",
+    stat: "10 tokens reserved",
+    accentToken: "--party-pink-bright",
+  },
+  {
+    tag: "v0.5.0",
+    title: "Pruning Protocol + React Primitives",
+    story: "Icon, EmptyState, PartyBadge — flat DOM, typed tokens, zero wrappers.",
+    stat: "3 primitives",
+    accentToken: "--party-green",
+  },
+  {
+    tag: "v0.6.0",
+    title: "Event Timeline",
+    story: "The chronology: grouped months, sticky glass headers, one line of nodes.",
+    stat: "sticky headers",
+    accentToken: "--party-mauve-soft",
+  },
+  {
+    tag: "v0.7.0",
+    title: "Event Modal",
+    story: "Portalled dialog, neutral scrim, Escape — the z-pillars earn their rungs.",
+    stat: "z 40 / 50",
+    accentToken: "--party-peach",
+  },
+  {
+    tag: "v1.0.0",
+    title: "Publish Flow & Distribution",
+    story: "npm-ready: exports map, tag-driven publish, tokens.json as the AI core.",
+    stat: "3 export paths",
+    accentToken: "--party-yellow",
+  },
+  {
+    tag: "v1.1.0",
+    title: "Storybook — The Human Interface",
+    story: "The philosophy, every token, every component — readable like a book.",
+    stat: "docs only",
+    accentToken: "--party-pink-soft",
+  },
+  {
+    tag: "v1.2.0",
+    title: "GlobalNav",
+    story: "Sticky navbar, drawer, aria-current — the attribute IS the state.",
+    stat: "--z-nav 30",
+    accentToken: "--party-lavender",
+  },
+  {
+    tag: "v1.3.0",
+    title: "Telemetry Module",
+    story: "ProgressBar + StatRing — data-ink doctrine, 8px tracks, surface fills.",
+    stat: "8px grid",
+    accentToken: "--party-sky",
+  },
+  {
+    tag: "v1.4.0",
+    title: "Input & Feedback Layer",
+    story: "Inputs, switches, selects, toasts at the zenith rung — the whitelist completes.",
+    stat: "whitelist 33",
+    accentToken: "--party-green",
+  },
+  {
+    tag: "v1.5.0",
+    title: "Bento Box Showcase",
+    story: "The playground dashboard: every primitive, one bento.",
+    stat: "playground born",
+    accentToken: "--party-peach",
+  },
+  {
+    tag: "v1.6.0",
+    title: "Ambient Elevation & Timeline Resurrection",
+    story: "The inset-highlight + ambient treaty; the sticky-header bug found, fixed.",
+    stat: "(e1) born",
+    accentToken: "--party-mauve-bright",
+  },
+  {
+    tag: "v1.7.0",
+    title: "The Visual Cortex",
+    story: "The MCP server: layout sweeps + screenshots as release-blocker proof.",
+    stat: "2 tools",
+    accentToken: "--party-blue",
+  },
+  {
+    tag: "v1.8.0",
+    title: "Bento Refinement & Spatial Harmony",
+    story: "Glass headers, metric air, breathing bars — the 8px grid everywhere.",
+    stat: "spatial pass",
+    accentToken: "--party-pink-bright",
+  },
+  {
+    tag: "v2.0.0",
+    title: "The Hub Migration",
+    story: "The Shed aesthetic: meta row → ruled title → content; gateway doors.",
+    stat: "sig-* born",
+    accentToken: "--party-lavender",
+  },
+  {
+    tag: "v2.1.0",
+    title: "Timeline Breathing Room & The Master Index",
+    story: "The −1px overlap measured and fixed; the index gets its three doors.",
+    stat: "measured",
+    accentToken: "--party-sky",
+  },
+  {
+    tag: "v2.2.0",
+    title: "Telemetry Limits & Official Surface Primitives",
+    story: "Limit captions on every bar; the Shed anatomy promoted into the package.",
+    stat: "pack 37",
+    accentToken: "--party-peach",
+  },
+  {
+    tag: "v2.3.0",
+    title: "Universal Web Components & AI Signature Codex",
+    story: "DataTable, Tabs, Callouts, Avatars — the codex ships with the package.",
+    stat: "pack 40",
+    accentToken: "--party-green",
+  },
+  {
+    tag: "v2.4.0",
+    title: "Form Wrappers & Editorial Primitives",
+    story: "FormFields, RadioCards, Carousel, Prose, Banners, StatCards, Sparklines.",
+    stat: "pack 43",
+    accentToken: "--party-mauve-soft",
+  },
+  {
+    tag: "v2.5.0",
+    title: "Ergonomic Form Rules, Button & Card Archetypes, and the 12-Column Bento",
+    story: "Five owner defects buried: shell, desc-above forms, labels, align, live bento.",
+    stat: "whitelist 34",
+    accentToken: "--party-pink-bright",
+  },
+  {
+    tag: "v2.6.0",
+    title: "Universal Developer Card Suite",
+    story: "The catalog became the product: chromatic elevation, the master index overhaul.",
+    stat: "5 archetypes · 3 tiers · 11 accents",
+    accentToken: "--party-yellow",
+  },
+];
+
+/**
+ * THE MASTER INDEX — THE CATALOG (2.6.0). Structure, top to bottom:
+ *
+ *   Tabs      — the category filter (attribute-driven package Tabs).
+ *   Row 1     — THREE BALANCED GATEWAY doors (.hub__row--3): equal
+ *               width, same row, each wearing its chromatic accent
+ *               (data-accent + --sig-accent on the button; the package
+ *               css paints eyebrow + underline + glow). PLANNER is the
+ *               real door (navigates to the dashboard); STUDY and
+ *               ARENA toast the roadmap (the 2.1.0 decision stands).
+ *   Row 2     — the commerce trio: ContentCard (catering) ·
+ *               ReferenceCard (the SurfaceCard snippet, copy → toast)
+ *               · TierCard (featured Arena Pass, floating).
+ *   Row 3     — the food slab: a full-width SurfaceCard housing the
+ *               Carousel (5 mini-cards, dot indicators) + the 4-up
+ *               profile row (ProfileCard · FlipCard · AccordionCard ·
+ *               MatchupCard).
+ *   Row 4     — the chronicle slab: a full-width FLAT SurfaceCard (the
+ *               archive is a record, not a floating toy — and the
+ *               release's flat-tier probe) housing the 23-release
+ *               ChronicleTimeline.
+ *
+ * The 2.1.0 button-not-section decision STANDS: the cards ARE
+ * <button>s wearing the package's own surface classes (a <button>
+ * cannot be the section-rendering <SurfaceCard>) — with data-accent,
+ * --sig-accent and the data-elevation ladder riding the same package
+ * css since 2.6.0. Filtering is conditional rendering per row (the
+ * simplest honest mechanism — no display:none ghost grid).
  */
 function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
   const toast = useToast();
+  const [category, setCategory] = useState<CatalogCategory>("all");
   const gateways: Gateway[] = [
     {
       label: "PLANNER",
       path: "views/planner.tsx",
-      title: "Event Planner Bento",
+      title: "Event & Party Planner",
       description:
         "The live dashboard — timeline, telemetry, forms, palette. Click to return.",
+      accent: "--color-cake-primary",
       action: () => onNavigate(VIEW_HREFS.dashboard),
     },
     {
       label: "STUDY",
       path: "modules/study.tsx",
-      title: "Study & Flashcard Generator",
+      title: "Study & Flashcard Engine",
       description: "Deck generation and spaced-repetition flashcards for study groups.",
+      accent: "--party-lavender",
       action: () => toast("success", "The study module is on the roadmap."),
     },
     {
-      label: "GAMES",
+      label: "ARENA",
       path: "modules/games.tsx",
-      title: "Party Game Modules",
+      title: "Party Game Arena",
       description:
         "40 curated party & shot games with 1v1 / 2v2 spectator betting frameworks.",
+      accent: "--party-peach",
       action: () => toast("success", "The party games module is on the roadmap."),
     },
   ];
 
+  // The row visibility switches — one boolean per row, straight off the
+  // category state (conditional rendering, documented in the header).
+  const showGateways = category === "all" || category === "gateways";
+  const showCatalog =
+    category === "all" || category === "commerce" || category === "docs";
+  const showFood = category === "all" || category === "food";
+  const showProfiles =
+    category === "all" || category === "food" || category === "commerce";
+  const showChronicle = category === "all" || category === "docs";
+
   return (
     <main className="hub hub--index">
-      {gateways.map((gateway) => (
-        <button
-          key={gateway.path}
-          type="button"
-          className="sig-surface-card sig-surface-card--interactive hub__card--gateway"
-          data-testid={`gateway-${gateway.label.toLowerCase()}`}
-          onClick={gateway.action}
+      <div data-testid="catalog-tabs">
+        <Tabs
+          label="Catalog categories"
+          tabs={CATALOG_TABS}
+          activeId={category}
+          onChange={(id) => setCategory(id as CatalogCategory)}
+        />
+      </div>
+
+      {showGateways && (
+        <div className="hub__row--3" data-testid="index-gateways">
+          {gateways.map((gateway) => (
+            <button
+              key={gateway.path}
+              type="button"
+              className="sig-surface-card sig-surface-card--interactive hub__card--gateway"
+              data-accent
+              data-elevation="raised"
+              data-testid={`gateway-${gateway.label.toLowerCase()}`}
+              style={{ "--sig-accent": `var(${gateway.accent})` } as CSSProperties}
+              onClick={gateway.action}
+            >
+              <div className="sig-surface-card__meta">
+                <span className="sig-surface-card__eyebrow">{gateway.label}</span>
+                <span className="sig-surface-card__path">{gateway.path}</span>
+              </div>
+              <h2 className="sig-surface-card__title">{gateway.title}</h2>
+              <p className="hub__gateway-desc">{gateway.description}</p>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {showCatalog && (
+        <div className="hub__row--3" data-testid="index-catalog">
+          <ContentCard
+            category="Catering"
+            categoryToken="--party-peach"
+            meta={["25 MIN", "SPICY", "$14"]}
+            accentToken="--party-yellow"
+            title="Birria & Street Taco Catering"
+            description="Slow-braised birria, consomé on the side, the salsa roja that silences the table. The taco cart parks at your gate and feeds the line until the last guest waves the white flag."
+            action={{ label: "Book the taco cart" }}
+          />
+          <ReferenceCard
+            tag="JSX"
+            title="The Signature Surface"
+            accentToken="--party-sky"
+            code={SURFACE_SNIPPET}
+            link="#/index"
+            onCopied={() => toast("success", "Snippet copied — paste it anywhere.")}
+          />
+          <TierCard
+            name="Arena Pass"
+            price="$49"
+            featured
+            accentToken="--party-mauve-soft"
+            features={[
+              "All 40 game modules",
+              "1v1 & 2v2 brackets",
+              "Spectator betting pot",
+              "Priority seating",
+            ]}
+            cta="Claim the pass"
+            onCta={() => toast("success", "The Arena Pass is on the roadmap.")}
+          />
+        </div>
+      )}
+
+      {showFood && (
+        <SurfaceCard
+          eyebrow="Food"
+          meta="components/editorial.tsx"
+          title="Field Notes & Carousel"
+          interactive
+          data-testid="index-food"
         >
-          <div className="sig-surface-card__meta">
-            <span className="sig-surface-card__eyebrow">{gateway.label}</span>
-            <span className="sig-surface-card__path">{gateway.path}</span>
-          </div>
-          <h2 className="sig-surface-card__title">{gateway.title}</h2>
-          <p className="hub__gateway-desc">{gateway.description}</p>
-        </button>
-      ))}
+          <Carousel label="Developer & lifestyle cards">
+            <CarouselItem className="hub__clipping">
+              <div className="hub__mini-card">
+                <strong>Books</strong>
+                <span>The Design of Everyday Things — affordances are promises.</span>
+              </div>
+            </CarouselItem>
+            <CarouselItem className="hub__clipping">
+              <div className="hub__mini-card">
+                <strong>Cocktails</strong>
+                <span>Smoked Old Fashioned — the cherry is not optional.</span>
+              </div>
+            </CarouselItem>
+            <CarouselItem className="hub__clipping">
+              <div className="hub__mini-card">
+                <strong>UI Patterns</strong>
+                <span>Empty States That Sell — a blank card is a sales pitch.</span>
+              </div>
+            </CarouselItem>
+            <CarouselItem className="hub__clipping">
+              <div className="hub__mini-card">
+                <strong>Hardware</strong>
+                <span>Keychron Q1 HE — the hall-effect keyboard of the shed.</span>
+              </div>
+            </CarouselItem>
+            <CarouselItem className="hub__clipping">
+              <div className="hub__mini-card">
+                <strong>Party Games</strong>
+                <span>Ribbon of Shame — the loser wears it until the next round.</span>
+              </div>
+            </CarouselItem>
+          </Carousel>
+        </SurfaceCard>
+      )}
+
+      {showProfiles && (
+        <div className="hub__row--4" data-testid="index-profiles">
+          <ProfileCard
+            name="Ana Souza"
+            role="Head of Catering"
+            accentToken="--party-peach"
+            stats={[
+              { label: "Events", value: "24" },
+              { label: "Guests", value: "412" },
+              { label: "Rating", value: "4.9" },
+            ]}
+            skills={[
+              { colorToken: "--party-peach", label: "Catering" },
+              { colorToken: "--party-green", label: "Logistics" },
+            ]}
+          />
+          <FlipCard front="Dare: karaoke the chorus" back="…or forfeit 10 points" />
+          <AccordionCard title="House Rules">
+            <p>
+              Best of one decides every matchup; ties resolve to
+              rock-paper-scissors and the loser of THAT brings ice.
+            </p>
+            <p>
+              No take-backs after the ring sounds — the bracket is a
+              promise everyone accepts.
+            </p>
+          </AccordionCard>
+          <MatchupCard
+            left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
+            right={{ name: "Leo Martins", ringToken: "--party-sky" }}
+            stakes="Winner picks the venue — loser brings ice."
+          />
+        </div>
+      )}
+
+      {showChronicle && (
+        <SurfaceCard
+          eyebrow="Docs"
+          meta="components/cards.tsx"
+          title="The Chronicle"
+          elevation="flat"
+          data-testid="index-chronicle"
+        >
+          <ChronicleTimeline releases={RELEASE_HISTORY} />
+        </SurfaceCard>
+      )}
     </main>
   );
 }

@@ -1,19 +1,30 @@
 /**
  * THE ENGINE — hub styles (2.0.0 "The Hub Migration — Shed Aesthetic",
  * 2.2.0 "Telemetry Limits & Official Surface Primitives", 2.5.0 "The
- * 12-Column Bento & Live State").
+ * 12-Column Bento & Live State", 2.6.0 "Universal Developer Card
+ * Suite, Chromatic Elevation & The Master Index Overhaul").
+ *
+ * 2.6.0 — THE MASTER INDEX OVERHAUL. The shell widens to 1520px with a
+ * 24px padding floor (the catalog needs the room); .hub--index becomes
+ * a flex column of ROWS — the filter Tabs bar, the balanced
+ * .hub__row--3 gateway grid (three equal doors, chromatic accents via
+ * data-accent/--sig-accent riding the package css), the 3-col commerce
+ * row (ContentCard / ReferenceCard / TierCard), the food slab
+ * (carousel + .hub__row--4 profile row), and the flat chronicle slab.
+ * Filtering is CONDITIONAL RENDERING per row (the simplest honest
+ * mechanism — no display:none ghost grid). Zero hex holds.
  *
  * 2.5.0 — THE SHELL + THE 12-COLUMN BENTO. The .sig-shell wraps EVERY
  * view's content (dashboard, index, events, guests, budget, ALL tab
- * modules): max-width 1400px, centered, clamp(20px, 4vw, 48px) side
- * padding — the owner's defect #1 (the Data & Tables and Form &
- * Input Matrix tab modules rendered edge-to-edge) dies here. The core
- * dashboard is the 12-column bento (.bento12) with explicit spans; the
- * old auto-fit .hub survives only as the index/placeholder grid (the
- * column constraint moved to the shell). The ring's stroke-dashoffset
- * animates through a playground-SCOPED css rule (react/viz.tsx is
- * byte-frozen — the StatRing has no class; the selector targets
- * svg[role="progressbar"]). Live state lives in App.tsx.
+ * modules): centered with side padding — the owner's defect #1 (the
+ * Data & Tables and Form & Input Matrix tab modules rendered
+ * edge-to-edge) dies here. The core dashboard is the 12-column bento
+ * (.bento12) with explicit spans; the old auto-fit .hub survives only
+ * as the index/placeholder grid (the column constraint moved to the
+ * shell). The ring's stroke-dashoffset animates through a
+ * playground-SCOPED css rule (react/viz.tsx is byte-frozen — the
+ * StatRing has no class; the selector targets svg[role="progressbar"]).
+ * Live state lives in App.tsx.
  *
  * 100% var()/color-mix — ZERO hex literals (the color doctrine holds
  * outside the package too). The only raw colors are the owner-mandated
@@ -35,16 +46,18 @@
  * the gateway buttons, the 900px index column.
  */
 
-/* ---- THE SHELL (2.5.0, defect #1) -----------------------------------------
+/* ---- THE SHELL (2.5.0, defect #1; 2.6.0 WIDENED) --------------------------
    Every view's content renders INSIDE this column — the dashboard, the
    master index, the workshop placeholders, and ALL tab modules (data,
-   forms). GlobalNav stays outside: it is its own bar. The clamp keeps
-   ≥20px of viewport margin at every width (the cortex proof measures
-   it on all three tabs). padding-bottom gives the last card air. */
+   forms). GlobalNav stays outside: it is its own bar. 2.6.0: the master
+   index became a full catalog (three balanced gateways + a 3-col
+   commerce row + carousels), so the column widens 1400px → 1520px and
+   the side padding floor rises 20px → 24px (clamp(24px, 4vw, 56px)).
+   The clamp keeps ≥24px of viewport margin at every width. */
 .sig-shell {
-  max-width: 1400px;
+  max-width: 1520px;
   margin-inline: auto;
-  padding-inline: clamp(20px, 4vw, 48px);
+  padding-inline: clamp(24px, 4vw, 56px);
   padding-bottom: 64px;
 }
 
@@ -311,17 +324,42 @@
   gap: var(--space-tight);
 }
 
-/* ---- the master index (2.1.0 — gate ix2/ix1 support) ----------------------
-   Three gateway doors in the SAME hub language: the grid keeps the
-   auto-fit minmax(400px, 1fr) packing but constrains the column to
-   900px — three cards read better narrow (owner call, documented:
-   unconstrained they stretch to 1400px and the trio stops reading as a
-   set of doors). The cards ARE <button>s in App.tsx wearing the
-   package's .sig-surface-card classes; the UA button chrome is
-   neutralized below so the package surface + hover lift carry the
-   whole interaction, and keyboard focus presses the same door. */
+/* ---- the master index (2.6.0 — THE MASTER INDEX OVERHAUL) ------------------
+   The 900px door column retired: the index is a full CATALOG now — a
+   filter Tabs bar, three balanced gateway doors (the .hub__row--3
+   grid), a 3-col commerce row, a food/carousel slab with a 4-up
+   profile row, and the live chronicle. .hub--index is a simple flex
+   column (the shell owns the width); each ROW is its own grid. The
+   cards ARE <button>s in App.tsx wearing the package's
+   .sig-surface-card classes (+ data-accent / --sig-accent since
+   2.6.0); the UA button chrome is neutralized below so the package
+   surface + hover lift carry the whole interaction. */
 .hub--index {
-  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+/* The balanced row grids: 3 equal columns (gateways + commerce) and 4
+   equal columns (the profile row). Pillar 2: both collapse to a single
+   column below 768px — no lopsided orphans at any width. */
+.hub__row--3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.hub__row--4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .hub__row--3,
+  .hub__row--4 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hub__card--gateway {
@@ -335,6 +373,32 @@
   margin: 0;
   color: var(--text-muted);
   font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+/* The carousel mini-cards (the Food slab): light tiles — title +
+   one-liner on the inset ground. The CarouselItem min-width gives the
+   track real scrollable overflow. */
+.hub__mini-card {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+  padding: var(--space-standard);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.hub__mini-card strong {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
+.hub__mini-card span {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
