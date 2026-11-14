@@ -97,11 +97,18 @@
     --party-pink-bright: #ea76cb;
     --party-pink-soft: #f5bde6;
     --party-pink-alt: #f4b8e4;
-    --party-mauve-bright: #8839ef;
+    --party-mauve-bright: #9e5ff2; /* 2.9.1 ZERO CONTRAST DEBT — was #8839ef
+       (2.32:1 on --bg-surface, sub-3.0 FAIL). Same violet family kept:
+       H266°/S85% preserved, lightness 58%→66% (the minimal step measuring
+       ≥3.1) — now 3.22:1 on surface / 4.20:1 on base. Gate: verify:contrast. */
     --party-mauve-soft: #cba6f7;
     --party-lavender: #7287fd;
     --party-sky: #04a5e5;
-    --party-blue: #1e66f5;
+    --party-blue: #89b4fa; /* 2.9.1 ZERO CONTRAST DEBT — was #1e66f5 (2.56:1 on
+       --bg-surface, sub-3.0 FAIL). Now the OFFICIAL Catppuccin Mocha Blue —
+       the exact value v3.0.0's planned --party-cobalt retires it into, so
+       this patch converges with the planned major. 5.97:1 on surface /
+       7.79:1 on base. Gate: verify:contrast. */
     --party-peach: #fe640b;
     --party-green: #a6d189;
     --party-yellow: #F9E2AF; /* strength-meter Fair stage, owner v2.5.0 */

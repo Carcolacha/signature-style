@@ -313,11 +313,16 @@ const PARTY_TOKENS = [
   ["--party-pink-bright", "#ea76cb"],
   ["--party-pink-soft", "#f5bde6"],
   ["--party-pink-alt", "#f4b8e4"],
-  ["--party-mauve-bright", "#8839ef"],
+  ["--party-mauve-bright", "#9e5ff2"], /* 2.9.1 ZERO CONTRAST DEBT — re-pinned from
+     #8839ef: the contrast mandate lightened the token in-family to 3.22:1 on
+     surface (owner-sanctioned amendment of the frozen (p) pins — the manifest
+     must carry the real value). Measured by playground/verify-contrast.mjs. */
   ["--party-mauve-soft", "#cba6f7"],
   ["--party-lavender", "#7287fd"],
   ["--party-sky", "#04a5e5"],
-  ["--party-blue", "#1e66f5"],
+  ["--party-blue", "#89b4fa"], /* 2.9.1 ZERO CONTRAST DEBT — re-pinned from #1e66f5:
+     now the official Catppuccin Mocha Blue (5.97:1 on surface), the exact value
+     v3.0.0's planned --party-cobalt retires it into (owner-sanctioned). */
   ["--party-peach", "#fe640b"],
   ["--party-green", "#a6d189"],
 ];
