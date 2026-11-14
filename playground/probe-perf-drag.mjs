@@ -88,10 +88,13 @@ if (before === null) {
   await page.mouse.move(startX, startY);
   await page.mouse.down();
   const dragStart = Date.now();
+  // 120px of SCREEN distance — comfortably inside the canvas (the
+  // viewBox is 640×320 graph units; dragging into the corner would clip
+  // the node's own boundingBox and break the commit measurement).
   for (let step = 1; step <= DRAG_STEPS; step++) {
     await page.mouse.move(
-      startX + (step * 320) / DRAG_STEPS,
-      startY + (step * 160) / DRAG_STEPS,
+      startX + (step * 120) / DRAG_STEPS,
+      startY + (step * 60) / DRAG_STEPS,
       { steps: 1 },
     );
     await page.waitForTimeout(STEP_PAUSE_MS);
@@ -135,7 +138,7 @@ if (before === null) {
   // THE COMMIT PROOF — the node actually moved (pointerup → onMoveNode
   // → persisted positions → the transform re-rendered).
   const after = await node.boundingBox();
-  if (after === null || Math.abs(after.x - before.x) < 100 || Math.abs(after.y - before.y) < 50) {
+  if (after === null || Math.abs(after.x - before.x) < 40 || Math.abs(after.y - before.y) < 20) {
     failures.push("the node did not commit its dragged position (the transform did not persist)");
   } else {
     console.log(`  commit proof               : node moved (${(after.x - before.x).toFixed(0)}, ${(after.y - before.y).toFixed(0)})px — onMoveNode landed`);

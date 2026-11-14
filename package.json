@@ -1,6 +1,6 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "2.9.1",
+  "version": "3.0.0",
   "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Harmonized — 100% official Catppuccin, per-theme (Mocha dark default, Latte light mode) with the signature Flamingo/Teal accents.",
   "type": "module",
   "license": "MIT",

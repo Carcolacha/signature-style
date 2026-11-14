@@ -129,6 +129,113 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 3.0.0 — 16-Color Chromatic System, Obsidian Graph, 3×3 Carousel, Symmetrical Forms & 60fps
+
+The major that gives the palette its full chromatic voice, makes the
+graph feel like Obsidian, and writes the data layer's contract down.
+
+- **The 16-color chromatic system** — the Party Palette grows 11 → **26
+  tokens**: `--party-blue` **retires** (the name, not the value — the
+  official Mocha Blue #89b4fa continues as `--party-cobalt`, and the old
+  name is *banned* from css/, tokens.json and the whitelist by the new
+  (p3)/(chrom) gates), and 15 **chromatic fill/series accents** join:
+  orchid, cyan, magenta, mint, spring, citron, violet-glow, pink-glow,
+  rose-glow, lime-glow, mint-glow, crimson, azure, tangerine,
+  neon-green. They are DECLARED fill/series color (bars, node rings,
+  borders, tinted wells — never body-text ink) and carry a 2.0:1
+  visibility floor vs surface; every value cleared it out of the box
+  (the floor leader is crimson at 3.01:1 — zero adjustments needed).
+  The ink-floor eleven keep their ≥3.0:1 contract (cobalt at 5.97:1).
+  The full 26-token WCAG table prints in `npm run verify:contrast`.
+  OWNER-SANCTIONED, per the 2.9.1 precedent: the frozen `scripts/verify.mjs`
+  (c)/(p) pins re-targeted — #F5C2E7 (the retired Catppuccin Pink) is
+  re-homed as `--party-orchid`, and the party pin list grew to the 26.
+  `react/timeline-manager.tsx` carries the one type-forced line
+  (`--party-blue` → `--party-cobalt`).
+- **`--radius-card: 12px`** — cards earn rounder corners than the 6px
+  controls. TOKEN_KEYS 34 → **50** (+ `KnownToken`, recompiled).
+- **The Data Architecture Blueprint** — `shared/schema.ts` (nine
+  zero-dependency DTO interfaces + runtime guards, money in **integer
+  cents** — floats drift, ledgers don't) + `docs/SCHEMA_V3.md`
+  (normalized ERD, SQLite + PostgreSQL DDL with CHECK constraints, the
+  FastAPI Pydantic v2 mirror, and the REST contract table). `shared/`
+  is the future backend's half and is deliberately NOT packed
+  (the pack stays exactly 58 files).
+- **Card parity + chromatic enrichment** — `.ptp-flip-card`,
+  `.ptp-accordion` and `.ptp-matchup` become self-contained surfaces
+  (var(--bg-surface) + the 15% glass hairline + `var(--radius-card)` +
+  a 220px floor — never transparent/collapsed in grid rows); ActionTile
+  icon wells tint 12% from the accent; `[data-accent]` cards wear a 45%
+  translucent chromatic top border (distinct from the title underline).
+  cards.css keeps its absolute-zero shadow law. BarChart series read as
+  a spectrum: cobalt/cyan/mint/tangerine.
+- **Carousel modes** — `mode?: "paged-3" | "free-scroll"`. paged-3
+  chunks the children into pages of three (pure math), each page ONE
+  snap slide wearing a repeat(3, 1fr) grid + 16px gap; chevrons stride
+  pages, dots are per page and clickable, the indicator reads "p / P".
+  free-scroll (the default) keeps the snap strip and UPGRADES its
+  active-index sync to an IntersectionObserver (majority-visible wins).
+  The mechanics dock into a bottom control bar — prev · dots ·
+  indicator · next — so the readout never overlaps card content. The
+  Field Notes card carries the live two-button mode toggle pill.
+- **Symmetrical form fields** — the owner's reversal of the 2.5.0
+  desc-above anatomy: the label row is a fixed 20px rail (side-by-side
+  fields align on the same baseline) and can carry an `infoTooltip` ⓘ
+  (pure-CSS bubble above the trigger, shown on hover AND
+  :focus-visible); `description` + `hint` move BELOW the control into
+  `.ptp-form-field__helpers` (a 20px bottom rail). **A11y preserved:**
+  the description id rides `aria-describedby` onto the control via a
+  cloneElement merge — screen readers still announce the format rule
+  (the GOV.UK concern survives the visual move; documented in
+  css/forms.css).
+- **StatRing zoom + detail** — the dial defaults to 120px; with
+  `total` (+ `unit`) the ring zooms to scale(1.07) on hover/press and a
+  click slides the detail strip open (0fr → 1fr, reduced-motion safe):
+  "85% · 170 / 200 Guests". The dash geometry is byte-identical.
+- **The Obsidian graph** — generous nodes (r 34, 13px labels, 16-char
+  truncation + `<title>` tooltips); **60fps drag** (pointer capture →
+  rAF mutates the node transform directly, no setState per move → one
+  `onMoveNode` commit per drag, persisted); **right-click tethers**
+  (a live azure dashed line chases the cursor; release over another
+  node fires `onLinkNodes` — the extra-links model persists in
+  `sig.v27.links`); **double-click spawn** on empty canvas; **pan**
+  (empty-canvas drag) and **wheel zoom** (0.5×–2.5×, cursor-anchored,
+  viewBox math so coordinates stay in graph space); Escape cancels;
+  arrow keys nudge the selected node 8px.
+- **60fps perf** — React.memo fences the five hot exports
+  (KnowledgeGraph, DataTable, AreaChart, BarChart, EventTimeline);
+  `usePersistentState` debounces its localStorage write to a 300ms
+  trailing window (sync read preserved, flush on unmount +
+  beforeunload, reset cancels immediately); `.sig-surface-card` carries
+  `contain: layout style paint`. The backdrop audit (bd1) pins the
+  glass: command.css on the z-50 rung, the 1.8.0 timeline glass header
+  where it has always been, the modal scrim honest (plain rgba, no
+  blur), nav blur-free. The measured proof: `playground/probe-perf-drag.mjs`
+  samples real rAF deltas during a playwright node drag — median
+  < 20ms, p95 < 40ms, and the commit proof (the node's transform
+  persists).
+- **The codex moves to v3.3** — refreshed FormField/StatRing/
+  KnowledgeGraph/Carousel recipes + a NEW Data Architecture subsection
+  pointing at `shared/schema.ts` + `docs/SCHEMA_V3.md`. llms.txt +
+  llms-full.txt regenerated from the 50-token whitelist.
+
+**Negative tests (falsifiability, restore-verified, git-checked
+byte-identical):** (ct4) dropping `--party-crimson` to `#7a0e0e` flips
+`verify:contrast` FAIL with the measured 1.136:1 against the 2.0 floor;
+re-declaring `--party-blue` in css/tokens.css flips the frozen (p3)
+retirement ban + the (d) whitelist parity FAIL; breaking a parity floor
+to `min-height: 9rem` flips (par) FAIL; a 2-column page grid flips
+(car3) FAIL; killing the helpers rail flips (ff2) FAIL; killing the
+zoom flips (ring2) FAIL; removing `setPointerCapture` flips (ob1)
+FAIL. Restore → PASS in every case.
+
+**Release gate:** `verify` (the frozen core, now carrying the 26-token
+(p) pins + the (p3) retirement bans + the `--radius-card` pin) ·
+`verify:contrast` (the 26-token table) · `verify:playground` (all
+gates, the (b7)/(n-hub4) safety diff rebased to v2.9.1 with the
+enumerated 3.0.0 authorized set) · `verify:mcp` · vite build exit 0 ·
+pack EXACTLY 58 with `shared/` and `docs/` excluded.
+
 ### 2.9.1 — Zero Contrast Debt & Live Skeleton Trigger
 
 The patch that pays the contrast bill the 2.9.0 hostile audit ran up

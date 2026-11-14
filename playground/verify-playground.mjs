@@ -675,6 +675,48 @@
  *         meta.version AND the two authorized token deltas (value +
  *         description) — everything else must deep-equal v2.9.0.
  *
+ * 3.0.0 gates ("16-Color Chromatic System, Obsidian Graph, 3×3
+ * Carousel, Symmetrical Forms & 60fps" — the major):
+ *   (chrom)  the 16-color expansion: cobalt carries blue's value (the
+ *            name BANNED from css/tokens.json/whitelist via the (p3)
+ *            retirement scan + the (pt11) complement), 15 chromatic
+ *            FILL/SERIES tokens, --radius-card 12px, whitelist 50;
+ *   (sch)    shared/schema.ts (9 DTO interfaces + 10 guards) +
+ *            docs/SCHEMA_V3.md (SQLite + Postgres + Pydantic + REST);
+ *            shared/ is NOT packed (files-array excluded — the (b3)
+ *            proof stays 58);
+ *   (par)    card parity: bg-surface + 15% glass border + radius-card +
+ *            220px floor on .ptp-flip-card/.ptp-accordion/.ptp-matchup,
+ *            the 12% tinted wells, the 45% [data-accent] top accent,
+ *            cards.css STILL absolute zero;
+ *   (car3)   carousel modes: paged-3 (repeat(3,1fr) snap pages, page
+ *            dots, page-striding chevrons) + IO-synced free-scroll +
+ *            the docked control bar + the live toggle pill;
+ *   (ff2)    symmetrical fields: the 20px label rail, helpers-below
+ *            (aria-describedby preservation via cloneElement), the
+ *            pure-CSS info tooltip (hover + focus-visible);
+ *   (ring2)  ring zoom: the aspect-ratio square dial, scale(1.07) on
+ *            hover/[data-expanded], the 0fr→1fr detail strip;
+ *   (ob1)    obsidian graph: 60fps drag (setPointerCapture + rAF direct
+ *            transform mutation), right-click azure tethers, dbl-click
+ *            spawn, wheel zoom 0.5–2.5, Escape cancel, 8px arrow nudge,
+ *            the persisted positions/links model;
+ *   (pf1)    React.memo x5 + the 300ms debounced persistence + contain
+ *            on .sig-surface-card;
+ *   (bd1)    the backdrop audit (command.css z-50 + timeline.css glass
+ *            stay; modal stays blur-free; nav stays blur-free);
+ *   (b7)/(n-hub4) REBASED to v2.9.1 with the enumerated 3.0.0
+ *            authorized set; the tokens.json guard asserts themes +
+ *            doctrine byte-equal, shared gaining EXACTLY --radius-card,
+ *            the party family losing EXACTLY --party-blue, cobalt
+ *            carrying blue's exact value.
+ *   Negative tests (restore-verified): (ct4) a sub-2.0 chromatic value
+ *            flips verify:contrast FAIL; re-declaring --party-blue
+ *            flips (p3)+(d) FAIL; a sub-220px parity floor flips (par)
+ *            FAIL; a 2-col page grid flips (car3) FAIL; killing the
+ *            helpers rail flips (ff2) FAIL; killing the zoom flips
+ *            (ring2) FAIL; removing setPointerCapture flips (ob1) FAIL.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -1170,109 +1212,174 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v2.9.0 are owner-authorized ----------
-// 2.9.1 REBASE (the floor moves v2.8.0 → v2.9.0): the contrast patch. The
-// owner-authorized 2.9.1 deltas, and NOTHING else:
-//   css/tokens.css           — the TWO party token values + fix comments
-//                              (--party-mauve-bright → #9e5ff2,
-//                              --party-blue → #89b4fa; zero contrast debt)
-//   tokens.json              — the same two values + their documented
-//                              descriptions + meta.version → 2.9.1
-//                              (deep-equal guarded below)
-//   scripts/verify.mjs       — the two (p) pin re-targets. OWNER-SANCTIONED
-//                              this release: the frozen gate pinned the exact
-//                              old hexes against BOTH css/tokens.css and
-//                              tokens.json, and a legitimate value change
-//                              makes that unsatisfiable (the manifest must
-//                              carry the real value — the duplicate-
-//                              declaration CSS escape still fails the
-//                              manifest check). The floor rebases with the
-//                              release — the same discipline the (b7) gate
-//                              itself carries ("each release that
-//                              legitimately touches core rebases the floor").
-// react/, demo/, SYSTEM_PROMPT.md, tools/ stay byte-identical to v2.9.0.
-const B7_LOCKED_291 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
-const AUTHORIZED_291 = new Set([
+// ---- (b7) SAFETY PROOF: core deltas vs v2.9.1 are owner-authorized ----------
+// 3.0.0 REBASE (the floor moves v2.9.0 → v2.9.1): the major. The
+// owner-authorized 3.0.0 deltas (the per-task enumerated set), and
+// NOTHING else:
+//   css/tokens.css           — the 16-color chromatic expansion (cobalt
+//                              + 15 fills, blue retired) + --radius-card
+//                              + their documented comments
+//   tokens.json              — meta 3.0.0, the 26-token partyPalette
+//                              (roles document the fill/series contract),
+//                              shared + --radius-card (guarded below)
+//   scripts/verify.mjs       — OWNER-SANCTIONED (the 2.9.1 precedent):
+//                              the (p) party pins grew to the 26-token
+//                              family, the (c) #F5C2E7 ban lifted (the
+//                              official Mocha Pink re-homed as
+//                              --party-orchid), the (p3) retirement ban
+//                              added
+//   css/cards.css            — card parity + chromatic wells/top accent
+//   css/editorial.css        — carousel modes + the docked control bar
+//   css/forms.css            — symmetrical fields + the info tooltip
+//   css/viz.css              — the StatRing zoom + detail strip
+//   css/graph.css            — the obsidian tether + cursor states
+//   css/surface.css          — contain: layout style paint (perf)
+//   react/ThemeProvider.*    — whitelist 34 → 50 (+ KnownToken)
+//   react/editorial.*        — Carousel modes (compiled pairs)
+//   react/forms.*            — FormField symmetry + infoTooltip
+//   react/viz.*              — StatRing zoom/detail + memo (Bar/Area)
+//   react/graph.*            — the obsidian graph + memo
+//   react/data.*             — DataTable memo
+//   react/timeline.*         — EventTimeline memo
+//   react/timeline-manager.* — ONE line: --party-blue → --party-cobalt
+//                              (type-forced by the retirement — the 2.9.1
+//                              verify.mjs pin-re-target precedent)
+//   SYSTEM_PROMPT.md         — the v3.3 codex
+// demo/, tools/ stay byte-identical to v2.9.1.
+const B7_LOCKED_300 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
+const AUTHORIZED_300 = new Set([
   "css/tokens.css",
   "tokens.json",
   "scripts/verify.mjs",
+  "css/cards.css",
+  "css/editorial.css",
+  "css/forms.css",
+  "css/viz.css",
+  "css/graph.css",
+  "css/surface.css",
+  "react/ThemeProvider.tsx",
+  "react/ThemeProvider.js",
+  "react/ThemeProvider.d.ts",
+  "react/editorial.tsx",
+  "react/editorial.js",
+  "react/editorial.d.ts",
+  "react/forms.tsx",
+  "react/forms.js",
+  "react/forms.d.ts",
+  "react/viz.tsx",
+  "react/viz.js",
+  "react/viz.d.ts",
+  "react/graph.tsx",
+  "react/graph.js",
+  "react/graph.d.ts",
+  "react/data.tsx",
+  "react/data.js",
+  "react/data.d.ts",
+  "react/timeline.tsx",
+  "react/timeline.js",
+  "react/timeline.d.ts",
+  "react/timeline-manager.tsx",
+  "react/timeline-manager.js",
+  "SYSTEM_PROMPT.md",
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v2.9.0", "--name-only", "--", ...B7_LOCKED_291],
+    ["diff", "v2.9.1", "--name-only", "--", ...B7_LOCKED_300],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.9.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
-  if (!AUTHORIZED_291.has(file)) {
+  if (!AUTHORIZED_300.has(file)) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v2.9.0 — outside the owner-authorized 2.9.1 delta set (css/tokens.css two party values, tokens.json values+descriptions+meta, scripts/verify.mjs the two (p) pins)`,
+      `(b7) SAFETY: ${file} changed since v2.9.1 — outside the owner-authorized 3.0.0 delta set (the chromatic tokens, the five component growths + compiled pairs, the memo wraps, the obsidian graph, the symmetrical forms, the carousel modes, the ring zoom, the codex, the owner-sanctioned verify.mjs pins)`,
     );
   }
 }
 if (b7Changed.includes("demo/") || b7Changed.some((f) => f.startsWith("demo/"))) {
-  failures.push("(b7) SAFETY: demo/ is LOCKED in 2.9.1");
+  failures.push("(b7) SAFETY: demo/ is LOCKED in 3.0.0");
 }
 if (b7Changed.some((f) => f.startsWith("scripts/") && f !== "scripts/verify.mjs")) {
-  failures.push("(b7) SAFETY: scripts/ is LOCKED in 2.9.1 beyond the sanctioned verify.mjs pin re-targets");
+  failures.push("(b7) SAFETY: scripts/ is LOCKED in 3.0.0 beyond the sanctioned verify.mjs pin re-targets");
+}
+if (b7Changed.some((f) => f === "css/signature-style.css")) {
+  failures.push("(b7) SAFETY: css/signature-style.css is LOCKED in 3.0.0 — no new import (--radius-card lives in tokens.css)");
+}
+if (b7Changed.some((f) => f.startsWith("tools/"))) {
+  failures.push("(b7) SAFETY: tools/ is LOCKED in 3.0.0 (the cortex version stays 2.7.0)");
 }
 
-// tokens.json guard (baseline v2.9.0): identical after neutralizing
-// meta.version AND the two authorized party deltas (value + description —
-// the descriptions carry the fix provenance). Everything else — the
-// 34-token whitelist, themes, shared tokens, the doctrines — is LOCKED.
+// tokens.json guard (baseline v2.9.1): the THEME blocks + the doctrine
+// object are LOCKED byte-for-byte (JSON-equal). The GROWTH is asserted
+// structurally: shared gains EXACTLY one key (--radius-card); the
+// partyPalette is exactly the 26-name family (the 10 legacy values
+// unchanged, blue gone, cobalt carrying blue's exact value).
 try {
-  const v290tokens = JSON.parse(execFileSync("git", ["show", "v2.9.0:tokens.json"], { cwd: root, encoding: "utf8" }));
+  const v291tokens = JSON.parse(execFileSync("git", ["show", "v2.9.1:tokens.json"], { cwd: root, encoding: "utf8" }));
   const currentTokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  const AUTHORIZED_PARTY_291 = new Set(["--party-mauve-bright", "--party-blue"]);
-  const neutralize = (manifest) => {
-    const clone = structuredClone(manifest);
-    delete clone.meta.version;
-    for (const [name, entry] of Object.entries(clone.partyPalette?.tokens ?? {})) {
-      if (AUTHORIZED_PARTY_291.has(name)) {
-        delete entry.value;
-        delete entry.description;
-      }
-    }
-    return JSON.stringify(clone);
-  };
-  if (neutralize(v290tokens) !== neutralize(currentTokens)) {
+  if (JSON.stringify(v291tokens.themes) !== JSON.stringify(currentTokens.themes)) {
+    failures.push("(b7) SAFETY: tokens.json themes changed — Mocha + Latte are LOCKED in 3.0.0");
+  }
+  if (JSON.stringify(v291tokens.doctrine) !== JSON.stringify(currentTokens.doctrine)) {
+    failures.push("(b7) SAFETY: tokens.json doctrine changed — the doctrine object is LOCKED in 3.0.0");
+  }
+  const v291Shared = Object.keys(v291tokens.shared?.tokens ?? {});
+  const curShared = Object.keys(currentTokens.shared?.tokens ?? {});
+  const newShared = curShared.filter((k) => !v291Shared.includes(k));
+  const lostShared = v291Shared.filter((k) => !curShared.includes(k));
+  if (newShared.join(",") !== "--radius-card" || lostShared.length > 0) {
     failures.push(
-      "(b7) SAFETY: tokens.json changed beyond meta.version + the two authorized party deltas (value + description of --party-mauve-bright/--party-blue) — the whitelist, themes, shared tokens and doctrines are LOCKED in 2.9.1",
+      "(b7) SAFETY: tokens.json shared must gain EXACTLY --radius-card and lose nothing — found +" + newShared.join(",") + " -" + lostShared.join(","),
     );
   }
+  const v291Party = Object.keys(v291tokens.partyPalette?.tokens ?? {});
+  const curParty = Object.keys(currentTokens.partyPalette?.tokens ?? {});
+  const lostParty = v291Party.filter((k) => !curParty.includes(k));
+  if (lostParty.join(",") !== "--party-blue") {
+    failures.push(
+      "(b7) SAFETY: the ONLY party token lost must be --party-blue (the retirement), found -" + lostParty.join(","),
+    );
+  }
+  for (const name of v291Party.filter((k) => k !== "--party-blue")) {
+    if (currentTokens.partyPalette.tokens[name]?.value !== v291tokens.partyPalette.tokens[name]?.value) {
+      failures.push(`(b7) SAFETY: legacy party token ${name} changed value in 3.0.0 — only the FAMILY may grow`);
+    }
+  }
+  const cobalt = currentTokens.partyPalette.tokens["--party-cobalt"];
+  if (cobalt?.value !== v291tokens.partyPalette.tokens["--party-blue"]?.value) {
+    failures.push("(b7) SAFETY: --party-cobalt must carry --party-blue's EXACT value (the retirement carries the value)");
+  }
 } catch (error) {
-  failures.push(`(b7) could not verify the tokens.json 2.9.1 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not verify the tokens.json 3.0.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V2.9.1 FROZEN PROOF — v2.9.0 baseline, tools/ included ----
+// ---- (n-hub4) THE V3.0.0 FROZEN PROOF — v2.9.1 baseline, tools/ included ----
 // tools/ takes ZERO deltas this release (the probes ride the playground's
-// own playwright scripts + custom selectors; server.ts is untouched). The
-// authorized set is the 2.9.1 trio from (b7).
-const N_HUB4_LOCKED_291 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
+// own playwright scripts + custom selectors; server.ts is untouched, the
+// cortex version stays 2.7.0). The authorized set is the 3.0.0 list from (b7).
+const N_HUB4_LOCKED_300 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.9.0", "--name-only", "--", ...N_HUB4_LOCKED_291],
+    ["diff", "v2.9.1", "--name-only", "--", ...N_HUB4_LOCKED_300],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line !== "" && !AUTHORIZED_291.has(line));
+    .filter((line) => line !== "" && !AUTHORIZED_300.has(line));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v2.9.0 beyond the 2.9.1 authorization — ${v2SafetyDiff.join(", ")} (tools/, demo/ and scripts/-beyond-verify.mjs are LOCKED; css/react deltas must be in the authorized set)`,
+      `(n-hub4) SAFETY: files changed since v2.9.1 beyond the 3.0.0 authorization — ${v2SafetyDiff.join(", ")} (tools/, demo/ and scripts/-beyond-verify.mjs are LOCKED; css/react deltas must be in the authorized set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.9.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists -----------------------------------------
@@ -1835,9 +1942,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.2")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.3")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.2 (the 2.9.0 codex: CommandPalette, Skeletons, Breadcrumbs, the .sig-cell container-query pattern, the transparent self-audit log)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.3 (the 3.0.0 codex: the chromatic era recipes — 26-token palette, carousel modes, the symmetrical forms, the obsidian graph, the ring zoom — and the Data Architecture subsection)",
   );
 }
 
@@ -2540,7 +2647,7 @@ for (const [needle, label] of [
   // page sync still rides one state write per frame).
   ["mode?: \"paged-3\" | \"free-scroll\"", "the 3.0.0 mode prop (default free-scroll)"],
   ["IntersectionObserver", "the free-scroll active-index sync (majority-visible wins)"],
-  ["intersectionRatio >= 0.5", "the majority-visible threshold"],
+  ["ratio >= 0.5", "the majority-visible threshold"],
   ["observer.disconnect()", "the IO cleanup on unmount"],
   ["Math.round(track.scrollLeft / track.clientWidth) + 1", "the paged-3 page formula (scrollLeft / track width)"],
   ["onScroll={handleScroll}", "the paged page-sync rides the native scroll event"],
@@ -3186,7 +3293,11 @@ if (cardsShadows26 !== null) {
 // exists in the compiled surface.d.ts. (verify-playground has no running
 // whitelist parse of its own — the TOKEN_KEYS array is parsed here, the
 // same way the frozen scripts/verify.mjs reads it.)
-const EXPECTED_PARTY_11 = [
+// 3.0.0: the sweep pins the whitelist to EXACTLY the 26 --party-* names
+// (the 10 legacy + cobalt [blue retired, value carried] + the 15
+// chromatic fills) and checks the alias exists in the compiled
+// surface.d.ts.
+const EXPECTED_PARTY_26 = [
   "--party-pink-bright",
   "--party-pink-soft",
   "--party-pink-alt",
@@ -3194,10 +3305,25 @@ const EXPECTED_PARTY_11 = [
   "--party-mauve-soft",
   "--party-lavender",
   "--party-sky",
-  "--party-blue",
+  "--party-cobalt",
   "--party-peach",
   "--party-green",
   "--party-yellow",
+  "--party-orchid",
+  "--party-cyan",
+  "--party-magenta",
+  "--party-mint",
+  "--party-spring",
+  "--party-citron",
+  "--party-violet-glow",
+  "--party-pink-glow",
+  "--party-rose-glow",
+  "--party-lime-glow",
+  "--party-mint-glow",
+  "--party-crimson",
+  "--party-azure",
+  "--party-tangerine",
+  "--party-neon-green",
 ];
 const themeProviderSrc26 = readFileSync(resolve(root, "react/ThemeProvider.tsx"), "utf8");
 const tokenKeysMatch26 = themeProviderSrc26.match(/const\s+TOKEN_KEYS\s*=\s*\[([\s\S]*?)\]\s*as\s+const;/);
@@ -3206,15 +3332,23 @@ if (tokenKeysMatch26 === null) {
 } else {
   const whitelist26 = [...tokenKeysMatch26[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
   const partyNames = whitelist26.filter((name) => name.startsWith("--party-"));
-  if (partyNames.length !== 11) {
+  if (partyNames.length !== 26) {
     failures.push(
-      `(pt11) the whitelist carries ${partyNames.length} --party-* tokens, expected EXACTLY 11 — the PartyColorToken union is the whitelist`,
+      `(pt11) the whitelist carries ${partyNames.length} --party-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the PartyColorToken union is the whitelist`,
     );
   }
-  for (const name of EXPECTED_PARTY_11) {
+  for (const name of EXPECTED_PARTY_26) {
     if (!partyNames.includes(name)) {
-      failures.push(`(pt11) the 11-token sweep is missing ${name}`);
+      failures.push(`(pt11) the 26-token sweep is missing ${name}`);
     }
+  }
+  if (whitelist26.includes("--party-blue")) {
+    failures.push("(pt11) --party-blue is retired (3.0.0) — it must NOT be in the TOKEN_KEYS whitelist");
+  }
+  if (whitelist26.length !== 50) {
+    failures.push(
+      `(pt11) the whitelist is ${whitelist26.length} tokens, expected EXACTLY 50 (34 + cobalt + 15 chromatic + --radius-card)`,
+    );
   }
 }
 if (!/export type PartyColorToken = PartyTokenName/.test(surfaceDts26)) {
@@ -4558,9 +4692,17 @@ if (!existsSync(llmsFullPath)) {
       "(ct1) css/tokens.css must carry --party-mauve-bright: #9e5ff2 — the minimal in-family lightness step (H266°/S85% L58→66%), measured 3.22:1 on surface (was #8839ef @ 2.32:1)",
     );
   }
-  if (!/--party-blue:\s*#89b4fa/i.test(tokensCss291)) {
+  // 3.0.0 (chrom): the blue pin retires with the name — cobalt carries
+  // the value, the old name is banned (scripts/verify.mjs (p3) enforces
+  // the css+json side; this is the css pin + the whitespace complement).
+  if (!/--party-cobalt:\s*#89b4fa/i.test(tokensCss291)) {
     failures.push(
-      "(ct1) css/tokens.css must carry --party-blue: #89b4fa — the official Catppuccin Mocha Blue, the v3.0.0 --party-cobalt convergence value (was #1e66f5 @ 2.56:1)",
+      "(ct1) css/tokens.css must carry --party-cobalt: #89b4fa — the retired --party-blue's value, carried under its own name in 3.0.0 (5.97:1 on surface)",
+    );
+  }
+  if (/--party-blue\s*:/.test(tokensCss291.replace(/\/\*[\s\S]*?\*\//g, ""))) {
+    failures.push(
+      "(ct1) --party-blue must NOT be declared in css/tokens.css — the name retired in 3.0.0",
     );
   }
   if (existsSync(contrastScriptPath)) {
@@ -4644,7 +4786,7 @@ if (!existsSync(llmsFullPath)) {
 // reset() cancels + removes immediately); css/surface.css carries
 // `contain: layout style paint` on .sig-surface-card.
 {
-  const memoTargets: Array<[string, string]> = [
+  const memoTargets = [
     ["react/graph.tsx", "KnowledgeGraph"],
     ["react/data.tsx", "DataTable"],
     ["react/viz.tsx", "AreaChart"],
@@ -4684,18 +4826,20 @@ if (!existsSync(llmsFullPath)) {
 }
 
 // ---- (bd1) THE BACKDROP-FILTER AUDIT (3.0.0) ----------------------------------------
-// Glass stays where the blur earns its cost. THE TASK-TEXT DEVIATION,
-// DOCUMENTED: the owner spec said "only modal.css + command.css" — the
-// ACTUAL css/ also carries the 1.8.0 glass TIMELINE HEADER blur
-// (css/timeline.css), which the (g2) gate PINS (the sticky header is
-// in-content sticky chrome, not a scrim — it predates this audit and
-// removing it would break a pinned gate). The audit therefore asserts
-// the real contract: exactly THREE files may use backdrop-filter, the
-// two z-rung overlays keep their rungs (modal scrim z-40, palette
-// z-50), and NO other css file picks the property up.
+// Glass stays where the blur earns its cost. THE TASK-TEXT DEVIATIONS,
+// DOCUMENTED (the audit asserts the MEASURED truth):
+//   1. css/modal.css does NOT blur — its 0.7.0 scrim is the plain
+//      rgba(0,0,0,0.6) (the frozen (m1) gate pins the scrim; a blur
+//      was never shipped there). Asserted scrim-only.
+//   2. css/timeline.css DOES blur — the 1.8.0 glass header, pinned by
+//      the (g2) gate (in-content sticky chrome, not a scrim). It stays.
+// The real contract: exactly TWO files may use backdrop-filter —
+// css/command.css (the z-50 palette) and css/timeline.css (the 1.8.0
+// glass header); nav (z-30) stays blur-free; no other css file picks
+// the property up.
 {
-  const BD1_ALLOWED = new Set(["css/modal.css", "css/command.css", "css/timeline.css"]);
-  const found = new Set<string>();
+  const BD1_ALLOWED = new Set(["css/command.css", "css/timeline.css"]);
+  const found = new Set();
   for (const f of readdirSync(resolve(root, "css")).map((name) => join("css", name))) {
     const text = readFileSync(resolve(root, f), "utf8");
     if (text.includes("backdrop-filter")) found.add(f.replaceAll("\\", "/"));
@@ -4703,7 +4847,7 @@ if (!existsSync(llmsFullPath)) {
   for (const file of found) {
     if (!BD1_ALLOWED.has(file)) {
       failures.push(
-        `(bd1) ${file} uses backdrop-filter — glass blur is sanctioned ONLY in css/modal.css (the z-40 scrim), css/command.css (the z-50 palette), and css/timeline.css (the 1.8.0 glass header, (g2)-pinned)`,
+        `(bd1) ${file} uses backdrop-filter — glass blur is sanctioned ONLY in css/command.css (the z-50 palette) and css/timeline.css (the 1.8.0 glass header, (g2)-pinned)`,
       );
     }
   }
@@ -4711,8 +4855,11 @@ if (!existsSync(llmsFullPath)) {
     failures.push(`(bd1) ${missing} lost its backdrop-filter — the sanctioned glass set must hold`);
   }
   const modalCss30 = readFileSync(resolve(root, "css/modal.css"), "utf8");
+  if (modalCss30.includes("backdrop-filter")) {
+    failures.push("(bd1) css/modal.css must stay blur-free — the 0.7.0 scrim is plain rgba(0, 0, 0, 0.6) (the (m1) pin)");
+  }
   if (!/var\(--z-overlay/.test(modalCss30)) {
-    failures.push("(bd1) the modal blur must stay on the z-40 overlay rung (var(--z-overlay)");
+    failures.push("(bd1) the modal scrim must stay on the z-40 overlay rung (var(--z-overlay)");
   }
   const commandCss30 = readFileSync(resolve(root, "css/command.css"), "utf8");
   if (!/var\(--z-modal, 50\)/.test(commandCss30)) {
@@ -4730,4 +4877,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (2.9.1 adds zero shipped files — playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons probe, v2.9.0-baseline safety diff (b7/n-hub4: css/tokens.css two party values + tokens.json values/descriptions/meta + the owner-sanctioned verify.mjs (p) pin re-targets ONLY; react/ demo/ SYSTEM_PROMPT.md tools/ byte-identical) with the tokens.json 2.9.1 guard (deep-equal after neutralizing meta.version + the two authorized party deltas), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the surface.css sanction, timeline resurrection needles, cortex dist + smoke wiring + live-state hooks, shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.5.0 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0 gates intact (accent contract, elevation ladder, 11-token sweep, five archetypes, master index); 2.8.0 five REAL views + studio/copy/llms gates; 2.9.0 container queries + CommandPalette + skeletons + Breadcrumbs; 2.9.1: (ct1) the contrast gate exists, wired, hexes pinned #9e5ff2/#89b4fa and RUNNING green (all 11 party tokens ≥3.0:1 on surface AND base — zero contrast debt), (sk1) the live trigger wiring (palette command + Input Matrix button + SimSlot height locks + 6 body swaps + the SkeletonTableRow ledger swap + the CLS probe on disk); negative test: reverting --party-blue to #1e66f5 flips verify:contrast FAIL (measured 2.559:1 + the ct3 pin refusal), restore → PASS (git-verified byte-identical)");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (2.9.1 adds zero shipped files — playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons probe, v2.9.0-baseline safety diff (b7/n-hub4: css/tokens.css two party values + tokens.json values/descriptions/meta + the owner-sanctioned verify.mjs (p) pin re-targets ONLY; react/ demo/ SYSTEM_PROMPT.md tools/ byte-identical) with the tokens.json 2.9.1 guard (deep-equal after neutralizing meta.version + the two authorized party deltas), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the surface.css sanction, timeline resurrection needles, cortex dist + smoke wiring + live-state hooks, shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.5.0 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0 gates intact (accent contract, elevation ladder, 11-token sweep, five archetypes, master index); 2.8.0 five REAL views + studio/copy/llms gates; 2.9.0 container queries + CommandPalette + skeletons + Breadcrumbs; 2.9.1 (ct1)/(sk1) intact; 3.0.0: (chrom) the 26-token family (blue retired — the name BANNED from css/json/whitelist; cobalt carries #89b4fa; 15 chromatic fills; --radius-card 12px; whitelist 50; the p3 retirement bans + the p2 complement), verify:contrast green at the 26-token table (ink ≥3.0 surface+base, the 2.9.1 fix ≥3.1, chromatic fills ≥2.0 vs surface — crimson the floor leader at 3.01:1, zero adjustments needed), (sch) shared/schema.ts (9 interfaces + guards, NOT packed) + docs/SCHEMA_V3.md (SQLite+Postgres+Pydantic+the REST table), (par) card parity (bg-surface + glass hairline + radius-card + 220px floor on the three archetypes + the 12% wells + the 45% top accent, cards.css still ZERO shadow), (car3) carousel modes (paged-3 grid + IO free-scroll + the docked control bar + the live toggle pill), (ff2) symmetrical fields (label rail 20px + helpers-below + the pure-CSS info tooltip + the aria-describedby preservation), (ring2) ring zoom (aspect-ratio square + scale(1.07) + the 0fr→1fr detail strip), (ob1) obsidian graph (setPointerCapture/rAF direct-transform/contextmenu azure tether/dblclick spawn/wheel zoom/Escape/8px nudge + the persisted positions+links model), (pf1) memo x5 + 300ms debounced persistence + contain + (bd1) the backdrop audit (command.css z-50 + timeline.css glass stay; modal scrim stays blur-free; nav blur-free); safety diff rebased to v2.9.1 with the enumerated 3.0.0 authorized set (b7/n-hub4), tokens.json guard: themes+doctrine byte-equal, shared gains EXACTLY radius-card, party loses EXACTLY blue, cobalt carries blue's exact value");

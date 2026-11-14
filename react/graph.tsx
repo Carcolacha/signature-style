@@ -65,7 +65,6 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
   PointerEvent as ReactPointerEvent,
-  WheelEvent as ReactWheelEvent,
 } from "react";
 import type { PartyColorToken } from "./surface.js";
 import { Button } from "./primitives.js";
@@ -646,16 +645,33 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
     }
   };
 
-  const handleWheel = (event: ReactWheelEvent<SVGSVGElement>): void => {
+  /* 3.0.0 — the wheel is attached NATIVELY (non-passive): React's
+     synthetic onWheel registers passive at the root, and a passive
+     listener cannot preventDefault (the page would scroll while
+     zooming). The effect owns subscribe/unsubscribe; the handler reads
+     the live view through viewRef. */
+  useEffect(() => {
     const svg = svgRef.current;
     if (svg === null) return;
-    event.preventDefault();
-    const before = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
-    const factor = event.deltaY < 0 ? 1.1 : 0.9;
+    const onWheelNative = (event: WheelEvent): void => {
+      event.preventDefault();
+      applyWheelZoom(event.clientX, event.clientY, event.deltaY);
+    };
+    svg.addEventListener("wheel", onWheelNative, { passive: false });
+    return () => svg.removeEventListener("wheel", onWheelNative);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /* -- ZOOM (wheel) — viewBox math, cursor-anchored ---------------------- */
+  const applyWheelZoom = (clientX: number, clientY: number, deltaY: number): void => {
+    const svg = svgRef.current;
+    if (svg === null) return;
+    const before = clientToGraph(svg, clientX, clientY, viewRef.current);
+    const factor = deltaY < 0 ? 1.1 : 0.9;
     const zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, viewRef.current.zoom * factor));
     const rect = svg.getBoundingClientRect();
-    const fx = (event.clientX - rect.left) / Math.max(rect.width, 1);
-    const fy = (event.clientY - rect.top) / Math.max(rect.height, 1);
+    const fx = (clientX - rect.left) / Math.max(rect.width, 1);
+    const fy = (clientY - rect.top) / Math.max(rect.height, 1);
     // Anchor the zoom at the cursor: the graph point under it must stay put.
     setView({
       x: before.x - fx * (VIEW_WIDTH / zoom),
@@ -753,7 +769,6 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({
         onPointerDown={handleCanvasPointerDown}
         onPointerMove={handleCanvasPointerMove}
         onPointerUp={handleCanvasPointerUp}
-        onWheel={handleWheel}
         onDoubleClick={handleDoubleClick}
       >
         {nodes
