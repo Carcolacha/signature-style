@@ -1231,7 +1231,7 @@ function BentoCore({
           data-testid="btn-toast"
           onClick={() => toast("success", "RSVP sent — see you there 🎉")}
         >
-          Send test toast
+          Preview the RSVP toast
         </Button>
       </SurfaceCard>
 

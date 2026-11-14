@@ -1053,7 +1053,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 ### Set 04 — Analytical Telemetry & Graphs
 
-Pure SVG telemetry over the party palette — no charting packages, deterministic layouts, hover readouts. Numbers stay tabular; colors stay content-only.
+The dashboards' math made visible: bars that admit their limits, rings that read at a glance, charts drawn as pure SVG with hover readouts. Reach for this set whenever a number deserves eyes — the colors stay content-only and the digits never jitter.
 
 #### ProgressBar (ProgressBar)
 
@@ -1476,7 +1476,7 @@ export interface ChronicleTimelineProps {
 
 ### Set 06 — Data, Editorial & Feedback
 
-The working set: tables, persistent notes, transient toasts, editorial prose and the honest empty state. Outcomes push toasts; context stays in callouts.
+The working set: ledgers that scroll instead of breaking, notes that persist, toasts that resolve, prose that reads, and the honest empty state. When an outcome lands it pushes a toast; when the context matters it stays in a callout.
 
 #### DataTable (DataTable)
 

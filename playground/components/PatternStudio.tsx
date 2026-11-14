@@ -127,7 +127,11 @@ function TabsPreview() {
         activeId={tab}
         onChange={setTab}
       />
-      <p className="studio__note">{tab === "core" ? "Panel: Core." : "Panel: Data."}</p>
+      <p className="studio__note">
+        {tab === "core"
+          ? "You are reading the Core panel — the tabs above switched it."
+          : "You are reading the Data panel — same switcher, different branch."}
+      </p>
     </div>
   );
 }
@@ -620,7 +624,7 @@ function UseModalPreview() {
   return (
     <div className="studio__stack">
       <Button size="sm" variant="secondary" onClick={() => modal.open(STUDIO_SAMPLE_EVENT)}>
-        modal.open(sample event)
+        Open the cake-cutting event
       </Button>
       {modal.selectedEvent !== null && (
         <EventModal event={modal.selectedEvent} open={modal.isOpen} onClose={modal.close} />
@@ -805,11 +809,19 @@ function UseToastPreview() {
   const toast = useToast();
   return (
     <div className="studio__inline-row">
-      <Button size="sm" variant="secondary" onClick={() => toast("success", "Saved")}>
-        success
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={() => toast("success", "RSVP recorded — the seat is theirs.")}
+      >
+        Record an RSVP
       </Button>
-      <Button size="sm" variant="danger" onClick={() => toast("error", "Could not save — try again")}>
-        error
+      <Button
+        size="sm"
+        variant="danger"
+        onClick={() => toast("error", "Payment failed — the shared pot did not move.")}
+      >
+        Fail a payment
       </Button>
     </div>
   );

@@ -60,11 +60,11 @@ export const SET_BLURBS: Record<SetId, string> = {
   "03":
     "Format rules sit above the input so people read the constraint before typing — announced by screen readers in the same breath as the label. Errors are states, not popups; every control keeps its native semantics.",
   "04":
-    "Pure SVG telemetry over the party palette — no charting packages, deterministic layouts, hover readouts. Numbers stay tabular; colors stay content-only.",
+    "The dashboards' math made visible: bars that admit their limits, rings that read at a glance, charts drawn as pure SVG with hover readouts. Reach for this set whenever a number deserves eyes — the colors stay content-only and the digits never jitter.",
   "05":
     "Time made visible: the alternating chronology for reading, the controlled manager for working, the flat release chronicle for remembering.",
   "06":
-    "The working set: tables, persistent notes, transient toasts, editorial prose and the honest empty state. Outcomes push toasts; context stays in callouts.",
+    "The working set: ledgers that scroll instead of breaking, notes that persist, toasts that resolve, prose that reads, and the honest empty state. When an outcome lands it pushes a toast; when the context matters it stays in a callout.",
 };
 
 export const SNIPPETS: Record<string, SnippetEntry> = {
