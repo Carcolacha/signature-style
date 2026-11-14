@@ -215,7 +215,7 @@ class SigSurfaceCard extends SigElement {
     const accent = this.getAttribute("accent-token");
     if (accent !== null) {
       card.setAttribute("data-accent", "");
-      card.style.setProperty("--sig-accent", accent);
+      card.style.setProperty("--sig-accent", `var(${accent})`);
     }
     const elevation = this.getAttribute("elevation");
     card.setAttribute("data-elevation-equivalent", elevation ?? "raised");
@@ -276,7 +276,7 @@ class SigBadge extends SigElement {
   buildAnatomy() {
     const pill = document.createElement("span");
     pill.className = "pill";
-    pill.style.setProperty("--sig-accent", __privateMethod(this, _SigBadge_instances, token_fn).call(this));
+    pill.style.setProperty("--sig-accent", `var(${__privateMethod(this, _SigBadge_instances, token_fn).call(this)})`);
     pill.textContent = this.getAttribute("label") ?? "";
     return pill;
   }
@@ -489,7 +489,7 @@ class SigCallout extends SigElement {
     note.className = "callout";
     const status = this.getAttribute("status");
     const token = status !== null && status in CALLOUT_STATUSES ? CALLOUT_STATUSES[status] ?? "--sig-sky" : "--sig-sky";
-    note.style.setProperty("--sig-accent", token);
+    note.style.setProperty("--sig-accent", `var(${token})`);
     note.setAttribute("status", status ?? "info");
     const slot = document.createElement("slot");
     note.appendChild(slot);

@@ -188,7 +188,9 @@ export class SigSurfaceCard extends SigElement {
     const accent = this.getAttribute("accent-token");
     if (accent !== null) {
       card.setAttribute("data-accent", "");
-      card.style.setProperty("--sig-accent", accent);
+      // The react SurfaceCard contract: the variable carries the RESOLVED
+      // color (`var(--sig-peach)`), never the bare token name.
+      card.style.setProperty("--sig-accent", `var(${accent})`);
     }
     const elevation = this.getAttribute("elevation");
     card.setAttribute("data-elevation-equivalent", elevation ?? "raised");
@@ -281,7 +283,7 @@ export class SigBadge extends SigElement {
   protected override buildAnatomy(): HTMLElement {
     const pill = document.createElement("span");
     pill.className = "pill";
-    pill.style.setProperty("--sig-accent", this.#token());
+    pill.style.setProperty("--sig-accent", `var(${this.#token()})`);
     pill.textContent = this.getAttribute("label") ?? "";
     return pill;
   }
@@ -546,7 +548,7 @@ export class SigCallout extends SigElement {
     const token = status !== null && status in CALLOUT_STATUSES
       ? CALLOUT_STATUSES[status] ?? "--sig-sky"
       : "--sig-sky";
-    note.style.setProperty("--sig-accent", token);
+    note.style.setProperty("--sig-accent", `var(${token})`);
     note.setAttribute("status", status ?? "info");
     const slot = document.createElement("slot");
     note.appendChild(slot);
