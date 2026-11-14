@@ -2,6 +2,29 @@
  * App — THE ENGINE + THE MASTER INDEX (2.6.0 "Universal Developer Card
  * Suite, Chromatic Elevation & The Master Index Overhaul").
  *
+ * 2.9.1 — ZERO CONTRAST DEBT & THE LIVE SKELETON TRIGGER. Two moves:
+ *
+ *   1. (css/tokens.css — not here) the two sub-3.0 party tokens are
+ *      lightened at the source; this file's BENTO still reads them
+ *      through var(--party-*) and inherits the fix.
+ *
+ *   2. THE ASYNC-LOAD SIMULATION — the skeletons (2.9.0's SkeletonCard /
+ *      SkeletonTableRow) get a LIVE trigger: the command-palette entry
+ *      "Simulate Async Load (800ms)" (keywords skeleton/loading/async/
+ *      cls) and a Button on the Form & Input Matrix module card
+ *      (data-testid="btn-simulate-load" — the documented most-natural
+ *      spot: the skeletons land on THIS view's Core Dashboard, so the
+ *      manual toggle sits one module-tab away; the palette command covers
+ *      cross-view runs by navigating home + deferring one frame).
+ *      DashboardView owns `simLoading` + the measured height locks ABOVE
+ *      the module switch (the guests pattern — tab flips survive);
+ *      BentoCore's SimSlot measures each card body's exact footprint
+ *      BEFORE the swap and renders the skeleton inside an explicit
+ *      height during the 800ms window — the card containers' bounding
+ *      rects are identical BEFORE / DURING / AFTER: CLS 0 by
+ *      construction, proven by playground/probe-skeleton-cls.mjs. No
+ *      toast on purpose: the skeleton IS the feedback.
+ *
  * 2.8.0 — THE SIGNATURE PATTERN WEBSITE. The playground stops being a
  * dashboard-with-catalog and becomes the public-ready Pattern Studio:
  * the nav map grows from 2 real + 3 placeholder views (dashboard/index +
@@ -708,6 +731,44 @@ const BENTO_LEDGER_COLUMNS: DataTableColumn[] = [
   { key: "share", header: "Contribution", numeric: true, align: "right" },
 ];
 
+/** The async-load simulation window (2.9.1) — 800ms of skeleton, then restore. */
+const SIM_LOADING_MS = 800;
+
+/**
+ * SimSlot (2.9.1) — the CLS lock around one bento card's body. Swapping
+ * real content for <SkeletonCard /> changes the card's natural height,
+ * and one moved card moves the whole 12-column grid (every row
+ * reflows). The lock: BentoCore measures each slot's exact footprint
+ * BEFORE the swap; during the window the slot renders the skeleton
+ * inside an explicit height equal to the measured footprint (overflow
+ * hidden), so every card container's bounding rect is identical BEFORE,
+ * DURING and AFTER — CLS 0 by construction. The probe that proves it
+ * lives in playground/probe-skeleton-cls.mjs (release blocker).
+ */
+function SimSlot({
+  id,
+  loading,
+  height,
+  bindRef,
+  children,
+}: {
+  id: string;
+  loading: boolean;
+  height: number | undefined;
+  bindRef: (slotId: string, el: HTMLDivElement | null) => void;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      ref={(el) => bindRef(id, el)}
+      data-sim-slot={id}
+      style={loading && height !== undefined ? { height: `${height}px`, overflow: "hidden" } : undefined}
+    >
+      {children}
+    </div>
+  );
+}
+
 /** All ten Party Palette tokens with their human names (content-only rule). */
 const PALETTE: ReadonlyArray<{ token: PtpEvent["category"]; label: string }> = [
   { token: "--party-pink-bright", label: "Pink" },
@@ -755,6 +816,20 @@ function Shell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const navigate = useCallback((href: string) => setView(HREF_TO_VIEW[href] ?? "dashboard"), []);
+  // 2.9.1 THE SIM RUNNER REGISTRY — BentoCore registers its measuring
+  // runner HERE (imperative by design: the refs live where the slots
+  // render, the triggers live in the Shell). The palette command and the
+  // Input Matrix button both land on the same runner; a cross-view run
+  // navigates home and defers one frame so the freshly mounted BentoCore
+  // has registered by the time the rAF callback fires.
+  const simRunnerRef = useRef<(() => void) | null>(null);
+  const registerSimRunner = useCallback((runner: (() => void) | null) => {
+    simRunnerRef.current = runner;
+  }, []);
+  const triggerAsyncSim = useCallback(() => {
+    navigate(VIEW_HREFS.dashboard);
+    requestAnimationFrame(() => simRunnerRef.current?.());
+  }, [navigate]);
   // Rebuilt per view — the closure stamps aria-current on the ACTIVE link.
   const navLink = useMemo(() => createHubLink(navigate, VIEW_HREFS[view]), [navigate, view]);
   const hero = HERO_COPY[view];
@@ -852,7 +927,15 @@ function Shell() {
       icon: "Copy",
       run: copyLlmsUrl,
     },
-  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl]);
+    {
+      id: "simulate-async-load",
+      label: "Simulate Async Load (800ms)",
+      keywords: "skeleton loading async cls placeholder simulate",
+      icon: "Hourglass",
+      hint: "dev",
+      run: triggerAsyncSim,
+    },
+  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim]);
 
   return (
     <>
@@ -877,7 +960,7 @@ function Shell() {
         </div>
         <PageHero title={hero.title} subtitle={hero.sub} />
         {view === "dashboard" ? (
-          <DashboardView />
+          <DashboardView registerSimRunner={registerSimRunner} triggerSim={triggerAsyncSim} />
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
         ) : view === "studio" ? (
@@ -966,7 +1049,13 @@ function Shell() {
  * tab flips; the core module renders <BentoCore>, the data/forms
  * showcases render below it — ALL inside the shell (styles.css).
  */
-function DashboardView() {
+function DashboardView({
+  registerSimRunner,
+  triggerSim,
+}: {
+  registerSimRunner: (runner: (() => void) | null) => void;
+  triggerSim: () => void;
+}) {
   const [moduleId, setModuleId] = useState<ModuleId>("core");
   // THE LIVE STATE — one array, every metric derives from it.
   const [guests, setGuests] = useState<Guest[]>(SEED_GUESTS);
@@ -984,6 +1073,30 @@ function DashboardView() {
     },
     [],
   );
+
+  // 2.9.1 THE ASYNC-LOAD SIMULATION — state lives HERE, above the module
+  // switch (the guests pattern): a trigger fired from the Input Matrix
+  // card survives the flip back to core. BentoCore measures its slot
+  // footprints and hands the table up through onSimStart; the 800ms
+  // window and its timer live here so they survive tab flips too.
+  const [simLoading, setSimLoading] = useState(false);
+  const [simLocked, setSimLocked] = useState<Record<string, number>>({});
+  const simTimer = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (simTimer.current !== null) window.clearTimeout(simTimer.current);
+    },
+    [],
+  );
+  const onSimStart = useCallback((measured: Record<string, number>) => {
+    setSimLocked(measured);
+    setSimLoading(true);
+    if (simTimer.current !== null) window.clearTimeout(simTimer.current);
+    simTimer.current = window.setTimeout(() => {
+      setSimLoading(false);
+      setSimLocked({});
+    }, SIM_LOADING_MS);
+  }, []);
 
   return (
     <>
@@ -1004,7 +1117,7 @@ function DashboardView() {
         </div>
       ) : moduleId === "forms" ? (
         <div className="hub__tabs-content">
-          <FormsModule />
+          <FormsModule onSimulate={triggerSim} />
         </div>
       ) : moduleId === "graph" ? (
         <div className="hub__tabs-content" data-testid="module-graph">
@@ -1012,7 +1125,14 @@ function DashboardView() {
         </div>
       ) : (
         <div className="hub__tabs-content">
-          <BentoCore guests={guests} onCheckIn={checkIn} />
+          <BentoCore
+            guests={guests}
+            onCheckIn={checkIn}
+            simLoading={simLoading}
+            simLocked={simLocked}
+            onSimStart={onSimStart}
+            registerSimRunner={registerSimRunner}
+          />
         </div>
       )}
     </>
@@ -1042,9 +1162,17 @@ function DashboardView() {
 function BentoCore({
   guests,
   onCheckIn,
+  simLoading,
+  simLocked,
+  onSimStart,
+  registerSimRunner,
 }: {
   guests: Guest[];
   onCheckIn: (guest: { name: string; rsvp: Guest["rsvp"]; contribution: number }) => void;
+  simLoading: boolean;
+  simLocked: Record<string, number>;
+  onSimStart: (measured: Record<string, number>) => void;
+  registerSimRunner: (runner: (() => void) | null) => void;
 }) {
   const toast = useToast();
   const modal = useModal<PtpEvent>();
@@ -1070,6 +1198,32 @@ function BentoCore({
     }));
     return { confirmedCount, potTotal, ringValue, spentPct, ledgerRows };
   }, [guests]);
+
+  // 2.9.1 — the sim slot registry + the MEASURING runner. startAsyncSim
+  // reads every SimSlot's CURRENT footprint (the real content is still
+  // rendered at that instant — measurement always precedes the swap),
+  // hands the table up to DashboardView's onSimStart, and the 800ms
+  // window begins. One window at a time: a re-trigger mid-window is a
+  // no-op. The runner registers through the Shell's registry so the
+  // palette command and the Input Matrix button can fire it from
+  // anywhere; cleanup deregisters (unmount while the Shell lives).
+  const slotRefs = useRef(new Map<string, HTMLDivElement>());
+  const bindSlotRef = useCallback((slotId: string, el: HTMLDivElement | null) => {
+    if (el === null) slotRefs.current.delete(slotId);
+    else slotRefs.current.set(slotId, el);
+  }, []);
+  const startAsyncSim = useCallback(() => {
+    if (simLoading) return;
+    const measured: Record<string, number> = {};
+    slotRefs.current.forEach((el, slotId) => {
+      measured[slotId] = el.getBoundingClientRect().height;
+    });
+    onSimStart(measured);
+  }, [simLoading, onSimStart]);
+  useEffect(() => {
+    registerSimRunner(startAsyncSim);
+    return () => registerSimRunner(null);
+  }, [registerSimRunner, startAsyncSim]);
 
   return (
     <main className="bento12">
@@ -1131,7 +1285,9 @@ function BentoCore({
         interactive
         className="sig-span-5 sig-cell"
       >
-        <CheckInForm onCheckIn={onCheckIn} />
+        <SimSlot id="checkin" loading={simLoading} height={simLocked.checkin} bindRef={bindSlotRef}>
+          {simLoading ? <SkeletonCard /> : <CheckInForm onCheckIn={onCheckIn} />}
+        </SimSlot>
       </SurfaceCard>
 
       {/* span 4, ROW-SPAN 2 — The Chronology (timeline + modal) */}
@@ -1142,14 +1298,22 @@ function BentoCore({
         interactive
         className="sig-span-4 sig-row-2 hub__card--timeline"
       >
-        <EventTimeline events={events} onEventSelect={modal.open} />
-        {modal.selectedEvent !== null && (
-          <EventModal
-            event={modal.selectedEvent}
-            open={modal.isOpen}
-            onClose={modal.close}
-          />
-        )}
+        <SimSlot id="chronology" loading={simLoading} height={simLocked.chronology} bindRef={bindSlotRef}>
+          {simLoading ? (
+            <SkeletonCard />
+          ) : (
+            <>
+              <EventTimeline events={events} onEventSelect={modal.open} />
+              {modal.selectedEvent !== null && (
+                <EventModal
+                  event={modal.selectedEvent}
+                  open={modal.isOpen}
+                  onClose={modal.close}
+                />
+              )}
+            </>
+          )}
+        </SimSlot>
       </SurfaceCard>
 
       {/* span 3 — Budget & RSVP Telemetry (LIVE) */}
@@ -1160,7 +1324,12 @@ function BentoCore({
         interactive
         className="sig-span-3 sig-cell"
       >
-        <div className="hub__metric" data-testid="metric-guests">
+        <SimSlot id="telemetry" loading={simLoading} height={simLocked.telemetry} bindRef={bindSlotRef}>
+          {simLoading ? (
+            <SkeletonCard />
+          ) : (
+            <>
+          <div className="hub__metric" data-testid="metric-guests">
           <span className="hub__metric-label">Guests confirmed</span>
           <span className="hub__metric-value">
             {derived.confirmedCount} / {GUEST_CAPACITY}
@@ -1201,6 +1370,9 @@ function BentoCore({
           label="Budget remaining"
           limitText={`$${(TOTAL_BUDGET - derived.potTotal).toLocaleString("en-US")} / $${TOTAL_BUDGET.toLocaleString("en-US")}`}
         />
+            </>
+          )}
+        </SimSlot>
       </SurfaceCard>
 
       {/* span 5 — Interactive Deck & Rules (the archetypes) */}
@@ -1211,6 +1383,11 @@ function BentoCore({
         interactive
         className="sig-span-5 sig-cell"
       >
+        <SimSlot id="deck" loading={simLoading} height={simLocked.deck} bindRef={bindSlotRef}>
+          {simLoading ? (
+            <SkeletonCard />
+          ) : (
+            <>
         <FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />
         <AccordionCard title="House Rules">
           <p>
@@ -1245,6 +1422,9 @@ function BentoCore({
         >
           Preview the RSVP toast
         </Button>
+            </>
+          )}
+        </SimSlot>
       </SurfaceCard>
 
       {/* span 3 — The Party Palette (unchanged badges) */}
@@ -1255,11 +1435,19 @@ function BentoCore({
         interactive
         className="sig-span-3 sig-cell"
       >
+        <SimSlot id="palette" loading={simLoading} height={simLocked.palette} bindRef={bindSlotRef}>
+          {simLoading ? (
+            <SkeletonCard />
+          ) : (
+            <>
         <div className="hub__palette">
           {PALETTE.map(({ token, label }) => (
             <PartyBadge key={token} colorToken={token} label={label} />
           ))}
         </div>
+            </>
+          )}
+        </SimSlot>
       </SurfaceCard>
 
       {/* span 7 — Guest & Budget Ledger (LIVE) */}
@@ -1270,16 +1458,31 @@ function BentoCore({
         interactive
         className="sig-span-7 sig-cell"
       >
-        <div data-testid="ledger-table">
-          <DataTable
-            columns={BENTO_LEDGER_COLUMNS}
-            rows={derived.ledgerRows}
-            caption="Shared pot ledger · live — every check-in lands here"
-          />
-        </div>
-        <Callout status="info">
-          Payments settle via the shared pot — no cash at the door.
-        </Callout>
+        {/* 2.9.1 — the ledger's slot swaps the DataTable for
+            SkeletonTableRow × current-rows (columns={3}, the ledger's
+            own width). Heights stay CLS-locked by SimSlot. */}
+        <SimSlot id="ledger" loading={simLoading} height={simLocked.ledger} bindRef={bindSlotRef}>
+          <div data-testid="ledger-table">
+            {simLoading ? (
+              <table className="ptp-data-table" aria-hidden="true">
+                <tbody>
+                  {guests.map((guest) => (
+                    <SkeletonTableRow key={guest.id} columns={3} />
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <DataTable
+                columns={BENTO_LEDGER_COLUMNS}
+                rows={derived.ledgerRows}
+                caption="Shared pot ledger · live — every check-in lands here"
+              />
+            )}
+          </div>
+          <Callout status="info">
+            Payments settle via the shared pot — no cash at the door.
+          </Callout>
+        </SimSlot>
       </SurfaceCard>
 
       {/* span 5 — 1v1 Game Matchup & Editorial */}
@@ -1290,6 +1493,11 @@ function BentoCore({
         interactive
         className="sig-span-5 sig-cell"
       >
+        <SimSlot id="matchup" loading={simLoading} height={simLocked.matchup} bindRef={bindSlotRef}>
+          {simLoading ? (
+            <SkeletonCard />
+          ) : (
+            <>
         <MatchupCard
           left={{ name: "Ana Souza", ringToken: "--party-mauve-soft" }}
           right={{ name: "Leo Martins", ringToken: "--party-sky" }}
@@ -1308,6 +1516,9 @@ function BentoCore({
           </blockquote>
           <cite>PlanThenParty Field Notes, vol. 3 — the matchup chapters</cite>
         </ProseBlock>
+            </>
+          )}
+        </SimSlot>
       </SurfaceCard>
     </main>
   );
@@ -2119,7 +2330,7 @@ function DataModule() {
  * wrapper side-by-side (hint on the first, error-replaces-hint on the
  * second), and the RSVP sample is a <RadioCardGroup>.
  */
-function FormsModule() {
+function FormsModule({ onSimulate }: { onSimulate: () => void }) {
   const [diet, setDiet] = useState("none");
   const [invited, setInvited] = useState(true);
   const [isPublic, setIsPublic] = useState(false);
@@ -2152,6 +2363,26 @@ function FormsModule() {
       title="The Input Matrix"
       interactive
     >
+      {/* 2.9.1 — THE ASYNC-LOAD TRIGGER. The documented most-natural-spot
+          call: the skeletons land on the Core Dashboard's bento cards,
+          so the manual toggle lives HERE — one module-tab away, cause
+          and effect on the same view (the palette command covers
+          cross-view runs). Deliberately no toast: the skeleton swap IS
+          the feedback, and the window is only 800ms. */}
+      <div className="hub__sim-row">
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon="Hourglass"
+          data-testid="btn-simulate-load"
+          onClick={onSimulate}
+        >
+          Simulate Async Load (800ms)
+        </Button>
+        <span className="hub__sim-note">
+          swaps the Core Dashboard to skeletons for 800ms — zero layout shift
+        </span>
+      </div>
       {/* 2.9.0: the multi-column row is ONE .sig-cell container — the
           @container (max-width: 480px) collapse in styles.css stacks the
           2-3 column row when the row's own width runs out. */}

@@ -1146,3 +1146,21 @@
   font-size: 0.8125rem;
   color: var(--text-muted);
 }
+
+/* 2.9.1 — THE ASYNC-LOAD TRIGGER ROW (the Input Matrix card, FormsModule).
+   The Button + caption row that fires the 800ms skeleton simulation on the
+   Core Dashboard's bento. Zero hex (the b4 gate), zero shadow (e1); the
+   caption is muted metadata. The CLS proof itself lives in
+   probe-skeleton-cls.mjs — the slots lock heights inline (SimSlot), so no
+   css-side min-heights are needed. */
+.hub__sim-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-standard);
+  margin-bottom: var(--space-standard);
+}
+
+.hub__sim-note {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
