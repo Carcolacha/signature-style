@@ -154,4 +154,4 @@ export interface KnowledgeGraphProps {
     /** Renders the compact add-and-link toolbar. Default false. */
     addOn?: boolean;
 }
-export declare function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onMoveNode, onLinkNodes, positions: draggedPositions, links, height, label, addOn, }: KnowledgeGraphProps): import("react").JSX.Element;
+export declare const KnowledgeGraph: import("react").NamedExoticComponent<KnowledgeGraphProps>;

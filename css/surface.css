@@ -52,6 +52,13 @@
   flex-direction: column;
   gap: var(--space-standard);
   min-width: 0;
+  /* 3.0.0 PERF CONTAINMENT (owner-authorized, enumerated): the card is
+     a self-painting layout island — `contain: layout style paint` tells
+     the engine its descendants cannot leak layout/style/paint outward,
+     so a drag inside the graph card (or any bento card reflow) cannot
+     invalidate the WHOLE page. Paint containment clips at the card box
+     (the portaled modal is safe — it renders at document.body). */
+  contain: layout style paint;
   /* The RAISED tier is the default (2.6.0): tuned one step off the
      v2.2.0 literals (0.05/0.40 → 0.06/0.42) — visually the same
      ambient, numerically on the ladder below. */

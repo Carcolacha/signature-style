@@ -4629,6 +4629,94 @@ if (!existsSync(llmsFullPath)) {
   }
 }
 
+// ---- (pf1) 60FPS PERFORMANCE (3.0.0) -----------------------------------------------
+// React.memo wraps the five hot exports (KnowledgeGraph, DataTable,
+// AreaChart, BarChart, EventTimeline — memo + displayName via the named
+// inner function); usePersistentState debounces its localStorage write
+// 300ms trailing (sync read preserved; flush on unmount + beforeunload;
+// reset() cancels + removes immediately); css/surface.css carries
+// `contain: layout style paint` on .sig-surface-card.
+{
+  const memoTargets: Array<[string, string]> = [
+    ["react/graph.tsx", "KnowledgeGraph"],
+    ["react/data.tsx", "DataTable"],
+    ["react/viz.tsx", "AreaChart"],
+    ["react/viz.tsx", "BarChart"],
+    ["react/timeline.tsx", "EventTimeline"],
+  ];
+  for (const [file, name] of memoTargets) {
+    const src = readFileSync(resolve(root, file), "utf8");
+    if (!src.includes(`export const ${name} = memo(function ${name}(`)) {
+      failures.push(
+        `(pf1) ${file} must wrap ${name} — export const ${name} = memo(function ${name}(…)); the named inner function IS the displayName`,
+      );
+    }
+  }
+  const persistenceSrc30 = readFileSync(resolve(root, "playground", "persistence.ts"), "utf8");
+  const PF1_PERSIST = [
+    ["PERSIST_DEBOUNCE_MS = 300", "the 300ms trailing debounce window"],
+    ["window.setTimeout(", "the trailing timer"],
+    ["window.clearTimeout(pending.timer)", "the pending write is cancelled (flush/reset)"],
+    ["window.localStorage.getItem", "the SYNCHRONOUS read is preserved"],
+    ['"beforeunload"', "the tab-close flush"],
+    ["flush()", "the unmount + beforeunload flush"],
+    ["localStorage.removeItem", "the reset's immediate key removal"],
+  ];
+  for (const [needle, label] of PF1_PERSIST) {
+    if (!persistenceSrc30.includes(needle)) {
+      failures.push(`(pf1) playground/persistence.ts must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const surfaceCss30 = readFileSync(resolve(root, "css/surface.css"), "utf8");
+  const containRule = /\.sig-surface-card\s*\{[^}]*contain: layout style paint;/s;
+  if (!containRule.test(surfaceCss30)) {
+    failures.push(
+      "(pf1) .sig-surface-card must carry contain: layout style paint — the card is a self-painting layout island (the 60fps containment)",
+    );
+  }
+}
+
+// ---- (bd1) THE BACKDROP-FILTER AUDIT (3.0.0) ----------------------------------------
+// Glass stays where the blur earns its cost. THE TASK-TEXT DEVIATION,
+// DOCUMENTED: the owner spec said "only modal.css + command.css" — the
+// ACTUAL css/ also carries the 1.8.0 glass TIMELINE HEADER blur
+// (css/timeline.css), which the (g2) gate PINS (the sticky header is
+// in-content sticky chrome, not a scrim — it predates this audit and
+// removing it would break a pinned gate). The audit therefore asserts
+// the real contract: exactly THREE files may use backdrop-filter, the
+// two z-rung overlays keep their rungs (modal scrim z-40, palette
+// z-50), and NO other css file picks the property up.
+{
+  const BD1_ALLOWED = new Set(["css/modal.css", "css/command.css", "css/timeline.css"]);
+  const found = new Set<string>();
+  for (const f of readdirSync(resolve(root, "css")).map((name) => join("css", name))) {
+    const text = readFileSync(resolve(root, f), "utf8");
+    if (text.includes("backdrop-filter")) found.add(f.replaceAll("\\", "/"));
+  }
+  for (const file of found) {
+    if (!BD1_ALLOWED.has(file)) {
+      failures.push(
+        `(bd1) ${file} uses backdrop-filter — glass blur is sanctioned ONLY in css/modal.css (the z-40 scrim), css/command.css (the z-50 palette), and css/timeline.css (the 1.8.0 glass header, (g2)-pinned)`,
+      );
+    }
+  }
+  for (const missing of [...BD1_ALLOWED].filter((f) => !found.has(f))) {
+    failures.push(`(bd1) ${missing} lost its backdrop-filter — the sanctioned glass set must hold`);
+  }
+  const modalCss30 = readFileSync(resolve(root, "css/modal.css"), "utf8");
+  if (!/var\(--z-overlay/.test(modalCss30)) {
+    failures.push("(bd1) the modal blur must stay on the z-40 overlay rung (var(--z-overlay)");
+  }
+  const commandCss30 = readFileSync(resolve(root, "css/command.css"), "utf8");
+  if (!/var\(--z-modal, 50\)/.test(commandCss30)) {
+    failures.push("(bd1) the palette blur must stay on the z-50 modal rung (var(--z-modal, 50))");
+  }
+  const navCss30 = readFileSync(resolve(root, "css/nav.css"), "utf8");
+  if (navCss30.includes("backdrop-filter")) {
+    failures.push("(bd1) css/nav.css must stay blur-free — the z-30 navbar has NO glass");
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");

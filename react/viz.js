@@ -1,5 +1,5 @@
 import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
-import { useId, useState } from "react";
+import { memo, useId, useState } from "react";
 export function ProgressBar({ value, colorToken, label, limitText }) {
     if (!colorToken.startsWith("--party-")) {
         console.warn(`[signature-style] dropped "${colorToken}" — ProgressBar accepts --party-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
@@ -198,7 +198,7 @@ function horizontalBar(datum, index, count, scaleMax) {
  * />
  * ```
  */
-export function BarChart({ data, orientation = "vertical", label }) {
+export const BarChart = memo(function BarChart({ data, orientation = "vertical", label }) {
     if (data.length === 0) {
         console.warn("[signature-style] dropped bar chart — data is empty; no data, no ink.");
         return null;
@@ -226,7 +226,7 @@ export function BarChart({ data, orientation = "vertical", label }) {
     return (_jsxs("svg", { role: "img", "aria-label": label ?? `Bar chart of ${data.length} categories`, className: "ptp-bars", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, children: [refLines, data.map((datum, index) => isVertical
                 ? verticalBar(datum, index, data.length, scaleMax)
                 : horizontalBar(datum, index, data.length, scaleMax))] }));
-}
+});
 /* The area chart's plot box inside the shared 320×200 chart. */
 const AREA_PAD_X = 16;
 const AREA_PLOT_TOP = 24;
@@ -291,7 +291,7 @@ function areaCoords(points) {
  * />
  * ```
  */
-export function AreaChart({ points, colorToken = "--party-sky", height = 200, label, }) {
+export const AreaChart = memo(function AreaChart({ points, colorToken = "--party-sky", height = 200, label, }) {
     if (points.length < 2) {
         console.warn(`[signature-style] dropped area chart — points needs ≥2 samples (got ${points.length}); no trend, no ink.`);
         return null;
@@ -313,4 +313,4 @@ export function AreaChart({ points, colorToken = "--party-sky", height = 200, la
                     return null;
                 return (_jsxs("g", { className: "ptp-area__spot", children: [_jsx("circle", { className: "ptp-area__point", cx: coord.x, cy: coord.y, r: 4, strokeWidth: 2, style: { stroke: `var(${colorToken})` } }), _jsx("text", { className: "ptp-area__readout", x: coord.x, y: coord.y - 10, textAnchor: "middle", children: point.value }), _jsx("text", { className: "ptp-area__xlabel", x: coord.x, y: AREA_LABEL_Y, textAnchor: "middle", children: point.label })] }, `${point.label}-${index}`));
             })] }));
-}
+});

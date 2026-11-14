@@ -31,6 +31,7 @@
  * `--z-sticky` header — the Pillar 3 z-index contract.
  */
 
+import { memo } from "react";
 import type { ReactNode } from "react";
 import {
   EmptyState,
@@ -186,7 +187,7 @@ function renderItem(event: PtpEvent, row: number, index: number): ReactNode {
  * />
  * ```
  */
-export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
+export const EventTimeline = memo(function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
   if (events.length === 0) {
     return (
       <EmptyState
@@ -208,4 +209,4 @@ export function EventTimeline({ events, onEventSelect }: EventTimelineProps) {
     }
   }
   return <div className="ptp-timeline">{children}</div>;
-}
+});

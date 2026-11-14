@@ -54,7 +54,13 @@
  * ```
  */
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type {
   KeyboardEvent as ReactKeyboardEvent,
   MouseEvent as ReactMouseEvent,
@@ -380,7 +386,7 @@ function clientToGraph(
   };
 }
 
-export function KnowledgeGraph({
+export const KnowledgeGraph = memo(function KnowledgeGraph({
   nodes,
   onAddNode,
   onAddNodeAt,
@@ -849,4 +855,4 @@ export function KnowledgeGraph({
       </div>
     </>
   );
-}
+});

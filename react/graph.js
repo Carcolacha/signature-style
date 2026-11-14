@@ -54,7 +54,7 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * />
  * ```
  */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState, } from "react";
 import { Button } from "./primitives.js";
 import { Input } from "./forms.js";
 /* The layout constants — all viewBox units, all documented above. */
@@ -218,7 +218,7 @@ function clientToGraph(svg, clientX, clientY, view) {
         y: view.y + ((clientY - rect.top) / Math.max(rect.height, 1)) * height,
     };
 }
-export function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onMoveNode, onLinkNodes, positions: draggedPositions, links = [], height = 320, label, addOn = false, }) {
+export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onMoveNode, onLinkNodes, positions: draggedPositions, links = [], height = 320, label, addOn = false, }) {
     const [selectedId, setSelectedId] = useState(null);
     const [draftLabel, setDraftLabel] = useState("");
     const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
@@ -576,4 +576,4 @@ export function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, on
                     })] }), _jsx("div", { className: "ptp-graph__footer", children: selected === null
                     ? "Select a node to inspect its note."
                     : `${selected.label}${selected.note !== undefined ? ` — ${selected.note}` : ""}` })] }));
-}
+});

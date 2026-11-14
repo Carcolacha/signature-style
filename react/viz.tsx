@@ -50,7 +50,7 @@
  */
 
 import type { PartyTokenName } from "./primitives.js";
-import { useId, useState } from "react";
+import { memo, useId, useState } from "react";
 
 /**
  * `<ProgressBar>` — the party-colored budget bar.
@@ -634,7 +634,7 @@ function horizontalBar(datum: BarDatum, index: number, count: number, scaleMax: 
  * />
  * ```
  */
-export function BarChart({ data, orientation = "vertical", label }: BarChartProps) {
+export const BarChart = memo(function BarChart({ data, orientation = "vertical", label }: BarChartProps) {
   if (data.length === 0) {
     console.warn(
       "[signature-style] dropped bar chart — data is empty; no data, no ink.",
@@ -684,7 +684,7 @@ export function BarChart({ data, orientation = "vertical", label }: BarChartProp
       )}
     </svg>
   );
-}
+});
 
 /** One AreaChart sample. The label renders under the point's x position. */
 export interface AreaPoint {
@@ -771,7 +771,7 @@ function areaCoords(points: readonly AreaPoint[]): Array<{ x: number; y: number 
  * />
  * ```
  */
-export function AreaChart({
+export const AreaChart = memo(function AreaChart({
   points,
   colorToken = "--party-sky",
   height = 200,
@@ -843,4 +843,4 @@ export function AreaChart({
       })}
     </svg>
   );
-}
+});

@@ -28,6 +28,7 @@
  * callouts hold context on the page.
  */
 
+import { memo } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
 /**
@@ -115,7 +116,7 @@ export interface DataTableProps {
  * />
  * ```
  */
-export function DataTable({ columns, rows, caption }: DataTableProps) {
+export const DataTable = memo(function DataTable({ columns, rows, caption }: DataTableProps) {
   return (
     <div className="ptp-table-scroll">
       <table className="ptp-data-table">
@@ -143,7 +144,7 @@ export function DataTable({ columns, rows, caption }: DataTableProps) {
       </table>
     </div>
   );
-}
+});
 
 /** One tab of a `<Tabs>` switcher: the stable id and its visible label. */
 export interface TabsTab {

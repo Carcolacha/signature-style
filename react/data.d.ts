@@ -95,7 +95,7 @@ export interface DataTableProps {
  * />
  * ```
  */
-export declare function DataTable({ columns, rows, caption }: DataTableProps): import("react").JSX.Element;
+export declare const DataTable: import("react").NamedExoticComponent<DataTableProps>;
 /** One tab of a `<Tabs>` switcher: the stable id and its visible label. */
 export interface TabsTab {
     /** The stable identity — the value `onChange` receives. */

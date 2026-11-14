@@ -1,4 +1,37 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+/**
+ * timeline — <EventTimeline>, the chronological party-events component
+ * (0.6.0 "Event Timeline").
+ *
+ * Engine v2.5 compliance: the DOM is perfectly FLAT — one grid container
+ * whose direct children are date headers (`h2`), nodes (`span`) and event
+ * content blocks (`div`). No row wrappers, and the vertical line is a
+ * `::before` pseudo-element on the container, never a div (Pruning
+ * Protocol). Structure (nodes, line) stays Flamingo/Teal; content
+ * categories wear Party Palette tokens via <PartyBadge> (Rule of
+ * Engagement).
+ *
+ * 0.7.0: nodes are `<button>` elements (interactive — an optional
+ * `onEventSelect` callback fires with the clicked event; pass `modal.open`
+ * from useModal() to wire the <EventModal> composition). Without the prop
+ * the buttons render unchanged and simply do nothing on click.
+ *
+ * Layout contract with css/timeline.css: elements are placed with INLINE
+ * `gridRow`/`gridColumn` styles against a `1fr auto 1fr` desktop grid
+ * (content | node column | content). The CSS remaps the placement columns
+ * via custom properties at max-width 768px (`auto 1fr` — line to the far
+ * left, all events stacked right), so these inline styles are
+ * breakpoint-neutral. A row counter assigns every child its row; the
+ * empty side of an alternating row is left EMPTY — no placeholder div.
+ *
+ * Sticky headers are spanning grid items, so each date header spans its
+ * whole group (`gridRow: "${headerRow} / ${spanEnd}"`). That span is what
+ * gives the header travel room; the first event of each group carries the
+ * `--group-first` clearance class so the statically-positioned header
+ * never covers it. Afterwards content scrolls BENEATH the opaque,
+ * `--z-sticky` header — the Pillar 3 z-index contract.
+ */
+import { memo } from "react";
 import { EmptyState, Icon, PartyBadge, } from "./primitives.js";
 /** Bucket events by `dateKey ?? date`, preserving first-occurrence order. */
 function groupEvents(events) {
@@ -53,7 +86,7 @@ function renderItem(event, row, index) {
  * />
  * ```
  */
-export function EventTimeline({ events, onEventSelect }) {
+export const EventTimeline = memo(function EventTimeline({ events, onEventSelect }) {
     if (events.length === 0) {
         return (_jsx(EmptyState, { icon: "CalendarX", title: "No events planned yet", message: "Add your first event and the timeline will appear." }));
     }
@@ -69,4 +102,4 @@ export function EventTimeline({ events, onEventSelect }) {
         }
     }
     return _jsx("div", { className: "ptp-timeline", children: children });
-}
+});

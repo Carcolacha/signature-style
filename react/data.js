@@ -1,5 +1,35 @@
 import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
+ * data — data-display primitives (2.3.0 "Universal Web Components & AI
+ * Signature Codex"; 2.4.1 "Intuitive Form Anatomy & Alignment Fix" grows
+ * DataTableColumn.align).
+ *
+ * Three flat components wired to the styles in css/data.css:
+ * `<DataTable>`, `<Tabs>`, `<Callout>`.
+ *
+ * ATTRIBUTE-DRIVEN STATE (the nav contract): `<Tabs>` renders ZERO
+ * .is-active classes — [aria-selected="true"] IS the selected state and
+ * css/data.css answers it directly (Flamingo underline, THE nav visual
+ * contract). Same doctrine as GlobalNav's [aria-current="page"] and the
+ * switch's [aria-checked]: the attribute is the state machine, so the
+ * state survives any DOM shape and any consumer CSS.
+ *
+ * WRAPPER JUSTIFICATION (the one sanctioned wrapper in this file):
+ * `<DataTable>` renders `<div class="ptp-table-scroll">` around the bare
+ * `<table>`. This wrapper is STRUCTURAL, not decorative — a table
+ * element ignores `overflow` in table layout, so scroll containment on
+ * narrow viewports is impossible without a block ancestor; the wrapper
+ * IS the mobile strategy (see the css/data.css header). Everything else
+ * here is peak-pruning flat.
+ *
+ * CALLOUTS ARE TOASTS' PERSISTENT SIBLING: `<Callout>` maps status → a
+ * `--party-*` token set INLINE as `--status` (css/data.css reads it for
+ * the 4px left strip) — the exact mechanism of css/toast.css — but a
+ * callout never auto-dismisses. Toasts report an outcome and leave;
+ * callouts hold context on the page.
+ */
+import { memo } from "react";
+/**
  * Column → cell className (2.4.1). The numeric convenience composes
  * with the alignment utility — a money column carries BOTH classes.
  * Class-based (not inline style) so css/data.css owns the paint and
@@ -43,9 +73,9 @@ function dataTableCellClass(column) {
  * />
  * ```
  */
-export function DataTable({ columns, rows, caption }) {
+export const DataTable = memo(function DataTable({ columns, rows, caption }) {
     return (_jsx("div", { className: "ptp-table-scroll", children: _jsxs("table", { className: "ptp-data-table", children: [caption !== undefined && _jsx("caption", { children: caption }), _jsx("thead", { children: _jsx("tr", { children: columns.map((column) => (_jsx("th", { scope: "col", className: dataTableCellClass(column), children: column.header }, column.key))) }) }), _jsx("tbody", { children: rows.map((row, index) => (_jsx("tr", { children: columns.map((column) => (_jsx("td", { className: dataTableCellClass(column), children: row[column.key] }, column.key))) }, index))) })] }) }));
-}
+});
 /**
  * `<Tabs>` — the controlled module switcher.
  *

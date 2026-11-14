@@ -265,7 +265,7 @@ export interface BarChartProps {
  * />
  * ```
  */
-export declare function BarChart({ data, orientation, label }: BarChartProps): import("react").JSX.Element | null;
+export declare const BarChart: import("react").NamedExoticComponent<BarChartProps>;
 /** One AreaChart sample. The label renders under the point's x position. */
 export interface AreaPoint {
     /** The axis label (mono, muted — rendered under the point). */
@@ -313,4 +313,4 @@ export declare function smoothPath(coords: ReadonlyArray<{
  * />
  * ```
  */
-export declare function AreaChart({ points, colorToken, height, label, }: AreaChartProps): import("react").JSX.Element | null;
+export declare const AreaChart: import("react").NamedExoticComponent<AreaChartProps>;

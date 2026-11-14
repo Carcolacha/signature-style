@@ -100,4 +100,4 @@ export interface EventTimelineProps {
  * />
  * ```
  */
-export declare function EventTimeline({ events, onEventSelect }: EventTimelineProps): import("react").JSX.Element;
+export declare const EventTimeline: import("react").NamedExoticComponent<EventTimelineProps>;
