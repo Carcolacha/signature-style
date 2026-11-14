@@ -13,7 +13,7 @@ export { GlobalNav, type NavItem, type GlobalNavProps, } from "./nav.js";
 export { ProgressBar, type ProgressBarProps, StatRing, type StatRingProps, Sparkline, type SparklineProps, StatCard, type StatCardProps, } from "./viz.js";
 export { Input, type InputProps, TextArea, type TextAreaProps, ToggleSwitch, type ToggleSwitchProps, Select, type SelectProps, Checkbox, type CheckboxProps, Avatar, type AvatarProps, FormField, type FormFieldProps, RadioCardGroup, type RadioCardGroupProps, type RadioCardOption, PasswordInput, type PasswordInputProps, } from "./forms.js";
 export { ToastProvider, useToast, type ToastFn, type ToastItem, type ToastStatus, } from "./toast.js";
-export { SurfaceCard, type SurfaceCardProps, PageHero, type PageHeroProps, } from "./surface.js";
+export { SurfaceCard, type SurfaceCardProps, PageHero, type PageHeroProps, type PartyColorToken, type StructuralAccentToken, type AccentToken, type SurfaceElevation, } from "./surface.js";
 export { DataTable, type DataTableProps, type DataTableColumn, Tabs, type TabsProps, type TabsTab, Callout, type CalloutProps, type CalloutStatus, } from "./data.js";
 export { Carousel, type CarouselProps, CarouselItem, type CarouselItemProps, ProseBlock, type ProseBlockProps, AnnouncementBanner, type AnnouncementBannerProps, type AnnouncementVariant, type AnnouncementBannerAction, } from "./editorial.js";
 export { ActionTile, type ActionTileProps, FlipCard, type FlipCardProps, AccordionCard, type AccordionCardProps, MatchupCard, type MatchupCardProps, type MatchupSide, } from "./cards.js";

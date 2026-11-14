@@ -1,6 +1,8 @@
 /**
  * surface — the OFFICIAL surface primitives (2.2.0 "Telemetry Limits &
- * Official Surface Primitives"). This is the Shed anatomy (the v2.0.0
+ * Official Surface Primitives"; 2.6.0 "Universal Developer Card Suite,
+ * Chromatic Elevation & The Master Index Overhaul" grows the chromatic
+ * accent + elevation-tier contract). This is the Shed anatomy (the v2.0.0
  * playground layer: meta row → ruled title → content) promoted into the
  * package with the owner-mandated `.sig-*` class prefix; the css half
  * lives in css/surface.css (layered into `cascade` after toast.css).
@@ -17,9 +19,61 @@
  * ambient elevation contract ships with the surface primitive (see the
  * css file header for the doctrine boundary; gate (e1) scopes the
  * package's zero-shadow law around exactly that file).
+ *
+ * 2.6.0 CHROMATIC ELEVATION — two additive props on <SurfaceCard>:
+ *
+ *   - `accentToken` — a party (or structural) accent rendered through
+ *     the `data-accent` attribute + the inline `--sig-accent` variable:
+ *     the eyebrow and the ruled title underline take the accent, and the
+ *     interactive hover gains a chromatic glow (css/surface.css). The
+ *     mechanism is attribute-driven so ANY archetype (the 2.6.0 card
+ *     suite included) can reuse the identical contract.
+ *   - `elevation` — the three-tier shadow ladder "flat" | "raised" |
+ *     "floating" (default "raised", the historical look, values tuned).
+ *     Rendered as `data-elevation`; the shadow blocks are shared
+ *     attribute selectors in css/surface.css so any element — the
+ *     featured <TierCard> included — rides the same ladder.
  */
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
+import type { PartyTokenName } from "./primitives.js";
+
+/**
+ * The content-accent alias: the ELEVEN `--party-*` tokens, typed. The
+ * owner's shorthand names map 1:1 onto the reserved tokens:
+ *
+ *   pink bright → --party-pink-bright     sky    → --party-sky
+ *   pink soft   → --party-pink-soft       blue   → --party-blue
+ *   pink alt    → --party-pink-alt        peach  → --party-peach
+ *   mauve       → --party-mauve-bright    green  → --party-green
+ *   mauve soft  → --party-mauve-soft      yellow → --party-yellow
+ *   lavender    → --party-lavender
+ *
+ * (The alias resolves through `Extract<KnownToken, `--party-${string}`>`,
+ * so the ThemeProvider whitelist IS the union — the 11-token sweep gate
+ * pins the count against that whitelist.)
+ */
+export type PartyColorToken = PartyTokenName;
+
+/**
+ * The STRUCTURAL accents — the two signature tokens (Flamingo primary /
+ * Teal secondary). Only these two may accent structural chrome; every
+ * other structural token is out (Rule of Engagement).
+ */
+export type StructuralAccentToken =
+  | "--color-cake-primary"
+  | "--color-cake-secondary";
+
+/**
+ * The full accent union accepted by chromatic props (`accentToken` on
+ * <SurfaceCard> and the 2.6.0 card archetypes): the eleven party content
+ * tokens PLUS the two structural signatures — gateways like the Event
+ * Planner door wear Flamingo, content cards wear the party palette.
+ */
+export type AccentToken = PartyColorToken | StructuralAccentToken;
+
+/** The three-tier elevation ladder (2.6.0). */
+export type SurfaceElevation = "flat" | "raised" | "floating";
 
 /**
  * `<SurfaceCard>` — the Shed surface: meta → ruled title → content.
@@ -31,6 +85,14 @@ import type { ReactNode } from "react";
  * `interactive` adds the tactile modifier — translateY(-2px) + the
  * deepened ambient shadow on hover (css/surface.css).
  *
+ * 2.6.0: `accentToken` renders `data-accent` + the inline `--sig-accent`
+ * variable — the eyebrow and the title underline take the accent color
+ * (the underline grows to 2px solid, the GlobalNav/Tabs contract), and
+ * the interactive hover gains the chromatic glow. `elevation` picks the
+ * shadow tier via `data-elevation`: "flat" (hairline only, no shadow),
+ * "raised" (default — the historical ambient, values tuned), "floating"
+ * (the deep display shadow; interactive+floating lifts -4px on hover).
+ *
  * The modifier classes of the world (grid spans like the playground's
  * `hub__card--timeline`) arrive through `className` — the composition
  * layer composes ON the primitive, never around it.
@@ -39,6 +101,12 @@ import type { ReactNode } from "react";
  * ```tsx
  * <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
  *   <Input placeholder="Guest name" />
+ * </SurfaceCard>
+ * <SurfaceCard
+ *   eyebrow="Planner" meta="views/planner.tsx" title="Event Planner Bento"
+ *   interactive accentToken="--color-cake-primary" elevation="floating"
+ * >
+ *   <ProgressBar value={72} colorToken="--party-sky" label="RSVP ratio" />
  * </SurfaceCard>
  * ```
  */
@@ -51,6 +119,20 @@ export interface SurfaceCardProps {
   title?: string;
   /** The tactile hover: translateY(-2px) + deepened ambient shadow. */
   interactive?: boolean;
+  /**
+   * The chromatic accent (2.6.0): a `--party-*` content token or one of
+   * the two structural signatures. Colors the eyebrow + the ruled title
+   * underline (2px solid — the GlobalNav/Tabs contract) and tints the
+   * interactive hover glow. Omit for the classic teal/muted card.
+   */
+  accentToken?: AccentToken;
+  /**
+   * The shadow tier (2.6.0, default "raised"): "flat" — border hairline
+   * only, zero shadow; "raised" — the historical ambient (values tuned
+   * to 0.06 inset / 0.42 ambient); "floating" — the deep display shadow
+   * (interactive hover lifts -4px).
+   */
+  elevation?: SurfaceElevation;
   /** Extra classes composed ON the primitive (e.g. grid placement). */
   className?: string;
   /** The card content — rendered directly inside the section. */
@@ -62,6 +144,8 @@ export function SurfaceCard({
   meta,
   title,
   interactive = false,
+  accentToken,
+  elevation = "raised",
   className,
   children,
 }: SurfaceCardProps) {
@@ -72,8 +156,20 @@ export function SurfaceCard({
   if (className !== undefined) {
     classes.push(className);
   }
+  // The chromatic mechanism (2.6.0): attribute + inline variable, so the
+  // css side ([data-accent] rules) does all the painting — the same
+  // mechanism as the AnnouncementBanner's inline --status.
+  const accentStyle =
+    accentToken !== undefined
+      ? ({ "--sig-accent": `var(${accentToken})` } as CSSProperties)
+      : undefined;
   return (
-    <section className={classes.join(" ")}>
+    <section
+      className={classes.join(" ")}
+      data-elevation={elevation}
+      data-accent={accentToken !== undefined || undefined}
+      style={accentStyle}
+    >
       {(eyebrow !== undefined || meta !== undefined) && (
         <div className="sig-surface-card__meta">
           {eyebrow !== undefined && (

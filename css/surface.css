@@ -3,21 +3,34 @@
    Official Surface Primitives"). Layered into `cascade` by
    signature-style.css (imported after toast.css).
 
+   2.6.0 — CHROMATIC ELEVATION: the card grows the `data-accent` +
+   `--sig-accent` contract (eyebrow + ruled title underline take the
+   accent; the interactive hover gains the chromatic glow) and the
+   three-tier `data-elevation` ladder — flat (hairline only, zero
+   shadow) / raised (the historical ambient, values tuned to an 0.06
+   inset highlight + 0.42 ambient) / floating (the deep display shadow,
+   0.10 inset + 0.60 ambient, hover lift -4px). The tier blocks are
+   BARE attribute selectors on purpose: the featured <TierCard>
+   (css/cards.css, react/cards.tsx) wears the same `data-elevation`
+   attribute and rides the identical ladder — one ladder, every card.
+
    PROMOTION STORY: this anatomy lived in the v2.0.0 playground layer
    (the Shed's .hub__card / .hub__meta / .hub__hero) and is promoted
    HERE as the OFFICIAL exports, owner-mandated `.sig-*` class prefix:
    the dashboard proved the skeleton for two releases; the package now
    owns it and any consumer gets it through one import.
 
-   DOCTRINE BOUNDARY — OWNER SANCTION (v2.2.0): the rgba ELEVATION
-   literals below (the inset top-highlight rgba(255, 255, 255, 0.05),
-   the ambient rgba(0, 0, 0, 0.4) / rgba(0, 0, 0, 0.5) hover shadow)
-   are OWNER-SANCTIONED in THIS FILE ONLY — the ambient elevation
-   contract ships WITH the surface primitive (a surface card without
-   its elevation is not the Shed surface). Everywhere else the package
-   border doctrine holds: elevation is composition-layer, and the gate
-   (e1) now scopes the zero-shadow law per-file. The earlier rgba
-   precedent — the modal scrim (css/modal.css, 0.7.0) — is unchanged.
+   DOCTRINE BOUNDARY — OWNER SANCTION (v2.2.0, amended v2.6.0): the rgba
+   ELEVATION literals below (the inset top-highlight, the ambient
+   shadows, the hover deepen) are OWNER-SANCTIONED in THIS FILE ONLY —
+   the ambient elevation contract ships WITH the surface primitive (a
+   surface card without its elevation is not the Shed surface). The
+   (e1) gate scopes the zero-shadow law per-file: shadow declarations
+   may appear ONLY inside (a) `.sig-surface-card` rule blocks, (b) the
+   three bare `[data-elevation="…"]` tier blocks, (c) `[data-accent]`
+   chromatic-glow rules. Everywhere else the package border doctrine
+   holds. The earlier rgba precedent — the modal scrim (css/modal.css,
+   0.7.0) — is unchanged.
 
    Hex literals remain BANNED here: 100% var()/color-mix plus the
    sanctioned rgba elevation literals, nothing else.
@@ -39,9 +52,36 @@
   flex-direction: column;
   gap: var(--space-standard);
   min-width: 0;
+  /* The RAISED tier is the default (2.6.0): tuned one step off the
+     v2.2.0 literals (0.05/0.40 → 0.06/0.42) — visually the same
+     ambient, numerically on the ladder below. */
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 12px 32px rgba(0, 0, 0, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 32px rgba(0, 0, 0, 0.42);
+}
+
+/* ---- the elevation ladder (2.6.0) --------------------------------------------
+   BARE attribute selectors: any element wearing data-elevation rides the
+   same three rungs — .sig-surface-card (raised default) AND the featured
+   .sig-tier-card (floating). Declared AFTER the base card so the rung
+   wins the equal-specificity race. */
+[data-elevation="flat"] {
+  /* Flat: the border hairline IS the separation. No outer shadow, no
+     inset highlight — the interactive hover keeps the lift but stays
+     shadow-free (see the flat hover below). */
+  box-shadow: none;
+}
+
+[data-elevation="raised"] {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 12px 32px rgba(0, 0, 0, 0.42);
+}
+
+[data-elevation="floating"] {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 22px 52px rgba(0, 0, 0, 0.60);
 }
 
 /* The tactile modifier — the surface answers the pointer. The transition
@@ -55,8 +95,58 @@
 .sig-surface-card--interactive:hover {
   transform: translateY(-2px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
     0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Elevation-aware hover reconciliation (2.6.0): interactive+floating
+   lifts the full -4px (the floating card is already off the ground);
+   interactive+flat keeps the lift but NEVER grows a shadow — flat is
+   the border-only tier. */
+.sig-surface-card--interactive[data-elevation="flat"]:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.sig-surface-card--interactive[data-elevation="floating"]:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 22px 52px rgba(0, 0, 0, 0.60);
+}
+
+/* ---- chromatic accents (2.6.0) ------------------------------------------------
+   The attribute contract: [data-accent] + the inline --sig-accent
+   variable (set by <SurfaceCard accentToken> / the card archetypes).
+   The eyebrow and the ruled title underline take the accent — the
+   underline grows to 2px solid, matching the GlobalNav/Tabs active
+   contract. No hex: the accent arrives as a var() reference. */
+[data-accent] .sig-surface-card__eyebrow {
+  color: var(--sig-accent);
+}
+
+[data-accent] .sig-surface-card__title {
+  border-bottom: 2px solid var(--sig-accent);
+}
+
+/* The chromatic glow: the accent answers the pointer — a 1px accent ring
+   plus a soft accent halo layered over the tier shadow. */
+.sig-surface-card--interactive[data-accent]:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 16px 40px rgba(0, 0, 0, 0.5),
+    0 0 0 1px color-mix(in srgb, var(--sig-accent) 35%, transparent),
+    0 8px 32px color-mix(in srgb, var(--sig-accent) 18%, transparent);
+}
+
+.sig-surface-card--interactive[data-accent][data-elevation="floating"]:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 22px 52px rgba(0, 0, 0, 0.60),
+    0 0 0 1px color-mix(in srgb, var(--sig-accent) 35%, transparent),
+    0 8px 32px color-mix(in srgb, var(--sig-accent) 18%, transparent);
 }
 
 /* ---- meta row — the Shed header -------------------------------------------

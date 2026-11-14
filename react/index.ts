@@ -84,6 +84,10 @@ export {
   type SurfaceCardProps,
   PageHero,
   type PageHeroProps,
+  type PartyColorToken,
+  type StructuralAccentToken,
+  type AccentToken,
+  type SurfaceElevation,
 } from "./surface.js";
 export {
   DataTable,
