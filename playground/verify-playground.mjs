@@ -65,9 +65,10 @@
  *         (braces/declarations) — only comment prose may be rewritten.
  *
  * 1.7.0 gates ("The Visual Cortex (MCP Integration)"):
- *   (m1)  tools/mcp-viz/dist/server.js EXISTS — the compiled MCP server
- *         is built (run `npm run build` inside tools/mcp-viz);
- *   (m2)  SMOKE PROOF ARTIFACT wired — tools/mcp-viz/smoke.mjs exists,
+ *   (m1)  packages/signature-mcp/dist/server.js EXISTS — the compiled
+ *         MCP server is built (npm --prefix packages/signature-mcp run
+ *         build); 3.5.0 retarget: tools/mcp-viz is DELETED, its logic
+ *         lives on in the standalone package;
  *         the package is the private @edwyn/visual-cortex-mcp, and root
  *         package.json carries the "verify:mcp" script that actually
  *         runs the smoke (raw JSON-RPC: exactly two tools, a
@@ -718,6 +719,46 @@
  *            helpers rail flips (ff2) FAIL; killing the zoom flips
  *            (ring2) FAIL; removing setPointerCapture flips (ob1) FAIL.
  *
+ * 3.5.0 gates ("Standalone Visual Cortex MCP Server & CI Pixel-Diff
+ * Certification" — the ecosystem closer; the MCP package is NEW, the
+ * certifications are NEW scripts, ci.yml is NEW; ZERO component
+ * changes — css/ react/ wc/ dist/wc stay byte-identical):
+ *   (b2 AMENDMENT)  the frozen files array is UNCHANGED — zero new
+ *         package files this release (the MCP package is a SEPARATE
+ *         private package under packages/, auto-excluded by the files
+ *         allowlist).
+ *   (b3)  npm pack stays EXACTLY 64 — packages/ and scripts/goldens/
+ *         are outside the files array (this gate's run proves it).
+ *   (b7)/(n-hub4)  REBASED to the v3.3.0 baseline with the enumerated
+ *         3.5.0 authorization: the tools/mcp-viz/ DELETIONS (all six
+ *         tracked files — the inspector's logic is PROMOTED into the
+ *         standalone packages/signature-mcp), the NEW certification
+ *         scripts (verify-mcp.mjs, verify-visual-diff.mjs,
+ *         verify-a11y.mjs, goldens/), and scripts/verify.mjs stays
+ *         BYTE-FROZEN (it never referenced tools/ paths — grepped).
+ *         css/, react/, wc/, dist/wc, demo/, shared/, docs/, bin/ stay
+ *         byte-identical; tokens.json gains ONLY meta.version → 3.5.0
+ *         (VALUES + the 50-token whitelist are byte-frozen).
+ *   (m1)  packages/signature-mcp/dist/server.js EXISTS — the compiled
+ *         MCP server is built (npm --prefix packages/signature-mcp
+ *         run build);
+ *   (m2)  SMOKE PROOF ARTIFACT wired — scripts/verify-mcp.mjs exists
+ *         (the proven v2.7.0 JSON-RPC harness, ported), the package is
+ *         the private @edwyn/signature-mcp, and root package.json
+ *         carries the "verify:mcp" script that builds + runs the smoke;
+ *   (dd6 AMENDMENT)  the cortex sweep needles retarget to
+ *         packages/signature-mcp/src/server.ts (same selector sweep,
+ *         verbatim port) and the server version string moves to 3.5.0;
+ *   (v35) THE CERTIFICATION GATE — packages/signature-mcp exists with
+ *         EXACTLY the 4-tool src/server.ts, private
+ *         @edwyn/signature-mcp v1.0.0, playwright pinned EXACTLY
+ *         1.65.0 (the shared Chromium — no second download), zero deps
+ *         beyond sdk+zod+playwright; scripts/verify-visual-diff.mjs +
+ *         scripts/verify-a11y.mjs exist and are wired
+ *         (verify:visual-diff / update:snapshots / verify:a11y);
+ *         .github/workflows/ci.yml exists and wires the suites;
+ *         scripts/goldens/ carries the 5 committed golden masters.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -782,6 +823,10 @@ if (!selfWired) {
 // files array gains "dist/wc" (the compiled bundle + the tsc-honest
 // declarations ship; the wc/src sources stay out of the tarball like the
 // react .tsx sources do). main/peers stay untouched.
+// 3.5.0 AMENDMENT: the array is UNCHANGED — the MCP package is a
+// SEPARATE private package (packages/signature-mcp) outside the files
+// allowlist, and scripts/goldens/ rides the repo, not the tarball; the
+// (b3) proof stays EXACTLY 64.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
 const WC_EXPORT = {
   types: "./dist/wc/index.d.ts",
@@ -1289,16 +1334,38 @@ if (oldTimeline !== null) {
 // v3.1.0 — NO token changes this release). playground/ is NOT under the
 // freeze (the composition layer); README/package.json/lock are release
 // plumbing; wc/ + dist/wc are NEW paths outside the locked list.
+// 3.5.0 REBASE: the locked set is unchanged; the AUTHORIZED set grows by
+// EXACTLY the enumerated 3.5.0 authorization — the six tools/mcp-viz
+// DELETIONS (the inspector is promoted into packages/signature-mcp, the
+// task's `tools/ may end up empty → remove if empty` clause) and the NEW
+// certification scripts (verify-mcp / verify-visual-diff / verify-a11y /
+// goldens/). css/ react/ wc/ dist/wc demo/ shared/ docs/ bin/ stay
+// byte-identical; scripts/verify.mjs stays BYTE-FROZEN; tokens.json
+// gains ONLY meta.version (guarded below — VALUES byte-frozen).
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
-// The v3.4.0 authorized delta set: exactly the files the WC release
-// touches. playground/ is NOT under the freeze (the composition layer).
+// The v3.4.0 authorized delta set, PLUS the 3.5.0 authorization. The
+// tools/mcp-viz entries authorize the DELETIONS (git diff name-only
+// lists deleted files by their old paths). scripts/verify.mjs stays in
+// the set from 3.4.0 — it is byte-frozen going FORWARD (no edit this
+// release; the (m1) needle lived in THIS file, never in verify.mjs).
 const AUTHORIZED_330 = new Set([
   "scripts/verify.mjs",
   "scripts/verify-cli.mjs",
   "scripts/verify-wc.mjs",
   "SYSTEM_PROMPT.md",
+  // 3.4.0 — the cortex sweep growth (now deleted; the deletions below
+  // supersede these two live-file authorizations).
   "tools/mcp-viz/server.ts",
   "tools/mcp-viz/smoke.mjs",
+  // 3.5.0 — THE TOOLS DELETIONS (logic promoted to packages/signature-mcp).
+  "tools/mcp-viz/README.md",
+  "tools/mcp-viz/package-lock.json",
+  "tools/mcp-viz/package.json",
+  "tools/mcp-viz/tsconfig.json",
+  // 3.5.0 — THE CERTIFICATION SCRIPTS (NEW).
+  "scripts/verify-mcp.mjs",
+  "scripts/verify-visual-diff.mjs",
+  "scripts/verify-a11y.mjs",
 ]);
 let b7Changed = [];
 try {
@@ -1320,9 +1387,20 @@ for (const file of b7Changed) {
     );
   }
 }
-const SCRIPTS_330_ALLOWED = new Set(["scripts/verify.mjs", "scripts/verify-cli.mjs", "scripts/verify-wc.mjs"]);
-if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f))) {
-  failures.push("(b7) SAFETY: scripts/ beyond the three authorized gates is LOCKED in 3.4.0 (verify.mjs: only the (e2) 4-path evolution)");
+// 3.4.0 rule: scripts/ beyond the three authorized gates is LOCKED.
+// 3.5.0 AMENDMENT: the certification scripts join (verify-mcp,
+// verify-visual-diff, verify-a11y, the goldens/ masters) — scripts/
+// verify.mjs itself stays BYTE-FROZEN (no edit this release).
+const SCRIPTS_330_ALLOWED = new Set([
+  "scripts/verify.mjs",
+  "scripts/verify-cli.mjs",
+  "scripts/verify-wc.mjs",
+  "scripts/verify-mcp.mjs",
+  "scripts/verify-visual-diff.mjs",
+  "scripts/verify-a11y.mjs",
+]);
+if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f) && !f.startsWith("scripts/goldens/"))) {
+  failures.push("(b7) SAFETY: scripts/ beyond the three authorized gates + the 3.5.0 certification scripts is LOCKED in 3.4.0/3.5.0 (verify.mjs stays BYTE-FROZEN)");
 }
 if (b7Changed.some((f) => f.startsWith("css/"))) {
   // css/ must not change AT ALL — the e1 treaty is mirrored inside the
@@ -1334,6 +1412,17 @@ if (b7Changed.some((f) => f.startsWith("react/"))) {
 }
 if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
   failures.push("(b7) SAFETY: tools/mcp-viz node_modules is LOCKED in 3.4.0");
+}
+// 3.5.0: the tokens.json meta bump is guarded — meta.version must be
+// EXACTLY 3.5.0 and everything the 3.2.0/3.4.0 guards don't explicitly
+// neutralize stays byte-equal (VALUES + the 50-token whitelist frozen).
+try {
+  const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+  if (tokensNow.meta?.version !== "3.5.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.5.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  }
+} catch (error) {
+  failures.push(`(b7) cannot read tokens.json meta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // tokens.json guard (baseline v3.1.0): the 3.2.0 SURFACE-ENGINE contract —
@@ -1473,36 +1562,46 @@ try {
   failures.push(`(n-hub4) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (m1) the compiled MCP server exists -----------------------------------------
-// The Visual Cortex is source-of-truth tools/mcp-viz/server.ts → tsc →
-// dist/server.js. tools/ is never packed (files array + gate b3 prove it);
-// this gate only asks that the build artifact is present.
-const mcpDistServer = resolve(root, "tools/mcp-viz/dist/server.js");
+// ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
+// The Visual Cortex is source-of-truth packages/signature-mcp/src/server.ts →
+// tsc → dist/server.js. 3.5.0: tools/mcp-viz is DELETED (logic promoted into
+// the standalone package). tools/ was never packed (files array + gate b3
+// prove it); packages/ is outside the allowlist too; this gate only asks
+// that the build artifact is present.
+const mcpDistServer = resolve(root, "packages/signature-mcp/dist/server.js");
 if (!existsSync(mcpDistServer)) {
   failures.push(
-    "(m1) tools/mcp-viz/dist/server.js is missing — build it: cd tools/mcp-viz && npm run build",
+    "(m1) packages/signature-mcp/dist/server.js is missing — build it: npm --prefix packages/signature-mcp run build",
   );
 }
 
-// ---- (m2) smoke-proof artifact wired ---------------------------------------------
-// The release-blocker proof lives in tools/mcp-viz/smoke.mjs (raw JSON-RPC
-// over stdio); root package.json must expose it as verify:mcp. The actual
-// run is the separate `npm run verify:mcp` gate — needs the dev server.
-const mcpPkgPath = resolve(root, "tools/mcp-viz/package.json");
-const mcpSmokePath = resolve(root, "tools/mcp-viz/smoke.mjs");
+// ---- (m2) smoke-proof artifact wired (3.5.0 RETARGET) -----------------------------
+// The release-blocker proof lives in scripts/verify-mcp.mjs (the proven
+// v2.7.0 raw JSON-RPC harness, ported and grown to the four tools); root
+// package.json must expose it as verify:mcp. The actual run is the separate
+// `npm run verify:mcp` gate — needs the dev server.
+const mcpPkgPath = resolve(root, "packages/signature-mcp/package.json");
+const mcpSmokePath = resolve(root, "scripts/verify-mcp.mjs");
 if (!existsSync(mcpSmokePath)) {
-  failures.push("(m2) tools/mcp-viz/smoke.mjs is missing — no smoke proof artifact");
+  failures.push("(m2) scripts/verify-mcp.mjs is missing — no smoke proof artifact");
 }
 try {
   const mcpPkg = JSON.parse(readFileSync(mcpPkgPath, "utf8"));
-  if (mcpPkg.name !== "@edwyn/visual-cortex-mcp" || mcpPkg.private !== true) {
-    failures.push('(m2) tools/mcp-viz/package.json must be private "@edwyn/visual-cortex-mcp"');
+  if (mcpPkg.name !== "@edwyn/signature-mcp" || mcpPkg.private !== true) {
+    failures.push('(m2) packages/signature-mcp/package.json must be private "@edwyn/signature-mcp"');
+  }
+  const mcpDeps = Object.keys(mcpPkg.dependencies ?? {});
+  if (JSON.stringify(mcpDeps.sort()) !== JSON.stringify(["@modelcontextprotocol/sdk", "playwright", "zod"])) {
+    failures.push("(m2) packages/signature-mcp dependencies must be EXACTLY @modelcontextprotocol/sdk + playwright + zod — zero other deps");
+  }
+  if (mcpPkg.dependencies?.playwright !== "1.65.0") {
+    failures.push('(m2) packages/signature-mcp playwright must be pinned EXACTLY "1.65.0" (the repo\'s installed Chromium — no second download)');
   }
 } catch (error) {
-  failures.push(`(m2) cannot read tools/mcp-viz/package.json — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(m2) cannot read packages/signature-mcp/package.json — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
-if (typeof pkg.scripts?.["verify:mcp"] !== "string") {
-  failures.push('(m2) root package.json scripts["verify:mcp"] is missing — the smoke must be runnable');
+if (pkg.scripts?.["verify:mcp"] !== "npm --prefix packages/signature-mcp run build && node scripts/verify-mcp.mjs") {
+  failures.push('(m2) root package.json scripts["verify:mcp"] must build the package + run scripts/verify-mcp.mjs — the smoke must be runnable');
 }
 
 // ---- (m3) data-testid wiring for the visual cortex -------------------------------
@@ -1538,6 +1637,64 @@ for (const [needle, label] of TESTID_NEEDLES) {
 if (/(className|data-testid)="[^"]*(bento__|bento-card)/.test(appSrc)) {
   failures.push("(m3) App.tsx still wires retired hub-era classes/testids — the migration must be complete");
 }
+
+// ---- (v35) THE CERTIFICATION GATE — 3.5.0 (NEW) -----------------------------------
+// The ecosystem closer's own needles: the standalone MCP package (its
+// manifest + the 4-tool source + the compiled dist), the certification
+// scripts and their npm wiring, the CI workflow, and the 5 committed
+// golden masters.
+{
+  const mcpSrcPath = resolve(root, "packages/signature-mcp/src/server.ts");
+  if (!existsSync(mcpSrcPath)) {
+    failures.push("(v35) packages/signature-mcp/src/server.ts is missing — the standalone Visual Cortex must live in the package");
+  } else {
+    const mcpSrc = readFileSync(mcpSrcPath, "utf8");
+    for (const tool of ["inspect_layout", "audit_contrast", "audit_e1_shadows", "capture_viewport_matrix"]) {
+      if (!mcpSrc.includes(`"${tool}"`)) {
+        failures.push(`(v35) packages/signature-mcp/src/server.ts must register the "${tool}" tool — the 4-tool cortex`);
+      }
+    }
+    for (const needle of ['name: "visual-cortex"', "StdioServerTransport", "npm run playground", "#1E1E2E", ".sig-surface-card, .sig-card, [data-elevation]"]) {
+      if (!mcpSrc.includes(needle)) {
+        failures.push(`(v35) packages/signature-mcp/src/server.ts must carry ${JSON.stringify(needle)} — the proven cortex anatomy (server name, stdio transport, the graceful hint, the documented bg assumption, the e1 sanction)`);
+      }
+    }
+  }
+  for (const script of ["scripts/verify-visual-diff.mjs", "scripts/verify-a11y.mjs"]) {
+    if (!existsSync(resolve(root, script))) {
+      failures.push(`(v35) ${script} is missing — the CI certification scripts must exist`);
+    }
+  }
+  for (const wire of ["verify:visual-diff", "update:snapshots", "verify:a11y"]) {
+    if (typeof pkg.scripts?.[wire] !== "string") {
+      failures.push(`(v35) package.json scripts["${wire}"] is missing — the certification suite must be runnable`);
+    }
+  }
+  if (typeof pkg.devDependencies?.pixelmatch !== "string" || typeof pkg.devDependencies?.pngjs !== "string") {
+    failures.push("(v35) pixelmatch + pngjs must be devDependencies — the pixel-diff certification's compare engine");
+  }
+  const ciPath = resolve(root, ".github/workflows/ci.yml");
+  if (!existsSync(ciPath)) {
+    failures.push("(v35) .github/workflows/ci.yml is missing — the CI certification workflow must exist");
+  } else {
+    const ci = readFileSync(ciPath, "utf8");
+    for (const needle of ["verify:mcp", "verify:a11y", "verify:visual-diff", "npx playwright install chromium", "continue-on-error: true"]) {
+      if (!ci.includes(needle)) {
+        failures.push(`(v35) ci.yml must wire ${JSON.stringify(needle)} — the browser-dependent suites need Chromium + the font-risk honesty`);
+      }
+    }
+  }
+  const goldensDir = resolve(root, "scripts/goldens");
+  if (!existsSync(goldensDir)) {
+    failures.push("(v35) scripts/goldens/ is missing — the committed golden masters must exist");
+  } else {
+    const goldens = readdirSync(goldensDir).filter((f) => f.endsWith(".png"));
+    if (goldens.length !== 5) {
+      failures.push(`(v35) scripts/goldens/ must carry EXACTLY 5 golden masters (the 5 views), found ${goldens.length}: ${goldens.join(", ")}`);
+    }
+  }
+}
+
 
 // ---- (n-hub1) THE CONSTRAINED COLUMN — 2.0.0 hub grid, 2.5.0 rebased ------
 // The SHELL (.sig-shell, gate sh1) owns the 1400px column now; .hub is
@@ -2172,17 +2329,20 @@ for (const [needle, label] of TABS_REQUIREMENTS) {
 // 3.4.0 AMENDMENT: the sweep grows the ZERO-REACT SURFACE — the six sig-*
 // custom element tags join (the studio mounts them; the cortex must see
 // them) and the server version moves to 3.4.0.
-const mcpServerSrc = readFileSync(resolve(root, "tools/mcp-viz/server.ts"), "utf8");
+// 3.5.0 AMENDMENT: the needles RETARGET to the standalone package —
+// packages/signature-mcp/src/server.ts carries the SAME sweep (verbatim
+// port) and the server version string moves to 3.5.0.
+const mcpServerSrc = readFileSync(resolve(root, "packages/signature-mcp/src/server.ts"), "utf8");
 for (const selector of [".sig-data-table", ".sig-tabs__tab", ".sig-callout", ".sig-surface-card", ".sig-btn", ".sig-stat-card", ".sig-shell", ".sig-carousel__dot", ".sig-chronicle__item", ".sig-graph__node", ".sig-bars__bar", ".sig-tmanager__count", "sig-surface-card", "sig-badge", "sig-progress-bar", "sig-stat-ring", "sig-callout", "sig-carousel"]) {
   if (!mcpServerSrc.includes(`"${selector}"`)) {
     failures.push(
-      `tools/mcp-viz/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index + the Graphs & Planner module (2.7.0: graph nodes, bar ink, milestone counter; 3.4.0: the six zero-react custom elements)`,
+      `packages/signature-mcp/src/server.ts DEFAULT_SELECTORS must carry "${selector}" — the cortex sweep measures the data module + the bento + the master index + the Graphs & Planner module (2.7.0: graph nodes, bar ink, milestone counter; 3.4.0: the six zero-react custom elements; 3.5.0: the verbatim port)`,
     );
   }
 }
-if (!mcpServerSrc.includes('version: "3.4.0"')) {
+if (!mcpServerSrc.includes('version: "3.5.0"')) {
   failures.push(
-    'tools/mcp-viz/server.ts server version string must be 3.4.0 (the zero-react WC tooling bump; the sweep grows the six sig-* tags)',
+    'packages/signature-mcp/src/server.ts server version string must be 3.5.0 (the standalone-promotion bump; the sweep ports verbatim)',
   );
 }
 

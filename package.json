@@ -71,9 +71,9 @@
     "verify:standalone": "node scripts/verify-standalone.mjs",
     "verify:playground": "node playground/verify-playground.mjs",
     "verify:contrast": "node playground/verify-contrast.mjs",
-    "verify:mcp": "npm --prefix tools/mcp-viz run build && node tools/mcp-viz/smoke.mjs",
+    "verify:mcp": "npm --prefix packages/signature-mcp run build && node scripts/verify-mcp.mjs",
     "llms": "node playground/generate-llms.mjs",
-    "inspect": "node tools/mcp-viz/dist/server.js",
+    "inspect": "node packages/signature-mcp/dist/server.js",
     "playground": "vite --config playground/vite.config.ts",
     "playground:build": "vite build --config playground/vite.config.ts"
   },
