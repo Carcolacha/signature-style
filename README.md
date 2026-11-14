@@ -74,12 +74,12 @@ The provider injects your token overrides into `@layer tokens`, and — before
 anything else — claims the canonical layer order as the first style tag in
 `<head>`. It is SSR-safe, leak-proof, and rejects unknown token keys.
 
-As of 0.4.0 the whitelist covers **every** custom property in
+As of 2.5.0 the whitelist covers **every** custom property in
 `css/tokens.css` — the core 6, the keeper tokens, the shared
 font/radius/transition/spacing tokens, the z-index scale (now with the
-navbar rung `--z-nav`), and the ten
-`--party-*` content tokens (32 keys, typed at compile time and enforced at
-runtime):
+navbar rung `--z-nav`), and the eleven
+`--party-*` content tokens (34 keys, typed at compile time and enforced at
+runtime; 2.5.0 added `--party-yellow`, the strength meter's Fair stage):
 
 ```tsx
 <ThemeProvider
@@ -128,6 +128,109 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 2.8.0 — The Signature Pattern Website, 6-Set Taxonomy & One-Click Copy Studio
+
+The playground becomes the **public-ready Signature Design Website** —
+built entirely with `@edwyn/signature-style`, dogfooding every export. The
+package itself is FROZEN: css/, react/, SYSTEM_PROMPT.md, demo/, scripts/
+and tools/ are byte-identical to v2.7.0 (safety-gated), and `npm pack`
+stays EXACTLY 52 files — `playground/public/` is a dev-server-only
+directory (the files array excludes `playground/` wholesale) and is NOT
+shipped. `tokens.json` carries one authorized delta: `meta.version` →
+2.8.0 (the 34-token whitelist is untouched and gate-guarded by a
+meta-only deep-equal check).
+
+**The 5-view nav map.** The old switcher's 2 real + 3 placeholder views
+(dashboard/index + events/guests/budget) become FIVE REAL views, keeping
+the HubLink/hash mechanism untouched: **Dashboard** (the live bento,
+untouched), **Pattern Studio** (the primary catalog — see below), **Index**
+(the Master Index catalog, unchanged), **Chronicle** (the Night of
+Versions full-width: `<ChronicleTimeline>` rendering all 23 releases of
+RELEASE_HISTORY in the package's own SurfaceCard, beside a memorial
+ProseBlock), and **AI Codex** (the machine-readable face, for humans AND
+agents). The workshop placeholders retire with their EmptyState dogfood —
+EmptyState lives on in the studio's Set 06 frame.
+
+**The Pattern Studio.** A two-column doc layout: a sticky 240px sidebar
+listing the 6-Set Taxonomy with tabular-nums component counts (state
+filter — one click shows that set's section; stacks below 768px), and the
+right stream of ruled `SET 0N · name` sections, each with a 1–2 sentence
+human explanation and one **`<PatternFrame>`** per component:
+
+| Set | Components | Count |
+|---|---|---|
+| 01 · Shell & Navigation | ThemeProvider, GlobalNav, Tabs, the sig-shell layout note | 4 |
+| 02 · Surface & Card Archetypes | SurfaceCard, PageHero, Icon, Avatar, PartyBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard | 13 |
+| 03 · Ergonomic Forms & Inputs | FormField, Input, TextArea, Select, Checkbox, RadioCardGroup, ToggleSwitch, PasswordInput, Button | 9 |
+| 04 · Analytical Telemetry & Graphs | ProgressBar, StatRing, StatCard, Sparkline, BarChart, AreaChart, KnowledgeGraph, smoothPath, layoutGraph, cubicBezierEdge | 10 |
+| 05 · Chronology & Planners | EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline | 5 |
+| 06 · Data, Editorial & Feedback | DataTable, Callout, Carousel, CarouselItem, ProseBlock, AnnouncementBanner, EmptyState, ToastProvider, useToast | 9 |
+
+**PatternFrame** (`playground/components/PatternFrame.tsx`) — one
+`<article data-sig-set data-sig-component>` per pattern: a header bar
+(component name weight 600 + the set PartyBadge + the Preview | JSX |
+HTML segmented mini-tabs, `aria-pressed`-driven + the **Copy Card**
+button) over a body that renders the LIVE interactive preview (check the
+checkbox, flip the card, add a graph node, type a password, open the
+modal, settle a milestone), the formatted JSX snippet in an inset
+`<pre><code>` well (mono 0.8125rem), or the documented HTML variant (a
+muted "HTML variant not documented — use the JSX form." note when none).
+The COPY PATH: Copy Card writes the active tab's text to the clipboard,
+flashes Copy → Check for 2s (timer cleaned on unmount and re-copy), and
+pushes the "Copied <ComponentName> snippet" toast through the app-level
+ToastProvider; a clipboard failure pushes the error toast instead of
+dying silently. The 2.8.0 css anatomy is FLAT — the e1 treaty holds.
+
+**The AI Codex view** (`playground/components/CodexView.tsx`) — the
+honest color census: exactly **22 click-to-copy swatches** (11 core/keeper
++ the 11-token Party Palette), each a flat card that copies the var name
+and toasts — the whitelist is 34, and the remaining 12 tokens (spatial,
+z-index, type, motion) get their own displays instead of being mislabeled
+"colors": the 8px spatial scale as visual bars (4/8/16/24/32/64px), the
+5-rung z-ladder as a DataTable (rung/token/value/used-by, CommandPalette
+on the modal rung), and the doctrines (Cascade, Override, Rule of
+Engagement, Pruning, 8px grid, mechanical physics, the e1 shadow treaty)
+as ProseBlocks.
+
+**llms.txt + llms-full.txt** (`playground/public/`, generated) — the
+machine-readable signature. `npm run llms` runs
+`playground/generate-llms.mjs`, which imports the SNIPPETS registry
+natively (Node ≥ 23.6 type stripping), reads tokens.json (the 34-token
+whitelist, verbatim), SYSTEM_PROMPT.md (the doctrines) and react/*.d.ts
+(brace-matched prop surfaces) and emits BOTH manifests — so they can
+never drift from source. `llms.txt` is the concise index (H1, blockquote,
+Tokens / Rules / Component Sets / Recipes); `llms-full.txt` is the 60KB
+self-complete version: every token with value + description, the rules
+verbatim-in-spirit, all 6 sets with every component's copy-paste JSX
+(+ HTML variants) and 44 prop tables. Vite serves `playground/public/` at
+the server root: both are reachable at `/llms.txt` and `/llms-full.txt`
+(HTTP 200, release-gate probed).
+
+**The SNIPPETS registry** (`playground/snippets.ts`) — one typed map from
+EVERY value export of the package to its clean, formatted, copy-paste
+snippet (`{ jsx, html?, set, componentName }`), ported from
+SYSTEM_PROMPT.md v3.0's Universal AI Replication Contract and
+fact-checked against the shipped prop contracts. It powers the Copy Card,
+the JSX/HTML toggle, and llms-full.txt generation — one source of truth,
+three consumers.
+
+| Area | Change | Where |
+|---|---|---|
+| Pattern Studio | the 6-Set Taxonomy: sticky set sidebar + 50 PatternFrames with live previews | playground/components/PatternStudio.tsx |
+| PatternFrame | Preview ↔ JSX ↔ HTML toggle + one-click Copy Card + data-sig-* | playground/components/PatternFrame.tsx |
+| AI Codex | 22 honest swatches, 8px scale, z-ladder DataTable, doctrine ProseBlocks | playground/components/CodexView.tsx |
+| Chronicle | full-width Night of Versions (23 releases) + memorial prose | playground/App.tsx |
+| Nav map | 5 real views replace 2 real + 3 placeholders | playground/App.tsx |
+| SNIPPETS registry | every value export → copy-paste JSX/HTML | playground/snippets.ts |
+| llms manifests | machine-readable signature, generated drift-proof | playground/public/, playground/generate-llms.mjs |
+| Gates | (nav5), (ps-studio), (ps-copy), (ps-llms); b7/n-hub4 rebased to v2.7.0 + tokens meta-only guard | playground/verify-playground.mjs |
+| Version | package/lock/tokens-meta → 2.8.0 (+ `llms` script) | package.json, package-lock.json, tokens.json |
+
+**Signature changes** — NONE at the package surface. Every existing prop
+contract is byte-identical; zero tokens added or changed; `npm pack`
+stays EXACTLY 52 files. The release is playground + manifests + release
+plumbing only.
 
 ### 2.7.0 — Interactive Knowledge Graph, Analytical SVG Charts & Manageable Timeline
 
@@ -1930,7 +2033,7 @@ npm install
 npm run build      # compile react/*.tsx → react/*.js (+ .d.ts)
 npm run typecheck  # strict tsc, no emit
 npm run verify     # theme parity, per-theme signature hexes, retired-hex bans, whitelist parity, z-scale values, party palette hexes + reserved flags, v0.3.0 structural freeze, bundle head, 3-path exports contract, provider hardening, timeline gates, modal gates, nav gates, viz gates
-npm pack --dry-run # inspect the publishable tarball (expect 28 files)
+npm pack --dry-run # inspect the publishable tarball (expect 52 files)
 ```
 
 ## License

@@ -583,6 +583,57 @@
  *         ./graph.css layer(cascade) AFTER ./cards.css; umbrella
  *         re-exports.
  *
+ * 2.8.0 gates ("The Signature Pattern Website, 6-Set Taxonomy & One-Click
+ * Copy Studio"):
+ *   (b2 AMENDMENT)  the frozen files array is UNCHANGED — zero new package
+ *         files this release (the release grows the playground layer).
+ *   (b3)  npm pack stays EXACTLY 52 — playground/public/ is NOT shipped
+ *         (the files array excludes playground/ wholesale; this gate's
+ *         number is the proof the manifests ride the dev server only).
+ *   (b7)/(n-hub4)  REBASED to the v2.7.0 baseline. css/, react/,
+ *         SYSTEM_PROMPT.md, demo/, scripts/ AND tools/ are LOCKED and
+ *         EMPTY-diffed (zero package deltas this release). tokens.json
+ *         carries ONE authorized delta — meta.version → 2.8.0 — guarded
+ *         by a deep-equal check that neutralizes meta.version (themes/
+ *         shared/partyPalette/doctrine must stay identical).
+ *   (ix1 AMENDMENT)  the view union grows to the 5 real views; the
+ *         EmptyState/Hammer placeholder needles retire with
+ *         PlaceholderView (EmptyState lives in the Set 06 frame).
+ *   (nav5)  THE FIVE REAL VIEWS — Dashboard / Pattern Studio / Index /
+ *         Chronicle / AI Codex in NAV_ITEMS + the routing table + the
+ *         render branches; negative needles: PlaceholderView,
+ *         WorkshopView, PLACEHOLDERS, "#/events"/"#/guests"/"#/budget"
+ *         must NOT exist.
+ *   (ps-studio)  THE PATTERN STUDIO — PatternFrame's
+ *         data-sig-set/data-sig-component article, the aria-pressed
+ *         Preview|JSX|HTML segmented tabs, the pre/code well, the HTML
+ *         fallback note; PatternStudio's registry-driven SET_FRAMES
+ *         (EVERY SNIPPETS key mounts a frame), tabular-nums sidebar
+ *         counts, 240px sticky sidebar + 768px stack; CodexView's
+ *         HONEST census (exactly 22 color tokens, "the whitelist is 34"
+ *         stated), click-to-copy swatches, the 5-rung z-ladder
+ *         DataTable, the 6-bar 8px scale; the 2.8.0 css anatomy stays
+ *         FLAT (e1: zero box-shadow in the new blocks — only the
+ *         standing primary-button composition pop remains).
+ *   (ps-copy)  THE COPY STUDIO PATH — navigator.clipboard.writeText →
+ *         copied state → Copy→Check (COPIED_RESET_MS 2000, timer
+ *         cleaned) → toast("success", `Copied ${componentName}
+ *         snippet`), the clipboard-unavailable error toast, and the
+ *         codex swatch copy path.
+ *   (ps-llms)  THE MANIFESTS — public/llms.txt (H1 + blockquote +
+ *         Tokens/Rules/Component Sets/Recipes) + public/llms-full.txt
+ *         (EVERY SNIPPETS key + all 34 whitelist token names + the
+ *         doctrines present); package.json scripts.llms wired; the
+ *         generator exists.
+ *   Negative test (falsifiability, restore-verified): removing
+ *         `data-sig-set={setId}` from PatternFrame.tsx flips (ps-studio)
+ *         to FAIL; restore → PASS (git-verified byte-identical).
+ *   Probe (cortex, playwright): Pattern Studio renders 50
+ *         PatternFrames across 6 data-sig-set sections; JSX toggle on 2
+ *         frames; Copy Card → clipboard + toast + Copied! → 2s reset;
+ *         HTML tab renders the documented variant; Chronicle 23 nodes;
+ *         Codex 22 swatches → clipboard var name; /llms.txt HTTP 200.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -1073,78 +1124,71 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core files untouched since v2.6.0 ------------------------
-// 2.7.0 REBASE (the release that legitimately touches core rebases the floor —
-// v2.5.0 → v2.6.0). The owner-authorized 2.7.0 deltas, and NOTHING else:
-//   css/viz.css                       — grows: .ptp-bars/.ptp-area (BarChart/AreaChart)
-//   css/timeline.css                  — grows: the APPEND-only .ptp-tmanager block (e2-governed)
-//   css/graph.css                     — NEW: the KnowledgeGraph stylesheet
-//   css/signature-style.css           — grows: the graph.css layered import (after cards.css)
-//   react/viz.{tsx,js,d.ts}           — grow: BarChart + AreaChart (+ smoothPath)
-//   react/graph.{tsx,js,d.ts}         — NEW: KnowledgeGraph (+ layoutGraph/cubicBezierEdge)
-//   react/timeline-manager.{tsx,js,d.ts} — NEW: TimelineManager
-//   react/index.{ts,js,d.ts}          — the umbrella re-exports
-//   SYSTEM_PROMPT.md                  — the v3.0 codex
-// ZERO token changes (tokens.json + css/tokens.css byte-identical to v2.6.0);
-// EventTimeline (react/timeline.tsx) intact; demo/ byte-frozen.
-// scripts/verify.mjs stays BYTE-FROZEN.
-const LOCKED_PATHS = ["css/", "react/", "tokens.json", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
-const B7_AUTHORIZED = [
-  ":(exclude)css/timeline.css",
-  ":(exclude)css/viz.css",
-  ":(exclude)css/graph.css",
-  ":(exclude)css/signature-style.css",
-  ":(exclude)react/viz.tsx",
-  ":(exclude)react/viz.js",
-  ":(exclude)react/viz.d.ts",
-  ":(exclude)react/graph.tsx",
-  ":(exclude)react/graph.js",
-  ":(exclude)react/graph.d.ts",
-  ":(exclude)react/timeline-manager.tsx",
-  ":(exclude)react/timeline-manager.js",
-  ":(exclude)react/timeline-manager.d.ts",
-  ":(exclude)react/index.ts",
-  ":(exclude)react/index.js",
-  ":(exclude)react/index.d.ts",
-  ":(exclude)SYSTEM_PROMPT.md",
-];
+// ---- (b7) SAFETY PROOF: core files untouched since v2.7.0 ------------------------
+// 2.8.0 REBASE (the floor moves v2.6.0 → v2.7.0; css/ react/ took ZERO deltas
+// this release). The owner-authorized 2.8.0 deltas, and NOTHING else:
+//   playground/**                    — the Signature Pattern Website (NOT a
+//                                      locked path — the composition layer)
+//   README.md + package.json + package-lock.json — release plumbing
+//   tokens.json                      — META-ONLY (meta.version → 2.8.0),
+//                                      guarded by a deep-equal check that
+//                                      neutralizes meta.version: themes,
+//                                      shared, partyPalette and doctrine must
+//                                      stay byte-equal after JSON round-trip.
+// css/, react/, SYSTEM_PROMPT.md, demo/, scripts/ are LOCKED and EMPTY-diffed
+// against v2.7.0. scripts/verify.mjs stays BYTE-FROZEN.
+const B7_LOCKED_280 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"];
 let safetyDiff = "";
 try {
   safetyDiff = execFileSync(
     "git",
-    ["diff", "v2.6.0", "--", ...LOCKED_PATHS, ...B7_AUTHORIZED],
+    ["diff", "v2.7.0", "--", ...B7_LOCKED_280],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(b7) could not diff against v2.6.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v2.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (safetyDiff.trim() !== "") {
   failures.push(
-    "(b7) SAFETY: core package files changed since v2.6.0 beyond the owner-authorized 2.7.0 deltas (graph.css NEW + viz/timeline growth + the bundle import, react viz growth + graph/timeline-manager modules, umbrella re-exports, v3.0 codex) — css/ react/ tokens.json demo/ scripts/ are LOCKED",
+    "(b7) SAFETY: core package files changed since v2.7.0 — css/, react/, SYSTEM_PROMPT.md, demo/ and scripts/ are LOCKED in 2.8.0 (the release grows the playground composition layer + manifests only)",
   );
 }
 
-// ---- (n-hub4) THE V2.7.0 FROZEN PROOF — v2.6.0 baseline, tools/ included ---------
-// Rebased v2.5.0 → v2.6.0 for 2.7.0. tools/ gets exactly ONE authorized delta:
-// tools/mcp-viz/server.ts (owner-editable: DEFAULT_SELECTORS grows
-// .ptp-graph__node / .ptp-bars__bar / .ptp-tmanager__count; version 2.7.0; the
-// compiled dist/ is gitignored). Everything else under the locked paths beyond
-// the (b7) deltas must stay byte-identical to v2.6.0.
-const V2_LOCKED_PATHS = ["css/", "react/", "tokens.json", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
-const N_HUB4_AUTHORIZED = [...B7_AUTHORIZED, ":(exclude)tools/mcp-viz/server.ts"];
+// tokens.json META-ONLY guard: identical after neutralizing meta.version.
+try {
+  const v270tokens = JSON.parse(execFileSync("git", ["show", "v2.7.0:tokens.json"], { cwd: root, encoding: "utf8" }));
+  const currentTokens = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+  const neutralize = (manifest) => {
+    const clone = structuredClone(manifest);
+    delete clone.meta.version;
+    return JSON.stringify(clone);
+  };
+  if (neutralize(v270tokens) !== neutralize(currentTokens)) {
+    failures.push(
+      "(b7) SAFETY: tokens.json changed beyond meta.version — the 34-token whitelist, themes, shared tokens, the Party Palette and the doctrines are LOCKED in 2.8.0",
+    );
+  }
+} catch (error) {
+  failures.push(`(b7) could not verify the tokens.json meta-only delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+}
+
+// ---- (n-hub4) THE V2.8.0 FROZEN PROOF — v2.7.0 baseline, tools/ included ---------
+// tools/ takes ZERO deltas this release (server.ts untouched — the probes ride
+// custom selectors). tokens.json joins with the same meta-only authorization.
+const N_HUB4_LOCKED_280 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/"];
 let v2SafetyDiff = "";
 try {
   v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v2.6.0", "--", ...V2_LOCKED_PATHS, ...N_HUB4_AUTHORIZED],
+    ["diff", "v2.7.0", "--", ...N_HUB4_LOCKED_280],
     { cwd: root, encoding: "utf8" },
   );
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v2.6.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v2.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 if (v2SafetyDiff.trim() !== "") {
   failures.push(
-    "(n-hub4) SAFETY: files changed since v2.6.0 beyond the owner-authorized 2.7.0 deltas (graph css/react modules, viz/timeline growth, bundle import, umbrella re-exports, v3.0 codex, mcp server selectors) — css/ react/ tokens.json demo/ scripts/ AND tools/ are LOCKED",
+    "(n-hub4) SAFETY: files changed since v2.7.0 beyond the 2.8.0 authorization — css/, react/, demo/, scripts/ AND tools/ are LOCKED (tokens.json carries the meta-only delta, guarded above)",
   );
 }
 
@@ -1439,19 +1483,26 @@ if (!nodeClearance.test(stylesCss)) {
   );
 }
 
-// ---- (ix1) THE VIEW SWITCHER — View type, HubLink, EmptyState dogfood --------
+// ---- (ix1) THE VIEW SWITCHER — View type, HubLink, the 5-view nav map ----
+// 2.8.0 AMENDMENT: the workshop placeholders (events/guests/budget) died —
+// the nav map is FIVE REAL views (dashboard/studio/index/chronicle/codex).
+// The EmptyState dogfood needles retired with PlaceholderView (EmptyState
+// still lives: the package TimelineManager edge + the Set 06 studio frame).
 const INDEX_REQUIREMENTS = [
-  ['type View = "dashboard" | "index" | "events" | "guests" | "budget"', "the view union type"],
+  ['type View = "dashboard" | "studio" | "index" | "chronicle" | "codex"', "the 2.8.0 five-real-view union"],
   ['useState<View>("dashboard")', 'the default view stays "dashboard" — the cortex smoke must find the timeline on load'],
   ["function HubLink(", "the playground's link renderer for GlobalNav's as prop"],
   ["onNavigate: (href: string) => void", "the navigation callback contract"],
   ["event.preventDefault()", "no full-reload anchor navigation (negative-test target)"],
   ["function createHubLink(", "the factory closure feeding onNavigate/activeHref through GlobalNav's as contract"],
   ["as={navLink}", "the nav renders through the HubLink factory"],
+  ['{ href: VIEW_HREFS.studio, label: "Pattern Studio" }', "the Pattern Studio nav destination (2.8.0)"],
   ['{ href: VIEW_HREFS.index, label: "Index" }', "the Index nav destination"],
+  ['{ href: VIEW_HREFS.chronicle, label: "Chronicle" }', "the Chronicle nav destination (2.8.0)"],
+  ['{ href: VIEW_HREFS.codex, label: "AI Codex" }', "the AI Codex nav destination (2.8.0)"],
   ['"#/index": "index"', "the index routing entry"],
-  ["<EmptyState", "the workshop placeholders dogfood the package EmptyState primitive"],
-  ['icon="Hammer"', "the workshop icon"],
+  ['"#/chronicle": "chronicle"', "the chronicle routing entry (2.8.0)"],
+  ['"#/codex": "codex"', "the codex routing entry (2.8.0)"],
   ['title: "THE MASTER INDEX"', "the index hero title"],
   ["every archetype · one catalog · zero dead ends", "the index hero subtitle (2.6.0: the catalog)"],
 ];
@@ -3557,10 +3608,249 @@ if (!row2Collapse.test(stylesCss)) {
   );
 }
 
+// ---- (nav5) THE FIVE REAL VIEWS (2.8.0) --------------------------------------------
+// The nav map is 5 REAL views; the placeholder machinery is GONE (negative
+// needles: PlaceholderView/WorkshopView/PLACEHOLDERS must not exist).
+const NAV5_REQUIREMENTS = [
+  ['{ href: VIEW_HREFS.dashboard, label: "Dashboard" }', "view 1: the live bento"],
+  ['{ href: VIEW_HREFS.studio, label: "Pattern Studio" }', "view 2: the primary catalog"],
+  ['{ href: VIEW_HREFS.index, label: "Index" }', "view 3: the master index"],
+  ['{ href: VIEW_HREFS.chronicle, label: "Chronicle" }', "view 4: the Night of Versions"],
+  ['{ href: VIEW_HREFS.codex, label: "AI Codex" }', "view 5: the codex"],
+  ['view === "studio" ? (', "the studio branch renders"],
+  ['view === "chronicle" ? (', "the chronicle branch renders"],
+  ["function ChronicleView", "the chronicle view component"],
+  ["title: \"THE PATTERN STUDIO\"", "the studio hero"],
+  ["six sets · fifty patterns · one-click copy", "the studio hero subtitle"],
+];
+for (const [needle, label] of NAV5_REQUIREMENTS) {
+  if (!appSrc.includes(needle)) {
+    failures.push(`(nav5) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+for (const dead of ["function PlaceholderView", "type WorkshopView", "const PLACEHOLDERS", '"#/events"', '"#/guests"', '"#/budget"']) {
+  if (appSrc.includes(dead)) {
+    failures.push(`(nav5) App.tsx must NOT contain ${JSON.stringify(dead)} — the placeholder trio died in 2.8.0`);
+  }
+}
+
+// ---- (ps-studio) THE PATTERN STUDIO (2.8.0) ----------------------------------------
+// PatternFrame: data-sig-* article + the segmented view tabs + the copy card.
+// PatternStudio: the 6-set taxonomy (sidebar counts, SET_FRAMES covering EVERY
+// SNIPPETS key) + the live previews. Codex: 22 honest swatches + z-ladder.
+const framePath = resolve(root, "playground/components/PatternFrame.tsx");
+if (!existsSync(framePath)) {
+  failures.push("(ps-studio) playground/components/PatternFrame.tsx is missing");
+} else {
+  const frameSrc = readFileSync(framePath, "utf8");
+  const FRAME_REQUIREMENTS = [
+    ["data-sig-set={setId}", "the set attribute — the AI-readable page"],
+    ["data-sig-component={componentName}", "the component attribute"],
+    ['className="pattern-frame"', "the article root"],
+    ['"preview" | "jsx" | "html"', "the three view tabs"],
+    ['data-testid={`pf-tab-${entry.id}`}', "the tab probe hooks"],
+    ["aria-pressed={tab === entry.id}", "THE tab state — the attribute IS the state"],
+    ['"Copy Card"', "the copy button label"],
+    ['copied ? "Check" : "Copy"', "the Copy → Check icon swap"],
+    ["COPIED_RESET_MS = 2000", "the 2s copied confirmation"],
+    ["window.clearTimeout", "the timer cleanup"],
+    ["navigator.clipboard", "the clipboard API"],
+    [".writeText(text)", "the clipboard write"],
+    ["toast(\"success\", `Copied ${componentName} snippet`)", "the copy toast"],
+    ["useToast()", "the app-level ToastProvider is consumed via the hook"],
+    ["snippet.html ?? htmlFallback", "the HTML variant resolution"],
+    ["HTML variant not documented — use the JSX form.", "the muted HTML fallback note"],
+    ["snippet.jsx", "the JSX tab renders the registry entry"],
+  ];
+  for (const [needle, label] of FRAME_REQUIREMENTS) {
+    if (!frameSrc.includes(needle)) {
+      failures.push(`(ps-studio) PatternFrame.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+
+const studioPath = resolve(root, "playground/components/PatternStudio.tsx");
+const codexPath = resolve(root, "playground/components/CodexView.tsx");
+if (!existsSync(studioPath)) {
+  failures.push("(ps-studio) playground/components/PatternStudio.tsx is missing");
+}
+if (!existsSync(codexPath)) {
+  failures.push("(ps-studio) playground/components/CodexView.tsx is missing");
+}
+let snippetsSrc = "";
+let snippetKeys = [];
+if (existsSync(studioPath)) {
+  const studioSrc = readFileSync(studioPath, "utf8");
+  snippetsSrc = readFileSync(resolve(root, "playground/snippets.ts"), "utf8");
+
+  // Every SNIPPETS key (regex-extracted: two-space-indented `Key: {`) must
+  // appear in the studio's SET_FRAMES map AND have a PREVIEWS entry.
+  snippetKeys = [...snippetsSrc.matchAll(/^  ([A-Za-z]\w*): \{$/gm)].map((m) => m[1]);
+  if (snippetKeys.length < 40) {
+    failures.push(`(ps-studio) snippets.ts registry looks truncated — only ${String(snippetKeys.length)} keys extracted`);
+  }
+  for (const key of snippetKeys) {
+    if (!studioSrc.includes(`"${key}"`) && !studioSrc.includes(`${key}: <`)) {
+      failures.push(`(ps-studio) studio must mount a frame for SNIPPETS key "${key}" (SET_FRAMES + PREVIEWS)`);
+    }
+  }
+
+  const STUDIO_REQUIREMENTS = [
+    ['from "../snippets.js"', "the registry import"],
+    ["SET_NAMES", "the 6 set names"],
+    ["SET_BLURBS", "the human explanations"],
+    ["data-sig-set-section={id}", "the per-set section attribute"],
+    ['data-testid="studio-sidebar"', "the sidebar probe hook"],
+    ['data-testid={`studio-set-${id}`}', "the per-set filter probe hooks"],
+    ['aria-label="Pattern sets"', "the sidebar's accessible name"],
+    ["studio__set-count", "the tabular-nums counts"],
+    ["setCount(id)", "counts derive from the registry — never hand-typed"],
+    ["aria-pressed={activeSet === id}", "the sidebar filter state attribute"],
+    ["<PatternFrame", "the studio renders PatternFrames"],
+    ['data-testid="pattern-studio"', "the view probe hook"],
+  ];
+  for (const [needle, label] of STUDIO_REQUIREMENTS) {
+    if (!studioSrc.includes(needle)) {
+      failures.push(`(ps-studio) PatternStudio.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+if (existsSync(codexPath)) {
+  const codexSrc = readFileSync(codexPath, "utf8");
+  const CODEX_REQUIREMENTS = [
+    ["COLOR_TOKENS", "the color census (22 entries)"],
+    ['data-testid="codex-swatch"', "the swatch probe hook"],
+    ["data-sig-token={token}", "the swatch's token attribute"],
+    ["navigator.clipboard", "the clipboard API"],
+    [".writeText(token)", "click-to-copy the var name"],
+    ["toast(\"success\", `Copied ${token}`)", "the swatch toast"],
+    ['data-testid="codex-swatches"', "the swatch grid probe hook"],
+  ];
+  for (const [needle, label] of CODEX_REQUIREMENTS) {
+    if (!codexSrc.includes(needle)) {
+      failures.push(`(ps-studio) CodexView.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // The honest census: exactly 22 color tokens declared INSIDE the
+  // COLOR_TOKENS array (the z-ladder's --z-* entries don't count).
+  const censusSlice = codexSrc.slice(codexSrc.indexOf("const COLOR_TOKENS"), codexSrc.indexOf("];"));
+  const declaredSwatches = censusSlice.match(/token: "--/g);
+  if (declaredSwatches === null || declaredSwatches.length !== 22) {
+    failures.push(
+      `(ps-studio) CodexView COLOR_TOKENS must declare exactly 22 color tokens (11 core/keeper + 11 party — the honest count out of whitelist 34), found ${String(declaredSwatches?.length ?? 0)}`,
+    );
+  }
+  if (!codexSrc.includes("the whitelist is 34")) {
+    failures.push('(ps-studio) CodexView must state the honest census — "the whitelist is 34" stated');
+  }
+  if (!codexSrc.includes("<DataTable") || !codexSrc.includes("--z-toast")) {
+    failures.push("(ps-studio) CodexView must render the 5-rung z-ladder as a DataTable (through --z-toast)");
+  }
+  if (!codexSrc.includes('style={{ width: `${String(step.px)}px` }}')) {
+    failures.push("(ps-studio) CodexView must render the 8px scale bars (4/8/16/24/32/64)");
+  }
+}
+// The studio/codex css anatomy: sticky sidebar + 768px collapse + FLAT (e1).
+const STUDIO_CSS_REQUIREMENTS = [
+  [".studio {", "the two-column doc layout"],
+  ["grid-template-columns: 240px 1fr", "the 240px sidebar column"],
+  [".studio__sidebar {\n  position: sticky;", "the sticky sidebar"],
+  [".studio__set-count {\n  font-variant-numeric: tabular-nums;", "the tabular counts"],
+  [".studio__set-link[aria-pressed=\"true\"]", "the filter state selector"],
+  [".codex__swatch", "the swatch cards"],
+  [".codex__grid-bar", "the grid scale bars"],
+];
+for (const [needle, label] of STUDIO_CSS_REQUIREMENTS) {
+  if (!stylesCss.includes(needle)) {
+    failures.push(`(ps-studio) styles.css must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+const studioCollapse = /@media \(max-width: 768px\)\s*\{[^@]*\.studio\s*\{[^}]*grid-template-columns: 1fr;/s;
+if (!studioCollapse.test(stylesCss)) {
+  failures.push("(ps-studio) .studio must stack to one column at max-width: 768px (Pillar 2)");
+}
+// e1 treaty: the new 2.8.0 anatomy is FLAT — no box-shadow in the new blocks.
+const newBlocks = stylesCss.slice(stylesCss.indexOf("2.8.0 THE PATTERN FRAME"));
+for (const match of newBlocks.matchAll(/([^{}]+)\{[^}]*box-shadow:[^}]*\}/g)) {
+  const selector = match[1].trim().split("\n").pop()?.trim() ?? "?";
+  if (!selector.includes("ptp-btn--primary")) {
+    failures.push(`(ps-studio) e1 treaty: the 2.8.0 css declares box-shadow on ${selector} — the new anatomy stays FLAT`);
+  }
+}
+
+// ---- (ps-copy) THE COPY STUDIO PATH (2.8.0) ----------------------------------------
+// The clipboard → copied-state → toast chain, frame-level and codex-level.
+if (existsSync(framePath)) {
+  const copySrc = readFileSync(framePath, "utf8");
+  const PS_COPY_REQUIREMENTS = [
+    ["navigator.clipboard", "the clipboard API"],
+    [".writeText(text)", "the clipboard write"],
+    ["COPIED_RESET_MS = 2000", "the 2s Check confirmation"],
+    ["copied ? \"Check\" : \"Copy\"", "the icon swap"],
+    ["toast(\"success\", `Copied ${componentName} snippet`)", "the frame toast contract"],
+    ["toast(\"error\", \"Clipboard unavailable", "the failure toast"],
+    ["window.clearTimeout(timerRef.current)", "the timer cleanup (unmount + re-copy)"],
+  ];
+  for (const [needle, label] of PS_COPY_REQUIREMENTS) {
+    if (!copySrc.includes(needle)) {
+      failures.push(`(ps-copy) PatternFrame.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+
+// ---- (ps-llms) THE MACHINE-READABLE MANIFESTS (2.8.0) ------------------------------
+const llmsPath = resolve(root, "playground/public/llms.txt");
+const llmsFullPath = resolve(root, "playground/public/llms-full.txt");
+if (typeof pkg.scripts?.llms !== "string") {
+  failures.push('(ps-llms) package.json scripts["llms"] is missing — `npm run llms` must regenerate both manifests');
+}
+if (!existsSync(resolve(root, "playground/generate-llms.mjs"))) {
+  failures.push("(ps-llms) playground/generate-llms.mjs is missing — the generator IS the drift-proofing");
+}
+if (!existsSync(llmsPath)) {
+  failures.push("(ps-llms) playground/public/llms.txt is missing — run `npm run llms`");
+} else {
+  const llmsTxt = readFileSync(llmsPath, "utf8");
+  if (!llmsTxt.startsWith("# @edwyn/signature-style — The Signature Style")) {
+    failures.push("(ps-llms) llms.txt must open with the H1");
+  }
+  if (!llmsTxt.includes("> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Party Palette content colors, mechanical physics.")) {
+    failures.push("(ps-llms) llms.txt must carry the blockquote tagline");
+  }
+  for (const section of ["## Tokens", "## Rules", "## Component Sets", "## Recipes"]) {
+    if (!llmsTxt.includes(section)) {
+      failures.push(`(ps-llms) llms.txt must carry the ${section} section`);
+    }
+  }
+}
+if (!existsSync(llmsFullPath)) {
+  failures.push("(ps-llms) playground/public/llms-full.txt is missing — run `npm run llms`");
+} else {
+  const llmsFull = readFileSync(llmsFullPath, "utf8");
+  for (const key of snippetKeys) {
+    if (!llmsFull.includes(key)) {
+      failures.push(`(ps-llms) llms-full.txt must contain every SNIPPETS key — missing "${key}"`);
+    }
+  }
+  const whitelistNames = Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).themes.mocha.tokens)
+    .concat(Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).shared.tokens))
+    .concat(Object.keys(JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).partyPalette.tokens));
+  for (const tokenName of whitelistNames) {
+    if (!llmsFull.includes(tokenName)) {
+      failures.push(`(ps-llms) llms-full.txt must contain all 34 whitelist token names — missing "${tokenName}"`);
+    }
+  }
+  if (!llmsFull.includes("Rule of Engagement")) {
+    failures.push("(ps-llms) llms-full.txt must carry the doctrines (Rule of Engagement)");
+  }
+}
+// public/ must NOT ship: the files array excludes playground/ wholesale (b2 pins
+// it); this gate documents the pack proof — 52 files, zero public/ entries.
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1): scaffold, wiring, pack=52 (2.7.0: css/graph.css + react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts}), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons (2.6.0: Copy/Check/ArrowUpRight join the probe), v2.5.0 safety diff empty beyond the owner-authorized 2.6.0 deltas (surface/cards/editorial css + react growth, forms.css textarea, umbrella re-exports, v2.9 codex; forms.tsx + viz.tsx + tokens + frozen css byte-identical; timeline.css additions-only per e2; scripts/verify.mjs byte-frozen) AND tools/ rebased with the single server.ts delta (n-hub4, version 2.6.0), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the 2.6.0 shadow amendment (surface.css: .sig-surface-card rules + the three [data-elevation] tier blocks + [data-accent] glow; cards.css absolute zero), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks (guest-form / ledger-table / ring-rsvp), shell column (1520px catalog width) + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.4.1 gates intact (surface anatomy, data/editorial css incl. the scrollbar-free track + dot indicators); 2.5.0 gates intact (bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0: (acc1) the accent contract (data-accent + --sig-accent painted in css, PartyColorToken/AccentToken typed + compiled), (elev) the three-tier ladder (flat/raised/floating; interactive+floating lifts -4px, cards.css stays absolute zero), (pt11) the 11-token sweep (the whitelist IS the union), (cc1)-(cc5) the five universal archetypes (16/9 content, clipboard reference, featured tier, tabular profile, the flat chronicle), (mi1) the master index (filter tabs, three chromatic gateways in the balanced row, the commerce trio, the food slab + 4-up profiles, the 23-release memorial chronicle); negative test: deleting the [data-elevation=\"floating\"] tier block flips (elev)/(cc3) FAIL, restore PASS");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + (ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms): scaffold, wiring, pack stays EXACTLY 52 (playground/public NOT shipped — files array excludes playground/), zero hex + 768px collapse, bento shape + hero + shed anatomy (7 cards audited INSIDE the dashboard branch), icons probe, v2.7.0 safety diff EMPTY on css/ react/ SYSTEM_PROMPT.md demo/ scripts/ (b7) AND tools/ byte-identical (n-hub4) with the tokens.json META-ONLY guard (themes/shared/partyPalette/doctrine deep-equal after neutralizing meta.version), bento-cell stagger + reduced-motion escape, mockEvents hydration + mapping, ambient-elevation markers + the surface.css sanction (e1: the 2.8.0 studio/codex/frame css stays FLAT), timeline resurrection needles, cortex dist + smoke wiring + live-state hooks, shell column + auto-fit packing + announced hero + teal/mono anatomy + hover lift + metric air + glass header boundary + telemetry spacing, MEASURED breathing room; 2.2.0-2.5.0 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align); 2.6.0 gates intact (accent contract, elevation ladder, 11-token sweep, five archetypes, master index); 2.8.0: (nav5) the five REAL views (dashboard/studio/index/chronicle/codex — the placeholder trio is a negative needle), (ps-studio) PatternFrame data-sig-set/data-sig-component + aria-pressed Preview|JSX|HTML tabs + the flat frame anatomy + EVERY SNIPPETS key mounted with a live preview + the honest 22-swatch codex census ('the whitelist is 34') + z-ladder DataTable + 8px scale bars, (ps-copy) clipboard → Copied! 2s → toast with the cleanup + error path, (ps-llms) llms.txt + llms-full.txt carrying every SNIPPETS key + all 34 whitelist tokens, generated drift-proof by npm run llms; negative test: deleting data-sig-set={setId} from PatternFrame.tsx flips (ps-studio) FAIL, restore PASS");
