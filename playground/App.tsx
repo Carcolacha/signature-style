@@ -615,9 +615,11 @@ const TOTAL_BUDGET = 2000;
 const GUEST_CAPACITY = 200;
 
 /**
- * SEED_GRAPH (2.7.0) — the knowledge graph's opening shape: the root
- * plus three connected workstream notes. Every node carries a note so
- * the footer inspect strip has something to say.
+ * SEED_GRAPH (2.7.0; 3.0.0 chromatic categories) — the knowledge
+ * graph's opening shape: the root plus three connected workstream
+ * notes wearing VARIED CHROMATIC tokens (azure/tangerine/pink — the
+ * 3.0.0 fill/series accents on the node rings). Every node carries a
+ * note so the footer inspect strip has something to say.
  */
 const SEED_GRAPH: GraphNode[] = [
   {
@@ -630,21 +632,21 @@ const SEED_GRAPH: GraphNode[] = [
     id: "kg-venue",
     label: "Venue",
     parentId: "kg-root",
-    categoryToken: "--party-mauve-soft",
+    categoryToken: "--party-azure",
     note: "Shortlist three venues; the walkthrough is on the timeline.",
   },
   {
     id: "kg-catering",
     label: "Catering",
     parentId: "kg-root",
-    categoryToken: "--party-peach",
+    categoryToken: "--party-tangerine",
     note: "Tasting scheduled — the vegan plate must travel well.",
   },
   {
     id: "kg-invites",
-    label: "Invites",
+    label: "Invites & RSVP tracking",
     parentId: "kg-root",
-    categoryToken: "--party-sky",
+    categoryToken: "--party-pink-bright",
     note: "Paper for family, digital for everyone else.",
   },
 ];
@@ -693,12 +695,13 @@ const SEED_TIMELINE: TimelineItem[] = [
   },
 ];
 
-/** The Spending by Category bars — four bars, per-bar capacity maxes. */
+/** The Spending by Category bars — four bars, four DIFFERENT chromatic
+ *  tokens (3.0.0: cobalt/cyan/mint/tangerine — the multi-token series). */
 const SPENDING_BARS = [
-  { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
-  { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
-  { label: "Invites", value: 240, max: 400, colorToken: "--party-pink-bright" },
-  { label: "Music", value: 450, max: 600, colorToken: "--party-sky" },
+  { label: "Venue", value: 800, max: 1000, colorToken: "--party-cobalt" },
+  { label: "Catering", value: 620, max: 900, colorToken: "--party-tangerine" },
+  { label: "Invites", value: 240, max: 400, colorToken: "--party-cyan" },
+  { label: "Music", value: 450, max: 600, colorToken: "--party-mint" },
 ] as const;
 
 /** The RSVP Momentum series — eight weekly samples, sky. */
@@ -771,18 +774,45 @@ function SimSlot({
   );
 }
 
-/** All ten Party Palette tokens with their human names (content-only rule). */
-const PALETTE: ReadonlyArray<{ token: PtpEvent["category"]; label: string }> = [
-  { token: "--party-pink-bright", label: "Pink" },
-  { token: "--party-pink-soft", label: "Soft pink" },
-  { token: "--party-pink-alt", label: "Alt pink" },
-  { token: "--party-mauve-bright", label: "Mauve" },
-  { token: "--party-mauve-soft", label: "Soft mauve" },
-  { token: "--party-lavender", label: "Lavender" },
-  { token: "--party-sky", label: "Sky" },
-  { token: "--party-cobalt", label: "Cobalt" },
-  { token: "--party-peach", label: "Peach" },
-  { token: "--party-green", label: "Green" },
+/**
+ * THE FULL PARTY PALETTE (3.0.0) — all 26 tokens with their human
+ * names and the ink/fill ROLE tags (the contrast contract: ink-floor
+ * tokens are cleared for high-emphasis content; the chromatic sixteen
+ * are DECLARED fill/series accents — bars, rings, borders, tinted
+ * wells, never body-text ink). The 3.0.0 newcomers carry isNew.
+ */
+const PALETTE: ReadonlyArray<{
+  token: PtpEvent["category"];
+  label: string;
+  role: "ink" | "fill";
+  isNew?: boolean;
+}> = [
+  { token: "--party-pink-bright", label: "Pink", role: "ink" },
+  { token: "--party-pink-soft", label: "Soft pink", role: "ink" },
+  { token: "--party-pink-alt", label: "Alt pink", role: "ink" },
+  { token: "--party-mauve-bright", label: "Mauve", role: "ink" },
+  { token: "--party-mauve-soft", label: "Soft mauve", role: "ink" },
+  { token: "--party-lavender", label: "Lavender", role: "ink" },
+  { token: "--party-sky", label: "Sky", role: "ink" },
+  { token: "--party-cobalt", label: "Cobalt", role: "ink", isNew: true },
+  { token: "--party-peach", label: "Peach", role: "ink" },
+  { token: "--party-green", label: "Green", role: "ink" },
+  { token: "--party-yellow", label: "Yellow", role: "ink" },
+  { token: "--party-orchid", label: "Orchid", role: "fill", isNew: true },
+  { token: "--party-cyan", label: "Cyan", role: "fill", isNew: true },
+  { token: "--party-magenta", label: "Magenta", role: "fill", isNew: true },
+  { token: "--party-mint", label: "Mint", role: "fill", isNew: true },
+  { token: "--party-spring", label: "Spring", role: "fill", isNew: true },
+  { token: "--party-citron", label: "Citron", role: "fill", isNew: true },
+  { token: "--party-violet-glow", label: "Violet glow", role: "fill", isNew: true },
+  { token: "--party-pink-glow", label: "Pink glow", role: "fill", isNew: true },
+  { token: "--party-rose-glow", label: "Rose glow", role: "fill", isNew: true },
+  { token: "--party-lime-glow", label: "Lime glow", role: "fill", isNew: true },
+  { token: "--party-mint-glow", label: "Mint glow", role: "fill", isNew: true },
+  { token: "--party-crimson", label: "Crimson", role: "fill", isNew: true },
+  { token: "--party-azure", label: "Azure", role: "fill", isNew: true },
+  { token: "--party-tangerine", label: "Tangerine", role: "fill", isNew: true },
+  { token: "--party-neon-green", label: "Neon green", role: "fill", isNew: true },
 ];
 
 export default function App() {
@@ -1437,7 +1467,7 @@ function BentoCore({
         </SimSlot>
       </SurfaceCard>
 
-      {/* span 3 — The Party Palette (unchanged badges) */}
+      {/* span 3 — The Party Palette (ALL 26 — click-to-copy swatches) */}
       <SurfaceCard
         eyebrow="Palette"
         meta="components/primitives.tsx"
@@ -1450,9 +1480,31 @@ function BentoCore({
             <SkeletonCard />
           ) : (
             <>
-        <div className="hub__palette">
-          {PALETTE.map(({ token, label }) => (
-            <PartyBadge key={token} colorToken={token} label={label} />
+        <p className="hub__sim-note">
+          26 tokens · click a swatch to copy its var name — ink badges are
+          body-text-safe; fill chips are series accents (bars, rings,
+          wells).
+        </p>
+        <div className="hub__palette-grid">
+          {PALETTE.map(({ token, label, role, isNew }) => (
+            <button
+              key={token}
+              type="button"
+              className="hub__palette-swatch"
+              title={`Copy ${token}`}
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(token)
+                  .then(() => toast("success", `Copied ${token}`))
+                  .catch(() => toast("error", "Clipboard unavailable"));
+              }}
+            >
+              <PartyBadge colorToken={token} label={label} />
+              <span className="hub__palette-swatch-meta">
+                <span className="hub__palette-role">{role}</span>
+                {isNew === true && <span className="hub__palette-new">new 3.0</span>}
+              </span>
+            </button>
           ))}
         </div>
             </>
@@ -2661,10 +2713,11 @@ function GraphPlannerModule() {
     // 2.9.0: the payload build stays here (the (ps1) contract lives in
     // the composition layer); the Blob → anchor dance moved into the
     // shared downloadJson helper (the command palette lands on it too).
-    const payload = { version: "sig.v27", graph, timeline };
+    // 3.0.0: the links model joins the payload (the ob1 extension).
+    const payload = { version: "sig.v27", graph, timeline, links };
     downloadJson(JSON.stringify(payload, null, 2), "signature-snapshot.json");
     toast("success", "Snapshot exported — signature-snapshot.json.");
-  }, [graph, timeline, toast]);
+  }, [graph, timeline, links, toast]);
 
   const importSnapshot = useCallback(
     (file: File) => {

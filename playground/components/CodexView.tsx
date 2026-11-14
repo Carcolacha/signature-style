@@ -1,13 +1,16 @@
 /**
- * CodexView — THE AI CODEX view (2.8.0). The machine-readable face of
- * the system, rendered for humans AND agents:
+ * CodexView — THE AI CODEX view (2.8.0; grown 3.0.0 "16-Color Chromatic
+ * System"). The machine-readable face of the system, rendered for
+ * humans AND agents:
  *
  *   1. THE COLOR SWATCHES — every COLOR token as a click-to-copy card
  *      (click → clipboard the var name → toast). THE HONEST COUNT: the
- *      whitelist is 34 tokens, of which exactly 22 are colors (11
- *      core/keeper + the 11-token Party Palette); the remaining 12 are
+ *      whitelist is 50 tokens, of which exactly 37 are colors (11
+ *      core/keeper + the 26-token Party Palette); the remaining 13 are
  *      spatial, z-index, type and motion tokens — they get their own
- *      displays below instead of being mislabeled "colors".
+ *      displays below instead of being mislabeled "colors". The 3.0.0
+ *      chromatic sixteen wear the "new 3.0" chip and their fill/series
+ *      role.
  *   2. THE 8PX SPATIAL GRID — visual bars at 4/8/16/24/32/64px (8/16/24
  *      are the token tiers --space-tight/standard/section).
  *   3. THE Z-LADDER — the 5 rungs as a DataTable (rung/token/value/
@@ -19,10 +22,10 @@ import type { ReactNode } from "react";
 import { SurfaceCard, DataTable, ProseBlock, useToast } from "@edwyn/signature-style/react";
 import type { DataTableColumn } from "@edwyn/signature-style/react";
 
-/** Every COLOR token (22): the 11 core/keeper + the 11 party tokens.
+/** Every COLOR token (37): the 11 core/keeper + the 26 party tokens.
     Values are the Mocha defaults (the dark default theme); Latte swaps
     the theme tokens by attribute — the party palette never moves. */
-const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core" | "party" }> = [
+const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core" | "party"; isNew?: boolean }> = [
   { token: "--bg-base", label: "Base", family: "core" },
   { token: "--bg-surface", label: "Surface", family: "core" },
   { token: "--bg-inset", label: "Inset", family: "core" },
@@ -41,10 +44,25 @@ const COLOR_TOKENS: ReadonlyArray<{ token: string; label: string; family: "core"
   { token: "--party-mauve-soft", label: "Mauve soft", family: "party" },
   { token: "--party-lavender", label: "Lavender", family: "party" },
   { token: "--party-sky", label: "Sky", family: "party" },
-  { token: "--party-cobalt", label: "Cobalt", family: "party" },
+  { token: "--party-cobalt", label: "Cobalt", family: "party", isNew: true },
   { token: "--party-peach", label: "Peach", family: "party" },
   { token: "--party-green", label: "Green", family: "party" },
   { token: "--party-yellow", label: "Yellow", family: "party" },
+  { token: "--party-orchid", label: "Orchid", family: "party", isNew: true },
+  { token: "--party-cyan", label: "Cyan", family: "party", isNew: true },
+  { token: "--party-magenta", label: "Magenta", family: "party", isNew: true },
+  { token: "--party-mint", label: "Mint", family: "party", isNew: true },
+  { token: "--party-spring", label: "Spring", family: "party", isNew: true },
+  { token: "--party-citron", label: "Citron", family: "party", isNew: true },
+  { token: "--party-violet-glow", label: "Violet glow", family: "party", isNew: true },
+  { token: "--party-pink-glow", label: "Pink glow", family: "party", isNew: true },
+  { token: "--party-rose-glow", label: "Rose glow", family: "party", isNew: true },
+  { token: "--party-lime-glow", label: "Lime glow", family: "party", isNew: true },
+  { token: "--party-mint-glow", label: "Mint glow", family: "party", isNew: true },
+  { token: "--party-crimson", label: "Crimson", family: "party", isNew: true },
+  { token: "--party-azure", label: "Azure", family: "party", isNew: true },
+  { token: "--party-tangerine", label: "Tangerine", family: "party", isNew: true },
+  { token: "--party-neon-green", label: "Neon green", family: "party", isNew: true },
 ];
 
 /** The visual 8px scale — 4/8/16/24/32/64, the white-space vocabulary. */
@@ -74,7 +92,17 @@ const Z_COLUMNS: DataTableColumn[] = [
 ];
 
 /** One click-to-copy swatch card — flat, hairline, no shadow (e1). */
-function Swatch({ token, label, family }: { token: string; label: string; family: "core" | "party" }) {
+function Swatch({
+  token,
+  label,
+  family,
+  isNew,
+}: {
+  token: string;
+  label: string;
+  family: "core" | "party";
+  isNew?: boolean;
+}) {
   const toast = useToast();
   const handleCopy = () => {
     navigator.clipboard
@@ -93,7 +121,10 @@ function Swatch({ token, label, family }: { token: string; label: string; family
     >
       <span className="codex__swatch-chip" style={{ background: `var(${token})` }} aria-hidden="true" />
       <span className="codex__swatch-name">{token}</span>
-      <span className="codex__swatch-label">{label}</span>
+      <span className="codex__swatch-label">
+        {label}
+        {isNew === true && <span className="codex__swatch-new"> · new 3.0</span>}
+      </span>
       <span className="codex__swatch-family" data-family={family}>
         {family}
       </span>
@@ -115,8 +146,10 @@ export function CodexView() {
     <div className="codex" data-testid="ai-codex">
       <SurfaceCard eyebrow="Codex" meta="css/tokens.css" title="The Color Tokens">
         <p className="codex__note">
-          22 color tokens render here — the whitelist is 34; the other 12 are spatial,
-          z-index, type and motion tokens (their displays follow). Click any swatch to copy
+          37 color tokens render here — the whitelist is 50; the other 13 are spatial,
+          z-index, type and motion tokens (their displays follow). The 16 chromatic
+          3.0.0 newcomers wear the &ldquo;new 3.0&rdquo; chip — cobalt (blue&rsquo;s
+          value carried) + 15 fill/series accents. Click any swatch to copy
           its var name.
         </p>
         <div className="codex__swatches" data-testid="codex-swatches">

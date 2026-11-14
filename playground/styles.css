@@ -1147,7 +1147,13 @@
   color: var(--text-muted);
 }
 
-/* 2.9.1 — THE ASYNC-LOAD TRIGGER ROW (the Input Matrix card, FormsModule).
+/* ---- 3.0.0 THE CODEX SWATCH "NEW" CHIP + PALETTE GRID BADGES --------- */
+.codex__swatch-new {
+  color: var(--color-cake-secondary);
+  font-weight: 600;
+}
+
+/* ---- 2.9.1 — THE ASYNC-LOAD TRIGGER ROW (the Input Matrix card, FormsModule).
    The Button + caption row that fires the 800ms skeleton simulation on the
    Core Dashboard's bento. Zero hex (the b4 gate), zero shadow (e1); the
    caption is muted metadata. The CLS proof itself lives in

@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v3.2
+# System Instruction: The Dynamic Signature Engine v3.3
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -207,10 +207,11 @@ Party-colored budget bar with the limit caption; `colorToken` accepts `--party-*
 
 ### <StatRing>
 
-The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only:
+The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only. 3.0.0 ZOOM + DETAIL: the dial defaults to 120px; pass `total` (+ optional `unit`) and the ring becomes zoomable — hover/press scale(1.07), a click toggles the detail strip ("85% · 170 / 200 Guests", tabular-nums, the 0fr→1fr slide, reduced-motion safe):
 
 ```tsx
 <StatRing value={85} colorToken="--party-sky" label="RSVP ratio" />
+<StatRing value={85} colorToken="--party-sky" label="RSVP ratio" total={200} unit="Guests" />
 ```
 
 ### <DataTable>
@@ -250,12 +251,13 @@ Initials disc — word-initials, max two, uppercased, derived from `name`; ring 
 
 ### <FormField>
 
-The accessible around-the-control scaffold — YOU wire id/htmlFor (the package renders no ids it cannot verify). THE 2.5.0 TOP-DOWN ANATOMY: label (promoted: text-main, 0.875rem, weight 500) → `description` ABOVE the control (format rules live with the title — "5 numbers only · e.g., 79901"; `hint` stays the below-input helper) → control → ONE validation line, priority `error` (role="alert", peach) → `validMessage` (party-green) → `hint`. `prefix`/`suffix` compose the `.ptp-form-field__well`: mono chips flanking a BARE input (the well owns the border, focus ring and the `[data-invalid]` shake — children must be bare inputs). `required` paints a visual peach asterisk only — pass `aria-required`/`required` to the CONTROL yourself:
+The accessible around-the-control scaffold — YOU wire id/htmlFor (the package renders no ids it cannot verify). THE 3.0.0 SYMMETRICAL ANATOMY (the owner's reversal of 2.5.0): the label row is a fixed 20px rail (side-by-side fields align on the same baseline) carrying the promoted label + the optional `infoTooltip` ⓘ (pure-CSS bubble above, shown on hover AND focus-visible; title/aria-label carry the text) → control (or the `prefix`/`suffix` `.ptp-form-field__well`: mono chips flanking a BARE input — the well owns the border, focus ring and the `[data-invalid]` shake) → THE HELPERS SLOT BELOW the well (`.ptp-form-field__helpers`, 20px rail, flex wrap): `description` (format examples — "120", "5 numbers only · e.g., 79901") + `hint` → ONE validation line, `error` first (role="alert", peach), then `validMessage` (party-green). THE A11Y PRESERVATION: the description renders with a generated id wired onto the control via aria-describedby — screen readers STILL announce the format rule below the input (the GOV.UK concern survives the visual move). `required` paints a visual peach asterisk only — pass `aria-required`/`required` to the CONTROL yourself:
 
 ```tsx
 <FormField
   label="Postal Code"
   htmlFor="zip"
+  infoTooltip="The ZIP drives the catering headcount"
   description="5 numbers only · e.g., 79901"
   validMessage={/^\d{5}$/.test(zip) ? "Valid ZIP" : undefined}
   error={zip !== "" && !/^\d{5}$/.test(zip) ? "Postal codes are 5 digits" : undefined}
@@ -396,12 +398,15 @@ The Pillar 4 empty state — icon, optional title, muted message, centered:
 
 ### <Carousel>
 
-The horizontal scroll strip — `children` must be `<CarouselItem>` snap slots; the page indicator ("n / count", 2.4.1) tracks the scroll position between the two buttons; buttons scroll one item per click:
+The horizontal scroll strip — TWO MODES (3.0.0, default `"free-scroll"`). free-scroll: `children` are `<CarouselItem>` snap slots; chevrons stride one item; the active dot syncs through an IntersectionObserver (majority-visible wins). `"paged-3"`: the children chunk into pages of THREE — each page is ONE snap slide wearing a repeat(3, 1fr) grid + 16px gap; chevrons stride ±1 page, dots are per page (clickable), the indicator reads "p / P". The mechanics dock into the bottom control bar: prev · dots · indicator · next — the readout never overlaps card content:
 
 ```tsx
 <Carousel label="Palette clippings">
   <CarouselItem><PartyBadge colorToken="--party-sky" label="Sky" /></CarouselItem>
   <CarouselItem><PartyBadge colorToken="--party-peach" label="Peach" /></CarouselItem>
+</Carousel>
+<Carousel label="Clippings" mode="paged-3">
+  {/* 3-6+ items chunk into pages of three */}
 </Carousel>
 ```
 
@@ -581,13 +586,20 @@ const nodes: GraphNode[] = [
 
 <KnowledgeGraph
   nodes={nodes}
+  positions={dragged}   /* 3.0.0: onMoveNode round-trip (persisted) */
+  links={links}         /* 3.0.0: the extra (non-parent) links */
   addOn
   onAddNode={(node) => addNode(node)}
+  onAddNodeAt={(point, parentId) => spawnAt(point, parentId)} /* dbl-click spawn */
+  onMoveNode={(id, position) => persistMove(id, position)}   /* drag commit, once per drag */
+  onLinkNodes={(fromId, toId) => tether(fromId, toId)}       /* right-click tether commit */
   onSelectNode={(node) => inspect(node)}
   label="Party planning graph"
   height={320}
 />
 ```
+
+THE 3.0.0 OBSIDIAN INTERACTIONS: generous nodes (r 34, 13px labels, 16-char truncation + a `<title>` full-label tooltip); DRAG at 60fps — pointerdown captures, pointermove mutates the node `<g>` transform DIRECTLY (rAF, zero setState per move), pointerup commits ONCE via `onMoveNode` (persist the position and feed it back through `positions`; keyboard parity: arrows nudge the selected node 8px); PAN on empty-canvas drag + WHEEL zoom (0.5×–2.5×, anchored at the cursor — both in viewBox math, so node coordinates stay in graph space); DOUBLE-CLICK empty canvas spawns a node at that coordinate (`onAddNodeAt`, nearest node or root parents it); RIGHT-CLICK a node enters TETHER mode — a live dashed azure line (`--party-azure`, 6 4, 1.5px) chases the cursor and releasing over another node fires `onLinkNodes(fromId, toId)`; Escape cancels any in-flight drag/tether. THE LINKS MODEL: parent edges stay derived from `parentId`; NON-parent tethers live in the consumer's persisted `links` array handed back through the `links` prop (same `GraphLink[]` in the snapshot payload).
 
 ### <BarChart>
 
@@ -596,9 +608,12 @@ The capacity bar chart (2.7.0) — pure SVG, one group per datum: an inset round
 ```tsx
 <BarChart
   data={[
-    { label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" },
-    { label: "Catering", value: 620, max: 900, colorToken: "--party-peach" },
-    { label: "Invites", value: 240, max: 400, colorToken: "--party-pink-bright" },
+    /* 3.0.0: the series reads as a SPECTRUM — four DIFFERENT chromatic
+       tokens (cobalt/cyan/mint/tangerine), one per datum. */
+    { label: "Venue", value: 800, max: 1000, colorToken: "--party-cobalt" },
+    { label: "Catering", value: 620, max: 900, colorToken: "--party-tangerine" },
+    { label: "Invites", value: 240, max: 400, colorToken: "--party-cyan" },
+    { label: "Music", value: 450, max: 600, colorToken: "--party-mint" },
   ]}
   orientation="vertical"
   label="Spending by category"
@@ -734,7 +749,7 @@ Everything else: 32/32 viewport×target sweep cells at zero horizontal overflow 
 
 
 
-The Excalidraw/tldraw pattern: user state mirrors into localStorage so a reload restores the work, and exports/imports as JSON so it can travel. ONE zero-dependency hook — lazy init parses inside try/catch (corrupt → fallback), the setter stringifies inside try/catch (quota/private-mode safe), `reset()` removes the key and restores the fallback:
+The Excalidraw/tldraw pattern: user state mirrors into localStorage so a reload restores the work, and exports/imports as JSON so it can travel. ONE zero-dependency hook — lazy init parses inside try/catch (corrupt → fallback), the setter schedules a 300ms TRAILING localStorage write (3.0.0: one write per burst; the sync read is preserved; flush on unmount + beforeunload; `reset()` cancels the pending write and removes the key at once):
 
 ```ts
 import { usePersistentState } from "./persistence";
@@ -747,7 +762,7 @@ THE STORAGE-KEY CONTRACT: keys are versioned with the release that introduced th
 
 ```ts
 function exportSnapshot(graph: GraphNode[], timeline: TimelineItem[]): void {
-  const payload = { version: "sig.v27", graph, timeline };
+  const payload = { version: "sig.v27", graph, timeline, links }; /* 3.0.0: the tether links ride along */
   const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -767,6 +782,15 @@ function resetAll(): void { resetGraph(); resetTimeline(); }
 ```
 
 The three doctrines, one line each: **Token Cascade** — every state derives from the core tokens via color-mix()/transforms, never hand-authored; **Override Protocol** — scoped utility classes alter one element, the global variables never move; **Rule of Engagement** — `--party-*` is content-only, Flamingo/Teal is structural-only, the families never cross. Never invent tokens; never hardcode hex.
+
+### The Data Architecture (3.0.0 — the contract source of truth)
+
+The normalized data layer ships in TWO mirrors — change one, change both:
+
+- `shared/schema.ts` — zero-dependency TypeScript DTOs + runtime guards (`isGuest`, `isEvent`, `isLedgerEntry`, `isMilestone`, `isGraphNodeRecord`, `isFlashcardDeck`, `isFlashcard`, `isGameMatchup`, `isApiError`, `isPaginated`). Nine interfaces: `User`, `Event`, `Guest` (`eventId` FK, `rsvp` enum `confirmed|pending|declined`, `contributionCents`), `LedgerEntry`, `Milestone`, `GraphNodeRecord` (workspace-scoped, `parentId` self-FK), `FlashcardDeck` + `Flashcard` (`deckId`, `front`, `back`), `GameMatchup` (`playerA/playerB` refs, `stakes`, `mode: "1v1" | "2v2"`), plus the API envelope `ApiError` / `Paginated<T>`. It is NOT in the npm pack (`shared/` is the future backend's half of the contract).
+- `docs/SCHEMA_V3.md` — the normalized ERD (mermaid + ASCII), the SQLite + PostgreSQL DDL (FKs, indexes on `eventId`, CHECK constraints on the `rsvp` enum + the `mode` shapes), the FastAPI Pydantic v2 models mirroring `shared/schema.ts` 1:1, and the REST contract table (GET/POST `/events`, `/events/{id}/guests`, `/guests/{id}/ledger-entries`, `/milestones`, `/decks`, `/matchups`, `/graph` — methods, DTOs, status codes).
+
+THE MONEY-IN-CENTS RULE (non-negotiable): every monetary amount is an INTEGER number of cents (`contributionCents: 12000` = $120.00). Floats drift — `0.1 + 0.2 !== 0.3` — and a shared-pot ledger that sums float dollars will eventually disagree with its own rows by a cent. Integers are exact in JS, SQLite (`INTEGER`) and PostgreSQL (`BIGINT`); the "$" formatting happens ONCE at the display boundary. The frontend demo keeps whole-dollar ergonomics in memory; the wire and the DB are cents.
 
 ## Execution Rules:
 - Use the Theme Provider Pattern for the base layout.

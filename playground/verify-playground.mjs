@@ -3959,7 +3959,7 @@ const GP_REQUIREMENTS = [
   ["addOn", "the graph's Add & Link toolbar"],
   ['title="Spending by Category"', "card 2"],
   ["<BarChart", "the bar chart primitive"],
-  ['{ label: "Venue", value: 800, max: 1000, colorToken: "--party-mauve-soft" }', "a per-bar capacity max"],
+  ['{ label: "Venue", value: 800, max: 1000, colorToken: "--party-cobalt" }', "a per-bar capacity max (3.0.0: the chromatic series)"],
   ['title="RSVP Momentum"', "card 3"],
   ["<AreaChart", "the area chart primitive"],
   ['colorToken="--party-sky"', "the sky series token"],
@@ -4121,17 +4121,24 @@ if (existsSync(codexPath)) {
       failures.push(`(ps-studio) CodexView.tsx must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  // The honest census: exactly 22 color tokens declared INSIDE the
+  // The honest census: exactly 37 color tokens declared INSIDE the
   // COLOR_TOKENS array (the z-ladder's --z-* entries don't count).
+  // 3.0.0: 11 core/keeper + the 26-token Party Palette.
   const censusSlice = codexSrc.slice(codexSrc.indexOf("const COLOR_TOKENS"), codexSrc.indexOf("];"));
   const declaredSwatches = censusSlice.match(/token: "--/g);
-  if (declaredSwatches === null || declaredSwatches.length !== 22) {
+  if (declaredSwatches === null || declaredSwatches.length !== 37) {
     failures.push(
-      `(ps-studio) CodexView COLOR_TOKENS must declare exactly 22 color tokens (11 core/keeper + 11 party — the honest count out of whitelist 34), found ${String(declaredSwatches?.length ?? 0)}`,
+      `(ps-studio) CodexView COLOR_TOKENS must declare exactly 37 color tokens (11 core/keeper + 26 party — the honest count out of whitelist 50), found ${String(declaredSwatches?.length ?? 0)}`,
     );
   }
-  if (!codexSrc.includes("the whitelist is 34")) {
-    failures.push('(ps-studio) CodexView must state the honest census — "the whitelist is 34" stated');
+  if (!codexSrc.includes("the whitelist is 50")) {
+    failures.push('(ps-studio) CodexView must state the honest census — "the whitelist is 50" stated');
+  }
+  const newChipCount = (censusSlice.match(/isNew: true/g) ?? []).length;
+  if (newChipCount !== 16) {
+    failures.push(
+      `(ps-studio) CodexView must mark exactly 16 chromatic newcomers (cobalt + 15), found ${String(newChipCount)}`,
+    );
   }
   if (!codexSrc.includes("<DataTable") || !codexSrc.includes("--z-toast")) {
     failures.push("(ps-studio) CodexView must render the 5-rung z-ladder as a DataTable (through --z-toast)");
