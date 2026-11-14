@@ -196,6 +196,9 @@ import {
   CommandPalette,
   Breadcrumbs,
   Icon,
+  SkeletonLine,
+  SkeletonCard,
+  SkeletonTableRow,
   type NavItem,
   type PtpEvent,
   type DataTableColumn,
@@ -921,6 +924,15 @@ function Shell() {
             description="Slow-braised birria, consomé on the side."
             action={{ label: "Book the taco cart" }}
           />
+          {/* The 2.9.0 skeletons ride the fixture too — the reduced-motion
+              probe asserts their shimmer stands down on a live element. */}
+          <SkeletonLine width="60%" />
+          <SkeletonCard />
+          <table>
+            <tbody>
+              <SkeletonTableRow columns={3} />
+            </tbody>
+          </table>
         </div>
         <div className="hub__cq-wide sig-cell">
           <MatchupCard

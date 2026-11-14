@@ -142,11 +142,16 @@ export function CommandPalette({
     }
   }, [open]);
 
-  // THE ONE LISTENER: the launcher (Ctrl/Cmd+K) when closed; navigation
-  // + Escape while open. Cleaned up on unmount.
+  // THE ONE LISTENER: the launcher (Ctrl/Cmd+K) when closed — ignored
+  // while the user is typing in a field; navigation + Escape while open.
+  // Cleaned up on unmount.
   useEffect(() => {
     const onKeyDown = (domEvent: KeyboardEvent): void => {
-      if ((domEvent.ctrlKey || domEvent.metaKey) && domEvent.key.toLowerCase() === "k") {
+      if (
+        !isTypingTarget(domEvent.target) &&
+        (domEvent.ctrlKey || domEvent.metaKey) &&
+        domEvent.key.toLowerCase() === "k"
+      ) {
         domEvent.preventDefault();
         if (open) onClose();
         else onOpen?.();

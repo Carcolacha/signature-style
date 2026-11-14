@@ -456,6 +456,17 @@
   padding-bottom: var(--space-standard);
 }
 
+/* 2.9.0 THE TAB BARS WRAP — the cortex sweep (375×812) measured the
+   module tab row (4 labels) overflowing by 12px and the index catalog
+   tab row (5 labels) by 135px: the package's .ptp-tabs is a no-wrap
+   flex row, honest for its own demos but a page-breaker when a
+   composition feeds it long labels. Every tab bar INSIDE the shell
+   wraps here (the Flamingo underline survives — each tab keeps its
+   own border-box). Package css/data.css untouched. */
+.sig-shell .ptp-tabs {
+  flex-wrap: wrap;
+}
+
 .hub__tabs-content {
   margin-top: var(--space-standard);
   /* 2.4.0: the module branches stack — banner, KPI trio, cards — one
@@ -668,12 +679,15 @@
 }
 
 /* The live preview strip — the inset ground gives interactive demos a
-   stage without owning any shadows. */
+   stage without owning any shadows. 2.9.0: overflow-x containment —
+   a stage is a pan, never a page-break (the 375×812 sweep caught a
+   nowrap <code> chip escaping the stage by 2px). */
 .pattern-frame__preview {
   padding: var(--space-standard);
   background: var(--bg-inset);
   border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
   border-radius: var(--radius-ui);
+  overflow-x: auto;
 }
 
 /* ---- 2.8.0 THE PATTERN STUDIO (the 6-Set Taxonomy doc layout) -------------
@@ -1017,6 +1031,22 @@
 .hub__shortcuts-row span {
   font-size: 0.875rem;
   color: var(--text-muted);
+}
+
+/* ---- 2.9.0 THE HERO TYPE FOLDS ITS TRACKING (375px sweep fix) -------------
+   The cortex sweep measured an 18px overflow on the Chronicle view at
+   375×812: "CHRONICLE" is ONE unbreakable word wearing the package
+   hero's clamp(2.25rem, 6vw, 4rem) + 0.35em tracking — at 36px the
+   single word outgrows the 327px shell column and cannot wrap (the
+   other views' titles break at their spaces). The composition folds
+   the display type one step below 480px (28px / 0.22em): "CHRONICLE"
+   fits with air to spare, the other titles re-wrap tighter. Package
+   css/surface.css untouched. */
+@media (max-width: 480px) {
+  .sig-shell .sig-page-hero h1 {
+    font-size: 1.75rem;
+    letter-spacing: 0.22em;
+  }
 }
 
 /* ---- 2.8.0 THE AI CODEX (tokens, rules, ladder) ---------------------------

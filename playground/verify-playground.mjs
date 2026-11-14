@@ -3977,7 +3977,7 @@ if (!existsSync(llmsFullPath)) {
     ["ArrowDown", "the next-row key"],
     ["ArrowUp", "the previous-row key"],
     ["selected.run();\n          onClose();", "Enter runs the selection AND closes"],
-    ["triggerRef", "the pre-open trigger capture"],
+    ["triggerRef.current.focus()", "the focus restore to the pre-open trigger"],
     ["toLowerCase().includes(needle)", "the case-insensitive substring filter"],
     ["createPortal(", "the portal architecture"],
     ["document.body", "the portal host"],
@@ -4106,7 +4106,8 @@ if (!existsSync(llmsFullPath)) {
     ["background-position", "the sweep mechanism (no transforms)"],
     ["height: 16px", "the line height (two 8px steps)"],
     ["height: 8px", "the row height (the tight step)"],
-    ["prefers-reduced-motion", "the MANDATORY static ground"],
+    ["animation: none;\n    background: var(--bg-surface);", "the MANDATORY static ground (animation none + the surface fill)"],
+    ["@media (prefers-reduced-motion: reduce)", "the reduced-motion guard block"],
   ];
   for (const [needle, label] of SK_CSS) {
     if (!skeletonCss.includes(needle)) {
