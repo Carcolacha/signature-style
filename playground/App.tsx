@@ -813,7 +813,14 @@ function FormsModule() {
   const [isPublic, setIsPublic] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [contribution, setContribution] = useState("");
+  const [postal, setPostal] = useState("");
   const [rsvp, setRsvp] = useState("attending");
+
+  // Live validation rules (2.5.0): the value passes → validMessage; the
+  // value is non-empty and fails → error. Empty stays quiet — an empty
+  // field is not yet wrong.
+  const postalValid = /^\d{5}$/.test(postal);
+  const postalError = postal !== "" && !postalValid ? "Postal codes are 5 digits" : undefined;
 
   return (
     <SurfaceCard
@@ -837,11 +844,14 @@ function FormsModule() {
         </FormField>
         {/* 2.4.1: label="Contribution" + prefix="$" — the adornment
             composition demo (the dollar sign moved OUT of the label and
-            INTO the mono prefix slot, flush with the input). */}
+            INTO the mono chip, flush with the cursor in the well).
+            2.5.0: the field rides the well — the Input is bare, the
+            well owns the border. */}
         <FormField
           label="Contribution"
           htmlFor="matrix-share"
           prefix="$"
+          description="Numbers only · e.g., 120"
           error={
             contribution.trim() === ""
               ? "Every share keeps the pot honest — enter an amount"
@@ -855,6 +865,25 @@ function FormsModule() {
             aria-invalid={contribution.trim() === "" || undefined}
             value={contribution}
             onChange={(event) => setContribution(event.target.value)}
+          />
+        </FormField>
+        {/* 2.5.0: the Postal Code demo — description ABOVE the input
+            (format rules live with the title), live validation with the
+            validMessage/error priority in the bottom slot. */}
+        <FormField
+          label="Postal Code"
+          htmlFor="matrix-postal"
+          description="5 numbers only · e.g., 79901"
+          validMessage={postalValid ? "Valid ZIP" : undefined}
+          error={postalError}
+        >
+          <Input
+            id="matrix-postal"
+            placeholder="79901"
+            inputMode="numeric"
+            aria-invalid={!!postalError || undefined}
+            value={postal}
+            onChange={(event) => setPostal(event.target.value)}
           />
         </FormField>
       </div>

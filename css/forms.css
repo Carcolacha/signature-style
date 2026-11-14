@@ -44,9 +44,8 @@
      border (never box-shadow).
 
    2.4.1 ADDITIONS (Intuitive Form Anatomy & Alignment Fix):
-    - .ptp-form-field__required / __row / __prefix — the peach required
-      asterisk (visual only, aria-hidden) and the justified prefix
-      adornment row (mono, muted, weight 600) that wraps the control.
+    - .ptp-form-field__required — the peach required asterisk (visual
+      only, aria-hidden) after the label text.
     - the switch grows a visible label: .ptp-switch becomes the wrapper
       (flex, align-center, tight gap) around .ptp-switch__pill (the
       SAME pill geometry, every selector migrated) + .ptp-switch__text
@@ -54,6 +53,39 @@
       interactive element.
     - the selected radio card lifts to var(--bg-surface) over its inset
       siblings (owner override of the 2.4.0 10% cake tint).
+
+   2.5.0 ADDITIONS (Ergonomic Form Rules — the top-down field anatomy):
+    - .ptp-form-field__label PROMOTED to the primary text voice
+      (text-main, 0.875rem, weight 500 — was muted 0.75rem): the title
+      is the field's headline, not a caption.
+    - .ptp-form-field__desc — the FORMAT line ABOVE the control
+      ("5 numbers only · e.g., 79901"). Format rules live with the
+      title; the below-input hint keeps its helper-text job.
+    - .ptp-form-field__well + __chip — the adornment zone replacing the
+      2.4.1 __row/__prefix: when prefix/suffix are present the bare
+      control rides inside the well (the well OWNS background, border,
+      focus ring and the error state), flanked by mono transparent
+      chips separated from the cursor by a hairline. THE CONTRACT:
+      prefix/suffix children must be BARE inputs — the scoped kill
+      `.ptp-form-field__well > .ptp-input, .ptp-form-field__well >
+      input` strips the field chrome inside the well.
+    - THE WELL FOCUS HALO — a DECISION, documented: the owner spec'd a
+      0 0 0 3px box-shadow halo, but the FROZEN scripts/verify.mjs (f1)
+      gate and the release safety scan ban every non-surface box-shadow
+      in css/. The halo renders as a 3px translucent Flamingo OUTLINE
+      hugging the border (outline is not a shadow — the same halo read,
+      zero shadow declarations).
+    - .ptp-form-field__valid — the live-validation success line in
+      var(--party-green); the validation zone priority is error →
+      validMessage → hint (react renders exactly one).
+    - @keyframes ptp-shake + the [data-invalid] well — the error state
+      physically shakes the well (0.3s, translateX ±4px); killed under
+      prefers-reduced-motion.
+    - .ptp-password (+ __toggle / __meter / __stage / __pill) — the
+      PasswordInput: bare input + eye toggle in a well, the 4-segment
+      strength meter (data-score paints the filled prefix peach →
+      yellow → sky → green), and the condition pills (data-satisfied →
+      the 20% party-green wash).
 
    ERROR DOCTRINE: invalid fields wear [aria-invalid="true"] — attribute-
    driven, so the state survives any DOM shape. The error border is
@@ -327,11 +359,18 @@
     gap: var(--space-tight);
   }
   .ptp-form-field__label {
-    color: var(--text-muted);
-    font-size: 0.75rem;
+    color: var(--text-main);
+    font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: var(--space-tight);
     display: block;
+  }
+  /* 2.5.0 — the format line ABOVE the control, directly below the
+     title. 12px muted: the spec speaks softly, but it lives with the
+     title (the v2.4.1 defect: rules under the input read as errors). */
+  .ptp-form-field__desc {
+    color: var(--text-muted);
+    font-size: 0.75rem;
   }
   .ptp-form-field__hint {
     color: var(--text-muted);
@@ -339,6 +378,12 @@
   }
   .ptp-form-field__error {
     color: var(--party-peach); /* the v1.4.0 error doctrine, message slot */
+    font-size: 0.75rem;
+  }
+  /* 2.5.0 — the live-validation success line. Third in the validation
+     zone priority (error → validMessage → hint; react renders ONE). */
+  .ptp-form-field__valid {
+    color: var(--party-green);
     font-size: 0.75rem;
   }
   /* 2.4.1 — required marker: the peach asterisk AFTER the label text.
@@ -350,20 +395,80 @@
     color: var(--party-peach);
     margin-left: 0.25rem;
   }
-  /* 2.4.1 — the prefix adornment composition: `prefix="$"` wraps the
-     control in this justified flex row (THE WRAPPER IS JUSTIFIED: an
-     adornment composition needs a flex parent; the bare control stays
-     untouched inside it) with the mono muted prefix span ahead of it. */
-  .ptp-form-field__row {
+  /* 2.5.0 — THE ADORNMENT WELL: prefix/suffix present → the bare
+     control rides inside this zone. The well OWNS the background,
+     border, focus ring and error state; the scoped kill below strips
+     the field chrome from the control itself (prefix/suffix children
+     must be BARE inputs — that is the documented contract). The focus
+     halo is a 3px translucent Flamingo OUTLINE (see header decision:
+     the box-shadow spelling is banned by the frozen (f1) gate; an
+     outline is not a shadow — same halo read). */
+  .ptp-form-field__well {
     display: flex;
     align-items: center;
-    gap: var(--space-tight);
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-ui);
+    transition: var(--transition-standard);
   }
-  .ptp-form-field__prefix {
+  .ptp-form-field__well:focus-within {
+    border-color: var(--color-cake-primary);
+    outline: 3px solid color-mix(in srgb, var(--color-cake-primary) 25%, transparent);
+    outline-offset: 0;
+  }
+  .ptp-form-field__well[data-invalid] {
+    border-color: var(--party-peach);
+    animation: ptp-shake 0.3s ease-out;
+  }
+  /* The scoped kill — the contract made css: bare inputs only. */
+  .ptp-form-field__well > .ptp-input,
+  .ptp-form-field__well > input {
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+  .ptp-form-field__well > .ptp-input::placeholder,
+  .ptp-form-field__well > input::placeholder {
+    color: var(--text-muted);
+  }
+  /* The chips: mono adornments flanking the cursor, separated by a
+     hairline (never glued into the label — the v2.4.1 "$" defect).
+     Transparent background, muted 600 voice. The LEFT chip (first
+     child) draws its hairline on the cursor side (border-right); the
+     RIGHT chip mirrors it (border-left). */
+  .ptp-form-field__chip {
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    background: transparent;
     color: var(--text-muted);
     font-weight: 600;
+    padding-inline: var(--space-tight);
     flex: none;
+  }
+  .ptp-form-field__well > .ptp-form-field__chip:first-child {
+    border-right: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  }
+  .ptp-form-field__well > .ptp-form-field__chip:last-child {
+    border-left: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  }
+  /* The error shake — fires the moment data-invalid appears (the
+     attribute is the trigger, so a submit-driven flip animates once). */
+  @keyframes ptp-shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    20% {
+      transform: translateX(-4px);
+    }
+    40% {
+      transform: translateX(4px);
+    }
+    60% {
+      transform: translateX(-3px);
+    }
+    80% {
+      transform: translateX(3px);
+    }
   }
 
   /* -- the radio cards: the LABEL is the card (2.4.0) --------------------------
@@ -440,8 +545,14 @@
     .ptp-select__native,
     .ptp-checkbox__input,
     .ptp-checkbox__input::after,
-    .ptp-radio-card {
+    .ptp-radio-card,
+    .ptp-form-field__well,
+    .ptp-password__meter span,
+    .ptp-password__pill {
       transition: none;
+    }
+    .ptp-form-field__well[data-invalid] {
+      animation: none; /* the shake is motion — it stands down first */
     }
   }
 }

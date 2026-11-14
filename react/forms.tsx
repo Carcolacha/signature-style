@@ -3,12 +3,15 @@
  * 2.3.0 grows Select / Checkbox / Avatar; 2.4.0 "Form Wrappers &
  * Editorial Primitives" grows FormField / RadioCardGroup; 2.4.1
  * "Intuitive Form Anatomy & Alignment Fix" grows FormField.required /
- * FormField.prefix and the visible switch label).
+ * FormField.prefix and the visible switch label; 2.5.0 "Ergonomic Form
+ * Rules" REWORKS FormField into the top-down anatomy (description above
+ * the input, prefix/suffix chips in the owning well, validMessage slot,
+ * the error shake) and grows PasswordInput).
  *
- * Eight controls + the accessible wrapper, wired to the form styles in
+ * Nine controls + the accessible wrapper, wired to the form styles in
  * css/forms.css: `<FormField>`, `<Input>`, `<TextArea>`,
  * `<ToggleSwitch>`, `<Select>`, `<Checkbox>`, `<Avatar>`,
- * `<RadioCardGroup>`.
+ * `<RadioCardGroup>`, `<PasswordInput>`.
  *
  * THE ERROR FLAG: `error` is a STATE FLAG, never rendered as text.
  * `<Input error>` / `<TextArea error>` only flip the DOM attribute
@@ -385,6 +388,15 @@ export function Avatar({ name, size = 32, ringToken }: AvatarProps) {
  * render as `children` and the same string as `htmlFor` here. The field
  * deliberately renders no ids of its own — a generated id it cannot
  * verify against the child would be an a11y lie with extra steps.
+ *
+ * 2.5.0 — THE TOP-DOWN ANATOMY (owner mandate, strict vertical order):
+ * label → description → control → validation. `description` is the
+ * ABOVE-the-input spec line (format rules live with the field's title,
+ * never below the control); `hint` stays the BELOW-input helper text.
+ * `prefix`/`suffix` compose the control into the `.ptp-form-field__well`
+ * adornment zone (mono chips flanking a bare input); `validMessage` is
+ * the live-validation success line that answers `error` in the ONE
+ * validation slot at the bottom.
  */
 export interface FormFieldProps {
   /** The visible label text (rendered in the `.ptp-form-field__label`). */
@@ -395,18 +407,58 @@ export interface FormFieldProps {
    */
   htmlFor?: string;
   /**
-   * The muted helper line under the control. REPLACED by `error` when
-   * both are present — a field in the error state shows the error,
-   * never the hint (one message slot, two states).
+   * The muted FORMAT line ABOVE the control (2.5.0), directly below the
+   * title — e.g. "5 numbers only · e.g., 79901". This is where format
+   * rules live (the v2.4.1 defect: rules under the input read as an
+   * error). NOT the hint: `hint` stays the below-input helper text for
+   * non-format context.
+   */
+  description?: string;
+  /**
+   * The muted helper line UNDER the control (unchanged 2.4.0 semantics).
+   * LOSES the priority contest in the validation zone: error →
+   * validMessage → hint, one line shown, never two.
    */
   hint?: string;
   /**
    * The error message — rendered with role="alert" (announced without a
-   * focus change) and REPLACING the hint. This is the MESSAGE slot; the
-   * control's own error STATE is still `aria-invalid` (v1.4.0 doctrine).
-   * Wire them together: `error` here + `aria-invalid` on the child.
+   * focus change) and WINNING the validation zone. This is the MESSAGE
+   * slot; the control's own error STATE is still `aria-invalid` (v1.4.0
+   * doctrine). Wire them together: `error` here + `aria-invalid` on the
+   * child. A truthy `error` also flips the well's `data-invalid`
+   * attribute (peach border + the shake) when the control rides one.
    */
   error?: string;
+  /**
+   * The live-validation SUCCESS line (2.5.0) — rendered below the
+   * control in `var(--party-green)`, outranked only by `error`. The
+   * "Valid ZIP" twin of the error slot: pass it when the value passes
+   * your rule, e.g. `validMessage={/^\d{5}$/.test(postal) ? "Valid ZIP" : undefined}`.
+   */
+  validMessage?: string;
+  /**
+   * A literal adornment rendered BEFORE the control (2.4.1; 2.5.0
+   * re-homed), e.g. `prefix="$"` for money fields. When prefix/suffix
+   * are present the children are wrapped in the
+   * `.ptp-form-field__well` adornment zone (THE JUSTIFIED WRAPPER: an
+   * adornment composition needs a flex parent that can own the border —
+   * the bare control must stay untouched inside it) with the
+   * `.ptp-form-field__chip` mono span ahead of it. THE CONTRACT: the
+   * children must be BARE inputs — the well owns the background,
+   * border and focus ring (css/forms.css scopes
+   * `.ptp-form-field__well > .ptp-input` kills). The adornment is
+   * DECORATION — the value's currency belongs to the consumer's
+   * placeholder/validation, never to the input's value. The chip is
+   * separated from the cursor by a hairline, never glued into the label
+   * (the second v2.4.1 defect: "$" concatenated into "Contribution").
+   */
+  prefix?: string;
+  /**
+   * A literal adornment rendered AFTER the control (2.5.0) — the mirror
+   * of `prefix` (e.g. `suffix="kg"`), riding the same well as the right
+   * chip. Same bare-input contract.
+   */
+  suffix?: string;
   /** The control (an `<Input>`, `<TextArea>`, `<Select>`, …). */
   children?: ReactNode;
   /**
@@ -419,70 +471,77 @@ export interface FormFieldProps {
    * for a control it cannot verify, the same doctrine as id/htmlFor.
    */
   required?: boolean;
-  /**
-   * A literal adornment rendered BEFORE the control (2.4.1), e.g.
-   * `prefix="$"` for money fields. When present the children are
-   * wrapped in `.ptp-form-field__row` (flex, align-center, tight gap —
-   * THE JUSTIFIED WRAPPER: an adornment composition needs a flex
-   * parent, and the bare control must stay untouched inside it) with
-   * the `.ptp-form-field__prefix` span (mono, muted, weight 600)
-   * ahead of the control. The prefix is DECORATION — the value's
-   * currency belongs to the consumer's placeholder/validation, not
-   * to the input's value.
-   */
-  prefix?: string;
 }
 
 /**
- * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1).
+ * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, REWORKED
+ * 2.5.0 into the owner-mandated top-down anatomy).
  *
  * `<div class="ptp-form-field">` (flex column, tight gap — the css
- * carries the `__field` slot contract ON the root, one class fewer) →
- * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` (+ the
- * optional aria-hidden `__required` peach asterisk) → children (the
- * bare control, untouched — or the justified `__row`/`__prefix`
- * adornment composition when `prefix` is set) → hint OR error. Error
- * replaces hint — never both: a field shows ONE message. The error
- * span is `role="alert"` (--party-peach, the v1.4.0 error token —
- * owner spec). The v1.4.0 "no message slot" doctrine applies to the
- * CONTROL (`<Input>` stays ONE element); the FIELD wrapper is the
- * sanctioned around-the-control scaffold for consumers who want
- * label+message wiring without hand-rolling it.
+ * carries the `__field` slot contract ON the root, one class fewer).
+ * THE STRICT VERTICAL ORDER (2.5.0 owner spec, top to bottom):
+ *
+ *   1. `<label class="ptp-form-field__label">` — PROMOTED to the
+ *      primary text voice (text-main, 0.875rem, weight 500) + the
+ *      optional aria-hidden `__required` peach asterisk.
+ *   2. `<span class="ptp-form-field__desc">` — the format line ABOVE
+ *      the control ("5 numbers only · e.g., 79901"). Format rules live
+ *      with the title, never under the input.
+ *   3. The control zone — bare children (old behavior, existing call
+ *      sites keep working), or — when `prefix`/`suffix` are present —
+ *      the `.ptp-form-field__well` adornment zone: mono `__chip`s
+ *      flanking the bare control. The well OWNS the border/focus ring
+ *      (`data-invalid` flips it peach and fires the shake).
+ *   4. The validation zone at the bottom — ONE line, priority order
+ *      `error` (role="alert", peach) → `validMessage` (party-green) →
+ *      `hint` (muted). Never two at once.
  *
  * @example
  * ```tsx
  * <FormField
- *   label="Contribution"
- *   htmlFor="share"
- *   prefix="$"
- *   required
- *   hint="Suggested $50"
+ *   label="Postal Code"
+ *   htmlFor="zip"
+ *   description="5 numbers only · e.g., 79901"
+ *   validMessage={/^\d{5}$/.test(zip) ? "Valid ZIP" : undefined}
+ *   error={zip !== "" && !/^\d{5}$/.test(zip) ? "Postal codes are 5 digits" : undefined}
  * >
- *   <Input id="share" required inputMode="numeric" />
+ *   <Input id="zip" inputMode="numeric" />
  * </FormField>
  * ```
  */
 export function FormField({
   label,
   htmlFor,
+  description,
   hint,
   error,
+  validMessage,
   required = false,
   prefix,
+  suffix,
   children,
 }: FormFieldProps) {
-  // The adornment composition (2.4.1): prefix present → the control
-  // rides in the justified __row flex wrapper, mono prefix first. No
-  // prefix → children stay DIRECT children (zero new DOM, peak pruning).
-  const control =
-    prefix !== undefined ? (
-      <span className="ptp-form-field__row">
-        <span className="ptp-form-field__prefix">{prefix}</span>
-        {children}
-      </span>
-    ) : (
-      children
-    );
+  // The adornment zone (2.5.0): prefix/suffix present → the control
+  // rides in the justified __well flex wrapper, mono chips flanking it,
+  // the well owning the border, focus ring and error state. Neither
+  // adornment → children stay DIRECT children (zero new DOM, peak
+  // pruning — every 2.4.x call site keeps rendering untouched).
+  const hasWell = prefix !== undefined || suffix !== undefined;
+  const control = hasWell ? (
+    <span className="ptp-form-field__well" data-invalid={!!error || undefined}>
+      {prefix !== undefined && (
+        <span className="ptp-form-field__chip">{prefix}</span>
+      )}
+      {children}
+      {suffix !== undefined && (
+        <span className="ptp-form-field__chip ptp-form-field__chip--right">
+          {suffix}
+        </span>
+      )}
+    </span>
+  ) : (
+    children
+  );
   return (
     <div className="ptp-form-field">
       <label className="ptp-form-field__label" htmlFor={htmlFor}>
@@ -493,11 +552,16 @@ export function FormField({
           </span>
         )}
       </label>
+      {description !== undefined && (
+        <span className="ptp-form-field__desc">{description}</span>
+      )}
       {control}
       {error !== undefined ? (
         <span className="ptp-form-field__error" role="alert">
           {error}
         </span>
+      ) : validMessage !== undefined ? (
+        <span className="ptp-form-field__valid">{validMessage}</span>
       ) : hint !== undefined ? (
         <span className="ptp-form-field__hint">{hint}</span>
       ) : null}

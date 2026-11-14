@@ -153,40 +153,50 @@ export function Avatar({ name, size = 32, ringToken }) {
     return (_jsx("span", { className: "ptp-avatar", style: { width: size, height: size, ...ringStyle }, "aria-label": name, children: initials }));
 }
 /**
- * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1).
+ * `<FormField>` — the accessible wrapper (2.4.0; grown 2.4.1, REWORKED
+ * 2.5.0 into the owner-mandated top-down anatomy).
  *
  * `<div class="ptp-form-field">` (flex column, tight gap — the css
- * carries the `__field` slot contract ON the root, one class fewer) →
- * `<label class="ptp-form-field__label" htmlFor={htmlFor}>` (+ the
- * optional aria-hidden `__required` peach asterisk) → children (the
- * bare control, untouched — or the justified `__row`/`__prefix`
- * adornment composition when `prefix` is set) → hint OR error. Error
- * replaces hint — never both: a field shows ONE message. The error
- * span is `role="alert"` (--party-peach, the v1.4.0 error token —
- * owner spec). The v1.4.0 "no message slot" doctrine applies to the
- * CONTROL (`<Input>` stays ONE element); the FIELD wrapper is the
- * sanctioned around-the-control scaffold for consumers who want
- * label+message wiring without hand-rolling it.
+ * carries the `__field` slot contract ON the root, one class fewer).
+ * THE STRICT VERTICAL ORDER (2.5.0 owner spec, top to bottom):
+ *
+ *   1. `<label class="ptp-form-field__label">` — PROMOTED to the
+ *      primary text voice (text-main, 0.875rem, weight 500) + the
+ *      optional aria-hidden `__required` peach asterisk.
+ *   2. `<span class="ptp-form-field__desc">` — the format line ABOVE
+ *      the control ("5 numbers only · e.g., 79901"). Format rules live
+ *      with the title, never under the input.
+ *   3. The control zone — bare children (old behavior, existing call
+ *      sites keep working), or — when `prefix`/`suffix` are present —
+ *      the `.ptp-form-field__well` adornment zone: mono `__chip`s
+ *      flanking the bare control. The well OWNS the border/focus ring
+ *      (`data-invalid` flips it peach and fires the shake).
+ *   4. The validation zone at the bottom — ONE line, priority order
+ *      `error` (role="alert", peach) → `validMessage` (party-green) →
+ *      `hint` (muted). Never two at once.
  *
  * @example
  * ```tsx
  * <FormField
- *   label="Contribution"
- *   htmlFor="share"
- *   prefix="$"
- *   required
- *   hint="Suggested $50"
+ *   label="Postal Code"
+ *   htmlFor="zip"
+ *   description="5 numbers only · e.g., 79901"
+ *   validMessage={/^\d{5}$/.test(zip) ? "Valid ZIP" : undefined}
+ *   error={zip !== "" && !/^\d{5}$/.test(zip) ? "Postal codes are 5 digits" : undefined}
  * >
- *   <Input id="share" required inputMode="numeric" />
+ *   <Input id="zip" inputMode="numeric" />
  * </FormField>
  * ```
  */
-export function FormField({ label, htmlFor, hint, error, required = false, prefix, children, }) {
-    // The adornment composition (2.4.1): prefix present → the control
-    // rides in the justified __row flex wrapper, mono prefix first. No
-    // prefix → children stay DIRECT children (zero new DOM, peak pruning).
-    const control = prefix !== undefined ? (_jsxs("span", { className: "ptp-form-field__row", children: [_jsx("span", { className: "ptp-form-field__prefix", children: prefix }), children] })) : (children);
-    return (_jsxs("div", { className: "ptp-form-field", children: [_jsxs("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "ptp-form-field__required", "aria-hidden": "true", children: "*" }))] }), control, error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : hint !== undefined ? (_jsx("span", { className: "ptp-form-field__hint", children: hint })) : null] }));
+export function FormField({ label, htmlFor, description, hint, error, validMessage, required = false, prefix, suffix, children, }) {
+    // The adornment zone (2.5.0): prefix/suffix present → the control
+    // rides in the justified __well flex wrapper, mono chips flanking it,
+    // the well owning the border, focus ring and error state. Neither
+    // adornment → children stay DIRECT children (zero new DOM, peak
+    // pruning — every 2.4.x call site keeps rendering untouched).
+    const hasWell = prefix !== undefined || suffix !== undefined;
+    const control = hasWell ? (_jsxs("span", { className: "ptp-form-field__well", "data-invalid": !!error || undefined, children: [prefix !== undefined && (_jsx("span", { className: "ptp-form-field__chip", children: prefix })), children, suffix !== undefined && (_jsx("span", { className: "ptp-form-field__chip ptp-form-field__chip--right", children: suffix }))] })) : (children);
+    return (_jsxs("div", { className: "ptp-form-field", children: [_jsxs("label", { className: "ptp-form-field__label", htmlFor: htmlFor, children: [label, required && (_jsx("span", { className: "ptp-form-field__required", "aria-hidden": "true", children: "*" }))] }), description !== undefined && (_jsx("span", { className: "ptp-form-field__desc", children: description })), control, error !== undefined ? (_jsx("span", { className: "ptp-form-field__error", role: "alert", children: error })) : validMessage !== undefined ? (_jsx("span", { className: "ptp-form-field__valid", children: validMessage })) : hint !== undefined ? (_jsx("span", { className: "ptp-form-field__hint", children: hint })) : null] }));
 }
 /**
  * `<RadioCardGroup>` — the card-metaphor radio group (2.4.0).
