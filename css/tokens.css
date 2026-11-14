@@ -103,6 +103,14 @@
     --space-standard: 1rem;
     --space-section: 1.5rem;
 
+    /* -- GEOMETRY PRESETS (3.2.0) — the radius axis rides data-sig-radius ----
+        Root keeps the 6px/12px defaults (the current look = unchanged until
+        the customizer sets the attribute). "standard" retunes to 8px/12px —
+        8px-GRID-PURE (6px never was: the control radius now snaps to the
+        grid's own step); "sharp" is the brutalist 0px/0px. The blocks live
+        below, after the theme blocks. tokens.json geometryPresets mirrors
+        them (gate rad2). */
+
     /* -- z-index scale (Pillar 3) — same values in both themes -------------- */
     --z-sticky: 10;
     --z-nav: 30;
@@ -280,5 +288,21 @@
     /* crimson 4.18 / azure 3.51 / tangerine 3.43 / magenta 3.21 /
        mauve-bright 3.91 / lavender 3.18 INHERIT — already >= 3.1 on white;
        the strictest daylight surface is #FFFFFF, so no declaration. */
+  }
+
+  /* -- GEOMETRY PRESETS (3.2.0) — the radius axis ----------------------------
+     <html data-sig-radius="standard|sharp">. Attribute selectors, same
+     specificity as the theme blocks; the presets compose with ANY theme
+     (radius and color are orthogonal axes). :root defaults stay 6px/12px
+     so the untouched consumer look is byte-stable. "standard" is the
+     8px-grid-pure tuning (8 = the grid's own step; 12 = 8 + 4 — the card
+     radius keeps its one-step-up relationship); "sharp" is brutalist 0. */
+  [data-sig-radius="standard"] {
+    --radius-ui: 8px;
+    --radius-card: 12px;
+  }
+  [data-sig-radius="sharp"] {
+    --radius-ui: 0px;
+    --radius-card: 0px;
   }
 }

@@ -1309,6 +1309,7 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/dist/") || f.startsWith("t
 // table, and doctrine.themes/grid_8px carry the engine sentences (exact
 // strings; every other doctrine key byte-equal).
 const DOCTRINE_THEMES_320 = "MULTI-THEME SURFACE ENGINE (3.2.0): the canonical surface themes ride the data-sig-theme attribute on <html> — absent or \"mocha\" = the :root default, \"oled\" = true-black (#000000 base / #0B0C10 surface / #12141C inset; every other token inherited), \"daylight\" = high-contrast light (#F8FAFC / #FFFFFF / #F1F5F9, dark slate ink, computed --sig-* ink variants ≥3.1:1 vs #FFFFFF). The legacy [data-theme=\"latte\"] light toggle stays working, outside the triad. ";
+const DOCTRINE_GRID_320 = "The 8px grid: --space-tight (0.5rem) / --space-standard (1rem) / --space-section (1.5rem) for all padding and gaps. Maximize negative space. Borders are 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent). Radius defaults to 6px in :root; the data-sig-radius presets retune it (standard 8px/12px — 8px-grid-pure; sharp 0px/0px). Zero drop shadows anywhere.";
 const CANONICAL_16 = [
   "--sig-cobalt", "--sig-orchid", "--sig-cyan", "--sig-magenta", "--sig-mint",
   "--sig-spring", "--sig-citron", "--sig-violet-glow", "--sig-pink-glow",
@@ -1343,13 +1344,16 @@ try {
     const vDoc = v310tokens.doctrine ?? {};
     const cDoc = currentTokens.doctrine ?? {};
     for (const key of Object.keys(vDoc)) {
-      if (key === "themes") continue; // the triad sentence lands with 3.2.0 (guarded below)
+      if (key === "themes" || key === "grid_8px") continue; // the 3.2.0 engine sentences (exact-string checks below)
       if (JSON.stringify(vDoc[key]) !== JSON.stringify(cDoc[key])) {
         failures.push(`(b7) SAFETY: doctrine.${key} changed — LOCKED in 3.2.0`);
       }
     }
     if (cDoc.themes !== DOCTRINE_THEMES_320 + vDoc.themes) {
       failures.push("(b7) SAFETY: doctrine.themes must be the 3.2.0 triad sentence PREFIXING the exact v3.1.0 string");
+    }
+    if (cDoc.grid_8px !== DOCTRINE_GRID_320) {
+      failures.push("(b7) SAFETY: doctrine.grid_8px must be the exact 3.2.0 string (the radius presets documented)");
     }
   }
   if (JSON.stringify(v310tokens.shared) !== JSON.stringify(currentTokens.shared)) {
@@ -1393,6 +1397,18 @@ try {
       if (entry === undefined || typeof entry.ratio !== "number" || entry.ratio < 3.0) {
         failures.push(`(b7) SAFETY: sigThemes.daylight.inkVariants must document ink-floor token ${name} with a measured ratio >= 3.0`);
       }
+    }
+  }
+  // The NEW geometryPresets section: the two presets, exact values.
+  const geo = currentTokens.geometryPresets;
+  if (geo === undefined || typeof geo !== "object") {
+    failures.push("(b7) SAFETY: tokens.json geometryPresets is missing — the 3.2.0 radius presets must be in the manifest");
+  } else {
+    if (geo.standard?.radiusUi !== "8px" || geo.standard?.radiusCard !== "12px") {
+      failures.push('(b7) SAFETY: geometryPresets.standard must be 8px/12px');
+    }
+    if (geo.sharp?.radiusUi !== "0px" || geo.sharp?.radiusCard !== "0px") {
+      failures.push('(b7) SAFETY: geometryPresets.sharp must be 0px/0px');
     }
   }
 } catch (error) {
@@ -4778,6 +4794,46 @@ if (!existsSync(llmsFullPath)) {
   // The legacy latte block must still be present and untouched.
   if (!stripped32.includes('[data-theme="latte"]')) {
     failures.push('(th3) css/tokens.css must keep the legacy [data-theme="latte"] block (back-compat, outside the triad)');
+  }
+}
+
+// ---- (rad2) THE GEOMETRY PRESETS (3.2.0) -------------------------------------
+// The radius axis: [data-sig-radius="standard"] → 8px/12px (8px-grid-pure —
+// 6px never was), [data-sig-radius="sharp"] → 0px/0px (brutalist). The :root
+// defaults stay 6px/12px (the untouched consumer look is byte-stable; the
+// 12px card half is pinned by the (p3) gates in scripts/verify.mjs).
+// tokens.json geometryPresets mirrors both blocks exactly.
+{
+  const tokensCssRad = readFileSync(resolve(root, "css/tokens.css"), "utf8");
+  const strippedRad = tokensCssRad.replace(/\/\*[\s\S]*?\*\//g, "");
+  const manifestRad = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+  const geo = manifestRad.geometryPresets ?? {};
+  for (const [preset, ui, card] of [
+    ["standard", "8px", "12px"],
+    ["sharp", "0px", "0px"],
+  ]) {
+    const block = strippedRad.match(
+      new RegExp(`\\[data-sig-radius="${preset}"\\]\\s*\\{([^}]*)\\}`),
+    );
+    if (block === null) {
+      failures.push(`(rad2) css/tokens.css must declare the [data-sig-radius="${preset}"] block`);
+      continue;
+    }
+    const uiMatch = block[1].match(/--radius-ui\s*:\s*([0-9]+px)\s*;/);
+    const cardMatch = block[1].match(/--radius-card\s*:\s*([0-9]+px)\s*;/);
+    if (uiMatch === null || uiMatch[1] !== ui) {
+      failures.push(`(rad2) [data-sig-radius="${preset}"] must set --radius-ui: ${ui}, found ${uiMatch?.[1] ?? "MISSING"}`);
+    }
+    if (cardMatch === null || cardMatch[1] !== card) {
+      failures.push(`(rad2) [data-sig-radius="${preset}"] must set --radius-card: ${card}, found ${cardMatch?.[1] ?? "MISSING"}`);
+    }
+    if (geo[preset]?.radiusUi !== ui || geo[preset]?.radiusCard !== card) {
+      failures.push(`(rad2) tokens.json geometryPresets.${preset} must mirror ${ui}/${card}`);
+    }
+  }
+  // The :root defaults stay 6px/12px — presets RETUNE, the default is stable.
+  if (!/--radius-ui\s*:\s*6px\s*;/.test(strippedRad) || !/--radius-card\s*:\s*12px\s*;/.test(strippedRad)) {
+    failures.push("(rad2) the :root radius defaults must stay 6px/12px (presets retune; the default is byte-stable)");
   }
 }
 
