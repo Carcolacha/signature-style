@@ -1266,3 +1266,137 @@
   border-radius: 999px;
   padding: 0 0.25rem;
 }
+
+/* ---- 3.2.0 THE STUDIO THEME CUSTOMIZER — the panel anatomy -------------------
+   Token-driven, flat (the e1 treaty: hairlines, never shadows), on the 8px
+   grid. The badge tiers paint through the chromatic tokens themselves —
+   which the daylight theme re-inks dark, so the verdicts stay readable on
+   every surface theme. */
+.studio__customizer-slot {
+  margin-bottom: var(--space-section);
+}
+
+.studio__customizer section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+.studio__customizer-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.studio__customizer-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.studio__customizer-note {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.studio__customizer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
+.studio__customizer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-tight) var(--space-standard);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-main);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition-standard);
+}
+
+.studio__customizer-btn:hover {
+  border-color: var(--color-cake-secondary);
+}
+
+.studio__customizer-btn:active {
+  transform: scale(0.97);
+}
+
+.studio__customizer-btn:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.studio__customizer-btn[aria-pressed="true"] {
+  background: var(--bg-surface);
+  border-color: var(--color-cake-primary);
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.studio__customizer-kbd {
+  font-size: 0.625rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.studio__customizer-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: var(--space-tight);
+}
+
+.studio__contrast-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-tight);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.studio__contrast-swatch {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border-radius: 4px;
+  background: var(--swatch);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+}
+
+.studio__contrast-name {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio__contrast-ratio {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.studio__contrast-badge[data-tier="pass"] .studio__contrast-ratio {
+  color: var(--sig-green);
+}
+
+.studio__contrast-badge[data-tier="amber"] .studio__contrast-ratio {
+  color: var(--sig-yellow);
+}
+
+.studio__contrast-badge[data-tier="fail"] .studio__contrast-ratio {
+  color: var(--sig-peach);
+}

@@ -932,9 +932,14 @@ export function setCount(id: SetId): number {
 export function PatternStudioView({
   activeSet: controlledSet,
   onSetChange,
+  customizer,
 }: {
   activeSet?: SetId | "all";
   onSetChange?: (set: SetId | "all") => void;
+  /** 3.2.0 — the Theme & Surface Customizer panel, rendered at the top of
+      the stream BEFORE Set 01 (the Shell owns the state; this view only
+      slots the node — one theme writer, ever). */
+  customizer?: ReactNode;
 } = {}) {
   const [fallbackSet, setFallbackSet] = useState<SetId | "all">("all");
   const activeSet = controlledSet ?? fallbackSet;
@@ -973,6 +978,11 @@ export function PatternStudioView({
         ))}
       </nav>
       <div className="studio__stream">
+        {customizer !== undefined && (
+          <div className="studio__customizer-slot" data-testid="studio-customizer-slot">
+            {customizer}
+          </div>
+        )}
         {visibleSets.map((id) => (
           <section key={id} className="studio__set" data-sig-set-section={id} aria-label={`Set ${id} · ${SET_NAMES[id]}`}>
             <header className="studio__set-head">

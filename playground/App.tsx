@@ -239,7 +239,9 @@ import { usePersistentState } from "./persistence.js";
 import { buildStoredWorkspaceSnapshot } from "./snapshot.js";
 import { SET_NAMES } from "./snippets.js";
 import type { SetId } from "./snippets.js";
+import { useSigTheme } from "./use-sig-theme.js";
 import { PatternStudioView } from "./components/PatternStudio.js";
+import { ThemeCustomizer } from "./components/ThemeCustomizer.js";
 import { CodexView } from "./components/CodexView.js";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract).
@@ -842,6 +844,11 @@ export default function App() {
 function Shell() {
   const toast = useToast();
   const [view, setView] = useState<View>("dashboard");
+  // 3.2.0 — THE LIVE THEME STATE: one useSigTheme owns the surface theme +
+  // radius (documentElement mirror + persistence + the contrast badges).
+  // The customizer panel (Pattern Studio) and the palette commands below
+  // share this instance — there is never a second writer.
+  const sig = useSigTheme();
   // The studio's set filter, LIFTED — the command palette jumps into a
   // set directly (the studio renders controlled).
   const [studioSet, setStudioSet] = useState<SetId | "all">("all");
@@ -910,6 +917,24 @@ function Shell() {
       .catch(() => toast("error", "Clipboard unavailable — the manifest lives at /llms.txt"));
   }, [toast]);
 
+  // 3.2.0 — the theme runtime's download/copy dances, with toast feedback.
+  const downloadThemeCss = useCallback(() => {
+    sig.downloadTokensCss();
+    toast("success", "tokens.css downloaded — the active theme's resolved :root block.");
+  }, [sig, toast]);
+  const copyThemeCss = useCallback(() => {
+    sig
+      .copyTokensCss()
+      .then((ok) =>
+        toast(
+          ok ? "success" : "error",
+          ok
+            ? "CSS variables copied — the active theme's :root block is on your clipboard."
+            : "Clipboard unavailable — run Download tokens.css instead.",
+        ),
+      );
+  }, [sig, toast]);
+
   // THE COMMAND LIST — views, studio sets, workspace, motion, help, codex.
   const commands = useMemo<CommandEntry[]>(() => [
     { id: "view-dashboard", label: "Go to Dashboard", keywords: "view engine bento planner live", icon: "Gauge", hint: "view", run: () => navigate(VIEW_HREFS.dashboard) },
@@ -967,7 +992,62 @@ function Shell() {
       hint: "dev",
       run: triggerAsyncSim,
     },
-  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim]);
+    // 3.2.0 — THE SURFACE ENGINE: themes, radius, tokens.css export.
+    {
+      id: "theme-mocha",
+      label: "Theme: Mocha",
+      keywords: "theme surface mocha dark default catppuccin",
+      icon: "Palette",
+      hint: sig.theme === "mocha" ? "active" : "theme",
+      run: () => sig.setTheme("mocha"),
+    },
+    {
+      id: "theme-oled",
+      label: "Theme: OLED",
+      keywords: "theme surface oled true black oled dark",
+      icon: "Moon",
+      hint: sig.theme === "oled" ? "active" : "theme",
+      run: () => sig.setTheme("oled"),
+    },
+    {
+      id: "theme-daylight",
+      label: "Theme: Daylight",
+      keywords: "theme surface daylight light high contrast",
+      icon: "Sun",
+      hint: sig.theme === "daylight" ? "active" : "theme",
+      run: () => sig.setTheme("daylight"),
+    },
+    {
+      id: "radius-standard",
+      label: "Radius: Standard",
+      keywords: "radius geometry standard 8px 12px rounded",
+      icon: "Frame",
+      hint: sig.radius === "standard" ? "active" : "radius",
+      run: () => sig.setRadius("standard"),
+    },
+    {
+      id: "radius-sharp",
+      label: "Radius: Sharp",
+      keywords: "radius geometry sharp brutalist 0px square",
+      icon: "Square",
+      hint: sig.radius === "sharp" ? "active" : "radius",
+      run: () => sig.setRadius("sharp"),
+    },
+    {
+      id: "download-tokens-css",
+      label: "Download tokens.css",
+      keywords: "theme tokens css download export customizer variables",
+      icon: "Download",
+      run: downloadThemeCss,
+    },
+    {
+      id: "copy-css-variables",
+      label: "Copy CSS Variables",
+      keywords: "theme tokens css copy clipboard customizer variables",
+      icon: "Copy",
+      run: copyThemeCss,
+    },
+  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim, sig, downloadThemeCss, copyThemeCss]);
 
   return (
     <>
@@ -996,7 +1076,21 @@ function Shell() {
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
         ) : view === "studio" ? (
-          <PatternStudioView activeSet={studioSet} onSetChange={setStudioSet} />
+          <PatternStudioView
+            activeSet={studioSet}
+            onSetChange={setStudioSet}
+            customizer={
+              <ThemeCustomizer
+                theme={sig.theme}
+                radius={sig.radius}
+                onThemeChange={sig.setTheme}
+                onRadiusChange={sig.setRadius}
+                badges={sig.badges}
+                onDownload={sig.downloadTokensCss}
+                onCopy={sig.copyTokensCss}
+              />
+            }
+          />
         ) : view === "chronicle" ? (
           <ChronicleView />
         ) : (

@@ -5038,10 +5038,142 @@ if (!existsSync(llmsFullPath)) {
   }
 }
 
+// ---- (cus) THE LIVE STUDIO THEME CUSTOMIZER (3.2.0) --------------------------
+// The customizer: a useSigTheme hook (ONE owner of documentElement — the
+// persisted keys, the absent-default contract, the badge data), the panel
+// (SurfaceCard at the top of the studio stream, aria-pressed buttons, the
+// 16 live contrast badges, download/copy), the 7 palette commands, and the
+// shared WCAG math module (sig-contrast.ts — the SAME module the contrast
+// gate imports, so a badge ratio IS a gate ratio).
+{
+  const customizerPath = resolve(root, "playground/components/ThemeCustomizer.tsx");
+  if (!existsSync(customizerPath)) {
+    failures.push("(cus) playground/components/ThemeCustomizer.tsx is missing — the customizer panel");
+  } else {
+    const customizerSrc = readFileSync(customizerPath, "utf8");
+    const CUS_PANEL = [
+      ['title="Theme & Surface Customizer"', "the ruled panel title"],
+      ["aria-pressed={theme === name}", "the theme buttons — the attribute IS the state"],
+      ["aria-pressed={radius === name}", "the radius buttons — same contract"],
+      ["data-testid={`customizer-theme-${name}`}", "the theme button hooks"],
+      ["data-testid={`customizer-radius-${name}`}", "the radius button hooks"],
+      ["data-testid={`contrast${badge.token}`}", "the badge hooks (contrast---sig-<token>)"],
+      ["data-tier={badge.tier}", "the badge verdict attribute (pass/amber/fail)"],
+      ['data-testid="customizer-download"', "the download hook"],
+      ['data-testid="customizer-copy"', "the copy hook"],
+      ['label="Surface theme"', "the theme group label"],
+      ["Download tokens.css", "the download button label"],
+      ["Copy CSS Variables", "the copy button label"],
+    ];
+    for (const [needle, label] of CUS_PANEL) {
+      if (!customizerSrc.includes(needle)) {
+        failures.push(`(cus) ThemeCustomizer.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+      }
+    }
+  }
+  const hookPath = resolve(root, "playground/use-sig-theme.ts");
+  if (!existsSync(hookPath)) {
+    failures.push("(cus) playground/use-sig-theme.ts is missing — the ONE theme-state owner");
+  } else {
+    const hookSrc = readFileSync(hookPath, "utf8");
+    const CUS_HOOK = [
+      ['usePersistentState<SigThemeName>(THEME_STORAGE_KEY, "mocha")', "the persisted theme state (default mocha)"],
+      ['usePersistentState<SigRadiusName>(RADIUS_STORAGE_KEY, "standard")', "the persisted radius state (default standard)"],
+      ["document.documentElement.dataset.sigTheme = theme", "the documentElement mirror (sig-theme)"],
+      ["document.documentElement.dataset.sigRadius = radius", "the documentElement mirror (sig-radius)"],
+      ["hasStored(THEME_STORAGE_KEY)", "the absent-default contract: a stored pick re-applies on load"],
+      ["appliedTheme", "the pick flag gating the theme mirror"],
+      ["URL.createObjectURL", "the download blob dance"],
+      ['anchor.download = "tokens.css"', "the download filename"],
+      ["URL.revokeObjectURL", "the revoke"],
+      ["navigator.clipboard", "the clipboard write"],
+      ["contrastBadges(theme)", "the badge data for the ACTIVE theme"],
+    ];
+    for (const [needle, label] of CUS_HOOK) {
+      if (!hookSrc.includes(needle)) {
+        failures.push(`(cus) use-sig-theme.ts must contain ${JSON.stringify(needle)} — ${label}`);
+      }
+    }
+  }
+  const utilsPath = resolve(root, "playground/theme-utils.ts");
+  if (!existsSync(utilsPath)) {
+    failures.push("(cus) playground/theme-utils.ts is missing — the theme runtime");
+  } else {
+    const utilsSrc = readFileSync(utilsPath, "utf8");
+    for (const [needle, label] of [
+      ['import manifest from "../tokens.json"', "the manifest import — the customizer cannot drift from tokens.json"],
+      ['from "./sig-contrast.js"', "the SHARED WCAG math (the gate imports the same module)"],
+      ["export const THEMES", "the resolved triad"],
+      ["export const RADIUS_PRESETS", "the geometry presets"],
+      ["export function contrastBadges", "the badge builder"],
+      ["export function buildTokensCss", "the client-side :root generator"],
+      ["CHROMATIC_16", "the 16-token badge contract"],
+    ]) {
+      if (!utilsSrc.includes(needle)) {
+        failures.push(`(cus) theme-utils.ts must contain ${JSON.stringify(needle)} — ${label}`);
+      }
+    }
+  }
+  const mathPath = resolve(root, "playground/sig-contrast.ts");
+  if (!existsSync(mathPath)) {
+    failures.push("(cus) playground/sig-contrast.ts is missing — the shared WCAG math module");
+  }
+  const contrastGateSrc = readFileSync(resolve(root, "playground/verify-contrast.mjs"), "utf8");
+  if (!contrastGateSrc.includes('from "./sig-contrast.ts"')) {
+    failures.push('(cus) verify-contrast.mjs must import the shared math from "./sig-contrast.ts" (badge ratio == gate ratio)');
+  }
+  for (const [needle, label] of [
+    ["const sig = useSigTheme();", "the Shell owns the ONE theme-state instance"],
+    ["id: \"theme-mocha\"", "palette command: Theme: Mocha"],
+    ["id: \"theme-oled\"", "palette command: Theme: OLED"],
+    ["id: \"theme-daylight\"", "palette command: Theme: Daylight"],
+    ["id: \"radius-standard\"", "palette command: Radius: Standard"],
+    ["id: \"radius-sharp\"", "palette command: Radius: Sharp"],
+    ["id: \"download-tokens-css\"", "palette command: Download tokens.css"],
+    ["id: \"copy-css-variables\"", "palette command: Copy CSS Variables"],
+    ['label: "Theme: Mocha"', "palette label: Theme: Mocha"],
+    ['label: "Theme: OLED"', "palette label: Theme: OLED"],
+    ['label: "Theme: Daylight"', "palette label: Theme: Daylight"],
+    ['label: "Radius: Standard"', "palette label: Radius: Standard"],
+    ['label: "Radius: Sharp"', "palette label: Radius: Sharp"],
+    ['label: "Download tokens.css"', "palette label: Download tokens.css"],
+    ['label: "Copy CSS Variables"', "palette label: Copy CSS Variables"],
+    ["customizer={", "the panel slots into PatternStudioView"],
+    ["sig.setTheme", "the commands drive the lifted state"],
+  ]) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(cus) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const studioSrc = readFileSync(resolve(root, "playground/components/PatternStudio.tsx"), "utf8");
+  for (const [needle, label] of [
+    ["customizer?: ReactNode", "the customizer slot prop"],
+    ['data-testid="studio-customizer-slot"', "the slot hook at the top of the stream"],
+  ]) {
+    if (!studioSrc.includes(needle)) {
+      failures.push(`(cus) PatternStudio.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  for (const [needle, label] of [
+    [".studio__customizer-slot", "the slot layout rule"],
+    [".studio__customizer-btn[aria-pressed=\"true\"]", "the pressed-state paint (attribute-driven)"],
+    [".studio__contrast-badge[data-tier=\"pass\"]", "the green tier"],
+    [".studio__contrast-badge[data-tier=\"amber\"]", "the amber tier"],
+    [".studio__contrast-badge[data-tier=\"fail\"]", "the red tier"],
+    ["var(--sig-green)", "the pass ink token"],
+    ["var(--sig-yellow)", "the amber ink token"],
+    ["var(--sig-peach)", "the fail ink token"],
+  ]) {
+    if (!stylesCss.includes(needle)) {
+      failures.push(`(cus) styles.css must contain ${needle} — ${label}`);
+    }
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions; 3.2.0 SURFACE ENGINE: (b7)/(n-hub4) rebased to v3.1.0 (themes.mocha + EXACTLY --bg-canvas, sigPalette/shared/latte byte-equal, the NEW sigThemes + geometryPresets sections, doctrine.themes/grid_8px exact strings), (th3) the canonical theme blocks cross-checked against the manifest ink variants, (rad2) the radius presets (standard 8/12 — 8px-grid-pure; sharp 0), (cus) the live customizer (one useSigTheme owner, aria-pressed panel, 16 badges on the shared sig-contrast math, download/copy), (pt11) whitelist 51, verify:contrast green on ALL THREE themes");
