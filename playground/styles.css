@@ -74,6 +74,12 @@
   gap: 2rem;
 }
 
+/* 2.8.0 — THE CHRONICLE VIEW: full-width, no auto-fit packing. The
+   memorial takes the whole stage (the Index keeps its compact slab). */
+.hub--chronicle {
+  grid-template-columns: 1fr;
+}
+
 /* ---- THE 12-COLUMN BENTO (2.5.0, defect #5) --------------------------------
    The core dashboard's explicit grid: 12 columns, section-gap rhythm,
    and the span utility classes the assembly declares. Mobile (≤768px,
@@ -647,4 +653,289 @@
   background: var(--bg-inset);
   border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
   border-radius: var(--radius-ui);
+}
+
+/* ---- 2.8.0 THE PATTERN STUDIO (the 6-Set Taxonomy doc layout) -------------
+    Two columns: a sticky 240px sidebar (the set list with tabular-nums
+    counts) and the 1fr stream of ruled SET 0N sections. Below 768px the
+    sidebar stacks above the stream (no drawer — the honest collapse).
+    Zero hex, zero shadows (e1). */
+.studio {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-section);
+  align-items: start;
+}
+
+.studio__sidebar {
+  position: sticky;
+  top: 88px; /* below the sticky GlobalNav bar (its own rung, --z-nav) */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.studio__set-link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: var(--space-tight);
+  padding: var(--space-tight);
+  font: inherit;
+  text-align: left;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-left: 2px solid transparent;
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+}
+
+.studio__set-link:hover {
+  color: var(--text-main);
+  background: var(--bg-inset);
+}
+
+.studio__set-link[aria-pressed="true"] {
+  color: var(--text-main);
+  background: var(--bg-inset);
+  border-left-color: var(--color-cake-primary);
+}
+
+.studio__set-link:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.studio__set-num {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-cake-secondary);
+}
+
+.studio__set-name {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.studio__set-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.studio__stream {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+  min-width: 0;
+}
+
+.studio__set {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+.studio__set-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-tight);
+  padding-bottom: var(--space-tight);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 25%, transparent);
+}
+
+.studio__set-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.studio__set-badge {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.studio__blurb {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.studio__frames {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+/* Preview helpers — small stages for the live demos. */
+.studio__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.studio__inline-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
+.studio__note {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.studio__nav-stage {
+  max-height: 180px;
+  overflow: auto;
+  border-radius: var(--radius-ui);
+}
+
+.studio__shell-demo {
+  padding: var(--space-standard);
+  background: color-mix(in srgb, var(--bg-surface) 60%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--text-muted) 30%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.studio__shell-column {
+  max-width: 320px;
+  margin-inline: auto;
+  padding: var(--space-standard);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 25%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.studio__mini-tile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-standard);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Pillar 2: below 768px the sidebar stacks above the stream. */
+@media (max-width: 768px) {
+  .studio {
+    grid-template-columns: 1fr;
+  }
+
+  .studio__sidebar {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* ---- 2.8.0 THE AI CODEX (tokens, rules, ladder) ---------------------------
+    The swatch grid is the honest color census: 22 click-to-copy cards.
+    Flat — hairlines only (e1). */
+.codex {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+.codex__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.codex__swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-tight);
+  margin-top: var(--space-standard);
+}
+
+.codex__swatch {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: var(--space-tight);
+  align-items: center;
+  padding: var(--space-tight);
+  font: inherit;
+  text-align: left;
+  color: var(--text-main);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  cursor: pointer;
+}
+
+.codex__swatch:hover {
+  border-color: var(--color-cake-secondary);
+}
+
+.codex__swatch:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.codex__swatch-chip {
+  grid-row: 1 / span 2;
+  width: 32px;
+  height: 32px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 25%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.codex__swatch-name {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.6875rem;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.codex__swatch-label {
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+}
+
+.codex__swatch-family {
+  display: none;
+}
+
+.codex__grid-scale {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.codex__grid-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-standard);
+}
+
+.codex__grid-bar {
+  height: 8px;
+  background: var(--color-cake-primary);
+  border-radius: 1px;
+}
+
+.codex__grid-label {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
 }

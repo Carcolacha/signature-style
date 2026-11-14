@@ -2,6 +2,23 @@
  * App — THE ENGINE + THE MASTER INDEX (2.6.0 "Universal Developer Card
  * Suite, Chromatic Elevation & The Master Index Overhaul").
  *
+ * 2.8.0 — THE SIGNATURE PATTERN WEBSITE. The playground stops being a
+ * dashboard-with-catalog and becomes the public-ready Pattern Studio:
+ * the nav map grows from 2 real + 3 placeholder views (dashboard/index +
+ * events/guests/budget) to FIVE REAL views — Dashboard (the live bento,
+ * untouched), Pattern Studio (THE primary catalog: the 6-Set Taxonomy
+ * rendered as <PatternFrame> cards with live previews, Preview ↔ JSX ↔
+ * HTML toggles and one-click Copy Card — components/PatternStudio.tsx),
+ * Master Index (unchanged), Chronicle (the Night of Versions full-width,
+ * below), and AI Codex (the 22 color tokens as click-to-copy swatches —
+ * honestly counted out of the 34-token whitelist — the 8px scale, the
+ * 5-rung z-ladder and the doctrines as ProseBlocks —
+ * components/CodexView.tsx). The HubLink/hash mechanism is untouched;
+ * every frame stamps data-sig-set / data-sig-component so AI agents can
+ * read the page, and public/llms.txt + llms-full.txt carry the same
+ * knowledge machine-readably (playground/generate-llms.mjs generates
+ * them from the SNIPPETS registry — they cannot drift).
+ *
  * 2.7.0 — THE GRAPHS & PLANNER MODULE + THE PERSISTENCE ADDENDUM. The
  * dashboard's module Tabs grow a fourth door: "Graphs & Planner"
  * (GraphPlannerModule, defined below FormsModule like every other
@@ -151,7 +168,6 @@ import {
   ProgressBar,
   StatRing,
   PartyBadge,
-  EmptyState,
   SurfaceCard,
   PageHero,
   Tabs,
@@ -186,9 +202,18 @@ import {
   type TimelineItem,
 } from "@edwyn/signature-style/react";
 import { usePersistentState } from "./persistence.js";
+import { PatternStudioView } from "./components/PatternStudio.js";
+import { CodexView } from "./components/CodexView.js";
 
-/** Every view the switcher knows. Default is "dashboard" (cortex contract). */
-type View = "dashboard" | "index" | "events" | "guests" | "budget";
+/** Every view the switcher knows. Default is "dashboard" (cortex contract).
+ *  2.8.0 — THE 5-VIEW NAV MAP: the 2 real + 3 placeholder views
+ *  (dashboard/index + events/guests/budget) become FIVE REAL views.
+ *  Dashboard (the live bento) and Master Index (the catalog) stay;
+ *  Pattern Studio (the primary catalog — the 6-Set Taxonomy), Chronicle
+ *  (the Night of Versions, full-width) and AI Codex (tokens/rules/
+ *  recipes for humans AND agents) replace the workshop placeholders.
+ *  The HubLink/hash mechanism is unchanged; only the map grows. */
+type View = "dashboard" | "studio" | "index" | "chronicle" | "codex";
 
 /** The dashboard's Tabs modules (2.3.0) — id union + the Tabs contract. */
 type ModuleId = "core" | "data" | "forms" | "graph";
@@ -200,67 +225,63 @@ const MODULE_TABS: Array<{ id: ModuleId; label: string }> = [
   { id: "graph", label: "Graphs & Planner" },
 ];
 
-/** The workshop modules — nav destinations without a view yet (2.1.0). */
-type WorkshopView = Exclude<View, "dashboard" | "index">;
+/** The workshop modules — nav destinations without a view yet (2.1.0).
+ *  RETIRED 2.8.0: the five-view map replaced them with REAL views —
+ *  the WorkshopView union and PLACEHOLDERS table died with them. */
 
 const VIEW_HREFS: Record<View, string> = {
   dashboard: "#/dashboard",
-  events: "#/events",
-  guests: "#/guests",
-  budget: "#/budget",
+  studio: "#/studio",
   index: "#/index",
+  chronicle: "#/chronicle",
+  codex: "#/codex",
 };
 
 /** href → view, the SPA routing table (kept explicit, no derivation). */
 const HREF_TO_VIEW: Record<string, View> = {
   "#/dashboard": "dashboard",
-  "#/events": "events",
-  "#/guests": "guests",
-  "#/budget": "budget",
+  "#/studio": "studio",
   "#/index": "index",
+  "#/chronicle": "chronicle",
+  "#/codex": "codex",
 };
 
-/** Nav order per owner: Dashboard, Events, Guests, Budget, Index. */
+/** Nav order per owner (2.8.0): the five REAL views — Dashboard,
+ *  Pattern Studio (the primary catalog), Index, Chronicle, AI Codex. */
 const NAV_ITEMS: NavItem[] = [
   { href: VIEW_HREFS.dashboard, label: "Dashboard" },
-  { href: VIEW_HREFS.events, label: "Events" },
-  { href: VIEW_HREFS.guests, label: "Guests" },
-  { href: VIEW_HREFS.budget, label: "Budget" },
+  { href: VIEW_HREFS.studio, label: "Pattern Studio" },
   { href: VIEW_HREFS.index, label: "Index" },
+  { href: VIEW_HREFS.chronicle, label: "Chronicle" },
+  { href: VIEW_HREFS.codex, label: "AI Codex" },
 ];
 
 /**
  * The shared hero speaks per view: THE ENGINE on the dashboard, THE
- * MASTER INDEX at the index, THE WORKSHOP on placeholder modules.
+ * PATTERN STUDIO in the studio, THE MASTER INDEX at the index, THE
+ * CHRONICLE on the memorial, THE AI CODEX in the codex.
  */
 const HERO_COPY: Record<View, { title: string; sub: string }> = {
   dashboard: {
     title: "THE ENGINE",
     sub: "every primitive, one dashboard · live showcase",
   },
+  studio: {
+    title: "THE PATTERN STUDIO",
+    sub: "six sets · fifty patterns · one-click copy",
+  },
   index: {
     title: "THE MASTER INDEX",
     sub: "every archetype · one catalog · zero dead ends",
   },
-  events: {
-    title: "THE WORKSHOP",
-    sub: "event manager under construction · shipping soon",
+  chronicle: {
+    title: "THE CHRONICLE",
+    sub: "twenty-three releases · one signature",
   },
-  guests: {
-    title: "THE WORKSHOP",
-    sub: "guest manager under construction · shipping soon",
+  codex: {
+    title: "THE AI CODEX",
+    sub: "tokens, rules & recipes · machine-readable",
   },
-  budget: {
-    title: "THE WORKSHOP",
-    sub: "budget tracker under construction · shipping soon",
-  },
-};
-
-/** The placeholder modules' Shed anatomy (label / path / title). */
-const PLACEHOLDERS: Record<WorkshopView, { label: string; path: string; title: string }> = {
-  events: { label: "Events", path: "modules/events.tsx", title: "Event Manager" },
-  guests: { label: "Guests", path: "modules/guests.tsx", title: "Guest Manager" },
-  budget: { label: "Budget", path: "modules/budget.tsx", title: "Budget Tracker" },
 };
 
 /**
@@ -646,8 +667,12 @@ function Shell() {
           <DashboardView />
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
+        ) : view === "studio" ? (
+          <PatternStudioView />
+        ) : view === "chronicle" ? (
+          <ChronicleView />
         ) : (
-          <PlaceholderView view={view} />
+          <CodexView />
         )}
       </div>
     </>
@@ -2156,21 +2181,31 @@ function GraphPlannerModule() {
 }
 
 /**
- * Placeholder modules (events / guests / budget) — the workshop dogfood:
- * the package's <EmptyState> primitive inside the package's OWN
- * <SurfaceCard> (2.2.0: the Shed anatomy is an official export now), so
- * the doctrine shows even where the feature isn't yet.
+ * THE CHRONICLE VIEW (2.8.0) — the Night of Versions, full-width: the
+ * package's <ChronicleTimeline> rendering the complete 23-release
+ * RELEASE_HISTORY inside the package's own <SurfaceCard>, with the
+ * memorial nod beside it. The Index keeps its compact chronicle slab;
+ * this view gives the memorial the whole stage.
  */
-function PlaceholderView({ view }: { view: WorkshopView }) {
-  const mod = PLACEHOLDERS[view];
+function ChronicleView() {
   return (
-    <main className="hub">
-      <SurfaceCard eyebrow={mod.label} meta={mod.path} title={mod.title}>
-        <EmptyState
-          icon="Hammer"
-          title="In the workshop"
-          message="This module ships in a future release."
-        />
+    <main className="hub hub--chronicle">
+      <SurfaceCard eyebrow="Chronicle" meta="components/cards.tsx" title="The Night of Versions">
+        <ChronicleTimeline releases={RELEASE_HISTORY} />
+      </SurfaceCard>
+      <SurfaceCard eyebrow="Memorial" meta="STORYBOOK.md" title="Twenty-three releases, one signature">
+        <ProseBlock>
+          <p>
+            Every tag tells on the one before it — the token foundation grew a palette, the
+            palette grew a conscience (the Rule of Engagement), the conscience grew
+            primitives, archetypes, charts, a planner, and finally this studio. The engine
+            never shipped a feature it could not copy-paste.
+          </p>
+          <blockquote>
+            <p>“Twenty-three releases, one signature.”</p>
+            <footer>— The Night of Versions</footer>
+          </blockquote>
+        </ProseBlock>
       </SurfaceCard>
     </main>
   );
