@@ -2011,9 +2011,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.3")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.4")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.3 (the 3.0.0 codex: the chromatic era recipes — 26-token palette, carousel modes, the symmetrical forms, the obsidian graph, the ring zoom — and the Data Architecture subsection)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.4 (the 3.1.0 codex: the Pure Engine standalone identity — the complete domain decoupling, the sig- vocabulary, the purity gate — riding the chromatic era recipes)",
   );
 }
 
