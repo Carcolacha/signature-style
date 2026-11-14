@@ -1,6 +1,7 @@
 /* ==========================================================================
-   NAV — <GlobalNav> (1.2.0 "GlobalNav"). Layered into `cascade` by
-   signature-style.css (imported after modal.css).
+   NAV — <GlobalNav> (1.2.0 "GlobalNav") + <Breadcrumbs> (2.9.0
+   "Power-User Utilities"). Layered into `cascade` by signature-style.css
+   (imported after modal.css).
 
    Z-GAP (Pillar 3): the navbar is `position: sticky` and wears
    `var(--z-nav, 30)` — exactly one rung above the timeline's sticky
@@ -157,12 +158,63 @@
   list-style: none;
 }
 
+/* ---- 2.9.0 <Breadcrumbs> — the Shed-style mono path -----------------------
+   "engine / set-02 / matchup-card": one nav > ol > li per crumb, mono,
+   lowercase-by-content. Links muted, hover main; the CURRENT page is
+   bold text-main via [aria-current="page"] (the attribute IS the
+   state, the nav contract). Separators are aria-hidden "/" spans —
+   muted, non-italic, half a tight step off each side (glyph geometry,
+   not layout spacing). Zero hex, zero shadows. */
+.ptp-breadcrumbs ol {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ptp-breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.8125rem;
+}
+
+.ptp-breadcrumbs a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: var(--transition-standard);
+}
+
+.ptp-breadcrumbs a:hover {
+  color: var(--text-main);
+}
+
+.ptp-breadcrumbs a:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+.ptp-breadcrumbs [aria-current="page"] {
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.ptp-breadcrumbs__sep {
+  color: color-mix(in srgb, var(--text-muted) 60%, transparent);
+  user-select: none;
+}
+
 /* Motion is a gift, not a requirement: no transitions when the visitor
    asked for reduced motion (the base layer's global guard also runs). */
 @media (prefers-reduced-motion: reduce) {
   .ptp-nav__link,
   .ptp-nav__menu-btn,
-  .ptp-nav-drawer {
+  .ptp-nav-drawer,
+  .ptp-breadcrumbs a {
     transition: none;
   }
 }

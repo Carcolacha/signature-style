@@ -148,6 +148,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent, MouseEvent, ReactNode } from "react";
+import { createPortal } from "react-dom";
 import {
   ThemeProvider,
   ToastProvider,
@@ -192,6 +193,9 @@ import {
   BarChart,
   AreaChart,
   TimelineManager,
+  CommandPalette,
+  Breadcrumbs,
+  Icon,
   type NavItem,
   type PtpEvent,
   type DataTableColumn,
@@ -200,8 +204,13 @@ import {
   type ChronicleRelease,
   type GraphNode,
   type TimelineItem,
+  type CommandEntry,
+  type BreadcrumbItem,
 } from "@edwyn/signature-style/react";
 import { usePersistentState } from "./persistence.js";
+import { buildStoredWorkspaceSnapshot } from "./snapshot.js";
+import { SET_NAMES } from "./snippets.js";
+import type { SetId } from "./snippets.js";
 import { PatternStudioView } from "./components/PatternStudio.js";
 import { CodexView } from "./components/CodexView.js";
 
@@ -347,6 +356,84 @@ function createHubLink(onNavigate: (href: string) => void, activeHref: string) {
       </HubLink>
     );
   };
+}
+
+/**
+ * The taxonomy display order (2.9.0) — the command palette's six
+ * studio jump commands map over it; PatternStudio keeps its own copy
+ * for the sidebar (same ids, same order).
+ */
+const SET_ORDER: ReadonlyArray<SetId> = ["01", "02", "03", "04", "05", "06"];
+
+/**
+ * downloadJson — the workspace-snapshot download dance (the v2.7.0
+ * contract, one shared helper): Blob → object URL → anchor click →
+ * revoke immediately. The command palette AND the Milestone Manager
+ * toolbar both land here.
+ */
+function downloadJson(text: string, filename: string): void {
+  const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * ShortcutsDialog (2.9.0) — the palette's "Open Keyboard Shortcuts"
+ * dialog: the modal conventions (the package's own
+ * .ptp-modal-backdrop scrim + .ptp-modal-close button, reused — the
+ * Pruning Protocol forbids growing a second anatomy) around a compact
+ * local card. Escape and the backdrop close; focus starts on the card.
+ */
+function ShortcutsDialog({ onClose }: { onClose: () => void }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    cardRef.current?.focus();
+    const onKeyDown = (domEvent: KeyboardEvent): void => {
+      if (domEvent.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onClose]);
+  return createPortal(
+    <div className="ptp-modal-backdrop" onClick={onClose}>
+      <div
+        ref={cardRef}
+        className="hub__shortcuts-card"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Keyboard shortcuts"
+        tabIndex={-1}
+        onClick={(domEvent) => domEvent.stopPropagation()}
+      >
+        <div className="hub__shortcuts-row">
+          <h2>Keyboard shortcuts</h2>
+          <button className="ptp-modal-close" type="button" aria-label="Close" onClick={onClose}>
+            <Icon name="X" aria-hidden />
+          </button>
+        </div>
+        <div className="hub__shortcuts-row">
+          <kbd className="ptp-action-tile__kbd">⌘K / Ctrl K</kbd>
+          <span>Open or close the command palette</span>
+        </div>
+        <div className="hub__shortcuts-row">
+          <kbd className="ptp-action-tile__kbd">↑ ↓</kbd>
+          <span>Move through the filtered commands</span>
+        </div>
+        <div className="hub__shortcuts-row">
+          <kbd className="ptp-action-tile__kbd">↵</kbd>
+          <span>Run the selected command</span>
+        </div>
+        <div className="hub__shortcuts-row">
+          <kbd className="ptp-action-tile__kbd">esc</kbd>
+          <span>Close the palette, a dialog, or the event modal</span>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
 }
 
 /**
@@ -643,16 +730,126 @@ export default function App() {
 }
 
 /**
- * THE SHELL — view state + the always-visible chrome (nav + hero), then
- * the per-view body. The default view stays "dashboard" so the cortex
- * smoke finds the timeline on load.
+ * THE SHELL — view state + the always-visible chrome (nav + topbar +
+ * hero), then the per-view body. The default view stays "dashboard" so
+ * the cortex smoke finds the timeline on load.
+ *
+ * 2.9.0 POWER-USER CHROME: the hub__topbar renders the view's
+ * Breadcrumbs (Shed-style mono path) beside the command-palette
+ * trigger (⌘K kbd badge); <CommandPalette> (controlled — this Shell
+ * owns `open`) portals over everything with the full command list:
+ * the five views, the six Pattern Studio sets (studioSet is LIFTED
+ * here so commands can jump straight into a set), Export Workspace
+ * JSON, the reduced-motion preview toggle, the keyboard-shortcuts
+ * dialog, and the llms.txt URL copy.
  */
 function Shell() {
+  const toast = useToast();
   const [view, setView] = useState<View>("dashboard");
+  // The studio's set filter, LIFTED — the command palette jumps into a
+  // set directly (the studio renders controlled).
+  const [studioSet, setStudioSet] = useState<SetId | "all">("all");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const navigate = useCallback((href: string) => setView(HREF_TO_VIEW[href] ?? "dashboard"), []);
   // Rebuilt per view — the closure stamps aria-current on the ACTIVE link.
   const navLink = useMemo(() => createHubLink(navigate, VIEW_HREFS[view]), [navigate, view]);
   const hero = HERO_COPY[view];
+
+  // THE PATH — the topbar breadcrumbs speak per view (Shed mono style).
+  const topbarCrumbs = useMemo<BreadcrumbItem[]>(() => {
+    const engine: BreadcrumbItem = { label: "engine", href: VIEW_HREFS.dashboard };
+    if (view === "studio") {
+      const crumbs: BreadcrumbItem[] = [
+        engine,
+        { label: "pattern-studio", href: VIEW_HREFS.studio },
+      ];
+      return studioSet === "all"
+        ? [engine, { label: "pattern-studio" }]
+        : [...crumbs, { label: `set-${studioSet}` }];
+    }
+    if (view === "index") return [engine, { label: "master-index" }];
+    if (view === "chronicle") return [engine, { label: "chronicle" }];
+    if (view === "codex") return [engine, { label: "ai-codex" }];
+    return [engine, { label: "live-bento" }];
+  }, [view, studioSet]);
+
+  // The reduced-motion PREVIEW override — data-motion="reduced" on
+  // documentElement (styles.css collapses every transition/animation to
+  // the 0.01ms floor). A preview switch, distinct from the user's OS
+  // prefers-reduced-motion setting, which is never touched.
+  const toggleReducedMotionPreview = useCallback(() => {
+    const rootEl = document.documentElement;
+    const wasOn = rootEl.dataset.motion === "reduced";
+    if (wasOn) delete rootEl.dataset.motion;
+    else rootEl.dataset.motion = "reduced";
+    toast(
+      "success",
+      wasOn
+        ? "Reduced-motion preview off — full motion restored."
+        : "Reduced-motion preview on — motion collapsed to the floor.",
+    );
+  }, [toast]);
+
+  // The codex manifest URL — copy, never navigate (the palette runs it).
+  const copyLlmsUrl = useCallback(() => {
+    const url = new URL("llms.txt", window.location.href);
+    navigator.clipboard
+      .writeText(url.toString())
+      .then(() => toast("success", "llms.txt URL copied — feed it to your agent."))
+      .catch(() => toast("error", "Clipboard unavailable — the manifest lives at /llms.txt"));
+  }, [toast]);
+
+  // THE COMMAND LIST — views, studio sets, workspace, motion, help, codex.
+  const commands = useMemo<CommandEntry[]>(() => [
+    { id: "view-dashboard", label: "Go to Dashboard", keywords: "view engine bento planner live", icon: "Gauge", hint: "view", run: () => navigate(VIEW_HREFS.dashboard) },
+    { id: "view-studio", label: "Go to Pattern Studio", keywords: "view catalog patterns sets copy", icon: "Shapes", hint: "view", run: () => navigate(VIEW_HREFS.studio) },
+    { id: "view-index", label: "Go to Master Index", keywords: "view catalog archetypes doors", icon: "LayoutGrid", hint: "view", run: () => navigate(VIEW_HREFS.index) },
+    { id: "view-chronicle", label: "Go to Chronicle", keywords: "view versions memorial night releases", icon: "Map", hint: "view", run: () => navigate(VIEW_HREFS.chronicle) },
+    { id: "view-codex", label: "Go to AI Codex", keywords: "view tokens rules recipes agents", icon: "Terminal", hint: "view", run: () => navigate(VIEW_HREFS.codex) },
+    ...SET_ORDER.map((id) => ({
+      id: `set-${id}`,
+      label: `Studio: Set ${id} · ${SET_NAMES[id]}`,
+      keywords: `pattern set ${id} jump studio ${SET_NAMES[id]}`,
+      icon: "Shapes" as const,
+      hint: `set ${id}`,
+      run: () => {
+        setStudioSet(id);
+        navigate(VIEW_HREFS.studio);
+      },
+    })),
+    {
+      id: "export-workspace",
+      label: "Export Workspace JSON",
+      keywords: "snapshot download save backup budget workspace json export",
+      icon: "Download",
+      run: () => {
+        downloadJson(buildStoredWorkspaceSnapshot(), "signature-snapshot.json");
+        toast("success", "Workspace snapshot exported — signature-snapshot.json.");
+      },
+    },
+    {
+      id: "toggle-reduced-motion",
+      label: "Toggle Reduced Motion Preview",
+      keywords: "motion accessibility animation preview reduce",
+      icon: "Accessibility",
+      run: toggleReducedMotionPreview,
+    },
+    {
+      id: "open-shortcuts",
+      label: "Open Keyboard Shortcuts",
+      keywords: "keyboard help keys dialog shortcuts",
+      icon: "Keyboard",
+      run: () => setShortcutsOpen(true),
+    },
+    {
+      id: "copy-llms-url",
+      label: "Copy Codex llms.txt URL",
+      keywords: "codex llms url copy manifest agents",
+      icon: "Copy",
+      run: copyLlmsUrl,
+    },
+  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl]);
 
   return (
     <>
@@ -662,19 +859,40 @@ function Shell() {
           modules). GlobalNav stays outside — it is its own bar. This
           wrapper is defect #1's tombstone. */}
       <div className="sig-shell">
+        {/* 2.9.0 — THE TOPBAR: breadcrumbs + the ⌘K trigger. */}
+        <div className="hub__topbar">
+          <Breadcrumbs items={topbarCrumbs} label="You are here" />
+          <button
+            type="button"
+            className="hub__cmdbar-trigger"
+            data-testid="palette-trigger"
+            onClick={() => setPaletteOpen(true)}
+          >
+            Commands
+            <kbd className="ptp-action-tile__kbd">⌘K</kbd>
+          </button>
+        </div>
         <PageHero title={hero.title} subtitle={hero.sub} />
         {view === "dashboard" ? (
           <DashboardView />
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
         ) : view === "studio" ? (
-          <PatternStudioView />
+          <PatternStudioView activeSet={studioSet} onSetChange={setStudioSet} />
         ) : view === "chronicle" ? (
           <ChronicleView />
         ) : (
           <CodexView />
         )}
       </div>
+      {/* 2.9.0 — THE COMMAND PALETTE (controlled: open lives HERE). */}
+      <CommandPalette
+        commands={commands}
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onOpen={() => setPaletteOpen(true)}
+      />
+      {shortcutsOpen && <ShortcutsDialog onClose={() => setShortcutsOpen(false)} />}
       {/* 2.9.0 — THE CONTAINER-QUERY PROOF FIXTURE (the release blocker's
           stage, off-screen but LAID OUT). The SAME MatchupCard, StatCard
           and ContentCard render inside a 280px .sig-cell and a 900px
@@ -2104,16 +2322,11 @@ function GraphPlannerModule() {
   );
 
   const exportSnapshot = useCallback(() => {
+    // 2.9.0: the payload build stays here (the (ps1) contract lives in
+    // the composition layer); the Blob → anchor dance moved into the
+    // shared downloadJson helper (the command palette lands on it too).
     const payload = { version: "sig.v27", graph, timeline };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "signature-snapshot.json";
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadJson(JSON.stringify(payload, null, 2), "signature-snapshot.json");
     toast("success", "Snapshot exported — signature-snapshot.json.");
   }, [graph, timeline, toast]);
 

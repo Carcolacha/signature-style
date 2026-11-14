@@ -1,0 +1,184 @@
+/* ==========================================================================
+   COMMAND — <CommandPalette> (2.9.0 "Power-User Utilities"). Layered
+   into `cascade` by signature-style.css (imported after graph.css).
+
+   Z-RUNG (Pillar 3): the palette is a MODAL — the backdrop wears
+   var(--z-modal, 50), exactly the modal card's rung (the drawer's
+   sibling). It portals to document.body, so the rung is the only
+   stacking authority.
+
+   GLASS = SCRIM + BORDER, NEVER SHADOW (the e1 treaty): the backdrop
+   reuses the modal conventions — the documented neutral scrim
+   rgba(0, 0, 0, 0.6) (the package's ONE sanctioned non-token color,
+   same reasoning as modal.css: a dimming layer must dim regardless of
+   theme) + backdrop-filter blur(8px) for the glass read. The panel is
+   surface + hairline + radius. ZERO box-shadow in this file.
+
+   COLOR DOCTRINE EXCEPTION: the rgba scrim ONLY. Every other
+   declaration is token-driven — zero hex, prefers-reduced-motion
+   respected, the doctrine focus ring (2px Flamingo).
+
+   ANATOMY: backdrop → panel (flex column): the input row (bare input
+   between the muted search icon and the esc chip — the chip reuses
+   .ptp-action-tile__kbd from cards.css), the scrollable listbox
+   (options: icon + label + mono hint; the selected row reads through
+   aria-selected → the Flamingo 8% wash + 2px inset rail, the radio-
+   card precedent), and the legend footer. Pillar 2: the panel takes
+   the full available width below 768px.
+   ========================================================================== */
+
+/* The scrim + glass blur — the documented rgba exception (see header). */
+.ptp-command-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  z-index: var(--z-modal, 50);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh var(--space-standard) var(--space-standard);
+}
+
+/* The panel — surface, hairline, radius; flex column; FLAT (e1). */
+.ptp-command {
+  display: flex;
+  flex-direction: column;
+  width: min(34rem, 100%);
+  max-height: 60vh;
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  overflow: hidden;
+  color: var(--text-main);
+}
+
+/* The input row: icon + bare input + the esc chip, hairline floor. */
+.ptp-command__inputrow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-standard);
+  border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  color: var(--text-muted);
+  flex: none;
+}
+
+.ptp-command__inputrow input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9375rem;
+}
+
+.ptp-command__inputrow input::placeholder {
+  color: var(--text-muted);
+}
+
+.ptp-command__inputrow:focus-within {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: -2px;
+}
+
+/* The rows — listbox options; the selection is the attribute (the
+   aria-selected IS the state, the Tabs/GlobalNav contract). */
+.ptp-command__list {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-tight);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.ptp-command__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-tight) var(--space-standard);
+  border-radius: var(--radius-ui);
+  border-left: 2px solid transparent;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.ptp-command__option svg {
+  color: var(--text-muted);
+  flex: none;
+}
+
+.ptp-command__option[aria-selected="true"] {
+  background: color-mix(in srgb, var(--color-cake-primary) 8%, transparent);
+  border-left-color: var(--color-cake-primary);
+}
+
+.ptp-command__option:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.ptp-command__label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The muted mono hint at the row's far edge (metadata, not data). */
+.ptp-command__hint {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  flex: none;
+}
+
+/* The no-matches note — the honest empty edge. */
+.ptp-command__empty {
+  margin: 0;
+  padding: var(--space-section) var(--space-standard);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* The legend footer — the keyboard map, mono chips (reused from
+   cards.css's .ptp-action-tile__kbd), hairline ceiling. */
+.ptp-command__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-standard);
+  padding: var(--space-tight) var(--space-standard);
+  border-top: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  flex: none;
+}
+
+.ptp-command__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
+/* Pillar 2: the panel takes the full available width on mobile. */
+@media (max-width: 768px) {
+  .ptp-command-backdrop {
+    padding: var(--space-standard);
+  }
+}
+
+/* Motion is a gift, not a requirement — the palette adds no animations,
+   so the guard only stills the option hover transition if an engine
+   ever grows one. Kept for the doctrine's completeness. */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-command__option {
+    transition: none;
+  }
+}

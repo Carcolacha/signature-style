@@ -42,7 +42,9 @@
     "!react/editorial.tsx",
     "!react/cards.tsx",
     "!react/graph.tsx",
-    "!react/timeline-manager.tsx"
+    "!react/timeline-manager.tsx",
+    "!react/command.tsx",
+    "!react/skeleton.tsx"
   ],
   "sideEffects": [
     "*.css"

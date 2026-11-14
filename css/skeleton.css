@@ -1,0 +1,81 @@
+/* ==========================================================================
+   SKELETON — the loading placeholders (2.9.0 "Power-User Utilities").
+   Layered into `cascade` by signature-style.css (imported after
+   command.css).
+
+   THE SHIMMER: ONE keyframes sweep — the background
+   linear-gradient slides via background-position between
+   color-mix(in srgb, var(--bg-inset) 60%, transparent) and
+   var(--bg-surface). No transforms, no opacity tricks, no shadows.
+
+   THE 8px GRID IS LAW: lines are 16px tall (two steps), card body rows
+   8px, the card's gaps 8px, the table-row cells 8px. Widths vary per
+   row (real text is ragged — a skeleton of equal bars reads as a
+   pattern, not a page).
+
+   REDUCED MOTION (mandatory): the sweep stands down — animation: none
+   and the static var(--bg-surface) block. The base layer's global
+   guard already collapses durations; the explicit block keeps the
+   static ground even where the global guard is overridden.
+
+   COLOR DOCTRINE: zero hex, zero box-shadow (the e1 treaty).
+   ========================================================================== */
+
+/* The shared shimmer block — every skeleton shape wears it. */
+.ptp-skeleton {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bg-inset) 60%, transparent),
+    var(--bg-surface),
+    color-mix(in srgb, var(--bg-inset) 60%, transparent)
+  );
+  background-size: 200% 100%;
+  animation: ptp-skeleton-sweep 1.5s ease-in-out infinite;
+  border-radius: var(--radius-ui);
+}
+
+@keyframes ptp-skeleton-sweep {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* One text line — 16px (two 8px steps), full width unless narrowed. */
+.ptp-skeleton--line {
+  height: 16px;
+  width: 100%;
+}
+
+/* A body row — 8px, the tight step. */
+.ptp-skeleton--row {
+  height: 8px;
+  width: 100%;
+}
+
+/* The card stub: hairline-bordered surface, 8px-grid internals. */
+.ptp-skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+  padding: var(--space-standard);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+/* The table row skeleton: the row is a native <tr>; each cell holds an
+   8px shimmer bar. Vertical rhythm rides the table's own padding. */
+.ptp-skeleton-tr td {
+  padding: var(--space-tight) var(--space-standard);
+}
+
+/* Motion is a gift, not a requirement — the static ground. */
+@media (prefers-reduced-motion: reduce) {
+  .ptp-skeleton {
+    animation: none;
+    background: var(--bg-surface);
+  }
+}

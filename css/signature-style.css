@@ -12,6 +12,8 @@
 @import "./primitives.css" layer(cascade);
 @import "./cards.css" layer(cascade);
 @import "./graph.css" layer(cascade);
+@import "./command.css" layer(cascade);
+@import "./skeleton.css" layer(cascade);
 @import "./editorial.css" layer(cascade);
 @import "./cascade.css";
 @import "./overrides.css";

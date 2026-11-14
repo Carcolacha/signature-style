@@ -574,6 +574,14 @@
   border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
 }
 
+.pattern-frame__id {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  min-width: 0;
+}
+
 .pattern-frame__title {
   display: flex;
   align-items: center;

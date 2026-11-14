@@ -1,15 +1,16 @@
 import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-runtime";
 /**
- * nav — <GlobalNav>, the PlanThenParty navbar (1.2.0 "GlobalNav").
+ * nav — <GlobalNav> (1.2.0) + <Breadcrumbs> (2.9.0 "Power-User
+ * Utilities").
  *
- * Architecture: two flat regions. The bar is a sticky <nav> whose flat
- * <ul> renders one link per item — there is no `.is-active` class, the
- * `[aria-current="page"]` attribute IS the active state and css/nav.css
- * styles it directly. The mobile drawer is portaled to `document.body`
- * with `createPortal` (same architecture as modal.tsx) so it breaks free
- * of the navbar's sticky stacking context: it reuses the modal backdrop
- * (z-40) as its scrim and wears `var(--z-modal, 50)` itself — above the
- * navbar, sibling to the modal card.
+ * GlobalNav architecture: two flat regions. The bar is a sticky <nav>
+ * whose flat <ul> renders one link per item — there is no `.is-active`
+ * class, the `[aria-current="page"]` attribute IS the active state and
+ * css/nav.css styles it directly. The mobile drawer is portaled to
+ * `document.body` with `createPortal` (same architecture as modal.tsx)
+ * so it breaks free of the navbar's sticky stacking context: it reuses
+ * the modal backdrop (z-40) as its scrim and wears `var(--z-modal, 50)`
+ * itself — above the navbar, sibling to the modal card.
  *
  * Link-agnostic API: `as` accepts any component-agnostic link renderer
  * (React Router's NavLink). Links receive
@@ -18,16 +19,24 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * router link the ROUTER owns aria-current — leave `activeHref` unset.
  * The drawer links go through the same renderer.
  *
- * A11y contract: the hamburger is `aria-expanded` + `aria-controls`; the
- * drawer is role="dialog" with aria-modal="true" and aria-label="Menu".
- * Escape closes (document keydown listener installed in a useEffect and
- * ALWAYS cleaned up — the modal.tsx pattern), a backdrop click closes,
- * clicks inside the drawer do NOT (stopPropagation), and focus follows
- * the dialog: the drawer takes focus on open, the hamburger gets it
- * back on close.
+ * GlobalNav a11y contract: the hamburger is `aria-expanded` +
+ * `aria-controls`; the drawer is role="dialog" with aria-modal="true"
+ * and aria-label="Menu". Escape closes (document keydown listener
+ * installed in a useEffect and ALWAYS cleaned up — the modal.tsx
+ * pattern), a backdrop click closes, clicks inside the drawer do NOT
+ * (stopPropagation), and focus follows the dialog: the drawer takes
+ * focus on open, the hamburger gets it back on close.
  *
- * Pruning Protocol: zero wrapper divs in the bar, zero hardcoded hexes —
- * every color comes from tokens via css/nav.css.
+ * 2.9.0 <Breadcrumbs> — the Shed-style mono path ("engine / set-02 /
+ * matchup-card"): ONE <nav aria-label="Breadcrumb"> > <ol> of <li>s;
+ * crumbed items with an href render <a>, the LAST item renders a
+ * <span aria-current="page"> (bold text-main in css) — a crumb without
+ * href is a plain span too. Separators are explicit "/" spans with
+ * aria-hidden="true" parked after each non-last item's content, so
+ * screen readers hear the labels, never the punctuation.
+ *
+ * Pruning Protocol: zero wrapper divs in the bar, zero hardcoded
+ * hexes — every color comes from tokens via css/nav.css.
  */
 import { useCallback, useEffect, useRef, useState, } from "react";
 import { createPortal } from "react-dom";
@@ -107,3 +116,28 @@ export function GlobalNav({ items, as, activeHref }) {
                 createPortal(_jsx("div", { className: "ptp-modal-backdrop", onClick: close, children: _jsxs("aside", { id: "ptp-nav-drawer", ref: drawerRef, className: "ptp-nav-drawer", "data-open": "true", role: "dialog", "aria-modal": "true", "aria-label": "Menu", tabIndex: -1, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("ul", { className: "ptp-nav-drawer__list", children: renderItems(Link, items, activeHref, plainAnchor, close) }), _jsx("button", { className: "ptp-modal-close", type: "button", "aria-label": "Close menu", onClick: close, children: _jsx(Icon, { name: "X", "aria-hidden": true }) })] }) }), document.body)] }));
 }
 export default GlobalNav;
+/**
+ * `<Breadcrumbs>` — the mono path trail. The last item renders a
+ * `<span aria-current="page">`; separators are explicit aria-hidden
+ * "/" spans so assistive tech hears the path, not the punctuation.
+ *
+ * @example
+ * ```tsx
+ * <Breadcrumbs
+ *   items={[
+ *     { label: "engine", href: "#/dashboard" },
+ *     { label: "set-02" },
+ *     { label: "matchup-card" },
+ *   ]}
+ * />
+ * ```
+ */
+export function Breadcrumbs({ items, label, children }) {
+    if (items.length === 0) {
+        return _jsx(_Fragment, { children: children ?? null });
+    }
+    return (_jsx("nav", { className: "ptp-breadcrumbs", "aria-label": label ?? "Breadcrumb", children: _jsx("ol", { children: items.map((item, index) => {
+                const isLast = index === items.length - 1;
+                return (_jsxs("li", { children: [isLast || item.href === undefined ? (_jsx("span", { "aria-current": isLast ? "page" : undefined, children: item.label })) : (_jsx("a", { href: item.href, children: item.label })), !isLast && (_jsx("span", { className: "ptp-breadcrumbs__sep", "aria-hidden": "true", children: "/" }))] }, `${item.label}-${String(index)}`));
+            }) }) }));
+}

@@ -911,9 +911,25 @@ export function setCount(id: SetId): number {
 
 /**
  * THE PATTERN STUDIO VIEW — sidebar filter + the per-set stream.
+ *
+ * 2.9.0: the set filter is CONTROLLED when a parent passes
+ * activeSet/onSetChange (the command palette's six set-jump commands
+ * drive it from App's lifted studioSet state); without props it keeps
+ * its internal state (backward compatible).
  */
-export function PatternStudioView() {
-  const [activeSet, setActiveSet] = useState<SetId | "all">("all");
+export function PatternStudioView({
+  activeSet: controlledSet,
+  onSetChange,
+}: {
+  activeSet?: SetId | "all";
+  onSetChange?: (set: SetId | "all") => void;
+} = {}) {
+  const [fallbackSet, setFallbackSet] = useState<SetId | "all">("all");
+  const activeSet = controlledSet ?? fallbackSet;
+  const setActiveSet = (set: SetId | "all"): void => {
+    if (onSetChange !== undefined) onSetChange(set);
+    else setFallbackSet(set);
+  };
   const visibleSets = activeSet === "all" ? SET_ORDER : [activeSet];
 
   return (

@@ -686,8 +686,11 @@ if (!selfWired) {
 // 2.7.0 AMENDMENT: the graph + timeline-manager promotions add the
 // fifth and sixth ("!react/graph.tsx", "!react/timeline-manager.tsx"),
 // same precedent.
+// 2.9.0 AMENDMENT: the command + skeleton promotions add the seventh
+// and eighth ("!react/command.tsx", "!react/skeleton.tsx"), same
+// precedent — the sources never ship, their compiled .js/.d.ts do.
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
-const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx", "!react/command.tsx", "!react/skeleton.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -701,19 +704,18 @@ if (v140pkg !== null) {
       failures.push(`(b2) package.json "${key}" changed vs v1.4.0 — the distribution surface is FROZEN`);
     }
   }
-  // files = v1.4.0's array + the 2.2.0/2.3.0 negations, exactly, in order.
+  // files = v1.4.0's array + the 2.2.0→2.9.0 negations, exactly, in order.
   const expectedFiles = [...(v140pkg.files ?? []), ...FILES_NEGATIONS];
   if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
     failures.push(
-      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx — the packing contract evolves documented steps",
+      "(b2) package.json files must be the v1.4.0 array EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx — the packing contract evolves documented steps",
     );
   }
 }
 
-// ---- (b3) npm pack grows 47 → 52 files in two steps (2.7.0 step 1:
-// css/graph.css + react/graph.{js,d.ts} = 50; step 2 adds
-// react/timeline-manager.{js,d.ts} = 52; playground/ and tools/ stay
-// excluded by the files array) ----
+// ---- (b3) npm pack grows 52 → 58 files (2.9.0: css/command.css +
+// css/skeleton.css + react/command.{js,d.ts} + react/skeleton.{js,d.ts};
+// playground/ and tools/ stay excluded by the files array) ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -732,9 +734,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "52") {
+} else if (totalFiles[1] !== "58") {
   failures.push(
-    `(b3) npm pack must yield exactly 52 files (47 + css/graph.css + react/graph.{js,d.ts} + react/timeline-manager.{js,d.ts}; playground/tools excluded by the files array), found ${totalFiles[1]}`,
+    `(b3) npm pack must yield exactly 58 files (52 + css/command.css + css/skeleton.css + react/command.{js,d.ts} + react/skeleton.{js,d.ts}; playground/tools excluded by the files array), found ${totalFiles[1]}`,
   );
 }
 
@@ -3939,6 +3941,273 @@ if (!existsSync(llmsFullPath)) {
   ]) {
     if (new RegExp(`${queried.replace(/-/g, "\\-")}\\s*\\{[^}]*container-type:`, "s").test(source)) {
       failures.push(`(cq1) container-type must NOT land on ${queried} itself (circular sizing) — containment goes on the OUTER .sig-cell only`);
+    }
+  }
+}
+
+// ---- (cmd1) THE COMMAND PALETTE (2.9.0, Phase 2) -----------------------------
+// react/command.tsx: the CONTROLLED launcher (open lives in the parent),
+// the global Ctrl/Cmd+K listener (ignored while typing in fields), the
+// combobox/listbox aria contract with aria-activedescendant, Enter runs +
+// closes, Escape closes, the trigger-capture focus restore, type-to-filter
+// over label + keywords, the createPortal to document.body.
+// css/command.css: the modal scrim + blur(8px), the --z-modal rung, the
+// FLAT panel (zero box-shadow — the e1 treaty), the reused kbd chip.
+{
+  const commandSrc = readFileSync(resolve(root, "react/command.tsx"), "utf8");
+  const commandJsPath = resolve(root, "react/command.js");
+  const commandDtsPath = resolve(root, "react/command.d.ts");
+  if (!existsSync(commandJsPath)) failures.push("(cmd1) react/command.js is missing — build it: npx tsc -p tsconfig.json");
+  if (!existsSync(commandDtsPath)) failures.push("(cmd1) react/command.d.ts is missing — build it: npx tsc -p tsconfig.json");
+  const CMD_TSX = [
+    ["export interface CommandEntry", "the command contract"],
+    ["keywords?: string", "the type-to-filter keywords"],
+    ["hint?: string", "the mono hint chip"],
+    ["icon?: IconName", "the strict lucide key"],
+    ["run: () => void", "the action"],
+    ["export interface CommandPaletteProps", "the controlled props contract"],
+    ["onOpen?: () => void", "the launcher callback — the palette never owns open state"],
+    ['key.toLowerCase() === "k"', "the Ctrl/Cmd+K launcher"],
+    ["isTypingTarget", "the typing-fields guard for the launcher"],
+    ['role="combobox"', "the filter input's combobox role"],
+    ['aria-activedescendant={activeId}', "the selection mirrors to the listbox"],
+    ['role="listbox"', "the rows listbox"],
+    ['role="option"', "each row is an option"],
+    ['aria-selected={index === activeIndex}', "THE selection attribute (the aria-selected IS the state)"],
+    ["ArrowDown", "the next-row key"],
+    ["ArrowUp", "the previous-row key"],
+    ["selected.run();\n          onClose();", "Enter runs the selection AND closes"],
+    ["triggerRef", "the pre-open trigger capture"],
+    ["toLowerCase().includes(needle)", "the case-insensitive substring filter"],
+    ["createPortal(", "the portal architecture"],
+    ["document.body", "the portal host"],
+    ['aria-label="Command palette"', "the dialog's accessible name"],
+    ["useState(0)", "the selection starts at the top"],
+  ];
+  for (const [needle, label] of CMD_TSX) {
+    if (!commandSrc.includes(needle)) {
+      failures.push(`(cmd1) react/command.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const commandCss = readFileSync(resolve(root, "css/command.css"), "utf8");
+  const CMD_CSS = [
+    ["rgba(0, 0, 0, 0.6)", "the documented neutral scrim (the modal.css exception)"],
+    ["backdrop-filter: blur(8px)", "the glass blur"],
+    ["-webkit-backdrop-filter: blur(8px)", "the webkit-prefixed blur"],
+    ["var(--z-modal, 50)", "the modal rung (Pillar 3)"],
+    ['[aria-selected="true"]', "the selection selector"],
+    ["border-left-color: var(--color-cake-primary)", "the Flamingo selection rail"],
+    ["max-width: 768px", "the Pillar 2 collapse"],
+    ["prefers-reduced-motion", "the reduced-motion guard"],
+    ["outline: 2px solid var(--color-cake-primary)", "the doctrine focus ring"],
+  ];
+  for (const [needle, label] of CMD_CSS) {
+    if (!commandCss.includes(needle)) {
+      failures.push(`(cmd1) css/command.css must contain ${needle} — ${label}`);
+    }
+  }
+  const commandShadows = commandCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (commandShadows !== null) {
+    failures.push(
+      `(cmd1) css/command.css declares a box-shadow (${commandShadows.join(" ")}) — glass is scrim + border, NEVER shadow (the e1 treaty)`,
+    );
+  }
+  const commandHexes = commandCss.replaceAll("rgba(0, 0, 0, 0.6)", "").match(/#[0-9a-f]{3,8}\b/gi);
+  if (commandHexes !== null) {
+    failures.push(
+      `(cmd1) css/command.css contains hex literal(s) ${[...new Set(commandHexes)].join(", ")} — only the documented rgba scrim may bypass the token doctrine`,
+    );
+  }
+  const bundleCommandIndex = bundleCss.indexOf('@import "./command.css" layer(cascade);');
+  if (bundleCommandIndex === -1) {
+    failures.push(
+      'css/signature-style.css must import "./command.css" layer(cascade) — cascade membership is the layered-import doctrine',
+    );
+  } else {
+    const graphImportForCommand = bundleCss.indexOf('@import "./graph.css" layer(cascade);');
+    if (graphImportForCommand !== -1 && bundleCommandIndex < graphImportForCommand) {
+      failures.push("css/signature-style.css must import ./command.css AFTER ./graph.css (graph styles load first)");
+    }
+  }
+  for (const name of ["CommandPalette", "CommandEntry", "CommandPaletteProps"]) {
+    if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+      failures.push(`react/index.d.ts must re-export ${name} — (cmd1)`);
+    }
+  }
+  if (!new RegExp("\\bCommandPalette\\b").test(umbrellaJs)) {
+    failures.push("react/index.js must re-export CommandPalette — (cmd1)");
+  }
+  // The playground wiring: the controlled palette, the trigger, the
+  // full command list (5 views + 6 sets + 4 utilities).
+  const APP_CMD = [
+    ["<CommandPalette", "the palette renders"],
+    ['open={paletteOpen}', "the controlled open"],
+    ['onClose={() => setPaletteOpen(false)}', "the close wiring"],
+    ['onOpen={() => setPaletteOpen(true)}', "the launcher wiring"],
+    ['data-testid="palette-trigger"', "the header trigger probe hook"],
+    ['className="hub__cmdbar-trigger"', "the trigger button anatomy"],
+    ['label: "Go to Dashboard"', "command: dashboard view"],
+    ['label: "Go to Pattern Studio"', "command: studio view"],
+    ['label: "Go to Master Index"', "command: index view"],
+    ['label: "Go to Chronicle"', "command: chronicle view"],
+    ['label: "Go to AI Codex"', "command: codex view"],
+    ["label: `Studio: Set ${id} · ${SET_NAMES[id]}`", "command: the six studio sets"],
+    ['label: "Export Workspace JSON"', "command: the workspace export"],
+    ['label: "Toggle Reduced Motion Preview"', "command: the motion preview"],
+    ['label: "Open Keyboard Shortcuts"', "command: the shortcuts dialog"],
+    ['label: "Copy Codex llms.txt URL"', "command: the codex manifest URL"],
+    ['rootEl.dataset.motion === "reduced"', "the preview toggle reads the attribute"],
+    ['rootEl.dataset.motion = "reduced"', "the preview toggle sets the attribute"],
+    ["buildStoredWorkspaceSnapshot()", "the export command reads the persisted mirror"],
+    ["downloadJson(", "the shared download dance"],
+    ["ShortcutsDialog", "the shortcuts dialog exists"],
+    ['aria-label="Keyboard shortcuts"', "the dialog's accessible name"],
+    ["<Breadcrumbs", "the breadcrumbs render in the shell"],
+  ];
+  for (const [needle, label] of APP_CMD) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(cmd1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+}
+
+// ---- (sk1) THE SKELETONS (2.9.0, Phase 2) -------------------------------------
+// react/skeleton.tsx: SkeletonLine (width?), SkeletonCard, SkeletonTableRow
+// (columns?) — aria-hidden decorative pulse, 8px-grid heights. css/
+// skeleton.css: the ONE shimmer sweep between the 60% bg-inset mix and
+// var(--bg-surface), the mandatory reduced-motion static ground, FLAT.
+{
+  const skeletonSrc = readFileSync(resolve(root, "react/skeleton.tsx"), "utf8");
+  const skeletonJsPath = resolve(root, "react/skeleton.js");
+  const skeletonDtsPath = resolve(root, "react/skeleton.d.ts");
+  if (!existsSync(skeletonJsPath)) failures.push("(sk1) react/skeleton.js is missing — build it: npx tsc -p tsconfig.json");
+  if (!existsSync(skeletonDtsPath)) failures.push("(sk1) react/skeleton.d.ts is missing — build it: npx tsc -p tsconfig.json");
+  const SK_TSX = [
+    ["export function SkeletonLine", "the line skeleton"],
+    ["width?: string | number", "the optional width prop"],
+    ["export function SkeletonCard", "the card stub"],
+    ["export function SkeletonTableRow", "the table-row skeleton"],
+    ["columns = 3", "the column default"],
+    ['aria-hidden="true"', "the decorative contract (the consumer announces loading)"],
+    ['className="ptp-skeleton ptp-skeleton--line"', "the line anatomy"],
+    ['className="ptp-skeleton ptp-skeleton--row"', "the row anatomy"],
+    ['className="ptp-skeleton-tr"', "the native <tr> root"],
+  ];
+  for (const [needle, label] of SK_TSX) {
+    if (!skeletonSrc.includes(needle)) {
+      failures.push(`(sk1) react/skeleton.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const skeletonCss = readFileSync(resolve(root, "css/skeleton.css"), "utf8");
+  const SK_CSS = [
+    ["color-mix(in srgb, var(--bg-inset) 60%, transparent)", "the shimmer's translucent end"],
+    ["var(--bg-surface)", "the shimmer's surface end (and the static ground)"],
+    ["@keyframes ptp-skeleton-sweep", "the ONE sweep"],
+    ["background-position", "the sweep mechanism (no transforms)"],
+    ["height: 16px", "the line height (two 8px steps)"],
+    ["height: 8px", "the row height (the tight step)"],
+    ["prefers-reduced-motion", "the MANDATORY static ground"],
+  ];
+  for (const [needle, label] of SK_CSS) {
+    if (!skeletonCss.includes(needle)) {
+      failures.push(`(sk1) css/skeleton.css must contain ${needle} — ${label}`);
+    }
+  }
+  const skeletonShadows = skeletonCss.match(/box-shadow\s*:\s*[^;]+;/g);
+  if (skeletonShadows !== null) {
+    failures.push(
+      `(sk1) css/skeleton.css declares a box-shadow (${skeletonShadows.join(" ")}) — the e1 treaty holds in every new file`,
+    );
+  }
+  const skeletonHexes = skeletonCss.match(/#[0-9a-f]{3,8}\b/gi);
+  if (skeletonHexes !== null) {
+    failures.push(
+      `(sk1) css/skeleton.css contains hex literal(s) ${[...new Set(skeletonHexes)].join(", ")} — token-driven only`,
+    );
+  }
+  const bundleSkeletonIndex = bundleCss.indexOf('@import "./skeleton.css" layer(cascade);');
+  if (bundleSkeletonIndex === -1) {
+    failures.push(
+      'css/signature-style.css must import "./skeleton.css" layer(cascade) — cascade membership is the layered-import doctrine',
+    );
+  } else {
+    const commandImportForSkeleton = bundleCss.indexOf('@import "./command.css" layer(cascade);');
+    if (commandImportForSkeleton !== -1 && bundleSkeletonIndex < commandImportForSkeleton) {
+      failures.push("css/signature-style.css must import ./skeleton.css AFTER ./command.css (command styles load first)");
+    }
+  }
+  for (const name of ["SkeletonLine", "SkeletonLineProps", "SkeletonCard", "SkeletonTableRow", "SkeletonTableRowProps"]) {
+    if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+      failures.push(`react/index.d.ts must re-export ${name} — (sk1)`);
+    }
+  }
+  for (const name of ["SkeletonLine", "SkeletonCard", "SkeletonTableRow"]) {
+    if (!new RegExp(`\\b${name}\\b`).test(umbrellaJs)) {
+      failures.push(`react/index.js must re-export ${name} — (sk1)`);
+    }
+  }
+}
+
+// ---- (bc1) THE BREADCRUMBS (2.9.0, Phase 2) ------------------------------------
+// react/nav.tsx: <Breadcrumbs items={[{label, href?}]} /> — nav[aria-label]
+// > ol > li, links muted + hover main, the LAST crumb is a span with
+// aria-current="page", separators are explicit aria-hidden "/" spans.
+// css/nav.css: the mono Shed path anatomy. Playground: the topbar speaks
+// per view + every PatternFrame carries its own path.
+{
+  const navSrc = readFileSync(resolve(root, "react/nav.tsx"), "utf8");
+  const navDtsPath = resolve(root, "react/nav.d.ts");
+  const BC_TSX = [
+    ["export interface BreadcrumbItem", "the crumb contract"],
+    ["href?: string", "navigable crumbs carry an href"],
+    ["export interface BreadcrumbsProps", "the props contract"],
+    ['aria-label={label ?? "Breadcrumb"}', "the nav's accessible name"],
+    ['aria-current={isLast ? "page" : undefined}', "THE current-page attribute on the last crumb"],
+    ['className="ptp-breadcrumbs__sep"', "the separator span"],
+    ['aria-hidden="true"', "the separator is silent to screen readers"],
+  ];
+  for (const [needle, label] of BC_TSX) {
+    if (!navSrc.includes(needle)) {
+      failures.push(`(bc1) react/nav.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  if (!/BreadcrumbsProps/.test(readFileSync(navDtsPath, "utf8"))) {
+    failures.push("(bc1) the compiled react/nav.d.ts must carry BreadcrumbsProps");
+  }
+  const navCss = readFileSync(resolve(root, "css/nav.css"), "utf8");
+  const BC_CSS = [
+    ['.ptp-breadcrumbs [aria-current="page"]', "THE current-page selector"],
+    ["font-weight: 700", "the bold current crumb"],
+    [".ptp-breadcrumbs__sep", "the separator anatomy"],
+    ["var(--font-mono, ui-monospace, \"SFMono-Regular\", Menlo, Consolas, monospace)", "the mono path voice"],
+    ["prefers-reduced-motion", "the reduced-motion guard follows"],
+  ];
+  for (const [needle, label] of BC_CSS) {
+    if (!navCss.includes(needle)) {
+      failures.push(`(bc1) css/nav.css must contain ${needle} — ${label}`);
+    }
+  }
+  for (const name of ["Breadcrumbs", "BreadcrumbItem", "BreadcrumbsProps"]) {
+    if (!new RegExp(`\\b${name}\\b`).test(umbrellaDts)) {
+      failures.push(`react/index.d.ts must re-export ${name} — (bc1)`);
+    }
+  }
+  if (!new RegExp("\\bBreadcrumbs\\b").test(umbrellaJs)) {
+    failures.push("react/index.js must re-export Breadcrumbs — (bc1)");
+  }
+  const frameSrcBc = readFileSync(resolve(root, "playground/components/PatternFrame.tsx"), "utf8");
+  const BC_APP = [
+    [appSrc, 'label="You are here"', "the topbar breadcrumbs' accessible name"],
+    [appSrc, '{ label: "engine", href: VIEW_HREFS.dashboard }', "the path's engine root"],
+    [appSrc, '{ label: "live-bento" }', "the dashboard's path tip"],
+    [appSrc, "`set-${studioSet}`", "the studio path tracks the active set"],
+    [frameSrcBc, 'label: "engine", href: "#/dashboard"', "the in-frame path's engine root"],
+    [frameSrcBc, "label: `set-${setId}`", "the in-frame path's set segment"],
+    [frameSrcBc, "{ label: componentName }", "the in-frame path names the component"],
+  ];
+  for (const [source, needle, label] of BC_APP) {
+    if (!source.includes(needle)) {
+      failures.push(`(bc1) must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
 }

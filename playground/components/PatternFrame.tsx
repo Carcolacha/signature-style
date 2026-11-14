@@ -23,7 +23,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Button, PartyBadge, useToast } from "@edwyn/signature-style/react";
+import { Button, PartyBadge, Breadcrumbs, useToast } from "@edwyn/signature-style/react";
 import type { SnippetEntry, SetId } from "../snippets.js";
 
 /** The three body views. */
@@ -121,12 +121,25 @@ export function PatternFrame({
   return (
     <article className="pattern-frame" data-sig-set={setId} data-sig-component={componentName}>
       <header className="pattern-frame__head">
-        <div className="pattern-frame__title">
-          <h3>{componentName}</h3>
-          <PartyBadge
-            colorToken={SET_ACCENTS[setId]}
-            label={setName}
+        {/* 2.9.0: the in-frame path — "engine / set-02 / matchup-card",
+            the Shed mono breadcrumb inside every frame (the current
+            crumb carries aria-current; the engine crumb links home). */}
+        <div className="pattern-frame__id">
+          <Breadcrumbs
+            label={`${componentName} path`}
+            items={[
+              { label: "engine", href: "#/dashboard" },
+              { label: `set-${setId}`, href: "#/studio" },
+              { label: componentName },
+            ]}
           />
+          <div className="pattern-frame__title">
+            <h3>{componentName}</h3>
+            <PartyBadge
+              colorToken={SET_ACCENTS[setId]}
+              label={setName}
+            />
+          </div>
         </div>
         <div className="pattern-frame__tools">
           <div className="pattern-frame__tabs" role="group" aria-label={`${componentName} view`}>
