@@ -162,6 +162,14 @@ export interface GraphNodeRecord {
   note?: string;
   /** FK → GraphNodeRecord.id, nullable — undefined/null renders a root. */
   parentId?: string;
+  /**
+   * 3.6.0 — the Graph Studio inspector's free-form tags (Traces to
+   * `GraphNode.tags`, the comma-separated HUD field → chips preview).
+   * ENUMERATED contract: an array of non-empty strings (no length cap
+   * at the type level; the UI suggests short single words). Omit for
+   * untagged nodes — the field is additive, older snapshots import clean.
+   */
+  tags?: string[];
 }
 
 /**
@@ -306,13 +314,18 @@ export function isMilestone(value: unknown): value is Milestone {
   );
 }
 
+export function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string" && item.length > 0);
+}
+
 export function isGraphNodeRecord(value: unknown): value is GraphNodeRecord {
   return (
     isRecord(value) &&
     typeof value.id === "string" &&
     typeof value.workspaceId === "string" &&
     typeof value.label === "string" &&
-    typeof value.categoryToken === "string"
+    typeof value.categoryToken === "string" &&
+    (value.tags === undefined || isStringArray(value.tags))
   );
 }
 

@@ -1168,6 +1168,260 @@
   color: var(--text-muted);
 }
 
+/* ---- 3.6.0 THE GRAPH STUDIO — the dedicated view's anatomy ---------------
+   `.graph-studio`: canvas pane (minmax(0, 1fr)) + a 340px inspector
+   column, stacking below 960px. The canvas is the dot-matrix board:
+   --bg-inset ground + a 24px radial-gradient matrix layered UNDER the
+   svg, min-height 620px. The HUD floats over the canvas top — glass
+   (bg-surface 80% + backdrop blur, hairline, radius, --z-sticky: the
+   (bd1) backdrop audit sanctions the HUD as the ONE new blur surface;
+   modal/nav stay blur-free). Token-driven, flat (e1), 8px grid. */
+.graph-studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--space-standard);
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .graph-studio {
+    grid-template-columns: 1fr;
+  }
+}
+
+.graph-studio__canvas {
+  position: relative;
+  min-height: 620px;
+  background-color: var(--bg-inset);
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--text-muted) 25%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+  padding: var(--space-section) var(--space-standard) var(--space-standard);
+}
+
+.graph-studio__hud {
+  position: absolute;
+  top: var(--space-standard);
+  left: var(--space-standard);
+  right: var(--space-standard);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-tight);
+  padding: var(--space-tight);
+  background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  z-index: var(--z-sticky);
+}
+
+.graph-studio__hud .sig-input {
+  flex: 1 1 12rem;
+  width: auto;
+}
+
+.graph-studio__zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.graph-studio__zoom-btn {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-ui);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.graph-studio__zoom-btn:hover {
+  color: var(--color-cake-secondary);
+}
+
+.graph-studio__zoom-btn:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.graph-studio__zoom-readout {
+  min-width: 3.25rem;
+  text-align: center;
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.graph-studio__count {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.graph-studio__help {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.graph-studio__help:hover {
+  color: var(--color-cake-secondary);
+  border-color: var(--color-cake-secondary);
+}
+
+.graph-studio__help:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.graph-studio__inspector {
+  min-width: 0;
+}
+
+.graph-studio__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+  margin-bottom: var(--space-standard);
+}
+
+.graph-studio__field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.graph-studio__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-tight);
+}
+
+.graph-studio__chip {
+  font-size: 0.75rem;
+  color: var(--sig-mauve-soft);
+  background: color-mix(in srgb, var(--sig-mauve-soft) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--sig-mauve-soft) 35%, transparent);
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+}
+
+.graph-studio__connected {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+  margin-bottom: var(--space-standard);
+}
+
+.graph-studio__edge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-tight);
+  padding: var(--space-tight);
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.graph-studio__edge-jump {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.graph-studio__edge-jump:hover {
+  color: var(--color-cake-secondary);
+}
+
+.graph-studio__edge-jump:focus-visible,
+.graph-studio__edge-unlink:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.graph-studio__edge-unlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--sig-crimson) 45%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--sig-crimson);
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  cursor: pointer;
+  flex: none;
+}
+
+.graph-studio__edge-unlink:hover {
+  background: color-mix(in srgb, var(--sig-crimson) 12%, transparent);
+}
+
+.graph-studio__edge-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+.graph-studio__edge-kind {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sig-crimson);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.graph-studio__edge-route {
+  margin: 0;
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.8125rem;
+  color: var(--text-main);
+}
+
+.graph-studio__empty {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
 /* ---- 3.0.0 THE CODEX SWATCH "NEW" CHIP + PALETTE GRID BADGES --------- */
 .codex__swatch-new {
   color: var(--color-cake-secondary);

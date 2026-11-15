@@ -82,9 +82,12 @@ const MAX_STOPS = 60;
 const WIDTH = 1440;
 const HEIGHT = 900;
 
-/** The certified views (same census as verify-visual-diff). */
+/** The certified views (same census as verify-visual-diff). 3.6.0: the
+ *  SIX-view map — the Graph Studio + Analytics & Planner join. */
 const VIEWS = [
   { name: "dashboard", hash: "" },
+  { name: "graph-studio", hash: "#/graph" },
+  { name: "analytics-planner", hash: "#/planner" },
   { name: "pattern-studio", hash: "#/studio" },
   { name: "master-index", hash: "#/index" },
   { name: "chronicle", hash: "#/chronicle" },

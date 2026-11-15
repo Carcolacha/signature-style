@@ -2,7 +2,9 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
 /**
  * graph — <KnowledgeGraph>, the interactive node-link graph (2.7.0
  * "Interactive Knowledge Graph, Analytical SVG Charts & Manageable
- * Timeline").
+ * Timeline"; 3.0.0 the obsidian interaction model; 3.6.0 THE GRAPH
+ * STUDIO ENGINE: explicit edge model + edge selection/unlink + the
+ * imperative canvas handle + search dimming).
  *
  * ONE `<svg role="application">` (viewBox 0 0 640 320) of pure SVG —
  * ZERO external charting packages (the Pruning Protocol: Chart.js /
@@ -22,39 +24,57 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * angle (depth-1 spreads the full circle; deeper levels span
  * ±min(π, (n−1)·π/5)), ties broken by the same id hash.
  *
- * EDGES are one cubic-Bezier `<path>` per node-with-parent
- * (`cubicBezierEdge`, also exported + pure): both control points sit
- * 60% along the parent→child radial, so the curve sags toward the
- * line between the rings. Stroke is the 40% muted mix, 1.5 wide,
- * fill none.
+ * THE EDGE MODEL (3.6.0) — two edge kinds, one render path:
+ *   · PARENT edges are DERIVED from `node.parentId` (the 2.7.0 tree
+ *     contract — never stored). Their id is `parent:${childId}`.
+ *   · LINK edges are the EXPLICIT array — `GraphEdge { id, fromId,
+ *     toId }` — persisted by the consumer (the playground stores them
+ *     under sig.workspace.v3.links). Right-click tether and the
+ *     inspector's "Spawn linked child" append here.
+ * BOTH kinds render as a cubic-Bezier pair: an invisible 14px hit path
+ * (keyboard/mouse target) under the visible hairline. Clicking an edge
+ * selects it (crimson highlight class, `data-selected="true"`),
+ * `onSelectEdge` reports it, and Delete/Backspace (when focus is not in
+ * a typing target — `isTypingTarget`) fires `onUnlinkEdge(edgeId)`;
+ * the CONSUMER resolves what unlink means for that id (a parent edge
+ * unlinks by clearing the child's parentId; a link edge is removed
+ * from its array).
  *
- * FOCUS DIMMING is class-driven, not style-driven: selecting a node
- * adds `.sig-graph--focused` to the svg and `data-dim="true"` to every
- * node/edge NOT adjacent to the selection; css/graph.css answers with
- * opacity 0.25. The selected circle's stroke flips to the structural
- * Flamingo at width 3 (selection is STRUCTURE, not content — Rule of
- * Engagement).
+ * FOCUS + SEARCH DIMMING is class-driven, not style-driven: selecting
+ * a node adds `.sig-graph--focused` to the svg and `data-dim="true"`
+ * to every node/edge NOT adjacent to the selection; a non-empty
+ * `searchQuery` dims every node/edge whose label does not substring-
+ * match (case-insensitive) — the HUD search's mechanism. css/graph.css
+ * answers with opacity 0.25. The selected node's stroke flips to the
+ * structural Flamingo at width 3; the selected edge's stroke flips to
+ * --sig-crimson at width 2.5 (3.6.0).
  *
- * The footer strip and the optional add-and-link toolbar are siblings
- * of the svg inside a fragment (no wrapper div): the footer inspects
- * the selected node's label + note; the toolbar ("Add & Link")
- * parents a new lavender node to the SELECTION (or the root; with no
- * nodes at all it becomes the root — documented contract).
+ * THE IMPERATIVE HANDLE (3.6.0) — the Graph Studio HUD drives the
+ * canvas through `ref`: { zoomIn, zoomOut, getZoom, autoArrange,
+ * selectNode }. Zoom buttons are CENTER-anchored (the wheel stays
+ * cursor-anchored); autoArrange delegates to `onAutoArrange` (the
+ * consumer clears its persisted custom positions and re-persists the
+ * deterministic layout — the component owns no storage); selectNode
+ * lets "Jump-to-target" buttons move the selection. Every view change
+ * reports through `onViewChange` (the HUD's live zoom readout).
  *
  * @example
  * ```tsx
+ * const graphRef = useRef<KnowledgeGraphHandle>(null);
  * <KnowledgeGraph
- *   nodes={[
- *     { id: "root", label: "Product Launch", categoryToken: "--sig-lavender", note: "One engine, many views." },
- *     { id: "venue", label: "Venue", parentId: "root", categoryToken: "--sig-mauve-soft" },
- *   ]}
+ *   ref={graphRef}
+ *   nodes={[{ id: "root", label: "Product Launch", categoryToken: "--sig-lavender" }]}
+ *   links={[{ id: "l1", fromId: "root", toId: "venue" }]}
+ *   onUnlinkEdge={(edgeId) => unlink(edgeId)}
+ *   searchQuery={hudQuery}
  *   addOn
  *   onAddNode={(node) => addNode(node)}
  *   label="Product launch graph"
  * />
+ * graphRef.current?.zoomIn();
  * ```
  */
-import { memo, useEffect, useMemo, useRef, useState, } from "react";
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, } from "react";
 import { Button } from "./primitives.js";
 import { Input } from "./forms.js";
 /* The layout constants — all viewBox units, all documented above. */
@@ -203,9 +223,24 @@ function strokeFor(node) {
 function canvasLabel(label) {
     return label.length > LABEL_MAX ? `${label.slice(0, LABEL_MAX - 1)}…` : label;
 }
+/**
+ * True when a KeyboardEvent's target is a text-entry surface (the v2.9.0
+ * contract): inputs, textareas, selects and contentEditable hosts. The
+ * global Delete/Backspace unlink (3.6.0) and the playground's "?" key
+ * both gate on this — a shortcut must never fire while the user types.
+ */
+export function isTypingTarget(target) {
+    const el = target;
+    if (el === null || typeof el.tagName !== "string")
+        return false;
+    const tag = el.tagName.toLowerCase();
+    return (tag === "input" || tag === "textarea" || tag === "select" || el.isContentEditable === true);
+}
 /* The zoom clamp (3.0.0): 0.5×–2.5× around the cursor. */
 const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 2.5;
+/* The zoom step the HUD buttons take (center-anchored). */
+const ZOOM_BUTTON_STEP = 1.2;
 /* The keyboard nudge step — the 8px grid (a11y parity with mouse drag). */
 const NUDGE_PX = 8;
 /** A client (pointer) point in graph-space coordinates (viewBox-aware). */
@@ -218,8 +253,14 @@ function clientToGraph(svg, clientX, clientY, view) {
         y: view.y + ((clientY - rect.top) / Math.max(rect.height, 1)) * height,
     };
 }
-export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onMoveNode, onLinkNodes, positions: draggedPositions, links = [], height = 320, label, addOn = false, }) {
+/**
+ * THE GRAPH STUDIO CANVAS (3.6.0) — memo(forwardRef) so the HUD owns a
+ * KnowledgeGraphHandle. Everything below the fold is the 3.0.0
+ * interaction model with the 3.6.0 edge model grafted in.
+ */
+export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onSelectEdge, onMoveNode, onLinkNodes, onUnlinkEdge, onAutoArrange, onViewChange, positions: draggedPositions, links = [], searchQuery = "", height = 320, label, addOn = false, }, ref) {
     const [selectedId, setSelectedId] = useState(null);
+    const [selectedEdgeId, setSelectedEdgeId] = useState(null);
     const [draftLabel, setDraftLabel] = useState("");
     const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
     // The live tether — source id + current cursor point (graph space).
@@ -240,26 +281,111 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
     const viewRef = useRef(view);
     viewRef.current = view;
     const [interacting, setInteracting] = useState(false);
-    // Focus-dimming bookkeeping: everything NOT adjacent to the selection dims.
-    const connectedIds = useMemo(() => {
-        if (selected === null)
-            return null;
-        const ids = new Set([selected.id]);
-        if (selected.parentId !== undefined)
-            ids.add(selected.parentId);
+    /* -- THE EDGE MODEL (3.6.0): derived parent edges + explicit links -- */
+    const edgeRows = useMemo(() => {
+        const parentEdges = [];
         for (const node of nodes) {
-            if (node.parentId === selected.id)
-                ids.add(node.id);
+            const parentPos = node.parentId === undefined ? undefined : positions[node.parentId];
+            const childPos = positions[node.id];
+            if (parentPos === undefined || childPos === undefined)
+                continue;
+            parentEdges.push({
+                id: `parent:${node.id}`,
+                kind: "parent",
+                fromId: node.parentId,
+                toId: node.id,
+                d: cubicBezierEdge(parentPos, childPos),
+            });
         }
-        return ids;
-    }, [nodes, selected]);
-    // ESCAPE CANCELS — an in-flight drag (restore the committed transform)
-    // or tether (drop the live path) dies here, keyboard first.
+        const linkEdges = [];
+        for (const link of links) {
+            const fromPos = positions[link.fromId];
+            const toPos = positions[link.toId];
+            if (fromPos === undefined || toPos === undefined)
+                continue;
+            linkEdges.push({
+                id: link.id,
+                kind: "link",
+                fromId: link.fromId,
+                toId: link.toId,
+                d: cubicBezierEdge(fromPos, toPos),
+            });
+        }
+        return [...parentEdges, ...linkEdges];
+    }, [nodes, links, positions]);
+    const edgeRowsRef = useRef(edgeRows);
+    edgeRowsRef.current = edgeRows;
+    const selectedEdge = edgeRows.find((edge) => edge.id === selectedEdgeId) ?? null;
+    // THE DIM BOOKKEEPING (3.6.0): the union of focus-dimming (non-
+    // adjacent to the selection) and search-dimming (label does not
+    // substring-match the query). Edges dim when either endpoint dims.
+    const query = searchQuery.trim().toLowerCase();
+    const dimmedIds = useMemo(() => {
+        const dim = new Set();
+        if (selected !== null) {
+            const adjacent = new Set([selected.id]);
+            if (selected.parentId !== undefined)
+                adjacent.add(selected.parentId);
+            for (const node of nodes) {
+                if (node.parentId === selected.id)
+                    adjacent.add(node.id);
+            }
+            for (const node of nodes) {
+                if (!adjacent.has(node.id))
+                    dim.add(node.id);
+            }
+            for (const edge of edgeRows) {
+                if (!(adjacent.has(edge.fromId) && adjacent.has(edge.toId)))
+                    dim.add(edge.id);
+            }
+        }
+        if (query !== "") {
+            const hit = (id) => {
+                const node = nodes.find((candidate) => candidate.id === id);
+                if (node === undefined)
+                    return false;
+                return node.label.toLowerCase().includes(query);
+            };
+            for (const node of nodes) {
+                if (!hit(node.id))
+                    dim.add(node.id);
+            }
+            for (const edge of edgeRows) {
+                if (!hit(edge.fromId) && !hit(edge.toId))
+                    dim.add(edge.id);
+            }
+        }
+        return dim;
+    }, [nodes, edgeRows, selected, query]);
+    const isDim = (id) => dimmedIds.has(id);
+    // The imperative handle — the HUD's zoom/arrange/select API.
+    useImperativeHandle(ref, () => ({
+        zoomIn: () => zoomAtCenter(ZOOM_BUTTON_STEP),
+        zoomOut: () => zoomAtCenter(1 / ZOOM_BUTTON_STEP),
+        getZoom: () => viewRef.current.zoom,
+        autoArrange: () => onAutoArrange?.(),
+        selectNode: (id) => {
+            const node = nodes.find((candidate) => candidate.id === id);
+            if (node === undefined)
+                return;
+            setSelectedEdgeId(null);
+            handleSelect(node);
+        },
+    }), 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [nodes, onAutoArrange]);
+    // THE VIEW REPORTER — every pan/zoom lands in the HUD's readout.
     useEffect(() => {
-        if (!interacting)
-            return;
+        onViewChange?.(view);
+    }, [view, onViewChange]);
+    // ESCAPE CANCELS — an in-flight drag (restore the committed transform)
+    // or tether (drop the live path) dies here, keyboard first. Escape
+    // ALSO deselects a selected edge (3.6.0), typing-target guarded.
+    useEffect(() => {
         const onKeyDown = (event) => {
             if (event.key !== "Escape")
+                return;
+            if (isTypingTarget(event.target))
                 return;
             if (dragRef.current !== null) {
                 const drag = dragRef.current;
@@ -276,10 +402,31 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
             setTether(null);
             panRef.current = null;
             setInteracting(false);
+            setSelectedEdgeId((current) => (current !== null ? null : current));
         };
         window.addEventListener("keydown", onKeyDown);
         return () => window.removeEventListener("keydown", onKeyDown);
-    }, [interacting]);
+    }, []);
+    // THE EDGE UNLINK (3.6.0) — Delete/Backspace with an edge selected,
+    // never while typing. The CONSUMER resolves the unlink semantics.
+    useEffect(() => {
+        if (selectedEdgeId === null || onUnlinkEdge === undefined)
+            return;
+        const onKeyDown = (event) => {
+            if (event.key !== "Delete" && event.key !== "Backspace")
+                return;
+            if (isTypingTarget(event.target))
+                return;
+            event.preventDefault();
+            const edge = edgeRowsRef.current.find((candidate) => candidate.id === selectedEdgeId);
+            if (edge === undefined)
+                return;
+            onUnlinkEdge(edge.id);
+            setSelectedEdgeId(null);
+        };
+        window.addEventListener("keydown", onKeyDown);
+        return () => window.removeEventListener("keydown", onKeyDown);
+    }, [selectedEdgeId, onUnlinkEdge]);
     useEffect(() => {
         return () => {
             if (frameRef.current !== null)
@@ -288,7 +435,13 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
     }, []);
     const handleSelect = (node) => {
         setSelectedId(node.id);
+        setSelectedEdgeId(null);
         onSelectNode?.(node);
+    };
+    const handleEdgeSelect = (edge) => {
+        setSelectedId(null);
+        setSelectedEdgeId(edge.id);
+        onSelectEdge?.({ id: edge.id, kind: edge.kind, fromId: edge.fromId, toId: edge.toId });
     };
     const handleAdd = () => {
         const trimmed = draftLabel.trim();
@@ -303,6 +456,19 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
         });
         setDraftLabel("");
     };
+    /* -- CENTERED ZOOM (3.6.0, the HUD buttons): the canvas center is
+       the anchor — the graph point at the center stays put. ---------- */
+    const zoomAtCenter = useCallback((factor) => {
+        const current = viewRef.current;
+        const zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, current.zoom * factor));
+        const centerX = current.x + VIEW_WIDTH / current.zoom / 2;
+        const centerY = current.y + VIEW_HEIGHT / current.zoom / 2;
+        setView({
+            x: centerX - VIEW_WIDTH / zoom / 2,
+            y: centerY - VIEW_HEIGHT / zoom / 2,
+            zoom,
+        });
+    }, []);
     /* -- DRAG (60fps): capture → rAF mutate the g transform → commit once -- */
     const handleNodePointerDown = (node, event) => {
         if (event.button !== 0 || onMoveNode === undefined)
@@ -369,10 +535,6 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
         const svg = svgRef.current;
         if (svg === null)
             return;
-        // contextmenu carries no pointerId — capture the tether on the svg's
-        // NEXT pointerdown-derived id via releasePointerCapture-safe tracking:
-        // we record tracking in tether state; the svg-level pointermove/up
-        // handlers own the line while the button is held.
         const point = clientToGraph(svg, event.clientX, event.clientY, viewRef.current);
         setTether({ fromId: node.id, to: point });
         setInteracting(true);
@@ -562,35 +724,25 @@ export const KnowledgeGraph = memo(function KnowledgeGraph({ nodes, onAddNode, o
                         : "sig-graph sig-graph--focused"
                     : tether !== null
                         ? "sig-graph sig-graph--tethering"
-                        : "sig-graph", viewBox: `${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`, style: { height, touchAction: "none" }, onPointerDown: handleCanvasPointerDown, onPointerMove: handleCanvasPointerMove, onPointerUp: handleCanvasPointerUp, onDoubleClick: handleDoubleClick, children: [nodes
-                        .filter((node) => node.parentId !== undefined && positions[node.parentId] !== undefined)
-                        .map((node) => {
-                        const parentPos = positions[node.parentId];
-                        const childPos = positions[node.id];
-                        if (parentPos === undefined || childPos === undefined)
-                            return null;
-                        const dim = connectedIds !== null &&
-                            !(connectedIds.has(node.parentId) && connectedIds.has(node.id));
-                        return (_jsx("path", { className: "sig-graph__edge", "data-parent": node.parentId, "data-child": node.id, "data-dim": dim || undefined, d: cubicBezierEdge(parentPos, childPos) }, `edge-${node.id}`));
-                    }), links.map((link, index) => {
-                        const fromPos = positions[link.from];
-                        const toPos = positions[link.to];
-                        if (fromPos === undefined || toPos === undefined)
-                            return null;
-                        return (_jsx("path", { className: "sig-graph__edge", "data-link": "true", "data-parent": link.from, "data-child": link.to, d: cubicBezierEdge(fromPos, toPos) }, `link-${link.from}-${link.to}-${index}`));
+                        : "sig-graph", viewBox: `${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`, style: { height, touchAction: "none" }, onPointerDown: handleCanvasPointerDown, onPointerMove: handleCanvasPointerMove, onPointerUp: handleCanvasPointerUp, onDoubleClick: handleDoubleClick, children: [edgeRows.map((edge) => {
+                        const dim = isDim(edge.id);
+                        const isSelected = edge.id === selectedEdgeId;
+                        return (_jsxs("g", { className: "sig-graph__edge-group", children: [_jsx("path", { className: "sig-graph__edge-hit", "data-edge-id": edge.id, d: edge.d, onClick: () => handleEdgeSelect(edge) }), _jsx("path", { className: "sig-graph__edge", "data-parent": edge.fromId, "data-child": edge.toId, "data-link": edge.kind === "link" || undefined, "data-selected": isSelected || undefined, "data-dim": dim || undefined, d: edge.d })] }, edge.id));
                     }), tether !== null && tetherSource !== undefined && (_jsx("path", { ref: tetherPathRef, className: "sig-graph__tether", d: `M ${tetherSource.x} ${tetherSource.y} L ${tether.to.x} ${tether.to.y}` })), nodes.map((node) => {
                         const position = positions[node.id];
                         if (position === undefined)
                             return null;
                         const isSelected = node.id === selectedId;
-                        const dim = connectedIds !== null && !connectedIds.has(node.id);
+                        const dim = isDim(node.id);
                         return (_jsxs("g", { ref: (el) => {
                                 if (el === null)
                                     nodeRefs.current.delete(node.id);
                                 else
                                     nodeRefs.current.set(node.id, el);
-                            }, className: "sig-graph__node", "data-id": node.id, "data-dim": dim || undefined, transform: `translate(${position.x} ${position.y})`, onClick: () => handleSelect(node), onPointerDown: (event) => handleNodePointerDown(node, event), onPointerMove: handleNodePointerMove, onPointerUp: (event) => handleNodePointerUp(node, event), onContextMenu: (event) => handleNodeContextMenu(node, event), onKeyDown: (event) => handleNodeKeyDown(node, event), tabIndex: 0, role: "button", "aria-label": node.label, children: [_jsx("title", { children: node.label }), _jsx("circle", { r: NODE_RADIUS, fill: "var(--bg-surface)", stroke: isSelected ? "var(--color-cake-primary)" : strokeFor(node), strokeWidth: isSelected ? 3 : 2 }), _jsx("text", { textAnchor: "middle", y: 4, fontSize: 13, fill: "var(--text-main)", style: { fontVariantNumeric: "tabular-nums" }, children: canvasLabel(node.label) })] }, node.id));
-                    })] }), _jsx("div", { className: "sig-graph__footer", children: selected === null
-                    ? "Select a node to inspect its note."
-                    : `${selected.label}${selected.note !== undefined ? ` — ${selected.note}` : ""}` })] }));
-});
+                            }, className: "sig-graph__node", "data-id": node.id, "data-dim": dim || undefined, transform: `translate(${position.x} ${position.y})`, onClick: () => handleSelect(node), onPointerDown: (event) => handleNodePointerDown(node, event), onPointerMove: handleNodePointerMove, onPointerUp: (event) => handleNodePointerUp(node, event), onContextMenu: (event) => handleNodeContextMenu(node, event), onKeyDown: (event) => handleNodeKeyDown(node, event), tabIndex: 0, role: "button", "aria-label": `${canvasLabel(node.label)} — ${node.label}`, children: [_jsx("title", { children: node.label }), _jsx("circle", { r: NODE_RADIUS, fill: "var(--bg-surface)", stroke: isSelected ? "var(--color-cake-primary)" : strokeFor(node), strokeWidth: isSelected ? 3 : 2 }), _jsx("text", { textAnchor: "middle", y: 4, fontSize: 13, fill: "var(--text-main)", style: { fontVariantNumeric: "tabular-nums" }, children: canvasLabel(node.label) })] }, node.id));
+                    })] }), _jsx("div", { className: "sig-graph__footer", children: selectedEdge !== null
+                    ? `Edge selected — ${selectedEdge.kind === "parent" ? "parent" : "linked"}: ${selectedEdge.fromId} → ${selectedEdge.toId}. Delete/Backspace unlinks.`
+                    : selected === null
+                        ? "Select a node to inspect its note."
+                        : `${selected.label}${selected.note !== undefined ? ` — ${selected.note}` : ""}` })] }));
+}));

@@ -32,12 +32,31 @@
   border-radius: var(--radius-ui);
 }
 
-/* Edges — the 40% muted mix hairline (stroke lives here; geometry in SVG). */
+/* Edges — the 40% muted mix hairline (stroke lives here; geometry in SVG).
+   3.6.0: the visible path is pointer-events:none — the INVISIBLE 14px
+   HIT PATH (.sig-graph__edge-hit) under it is the click target (a 1.5px
+   hairline is unhittable); the hit path takes pointer-events:stroke. */
 .sig-graph__edge {
   fill: none;
   stroke: color-mix(in srgb, var(--text-muted) 40%, transparent);
   stroke-width: 1.5;
   transition: var(--transition-standard);
+  pointer-events: none;
+}
+.sig-graph__edge-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+/* 3.6.0 — THE SELECTED EDGE: --sig-crimson (the danger/content accent —
+   an unlink affordance is a destructive intent, content voice per the
+   Rule of Engagement) at 2.5px over the 1.5 hairline. */
+.sig-graph__edge[data-selected="true"] {
+  stroke: var(--sig-crimson);
+  stroke-width: 2.5;
 }
 
 /* Nodes — pointer affordance; the g is the interactive element. */

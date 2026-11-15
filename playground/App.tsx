@@ -212,7 +212,6 @@ import {
   TierCard,
   ProfileCard,
   ChronicleTimeline,
-  KnowledgeGraph,
   BarChart,
   AreaChart,
   TimelineManager,
@@ -229,7 +228,8 @@ import {
   type AccentToken,
   type ChronicleRelease,
   type GraphNode,
-  type GraphLink,
+  type GraphEdge,
+  type GraphEdgeSelection,
   type GraphPosition,
   type TimelineItem,
   type CommandEntry,
@@ -239,29 +239,43 @@ import { usePersistentState } from "./persistence.js";
 import { buildStoredWorkspaceSnapshot } from "./snapshot.js";
 import { SET_NAMES } from "./snippets.js";
 import type { SetId } from "./snippets.js";
+import { PALETTE } from "./palette.js";
 import { useSigTheme } from "./use-sig-theme.js";
 import { PatternStudioView } from "./components/PatternStudio.js";
 import { ThemeCustomizer } from "./components/ThemeCustomizer.js";
 import { CodexView } from "./components/CodexView.js";
+import { GraphStudioView } from "./components/GraphStudio.js";
+import type { NodePatch } from "./components/GraphStudio.js";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract).
- *  2.8.0 — THE 5-VIEW NAV MAP: the 2 real + 3 placeholder views
- *  (dashboard/index + events/members/budget) become FIVE REAL views.
- *  Dashboard (the live bento) and Master Index (the catalog) stay;
- *  Pattern Studio (the primary catalog — the 6-Set Taxonomy), Chronicle
- *  (the Night of Versions, full-width) and AI Codex (tokens/rules/
- *  recipes for humans AND agents) replace the workshop placeholders.
- *  The HubLink/hash mechanism is unchanged; only the map grows. */
-type View = "dashboard" | "studio" | "index" | "chronicle" | "codex";
+ *  3.6.0 — THE 6-VIEW NAV MAP: the Workbench (the 12-column bento — the
+ *  "Dashboard" nav label retires), the GRAPH STUDIO (the dedicated
+ *  canvas/HUD/inspector view — the KnowledgeGraph leaves the planner
+ *  tab), ANALYTICS & PLANNER (the charts + the Milestone Manager — the
+ *  old "Graphs & Planner" tab, retitled and promoted), Pattern Studio,
+ *  Master Index and AI Codex. Chronicle stays a REAL view (the memorial
+ *  keeps its hash + palette command) but hands its nav slot to the
+ *  Studio. The HubLink/hash mechanism is unchanged; only the map grows.
+ */
+type View =
+  | "dashboard"
+  | "graph"
+  | "planner"
+  | "studio"
+  | "index"
+  | "chronicle"
+  | "codex";
 
-/** The dashboard's Tabs modules (2.3.0) — id union + the Tabs contract. */
-type ModuleId = "core" | "data" | "forms" | "graph";
+/** The dashboard's Tabs modules (2.3.0) — id union + the Tabs contract.
+ *  3.6.0: the "Graphs & Planner" module tab is RETIRED — its graph moved
+ *  to the Graph Studio view, its charts + milestones to Analytics &
+ *  Planner. */
+type ModuleId = "core" | "data" | "forms";
 
 const MODULE_TABS: Array<{ id: ModuleId; label: string }> = [
   { id: "core", label: "Core Dashboard" },
   { id: "data", label: "Data & Tables" },
   { id: "forms", label: "Form & Input Matrix" },
-  { id: "graph", label: "Graphs & Planner" },
 ];
 
 /** The workshop modules — nav destinations without a view yet (2.1.0).
@@ -270,6 +284,8 @@ const MODULE_TABS: Array<{ id: ModuleId; label: string }> = [
 
 const VIEW_HREFS: Record<View, string> = {
   dashboard: "#/dashboard",
+  graph: "#/graph",
+  planner: "#/planner",
   studio: "#/studio",
   index: "#/index",
   chronicle: "#/chronicle",
@@ -279,31 +295,45 @@ const VIEW_HREFS: Record<View, string> = {
 /** href → view, the SPA routing table (kept explicit, no derivation). */
 const HREF_TO_VIEW: Record<string, View> = {
   "#/dashboard": "dashboard",
+  "#/graph": "graph",
+  "#/planner": "planner",
   "#/studio": "studio",
   "#/index": "index",
   "#/chronicle": "chronicle",
   "#/codex": "codex",
 };
 
-/** Nav order per owner (2.8.0): the five REAL views — Dashboard,
- *  Pattern Studio (the primary catalog), Index, Chronicle, AI Codex. */
+/** Nav order per owner (3.6.0): the SIX views — Workbench, Graph Studio,
+ *  Analytics & Planner, Pattern Studio, Master Index, AI Codex.
+ *  Chronicle remains reachable (hash + palette command) but yields its
+ *  nav slot to the Studio. */
 const NAV_ITEMS: NavItem[] = [
-  { href: VIEW_HREFS.dashboard, label: "Dashboard" },
+  { href: VIEW_HREFS.dashboard, label: "Workbench" },
+  { href: VIEW_HREFS.graph, label: "Graph Studio" },
+  { href: VIEW_HREFS.planner, label: "Analytics & Planner" },
   { href: VIEW_HREFS.studio, label: "Pattern Studio" },
   { href: VIEW_HREFS.index, label: "Index" },
-  { href: VIEW_HREFS.chronicle, label: "Chronicle" },
   { href: VIEW_HREFS.codex, label: "AI Codex" },
 ];
 
 /**
- * The shared hero speaks per view: THE ENGINE on the dashboard, THE
- * PATTERN STUDIO in the studio, THE MASTER INDEX at the index, THE
+ * The shared hero speaks per view: THE ENGINE on the workbench, THE
+ * GRAPH STUDIO in the canvas, ANALYTICS & PLANNER on the planning deck,
+ * THE PATTERN STUDIO in the studio, THE MASTER INDEX at the index, THE
  * CHRONICLE on the memorial, THE AI CODEX in the codex.
  */
 const HERO_COPY: Record<View, { title: string; sub: string }> = {
   dashboard: {
     title: "THE ENGINE",
-    sub: "every primitive, one dashboard · live showcase",
+    sub: "the workbench — every primitive, one live bento",
+  },
+  graph: {
+    title: "THE GRAPH STUDIO",
+    sub: "nodes, links & the inspector · one canvas",
+  },
+  planner: {
+    title: "ANALYTICS & PLANNER",
+    sub: "charts and milestones · the planning deck",
   },
   studio: {
     title: "THE PATTERN STUDIO",
@@ -778,45 +808,10 @@ function SimSlot({
 }
 
 /**
- * THE FULL CHROMATIC PALETTE (3.0.0) — all 26 tokens with their human
- * names and the ink/fill ROLE tags (the contrast contract: ink-floor
- * tokens are cleared for high-emphasis content; the chromatic sixteen
- * are DECLARED fill/series accents — bars, rings, borders, tinted
- * wells, never body-text ink). The 3.0.0 newcomers carry isNew.
+ * THE FULL CHROMATIC PALETTE moved to playground/palette.ts (3.6.0) —
+ * the Graph Studio inspector and the bento share ONE table without an
+ * App ↔ GraphStudio import cycle.
  */
-const PALETTE: ReadonlyArray<{
-  token: TimelineEvent["category"];
-  label: string;
-  role: "ink" | "fill";
-  isNew?: boolean;
-}> = [
-  { token: "--sig-pink-bright", label: "Pink", role: "ink" },
-  { token: "--sig-pink-soft", label: "Soft pink", role: "ink" },
-  { token: "--sig-pink-alt", label: "Alt pink", role: "ink" },
-  { token: "--sig-mauve-bright", label: "Mauve", role: "ink" },
-  { token: "--sig-mauve-soft", label: "Soft mauve", role: "ink" },
-  { token: "--sig-lavender", label: "Lavender", role: "ink" },
-  { token: "--sig-sky", label: "Sky", role: "ink" },
-  { token: "--sig-cobalt", label: "Cobalt", role: "ink", isNew: true },
-  { token: "--sig-peach", label: "Peach", role: "ink" },
-  { token: "--sig-green", label: "Green", role: "ink" },
-  { token: "--sig-yellow", label: "Yellow", role: "ink" },
-  { token: "--sig-orchid", label: "Orchid", role: "fill", isNew: true },
-  { token: "--sig-cyan", label: "Cyan", role: "fill", isNew: true },
-  { token: "--sig-magenta", label: "Magenta", role: "fill", isNew: true },
-  { token: "--sig-mint", label: "Mint", role: "fill", isNew: true },
-  { token: "--sig-spring", label: "Spring", role: "fill", isNew: true },
-  { token: "--sig-citron", label: "Citron", role: "fill", isNew: true },
-  { token: "--sig-violet-glow", label: "Violet glow", role: "fill", isNew: true },
-  { token: "--sig-pink-glow", label: "Pink glow", role: "fill", isNew: true },
-  { token: "--sig-rose-glow", label: "Rose glow", role: "fill", isNew: true },
-  { token: "--sig-lime-glow", label: "Lime glow", role: "fill", isNew: true },
-  { token: "--sig-mint-glow", label: "Mint glow", role: "fill", isNew: true },
-  { token: "--sig-crimson", label: "Crimson", role: "fill", isNew: true },
-  { token: "--sig-azure", label: "Azure", role: "fill", isNew: true },
-  { token: "--sig-tangerine", label: "Tangerine", role: "fill", isNew: true },
-  { token: "--sig-neon-green", label: "Neon green", role: "fill", isNew: true },
-];
 
 export default function App() {
   return (
@@ -857,6 +852,9 @@ function Shell() {
   // The customizer panel (Pattern Studio) and the palette commands below
   // share this instance — there is never a second writer.
   const sig = useSigTheme();
+  // 3.6.0 — THE WORKSPACE: one hook owns the persisted sig.workspace.v3.*
+  // arrays for BOTH the Graph Studio and Analytics & Planner.
+  const workspace = useWorkspaceState();
   // The studio's set filter, LIFTED — the command palette jumps into a
   // set directly (the studio renders controlled).
   const [studioSet, setStudioSet] = useState<SetId | "all">("all");
@@ -893,10 +891,12 @@ function Shell() {
         ? [engine, { label: "pattern-studio" }]
         : [...crumbs, { label: `set-${studioSet}` }];
     }
+    if (view === "graph") return [engine, { label: "graph-studio" }];
+    if (view === "planner") return [engine, { label: "analytics-planner" }];
     if (view === "index") return [engine, { label: "master-index" }];
     if (view === "chronicle") return [engine, { label: "chronicle" }];
     if (view === "codex") return [engine, { label: "ai-codex" }];
-    return [engine, { label: "live-bento" }];
+    return [engine, { label: "workbench" }];
   }, [view, studioSet]);
 
   // The reduced-motion PREVIEW override — data-motion="reduced" on
@@ -945,7 +945,9 @@ function Shell() {
 
   // THE COMMAND LIST — views, studio sets, workspace, motion, help, codex.
   const commands = useMemo<CommandEntry[]>(() => [
-    { id: "view-dashboard", label: "Go to Dashboard", keywords: "view engine bento planner live", icon: "Gauge", hint: "view", run: () => navigate(VIEW_HREFS.dashboard) },
+    { id: "view-dashboard", label: "Go to Workbench", keywords: "view engine bento workbench live dashboard", icon: "Gauge", hint: "view", run: () => navigate(VIEW_HREFS.dashboard) },
+    { id: "view-graph", label: "Go to Graph Studio", keywords: "view graph studio canvas nodes links inspector", icon: "Waypoints", hint: "view", run: () => navigate(VIEW_HREFS.graph) },
+    { id: "view-planner", label: "Go to Analytics & Planner", keywords: "view analytics planner charts milestones timeline", icon: "ChartColumn", hint: "view", run: () => navigate(VIEW_HREFS.planner) },
     { id: "view-studio", label: "Go to Pattern Studio", keywords: "view catalog patterns sets copy", icon: "Shapes", hint: "view", run: () => navigate(VIEW_HREFS.studio) },
     { id: "view-index", label: "Go to Master Index", keywords: "view catalog archetypes doors", icon: "LayoutGrid", hint: "view", run: () => navigate(VIEW_HREFS.index) },
     { id: "view-chronicle", label: "Go to Chronicle", keywords: "view versions memorial night releases", icon: "Map", hint: "view", run: () => navigate(VIEW_HREFS.chronicle) },
@@ -1081,6 +1083,22 @@ function Shell() {
         <PageHero title={hero.title} subtitle={hero.sub} />
         {view === "dashboard" ? (
           <DashboardView registerSimRunner={registerSimRunner} triggerSim={triggerAsyncSim} />
+        ) : view === "graph" ? (
+          <GraphStudioView
+            graph={workspace.graph}
+            links={workspace.links}
+            positions={workspace.positions}
+            onUpdateNode={workspace.updateNode}
+            onUnlinkEdge={workspace.unlinkEdge}
+            onSpawnLinkedChild={workspace.spawnLinkedChild}
+            onAutoArrange={workspace.autoArrange}
+            onMoveNode={workspace.moveNode}
+            onLinkNodes={workspace.linkNodes}
+            onAddNodeAt={workspace.addNodeAt}
+            onOpenShortcuts={() => setShortcutsOpen(true)}
+          />
+        ) : view === "planner" ? (
+          <AnalyticsPlannerView workspace={workspace} />
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
         ) : view === "studio" ? (
@@ -1266,10 +1284,6 @@ function DashboardView({
       ) : moduleId === "forms" ? (
         <div className="hub__tabs-content">
           <FormsModule onSimulate={triggerSim} />
-        </div>
-      ) : moduleId === "graph" ? (
-        <div className="hub__tabs-content" data-testid="module-graph">
-          <GraphPlannerModule />
         </div>
       ) : (
         <div className="hub__tabs-content">
@@ -2102,12 +2116,12 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
       action: () => onNavigate(VIEW_HREFS.dashboard),
     },
     {
-      label: "PLANNER",
-      path: "views/planner.tsx",
-      title: "Interactive Graph & Planner",
-      description: "The persistence module — graph, charts, milestones.",
+      label: "GRAPH STUDIO",
+      path: "views/graph-studio.tsx",
+      title: "The Graph Studio",
+      description: "The canvas — nodes, links, inspector. Click to enter.",
       accent: "--sig-lavender",
-      action: () => toast("success", "The planner module is on the roadmap."),
+      action: () => onNavigate(VIEW_HREFS.graph),
     },
     {
       label: "STUDIO",
@@ -2115,7 +2129,7 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
       title: "Pattern Studio",
       description: "Every archetype on one stage — compose before you commit.",
       accent: "--sig-peach",
-      action: () => toast("success", "The studio module is on the roadmap."),
+      action: () => onNavigate(VIEW_HREFS.studio),
     },
   ];
 
@@ -2695,14 +2709,23 @@ function FormsModule({ onSimulate }: { onSimulate: () => void }) {
 }
 
 /* ==========================================================================
-   THE GRAPHS & PLANNER MODULE (2.7.0; 3.1.0 keys) — the persistence
-   addendum's home. Two usePersistentState arrays (sig.workspace.v3.graph /
-   sig.workspace.v3.timeline —
-   reload survives, Reset restores the seeds), the snapshot toolbar
-   (Export JSON / Import JSON / Reset), and four cards: The Knowledge
-   Graph (addOn), Spending by Category (BarChart, per-bar maxes),
-   Attendance Momentum (AreaChart, 8 points, sky), and the Milestone Manager
-   (TimelineManager fully wired; inspect composes the EventModal).
+   THE WORKSPACE STATE + THE ANALYTICS & PLANNER VIEW (2.7.0; 3.6.0 the
+   Studio split). THE ONE OWNER of the persisted sig.workspace.v3.*
+   arrays: graph, timeline, graph-positions, and the 3.6.0 GraphEdge[]
+   links. `useWorkspaceState` is called ONCE (the Shell); the Graph
+   Studio view consumes the graph/links/positions + node ops, Analytics
+   & Planner consumes the timeline + charts + the snapshot toolbar
+   (Export JSON / Import JSON / Reset). Reload survives, Reset restores
+   the seeds.
+
+   THE 3.6.0 LINKS MODEL — sig.workspace.v3.links stores GraphEdge
+   { id, fromId, toId } records (the 3.0.0 shapeless {from, to} pair is
+   MIGRATED LAZILY by normalizeEdge: legacy entries read through a
+   synthetic `legacy:from:to` id and re-persist as GraphEdges on the
+   next write). Parent edges stay DERIVED from parentId and carry the
+   deterministic id `parent:${childId}` — unlink resolves the kind by
+   id prefix: a parent edge unlinks by clearing the child's parentId,
+   a link edge is removed from the array.
    ========================================================================== */
 
 /** Shallow shape guards for the snapshot import (trust, but verify). */
@@ -2723,10 +2746,33 @@ function isTimelineItemish(value: unknown): boolean {
   );
 }
 
-function GraphPlannerModule() {
+/**
+ * GraphEdge normalizer (3.6.0): accepts the CURRENT { id, fromId, toId }
+ * shape and the LEGACY { from, to } pair (a synthetic
+ * `legacy:from:to` id keeps unlink/dedupe honest), null for junk.
+ */
+function normalizeEdge(raw: unknown): GraphEdge | null {
+  if (typeof raw !== "object" || raw === null) return null;
+  const edge = raw as Partial<GraphEdge> & { from?: unknown; to?: unknown };
+  if (
+    typeof edge.id === "string" &&
+    typeof edge.fromId === "string" &&
+    typeof edge.toId === "string"
+  ) {
+    return { id: edge.id, fromId: edge.fromId, toId: edge.toId };
+  }
+  if (typeof edge.from === "string" && typeof edge.to === "string") {
+    return { id: `legacy:${edge.from}:${edge.to}`, fromId: edge.from, toId: edge.to };
+  }
+  return null;
+}
+
+/**
+ * useWorkspaceState — THE ONE HOOK (the Studio split, 3.6.0). Every
+ * mutation the two views need, one toast voice, one persistence story.
+ */
+function useWorkspaceState() {
   const toast = useToast();
-  const modal = useModal<TimelineItem>();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   // THE PERSISTENCE CONTRACT — versioned keys, seeds as fallbacks.
   const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>(
     "sig.workspace.v3.graph",
@@ -2736,16 +2782,17 @@ function GraphPlannerModule() {
     "sig.workspace.v3.timeline",
     SEED_TIMELINE,
   );
-  /* 3.0.0 OBSIDIAN MODEL EXTENSIONS — the dragged positions and the
-     tether links are their own persisted arrays (the graph NODES stay
-     the 2.7.0 shape; positions/links are separate keys, so an older
-     snapshot still imports cleanly). */
   const [positions, setPositions, resetPositions] = usePersistentState<
     Record<string, { x: number; y: number }>
   >("sig.workspace.v3.graph-positions", {});
-  const [links, setLinks, resetLinks] = usePersistentState<GraphLink[]>(
+  const [links, setLinks, resetLinks] = usePersistentState<GraphEdge[]>(
     "sig.workspace.v3.links",
     [],
+  );
+  // The NORMALIZED view (legacy {from,to} entries read through).
+  const normalizedLinks = useMemo<GraphEdge[]>(
+    () => links.map(normalizeEdge).filter((edge): edge is GraphEdge => edge !== null),
+    [links],
   );
 
   const moveNode = useCallback(
@@ -2756,23 +2803,71 @@ function GraphPlannerModule() {
   );
 
   // THE TETHER COMMIT — a right-click drag from node to node lands here.
-  // Extra links are APPENDED (deduped); the docs model: non-parent edges
-  // live in this array, parent edges stay derived from parentId.
+  // Extra links are APPENDED (deduped, both directions) as GraphEdges;
+  // parent edges stay derived from parentId. The dedupe read goes
+  // through normalizeEdge, so a legacy array migrates on first write.
   const linkNodes = useCallback(
     (fromId: string, toId: string) => {
       setLinks((current) => {
-        const exists = current.some(
+        const normalized = current
+          .map(normalizeEdge)
+          .filter((edge): edge is GraphEdge => edge !== null);
+        const exists = normalized.some(
           (link) =>
-            (link.from === fromId && link.to === toId) ||
-            (link.from === toId && link.to === fromId),
+            (link.fromId === fromId && link.toId === toId) ||
+            (link.fromId === toId && link.toId === fromId),
         );
-        if (exists) return current;
-        return [...current, { from: fromId, to: toId }];
+        if (exists) return normalized;
+        return [
+          ...normalized,
+          { id: `lnk-${Date.now().toString(36)}`, fromId, toId },
+        ];
       });
       toast("success", "Tethered — the graph keeps the link.");
     },
     [setLinks, toast],
   );
+
+  // THE UNLINK (3.6.0) — kind-resolved by the id prefix: `parent:*`
+  // clears the child's parentId (the tree edge), anything else is a
+  // GraphEdge removed from the persisted array.
+  const unlinkEdge = useCallback(
+    (edgeId: string) => {
+      if (edgeId.startsWith("parent:")) {
+        const childId = edgeId.slice("parent:".length);
+        setGraph((current) =>
+          current.map((node) =>
+            node.id === childId ? { ...node, parentId: undefined } : node,
+          ),
+        );
+      } else {
+        setLinks((current) =>
+          current
+            .map(normalizeEdge)
+            .filter((edge): edge is GraphEdge => edge !== null && edge.id !== edgeId),
+        );
+      }
+      toast("success", "Unlinked — the edge is gone from the workspace.");
+    },
+    [setGraph, setLinks, toast],
+  );
+
+  // THE INSPECTOR COMMIT (3.6.0) — one debounced patch per field burst.
+  const updateNode = useCallback(
+    (id: string, patch: NodePatch) => {
+      setGraph((current) =>
+        current.map((node) => (node.id === id ? { ...node, ...patch } : node)),
+      );
+    },
+    [setGraph],
+  );
+
+  // THE AUTO-ARRANGE — clear the persisted custom positions; the pure
+  // layoutGraph re-places every node and the EMPTY map persists.
+  const autoArrange = useCallback(() => {
+    resetPositions();
+    toast("success", "Auto-arranged — the deterministic layout is restored and persisted.");
+  }, [resetPositions, toast]);
 
   // THE DBL-CLICK SPAWN — a node at the clicked point, parented to the
   // nearest node (or the root), position persisted immediately.
@@ -2789,15 +2884,28 @@ function GraphPlannerModule() {
     [setGraph, setPositions, toast],
   );
 
-  const addNode = useCallback(
-    (node: Omit<GraphNode, "id">) => {
+  // THE SPAWNED CHILD (3.6.0, the inspector button) — a node parented to
+  // the selection, parked beside it.
+  const spawnLinkedChild = useCallback(
+    (parentId: string) => {
+      const id = `kg-${Date.now().toString(36)}`;
       setGraph((current) => [
         ...current,
-        { ...node, id: `kg-${Date.now().toString(36)}` },
+        { id, label: "New note", categoryToken: "--sig-lavender", parentId },
       ]);
-      toast("success", `Node "${node.label}" added and linked.`);
+      const parentPosition = positions[parentId];
+      if (parentPosition !== undefined) {
+        setPositions((current) => ({
+          ...current,
+          [id]: {
+            x: Math.min(600, parentPosition.x + 70),
+            y: Math.max(40, parentPosition.y - 50),
+          },
+        }));
+      }
+      toast("success", "Linked child spawned — drag it, tether it, inspect it.");
     },
-    [setGraph, toast],
+    [positions, setGraph, setPositions, toast],
   );
 
   const addMilestone = useCallback(
@@ -2832,14 +2940,17 @@ function GraphPlannerModule() {
   );
 
   const exportSnapshot = useCallback(() => {
-    // 2.9.0: the payload build stays here (the (ps1) contract lives in
-    // the composition layer); the Blob → anchor dance moved into the
-    // shared downloadJson helper (the command palette lands on it too).
-    // 3.0.0: the links model joins the payload (the ob1 extension).
-    const payload = { version: "sig.workspace.v3", graph, timeline, links };
+    // 3.0.0: the links model joins the payload; 3.6.0: the GraphEdge
+    // shape (the normalized view — legacy entries migrate on export).
+    const payload = {
+      version: "sig.workspace.v3",
+      graph,
+      timeline,
+      links: normalizedLinks,
+    };
     downloadJson(JSON.stringify(payload, null, 2), "signature-workspace.json");
     toast("success", "Snapshot exported — signature-workspace.json.");
-  }, [graph, timeline, links, toast]);
+  }, [graph, timeline, normalizedLinks, toast]);
 
   const importSnapshot = useCallback(
     (file: File) => {
@@ -2849,6 +2960,7 @@ function GraphPlannerModule() {
           const data = JSON.parse(String(reader.result)) as {
             graph?: unknown;
             timeline?: unknown;
+            links?: unknown;
           };
           const graphOk =
             Array.isArray(data.graph) && data.graph.every(isGraphNodeish);
@@ -2861,6 +2973,13 @@ function GraphPlannerModule() {
           }
           setGraph(data.graph as GraphNode[]);
           setTimeline(data.timeline as TimelineItem[]);
+          if (Array.isArray(data.links)) {
+            setLinks(
+              data.links
+                .map(normalizeEdge)
+                .filter((edge): edge is GraphEdge => edge !== null),
+            );
+          }
           toast("success", "Snapshot imported — graph + timeline restored.");
         } catch {
           toast("error", "Invalid snapshot structure");
@@ -2868,7 +2987,7 @@ function GraphPlannerModule() {
       };
       reader.readAsText(file);
     },
-    [setGraph, setTimeline, toast],
+    [setGraph, setTimeline, setLinks, toast],
   );
 
   const resetAll = useCallback(() => {
@@ -2879,28 +2998,48 @@ function GraphPlannerModule() {
     toast("error", "Local state reset");
   }, [resetGraph, resetTimeline, resetPositions, resetLinks, toast]);
 
+  return {
+    graph,
+    timeline,
+    links: normalizedLinks,
+    positions,
+    setGraph,
+    setLinks,
+    resetPositions,
+    moveNode,
+    linkNodes,
+    unlinkEdge,
+    updateNode,
+    autoArrange,
+    addNodeAt,
+    spawnLinkedChild,
+    addMilestone,
+    toggleSettled,
+    deleteMilestone,
+    exportSnapshot,
+    importSnapshot,
+    resetAll,
+  };
+}
+
+/** The useWorkspaceState return type — the views share one contract. */
+type WorkspaceState = ReturnType<typeof useWorkspaceState>;
+
+/* ==========================================================================
+   ANALYTICS & PLANNER (3.6.0) — the old "Graphs & Planner" module,
+   RETITLED and promoted to its own view after the KnowledgeGraph moved
+   to the Graph Studio. Three cards: Spending by Category (BarChart,
+   per-bar maxes), Attendance Momentum (AreaChart, 8 points, sky), and
+   the Milestone Manager (TimelineManager fully wired; inspect composes
+   the EventModal) with the snapshot toolbar (Export / Import / Reset).
+   ========================================================================== */
+
+function AnalyticsPlannerView({ workspace }: { workspace: WorkspaceState }) {
+  const modal = useModal<TimelineItem>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   return (
     <>
-      <SurfaceCard
-        eyebrow="Graph"
-        meta="components/graph.tsx"
-        title="The Knowledge Graph"
-        interactive
-      >
-        <div data-testid="knowledge-graph">
-          <KnowledgeGraph
-            nodes={graph}
-            positions={positions}
-            links={links}
-            onAddNode={addNode}
-            onAddNodeAt={addNodeAt}
-            onMoveNode={moveNode}
-            onLinkNodes={linkNodes}
-            addOn
-            label="Workbench knowledge graph"
-          />
-        </div>
-      </SurfaceCard>
       <div className="hub__row--2">
         <SurfaceCard
           eyebrow="Charts"
@@ -2939,7 +3078,7 @@ function GraphPlannerModule() {
             variant="secondary"
             leftIcon="Download"
             data-testid="snapshot-export"
-            onClick={exportSnapshot}
+            onClick={workspace.exportSnapshot}
           >
             Export JSON
           </Button>
@@ -2961,7 +3100,7 @@ function GraphPlannerModule() {
             tabIndex={-1}
             onChange={(event) => {
               const file = event.target.files?.[0];
-              if (file !== undefined) importSnapshot(file);
+              if (file !== undefined) workspace.importSnapshot(file);
               event.target.value = "";
             }}
           />
@@ -2969,17 +3108,20 @@ function GraphPlannerModule() {
             size="sm"
             variant="danger"
             data-testid="snapshot-reset"
-            onClick={resetAll}
+            onClick={workspace.resetAll}
           >
             Reset
           </Button>
+          <span className="hub__sim-note">
+            the workspace snapshot carries graph + timeline + links under sig.workspace.v3
+          </span>
         </div>
         <div data-testid="milestone-manager">
           <TimelineManager
-            items={timeline}
-            onAdd={addMilestone}
-            onToggleSettled={toggleSettled}
-            onDelete={deleteMilestone}
+            items={workspace.timeline}
+            onAdd={workspace.addMilestone}
+            onToggleSettled={workspace.toggleSettled}
+            onDelete={workspace.deleteMilestone}
             onInspect={modal.open}
             label="Milestone manager"
           />

@@ -69,52 +69,58 @@ export interface CarouselProps {
     /** The accessible name for the scroll region (role="region"). */
     label?: string;
     /**
-     * 3.0.0 — THE MODE. "free-scroll" (default) is the historical snap
-     * strip: every child is a content-width snap unit, Prev/Next advance
-     * ONE ITEM, dots are one per child, and the active index syncs
-     * through an IntersectionObserver (majority-visible item = active —
-     * 3.0.0 replaces the old scrollLeft/itemWidth scroll math). "paged-3"
+     * 3.0.0 — THE MODE; 3.6.0 rebuilds paged-3 as TRUE PAGE GRIDS.
+     * "free-scroll" (default) is the historical snap strip: every child is
+     * a content-width snap unit, Prev/Next advance ONE ITEM, dots are one
+     * per child, and the active index syncs through an
+     * IntersectionObserver (majority-visible item = active). "paged-3"
      * chunks the children into pages of THREE (pure math: ceil(n / 3))
-     * and renders each page as ONE snap unit — a `repeat(3, 1fr)` grid
-     * with the 16px gap (css: .sig-carousel__page); Prev/Next advance
-     * ±1 PAGE, dots are one per PAGE, the indicator reads "p / P".
+     * and renders a STATEFUL PAGE DECK — one `.sig-carousel__page` grid
+     * (repeat(3, minmax(0, 1fr)), 16px gap, stretch) visible at a time;
+     * non-current page wrappers carry `hidden` + `inert` (the inert
+     * sweep: off-screen pages leave both the a11y tree and the tab
+     * order), dots are ONE PER PAGE, Prev/Next step pages and disable at
+     * the bounds, the indicator reads "Page p of P", and ←/→ (focus
+     * anywhere inside the carousel) flip pages.
      */
     mode?: "paged-3" | "free-scroll";
     /** The items — must already be `<CarouselItem>` elements. */
     children?: ReactNode;
 }
 /**
- * `<Carousel>` — the horizontal scroll strip (3.0.0: TWO MODES).
+ * `<Carousel>` — the horizontal strip (3.0.0: TWO MODES; 3.6.0: the
+ * paged mode is a TRUE 3×3 page deck).
  *
- * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
- * track rides on top (full width, never squeezed between buttons), and
- * BELOW it one `.sig-carousel__controls` flex row: prev · dots ·
- * indicator ("1 / N", aria-live polite) · next. The readout never
- * overlaps card content — it lives in its own bar.
+ * THE ANATOMY — a full-width stage on top, and BELOW it one
+ * `.sig-carousel__controls` flex row: prev · dots · indicator · next.
+ * The readout never overlaps card content — it lives in its own bar.
  *
  * free-scroll (DEFAULT — the historical behavior): every child is a
  * content-width snap unit (`flex: 0 0 auto` + scroll-snap-align), the
  * chevrons scrollBy ±ONE ITEM WIDTH, dots are one per child and
- * clickable (`scrollTo({ left: index * itemWidth })`). 3.0.0 UPGRADE:
- * the active-index sync is an IntersectionObserver — the track's items
- * are observed and the MAJORITY-VISIBLE item (intersectionRatio ≥ 0.5,
- * highest wins) is the active dot. The old per-pixel scroll math is
- * gone; the track's scroll handler now only drives the paged mode.
+ * clickable (`scrollTo({ left: index * itemWidth })`), and the active
+ * index syncs through an IntersectionObserver — the track's items are
+ * observed and the MAJORITY-VISIBLE item (intersectionRatio ≥ 0.5,
+ * highest wins) is the active dot.
  *
- * paged-3: the children are chunked into PAGES OF THREE (pure math:
- * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
- * — a `.sig-carousel__page` slide wearing the 100% width and the
- * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
- * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
- * dots are one per page, and the indicator reads "p / P" (pages). The
- * active page syncs from the track's scroll event, rAF-throttled (one
- * state write per frame), with the page formula
- * `Math.round(scrollLeft / track.clientWidth) + 1`.
+ * paged-3 (3.6.0 REBUILD — the owner's "true 3-per-page grids" spec):
+ * the children chunk into PAGES OF THREE (`pageCount = ceil(n / 3)`)
+ * rendered as a STATEFUL PAGE DECK — a page-index state, not a scroll
+ * track. Every page wrapper renders as a `.sig-carousel__page` grid
+ * (`repeat(3, minmax(0, 1fr))`, 16px gap, `align-items: stretch` for
+ * equal heights; collapses to `1fr` under a 640px container); exactly
+ * one is visible (conditional `hidden`), and the non-current wrappers
+ * also carry `inert` (React 18 has no inert prop — the ref callback
+ * workaround; React 19 could take `inert={...}` directly) so Tab never
+ * lands in an off-screen page. Prev/Next step ±1 page and DISABLE at
+ * the bounds; dots are ONE PER PAGE (never per item in paged mode) and
+ * clickable; the indicator reads "Page p of P" in tabular-nums; ←/→
+ * (captured on the root, so focus may rest on any control inside) flip
+ * pages too.
  *
- * ZERO-DEPENDENCY MOTION: scrolling uses `behavior: "smooth"` unless
- * the visitor prefers reduced motion — matchMedia is read ONCE per
- * component instance. The IO is disconnected on unmount; the pending
- * rAF frame is cancelled on unmount.
+ * ZERO-DEPENDENCY MOTION: free-scroll scrolling uses `behavior:
+ * "smooth"` unless the visitor prefers reduced motion — matchMedia is
+ * read ONCE per component instance. The IO is disconnected on unmount.
  *
  * @example
  * ```tsx

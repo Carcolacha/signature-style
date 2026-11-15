@@ -62,9 +62,12 @@ const SETTLE_MS = 800;
 /** Tolerance: 0.1% of total pixels (fonts/antialiasing headroom). */
 const TOLERANCE = 0.001;
 
-/** The 5 certified views: name → deep link (the hash bootstrap lands cold). */
+/** The certified views: name → deep link (the hash bootstrap lands cold).
+ *  3.6.0: the SIX-view map — graph-studio + analytics-planner join. */
 const VIEWS = [
   { name: "dashboard", hash: "" },
+  { name: "graph-studio", hash: "#/graph" },
+  { name: "analytics-planner", hash: "#/planner" },
   { name: "pattern-studio", hash: "#/studio" },
   { name: "master-index", hash: "#/index" },
   { name: "chronicle", hash: "#/chronicle" },

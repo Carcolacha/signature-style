@@ -18,6 +18,6 @@ export { SurfaceCard, type SurfaceCardProps, PageHero, type PageHeroProps, type 
 export { DataTable, type DataTableProps, type DataTableColumn, Tabs, type TabsProps, type TabsTab, Callout, type CalloutProps, type CalloutStatus, } from "./data.js";
 export { Carousel, type CarouselProps, CarouselItem, type CarouselItemProps, ProseBlock, type ProseBlockProps, AnnouncementBanner, type AnnouncementBannerProps, type AnnouncementVariant, type AnnouncementBannerAction, } from "./editorial.js";
 export { ActionTile, type ActionTileProps, FlipCard, type FlipCardProps, AccordionCard, type AccordionCardProps, MatchupCard, type MatchupCardProps, type MatchupSide, ContentCard, type ContentCardProps, type ContentCardAction, ReferenceCard, type ReferenceCardProps, TierCard, type TierCardProps, ProfileCard, type ProfileCardProps, type ProfileStat, type ProfileSkill, ChronicleTimeline, type ChronicleTimelineProps, type ChronicleRelease, } from "./cards.js";
-export { KnowledgeGraph, type KnowledgeGraphProps, type GraphNode, type GraphPosition, layoutGraph, cubicBezierEdge, } from "./graph.js";
+export { KnowledgeGraph, type KnowledgeGraphProps, type KnowledgeGraphHandle, type GraphNode, type GraphEdge, type GraphEdgeSelection, type GraphPosition, type GraphView, layoutGraph, cubicBezierEdge, isTypingTarget, } from "./graph.js";
 export { CommandPalette, type CommandEntry, type CommandPaletteProps, } from "./command.js";
 export { SkeletonLine, type SkeletonLineProps, SkeletonCard, SkeletonTableRow, type SkeletonTableRowProps, } from "./skeleton.js";

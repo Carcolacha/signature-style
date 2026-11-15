@@ -155,10 +155,15 @@ export {
 export {
   KnowledgeGraph,
   type KnowledgeGraphProps,
+  type KnowledgeGraphHandle,
   type GraphNode,
+  type GraphEdge,
+  type GraphEdgeSelection,
   type GraphPosition,
+  type GraphView,
   layoutGraph,
   cubicBezierEdge,
+  isTypingTarget,
 } from "./graph.js";
 export {
   CommandPalette,
