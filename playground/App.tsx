@@ -250,6 +250,7 @@ import { ThemeCustomizer } from "./components/ThemeCustomizer.js";
 import { CodexView } from "./components/CodexView.js";
 import { GraphStudioView } from "./components/GraphStudio.js";
 import type { NodePatch } from "./components/GraphStudio.js";
+import { MotionLabView } from "./components/MotionLab.js";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract).
  *  3.6.0 — THE 6-VIEW NAV MAP: the Workbench (the 12-column bento — the
@@ -265,6 +266,7 @@ type View =
   | "dashboard"
   | "graph"
   | "planner"
+  | "motion"
   | "studio"
   | "index"
   | "chronicle"
@@ -290,6 +292,7 @@ const VIEW_HREFS: Record<View, string> = {
   dashboard: "#/dashboard",
   graph: "#/graph",
   planner: "#/planner",
+  motion: "#/motion",
   studio: "#/studio",
   index: "#/index",
   chronicle: "#/chronicle",
@@ -301,6 +304,7 @@ const HREF_TO_VIEW: Record<string, View> = {
   "#/dashboard": "dashboard",
   "#/graph": "graph",
   "#/planner": "planner",
+  "#/motion": "motion",
   "#/studio": "studio",
   "#/index": "index",
   "#/chronicle": "chronicle",
@@ -310,11 +314,13 @@ const HREF_TO_VIEW: Record<string, View> = {
 /** Nav order per owner (3.6.0): the SIX views — Workbench, Graph Studio,
  *  Analytics & Planner, Pattern Studio, Master Index, AI Codex.
  *  Chronicle remains reachable (hash + palette command) but yields its
- *  nav slot to the Studio. */
+ *  nav slot to the Studio. 3.7.0: the MOTION LAB joins the bar (after
+ *  Analytics & Planner — the kinetic engine's proving ground). */
 const NAV_ITEMS: NavItem[] = [
   { href: VIEW_HREFS.dashboard, label: "Workbench" },
   { href: VIEW_HREFS.graph, label: "Graph Studio" },
   { href: VIEW_HREFS.planner, label: "Analytics & Planner" },
+  { href: VIEW_HREFS.motion, label: "Motion Lab" },
   { href: VIEW_HREFS.studio, label: "Pattern Studio" },
   { href: VIEW_HREFS.index, label: "Index" },
   { href: VIEW_HREFS.codex, label: "AI Codex" },
@@ -338,6 +344,10 @@ const HERO_COPY: Record<View, { title: string; sub: string }> = {
   planner: {
     title: "ANALYTICS & PLANNER",
     sub: "charts and milestones · the planning deck",
+  },
+  motion: {
+    title: "THE MOTION LAB",
+    sub: "the kinetic engine on stage · springs, glides & live choreography",
   },
   studio: {
     title: "THE PATTERN STUDIO",
@@ -867,6 +877,7 @@ function Shell() {
     }
     if (view === "graph") return [engine, { label: "graph-studio" }];
     if (view === "planner") return [engine, { label: "analytics-planner" }];
+    if (view === "motion") return [engine, { label: "motion-lab" }];
     if (view === "index") return [engine, { label: "master-index" }];
     if (view === "chronicle") return [engine, { label: "chronicle" }];
     if (view === "codex") return [engine, { label: "ai-codex" }];
@@ -922,6 +933,7 @@ function Shell() {
     { id: "view-dashboard", label: "Go to Workbench", keywords: "view engine bento workbench live dashboard", icon: "Gauge", hint: "view", run: () => navigate(VIEW_HREFS.dashboard) },
     { id: "view-graph", label: "Go to Graph Studio", keywords: "view graph studio canvas nodes links inspector", icon: "Waypoints", hint: "view", run: () => navigate(VIEW_HREFS.graph) },
     { id: "view-planner", label: "Go to Analytics & Planner", keywords: "view analytics planner charts milestones timeline", icon: "ChartColumn", hint: "view", run: () => navigate(VIEW_HREFS.planner) },
+    { id: "view-motion", label: "Go to Motion Lab", keywords: "view motion lab kinetics springs animation slow-mo reveal choreography", icon: "Activity", hint: "view", run: () => navigate(VIEW_HREFS.motion) },
     { id: "view-studio", label: "Go to Pattern Studio", keywords: "view catalog patterns sets copy", icon: "Shapes", hint: "view", run: () => navigate(VIEW_HREFS.studio) },
     { id: "view-index", label: "Go to Master Index", keywords: "view catalog archetypes doors", icon: "LayoutGrid", hint: "view", run: () => navigate(VIEW_HREFS.index) },
     { id: "view-chronicle", label: "Go to Chronicle", keywords: "view versions memorial night releases", icon: "Map", hint: "view", run: () => navigate(VIEW_HREFS.chronicle) },
@@ -1109,6 +1121,8 @@ function Shell() {
           />
         ) : view === "planner" ? (
           <AnalyticsPlannerView workspace={workspace} />
+        ) : view === "motion" ? (
+          <MotionLabView />
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
         ) : view === "studio" ? (
@@ -1789,7 +1803,7 @@ function AllocationForm({
       });
       toast("success", "Allocated — welcome aboard 🎉");
       setName("");
-      setContribution("");
+      setAllocation("");
       setPostal("");
       setRotation(false);
       setSubmitting(false);

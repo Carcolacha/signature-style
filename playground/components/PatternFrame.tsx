@@ -199,4 +199,5 @@ const SET_ACCENTS: Record<SetId, Parameters<typeof SigBadge>[0]["colorToken"]> =
   "05": "--sig-mauve-soft",
   "06": "--sig-yellow",
   "07": "--sig-cyan",
+  "08": "--sig-violet-glow",
 };

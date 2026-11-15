@@ -30,6 +30,7 @@ import { readFileSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SNIPPETS, SET_NAMES, SET_BLURBS } from "./snippets.ts";
+import { MOTION_SNIPPETS } from "./motion-snippets.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -57,8 +58,13 @@ const whitelist = new Set([
   ...Object.keys(tokens.shared.tokens),
   ...Object.keys(tokens.sigPalette.tokens),
 ]);
-if (whitelist.size !== 51) {
-  throw new Error(`generate-llms: expected the 51-token whitelist (3.2.0: 34 + cobalt + 15 chromatic + --radius-card + the --bg-canvas alias), found ${String(whitelist.size)}`);
+/* 3.7.0 — the kinetic motion tokens join the whitelist (gate mo1):
+   51 → 60. The ThemeProvider TOKEN_KEYS is the law; this check pins the
+   generator's expectation so a silent drift fails loudly here. */
+const motionTokenNames = Object.keys(tokens.motionTokens?.tokens ?? {});
+for (const name of motionTokenNames) whitelist.add(name);
+if (whitelist.size !== 60) {
+  throw new Error(`generate-llms: expected the 60-token whitelist (3.2.0's 51 + the 9 kinetic motion tokens of 3.7.0), found ${String(whitelist.size)}`);
 }
 
 /* ---- SYSTEM_PROMPT.md — the doctrines ---------------------------------- */
@@ -190,6 +196,21 @@ lines.push("");
 lines.push(":root keeps the 6px/12px defaults — an absent attribute renders the historical look. Radius and color are orthogonal axes.");
 lines.push("");
 
+/* ---- 3.7.0 THE KINETIC MOTION TOKENS ----------------------------------- */
+const motionTokens = tokens.motionTokens?.tokens ?? {};
+lines.push("## The Kinetic Motion Tokens (3.7.0)");
+lines.push("");
+lines.push(motionTokens.contract ?? "");
+lines.push("");
+lines.push("| token | value |");
+lines.push("|---|---|");
+for (const [name, entry] of Object.entries(motionTokens)) {
+  if (name === "contract") continue;
+  const fallback = entry.fallback !== undefined ? ` (fallback: \`${entry.fallback}\`)` : "";
+  lines.push(`| \`${name}\` | \`${entry.value}\`${fallback} |`);
+}
+lines.push("");
+
 lines.push("## The Rules (The Dynamic Signature Engine v3.2)");
 lines.push("");
 lines.push(doctrines);
@@ -197,7 +218,7 @@ lines.push("");
 
 lines.push("## The 6-Set Taxonomy — every component, copy-paste");
 lines.push("");
-lines.push(`Registry: ${Object.keys(SNIPPETS).length} entries, one per value export of react/index.d.ts. Every snippet is compile-plausible documentation — one import, no invented props.`);
+lines.push(`Registry: ${Object.keys(SNIPPETS).length} entries, one per value export of react/index.d.ts, plus the Set 08 motion registry (${Object.keys(MOTION_SNIPPETS).length} entries). Every snippet is compile-plausible documentation — one import, no invented props.`);
 lines.push("");
 for (const setId of SET_ORDER) {
   lines.push(`### Set ${setId} — ${SET_NAMES[setId]}`);
@@ -234,6 +255,30 @@ for (const setId of SET_ORDER) {
   }
 }
 
+/* ---- 3.7.0 SET 08 · MOTION & KINETICS ----------------------------------- */
+lines.push(`### Set 08 — ${SET_NAMES["08"]}`);
+lines.push("");
+lines.push(SET_BLURBS["08"]);
+lines.push("");
+for (const [key, entry] of Object.entries(MOTION_SNIPPETS)) {
+  lines.push(`#### ${entry.componentName} (${key})`);
+  lines.push("");
+  lines.push("Copy-paste JSX:");
+  lines.push("");
+  lines.push("```tsx");
+  lines.push(entry.jsx);
+  lines.push("```");
+  if (entry.html !== undefined) {
+    lines.push("");
+    lines.push("HTML variant (no React — real package classes/inline styles):");
+    lines.push("");
+    lines.push("```html");
+    lines.push(entry.html);
+    lines.push("```");
+  }
+  lines.push("");
+}
+
 lines.push("## The Universal AI Replication Contract (source of truth)");
 lines.push("");
 lines.push("The recipes above are ported from SYSTEM_PROMPT.md's Universal AI Replication Contract — read that section of SYSTEM_PROMPT.md for the narrative contracts. Any AI consuming `@edwyn/signature-style` reproduces the signature verbatim: read the snippet, copy the snippet.");
@@ -249,6 +294,9 @@ const setIndex = SET_ORDER.map((setId) => {
     .map(([key]) => key);
   return `- [Set ${setId} — ${SET_NAMES[setId]}](llms-full.txt): ${keys.join(", ")} (live demos + copy-paste in the playground's Pattern Studio)`;
 });
+setIndex.push(
+  `- [Set 08 — ${SET_NAMES["08"]}](llms-full.txt): ${Object.keys(MOTION_SNIPPETS).join(", ")} (live demos + copy-paste in the playground's Motion Lab)`,
+);
 
 const llms = `# @edwyn/signature-style — The Signature Style
 

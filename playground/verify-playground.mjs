@@ -2119,7 +2119,9 @@ if (!existsSync(dataCssPath)) {
     ["font-variant-numeric: tabular-nums", "the tabular numeric cells (digits never jitter)"],
     ["color-mix(in srgb, var(--color-cake-primary) 8%, transparent)", "the subtle 8% Flamingo row hover wash"],
     ['[aria-selected="true"]', "THE tab active mechanism — the attribute IS the state (no .is-active class)"],
-    ["border-bottom-color: var(--color-cake-primary)", "the Flamingo underline on the selected tab (THE nav visual contract)"],
+    ["background: var(--color-cake-primary)", "the Flamingo underline — the shared gliding indicator's ink (THE nav visual contract; 3.7.0 FLIP)"],
+    [".sig-tabs-indicator", "the shared gliding tab indicator (3.7.0 — the per-tab border underline retired)"],
+    ["transition: transform var(--dur-glide", "the indicator glides on transform ONLY (the e1 treaty; the FLIP play step)"],
     ["border-left: 4px solid var(--status)", "the callout status strip (the toast mechanism, persistent)"],
     ["caption-side: bottom", "the table caption sits UNDER the table"],
     ["scale(0.97)", "the tab press physics"],
@@ -2141,6 +2143,16 @@ if (!existsSync(dataCssPath)) {
   if (/\.is-active/.test(dataCss.replace(/\/\*[\s\S]*?\*\//g, ""))) {
     failures.push(
       '(dd1) css/data.css uses .is-active — the tab state is [aria-selected="true"] ONLY (attribute-driven, the nav contract)',
+    );
+  }
+  // 3.7.0 FLIP: the TELEPORTING per-tab underline must be GONE — no tab
+  // rule may declare its own border-bottom underline (the shared
+  // .sig-tabs-indicator is the only underline in the file; comment prose
+  // may narrate the retirement, rule selectors may not resurrect it).
+  const dataStripped = dataCss.replace(/\/\*[\s\S]*?\*\//g, "");
+  if (/\.sig-tabs__tab[^{]*\{[^}]*border-bottom[^}]*\}/.test(dataStripped)) {
+    failures.push(
+      "(dd1) css/data.css declares a per-tab border-bottom underline — 3.7.0 retired it for the shared .sig-tabs-indicator (the FLIP glide)",
     );
   }
   const dataHexes = dataCss.match(/#[0-9a-f]{3,8}\b/gi);
@@ -3666,11 +3678,17 @@ if (tokenKeysMatch26 === null) {
   failures.push("(pt11) cannot sweep — react/ThemeProvider.tsx has no parseable TOKEN_KEYS array");
 } else {
   const whitelist26 = [...tokenKeysMatch26[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
-  const sigNames = whitelist26.filter((name) => name.startsWith("--sig-"));
+  // 3.7.0: --sig-motion-scale carries a --sig-* NAME but is a MOTION
+  // dial, not a content COLOR — the sweep is the color-family sweep, so
+  // the dial is excluded from the count (and separately required below).
+  const sigNames = whitelist26.filter((name) => name.startsWith("--sig-") && name !== "--sig-motion-scale");
   if (sigNames.length !== 26) {
     failures.push(
-      `(pt11) the whitelist carries ${sigNames.length} --sig-* tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion) — the SigColorToken union is the whitelist`,
+      `(pt11) the whitelist carries ${sigNames.length} --sig-* COLOR tokens, expected EXACTLY 26 (3.0.0: the chromatic expansion; --sig-motion-scale is the motion dial, swept separately) — the SigColorToken union is the whitelist`,
     );
+  }
+  if (!whitelist26.includes("--sig-motion-scale")) {
+    failures.push("(pt11) the motion dial --sig-motion-scale is missing from the whitelist (3.7.0)");
   }
   for (const name of EXPECTED_SIG_26) {
     if (!sigNames.includes(name)) {
@@ -3680,9 +3698,9 @@ if (tokenKeysMatch26 === null) {
   if (whitelist26.includes("--sig-blue")) {
     failures.push("(pt11) --sig-blue is retired (3.0.0) — it must NOT be in the TOKEN_KEYS whitelist");
   }
-  if (whitelist26.length !== 51) {
+  if (whitelist26.length !== 60) {
     failures.push(
-      `(pt11) the whitelist is ${whitelist26.length} tokens, expected EXACTLY 51 (34 + cobalt + 15 chromatic + --radius-card + the 3.2.0 --bg-canvas alias)`,
+      `(pt11) the whitelist is ${whitelist26.length} tokens, expected EXACTLY 60 (51 through 3.2.0 + the 9 kinetic motion tokens of 3.7.0)`,
     );
   }
 }

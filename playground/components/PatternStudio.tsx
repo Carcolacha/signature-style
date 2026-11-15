@@ -1045,6 +1045,11 @@ const SET_FRAMES: Record<SetId, ReadonlyArray<string>> = {
     "SigWcSurfaceCard", "SigWcBadge", "SigWcProgressBar", "SigWcStatRing",
     "SigWcCallout", "SigWcCarousel",
   ],
+  /* 3.7.0 — Set 08 (Motion & Kinetics) mounts in the MOTION LAB view, not
+     here; the studio stream stays the 7 canon sets (SET_ORDER). The key
+     exists because SET_FRAMES is Record<SetId, …> and SetId grew to
+     include "08" for the Motion Lab's PatternFrames. */
+  "08": [],
 };
 
 /** Component count per set — derived from the registry, never hand-typed. */

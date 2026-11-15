@@ -27,6 +27,7 @@ The 6-Set Taxonomy — 56 documented exports, one copy-paste snippet each:
 - [Set 05 — Chronology & Planners](llms-full.txt): EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 06 — Data, Editorial & Feedback](llms-full.txt): DataTable, Callout, Carousel, CarouselItem, ProseBlock, AnnouncementBanner, EmptyState, ToastProvider, useToast (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 07 — Web Components (zero-react)](llms-full.txt): SigWcSurfaceCard, SigWcBadge, SigWcProgressBar, SigWcStatRing, SigWcCallout, SigWcCarousel (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 08 — Motion & Kinetics](llms-full.txt): KineticTokens, AnimatedNumber, MotionReveal, KineticSurface, MotionLabTimeDilation, FallbackFirstData (live demos + copy-paste in the playground's Motion Lab)
 
 ## Recipes
 

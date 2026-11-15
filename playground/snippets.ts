@@ -31,8 +31,12 @@
  * 3.4.0: the taxonomy grows one MINI-SET — "07" is the Web Components
  * (zero-react) group: the six custom elements, each entry's "jsx" being
  * the plain HTML usage (a custom element IS valid JSX — no import, no
- * props, attributes only). */
-export type SetId = "01" | "02" | "03" | "04" | "05" | "06" | "07";
+ * props, attributes only).
+ * 3.7.0: "08" is the MOTION set — the kinetic primitives' copy payloads.
+ * It is NOT part of the Pattern Studio's SET_ORDER stream (the studio
+ * sidebar stays the 7 canon sets); Set 08 frames mount in the MOTION LAB
+ * view (#/motion), which needs the Copy Card machinery. */
+export type SetId = "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08";
 
 /** One registry entry — the Copy Card's payload. */
 export interface SnippetEntry {
@@ -55,6 +59,7 @@ export const SET_NAMES: Record<SetId, string> = {
   "05": "Chronology & Planners",
   "06": "Data, Editorial & Feedback",
   "07": "Web Components (zero-react)",
+  "08": "Motion & Kinetics",
 };
 
 /** Set order + the one-to-two-sentence human explanation per set. */
@@ -73,6 +78,8 @@ export const SET_BLURBS: Record<SetId, string> = {
     "The working set: ledgers that scroll instead of breaking, notes that persist, toasts that resolve, prose that reads, and the honest empty state. When an outcome lands it pushes a toast; when the context matters it stays in a callout.",
   "07":
     "The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @edwyn/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @edwyn/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.",
+  "08":
+    "The kinetic engine's own set: the linear() spring tokens, the three motion primitives and the two release patterns (time dilation, fallback-first data). These frames mount in the MOTION LAB view (#/motion) — the lab stages the live choreography, the Copy Cards carry the recipes.",
 };
 
 export const SNIPPETS: Record<string, SnippetEntry> = {
