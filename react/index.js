@@ -21,3 +21,4 @@ export { ActionTile, FlipCard, AccordionCard, MatchupCard, ContentCard, Referenc
 export { KnowledgeGraph, layoutGraph, cubicBezierEdge, isTypingTarget, } from "./graph.js";
 export { CommandPalette, } from "./command.js";
 export { SkeletonLine, SkeletonCard, SkeletonTableRow, } from "./skeleton.js";
+export { AnimatedNumber, springProgress, MotionReveal, KineticSurface, } from "./motion.js";

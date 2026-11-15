@@ -177,3 +177,13 @@ export {
   SkeletonTableRow,
   type SkeletonTableRowProps,
 } from "./skeleton.js";
+export {
+  AnimatedNumber,
+  springProgress,
+  type AnimatedNumberProps,
+  MotionReveal,
+  type MotionRevealProps,
+  type MotionRevealVariant,
+  KineticSurface,
+  type KineticSurfaceProps,
+} from "./motion.js";

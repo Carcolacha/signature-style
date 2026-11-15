@@ -1,0 +1,144 @@
+/* ==========================================================================
+   MOTION — THE KINETIC PRIMITIVES (3.7.0 "The Intelligent Kinetic Engine,
+   Motion Lab & Live Data Choreography"). Layered into `cascade` by
+   signature-style.css (imported after graph.css).
+
+   THREE COMPONENT FAMILIES, ONE TREATY:
+   - .sig-animated-number — <AnimatedNumber>'s span: tabular-nums so
+     digits never jitter while the rAF rolls the value. The roll itself
+     is JS (react/motion.tsx); css owns only the typography.
+   - .sig-motion-reveal[--in] — <MotionReveal>'s once-entrance wrapper.
+     The BASE state is the hidden half (opacity 0 + the variant's
+     transform/clip); data-in="true" is the revealed half. EVERY
+     animated property is on the e1 treaty list: opacity, transform,
+     clip-path. NEVER box-shadow, never layout geometry. The transition
+     rides the kinetic tokens (--dur-spring-gentle × --ease-spring-gentle)
+     and the stagger delay is calc(var(--stagger-index) × 45ms) — set
+     inline by the component.
+   - .sig-kinetic-surface — <KineticSurface>: the cursor-tracked sheen.
+     ::after is a radial-gradient anchored at --ptr-x / --ptr-y (pixel
+     coords, written per-frame by the component's rAF-throttled
+     pointermove handler). ONLY the sheen's opacity transitions on
+     hover; the POSITION is a direct custom-property repaint — it never
+     animates. GPU note: the gradient repaint is localized to the
+     pseudo-element (one composited layer inside the surface); no
+     layout, no ancestors, no other ink is touched.
+
+   REDUCED-MOTION MERCY (belt and suspenders): the kinetic duration
+   tokens already collapse to 1ms under prefers-reduced-motion and the
+   [data-sig-motion="reduced"] root override (css/tokens.css, the motion
+   mercy block) — which makes every transition here effectively instant.
+   This file ALSO hard-kills the transitions/animations and forces the
+   revealed/rest states, so the primitives stand down even if a consumer
+   overrides the duration tokens.
+
+   COLOR DOCTRINE: zero hex, zero box-shadow. The sheen mixes the
+   inline --sig-kinetic-accent (a --sig-* content token chosen by the
+   consumer, default --sig-cyan) at 12% into a transparent gradient —
+   content decoration on a content surface, the Rule of Engagement.
+   ========================================================================== */
+
+@layer cascade {
+
+  /* -- the number roll -------------------------------------------------------
+     tabular-nums: every digit occupies the same advance width, so a
+     rolling "9 → 10" never shimmies the line. Inline-block keeps the
+     span a transformable box should a consumer compose entrances. */
+  .sig-animated-number {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* -- the once-entrance wrapper ---------------------------------------------
+     The base (hidden) state. will-change hints the compositor for the
+     three treaty properties during the entrance only — the revealed
+     rule drops it (no permanent layer lease). */
+  .sig-motion-reveal {
+    opacity: 0;
+    transition:
+      opacity var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1)),
+      transform var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1)),
+      clip-path var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1));
+    /* The stagger delay arrives INLINE from the component (style=
+       {{ transitionDelay: "calc(var(--stagger-index) × 45ms)" }}) — an
+       inline longhand outranks this shorthand, which is exactly the
+       mechanism: the wave is per-instance data, not a css loop. */
+    will-change: opacity, transform, clip-path;
+  }
+  .sig-motion-reveal--fade-up {
+    transform: translateY(16px);
+  }
+  .sig-motion-reveal--scale-in {
+    transform: scale(0.96);
+  }
+  .sig-motion-reveal--clip-reveal {
+    clip-path: inset(0 0 100% 0);
+  }
+  /* THE REVEALED HALF — data-in="true" (the attribute IS the state, the
+     nav contract). Transform/clip return to identity; opacity to 1. */
+  .sig-motion-reveal[data-in="true"] {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(0 0 0% 0);
+    will-change: auto;
+  }
+  /* Motion is a gift, not a requirement: the entrances land immediately.
+     (The [data-sig-motion="reduced"] case is covered twice — the duration
+     tokens collapse above AND this explicit stand-down.) */
+  @media (prefers-reduced-motion: reduce) {
+    .sig-motion-reveal {
+      transition: none;
+      opacity: 1;
+      transform: none;
+      clip-path: none;
+      will-change: auto;
+    }
+    .sig-motion-reveal--clip-reveal {
+      clip-path: inset(0 0 0% 0);
+    }
+  }
+  [data-sig-motion="reduced"] .sig-motion-reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    will-change: auto;
+  }
+
+  /* -- the kinetic sheen surface ----------------------------------------------
+     position: relative + overflow: hidden — the sheen lives INSIDE the
+     card (a 240px circle can never bleed past the radius). The
+     ::after is the ONLY new paint surface; content stays untouched
+     beneath it (pointer-events: none). */
+  .sig-kinetic-surface {
+    position: relative;
+    overflow: hidden;
+  }
+  .sig-kinetic-surface::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1));
+    background: radial-gradient(
+      240px circle at var(--ptr-x, 50%) var(--ptr-y, 50%),
+      color-mix(in srgb, var(--sig-kinetic-accent, var(--sig-cyan)) 12%, transparent),
+      transparent 70%
+    );
+  }
+  .sig-kinetic-surface:hover::after {
+    opacity: 1;
+  }
+  /* Stillness: the sheen shows for keyboard/hover users but never fades
+     — it appears at rest opacity (a static 1 keeps the affordance
+     honest; there is no motion to reduce). */
+  @media (prefers-reduced-motion: reduce) {
+    .sig-kinetic-surface::after {
+      transition: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-kinetic-surface::after {
+    transition: none;
+  }
+}
