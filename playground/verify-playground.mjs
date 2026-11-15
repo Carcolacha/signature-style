@@ -934,7 +934,7 @@ const APP_REQUIREMENTS = [
   ["PageHero,", "the page hero primitive is imported from the package (2.2.0)"],
   ["<PageHero title={hero.title} subtitle={hero.sub} />", "the announcing hero renders through the package primitive (n-hub2, 2.2.0)"],
   ['title: "THE ENGINE"', "the hero announces THE ENGINE (n-hub2, per-view HERO_COPY)"],
-  ["every primitive, one dashboard · live showcase", "the dashboard hero subtitle string (n-hub2)"],
+  ["the workbench — every primitive, one live bento", "the dashboard hero subtitle string (n-hub2; 3.6.0 the Workbench retitle)"],
   ['className="sig-shell"', "THE SHELL (2.5.0 sh1) — every view's content renders inside it (defect #1)"],
   ['<main className="bento12">', "the core dashboard IS the 12-column bento (2.5.0 b12)"],
   ['eyebrow="Forms"', "the check-in card — the teal eyebrow (n-hub3 anatomy, package-owned)"],
@@ -1335,14 +1335,31 @@ if (oldTimeline !== null) {
 // v3.1.0 — NO token changes this release). playground/ is NOT under the
 // freeze (the composition layer); README/package.json/lock are release
 // plumbing; wc/ + dist/wc are NEW paths outside the locked list.
-// 3.5.0 REBASE: the locked set is unchanged; the AUTHORIZED set grows by
-// EXACTLY the enumerated 3.5.0 authorization — the six tools/mcp-viz
-// DELETIONS (the inspector is promoted into packages/signature-mcp, the
-// task's `tools/ may end up empty → remove if empty` clause) and the NEW
-// certification scripts (verify-mcp / verify-visual-diff / verify-a11y /
-// goldens/). css/ react/ wc/ dist/wc demo/ shared/ docs/ bin/ stay
-// byte-identical; scripts/verify.mjs stays BYTE-FROZEN; tokens.json
-// gains ONLY meta.version (guarded below — VALUES byte-frozen).
+// 3.6.0 REBASE (the floor moves v3.3.0 → v3.5.0): the Zero-Defect A11y +
+// Graph Studio release. The owner-authorized 3.6.0 deltas, and NOTHING
+// else — demo/ bin/ stay byte-identical; scripts/verify.mjs stays
+// BYTE-FROZEN (untouched this release — the diff proves it). The
+// AUTHORIZED set enumerates:
+//   css/cards.css       — the .sig-action-tile scoped :focus kill + the
+//                         reference-code halo (a11y Task 1)
+//   css/editorial.css   — the true 3x3 page deck (Task 2)
+//   css/graph.css       — the edge hit paths + the selected-edge crimson
+//                         (Task 3)
+//   css/timeline.css    — the settled dim scoped to the title (axe fix)
+//   react/cards|editorial|graph|index(.ts/.js/.d.ts) — the package-side
+//                         implementations of Tasks 1-3 (FlipCard inert,
+//                         ReferenceCard focusable code well, the page
+//                         deck, GraphEdge model + KnowledgeGraphHandle +
+//                         the new exports)
+//   scripts/verify-a11y.mjs / verify-visual-diff.mjs — the 7-view census
+//                         + tier adjudication + inert sweep
+//   scripts/verify-examples.mjs — NEW (Task 8)
+//   scripts/goldens/    — the owner-mandated re-certification (NEW views)
+//   SYSTEM_PROMPT.md    — title → v3.8 + the Graph Studio sections
+// wc/src + dist/wc (outside the locked list) carry the sig-stat-ring
+// label contract + the WC carousel 2.5.3 aria labels. tokens.json gains
+// meta.version 3.6.0 + the TWO-TIER metadata (guarded below — VALUES
+// byte-frozen).
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 // The v3.4.0 authorized delta set, PLUS the 3.5.0 authorization. The
 // tools/mcp-viz entries authorize the DELETIONS (git diff name-only
@@ -1350,23 +1367,32 @@ const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/"
 // the set from 3.4.0 — it is byte-frozen going FORWARD (no edit this
 // release; the (m1) needle lived in THIS file, never in verify.mjs).
 const AUTHORIZED_330 = new Set([
+  // 3.5.0 authorization (carried: the certification scripts exist since
+  // v3.5.0 — the floor moved PAST them, so they no longer diff).
   "scripts/verify.mjs",
   "scripts/verify-cli.mjs",
   "scripts/verify-wc.mjs",
-  "SYSTEM_PROMPT.md",
-  // 3.4.0 — the cortex sweep growth (now deleted; the deletions below
-  // supersede these two live-file authorizations).
+  "scripts/verify-mcp.mjs",
   "tools/mcp-viz/server.ts",
   "tools/mcp-viz/smoke.mjs",
-  // 3.5.0 — THE TOOLS DELETIONS (logic promoted to packages/signature-mcp).
   "tools/mcp-viz/README.md",
   "tools/mcp-viz/package-lock.json",
   "tools/mcp-viz/package.json",
   "tools/mcp-viz/tsconfig.json",
-  // 3.5.0 — THE CERTIFICATION SCRIPTS (NEW).
-  "scripts/verify-mcp.mjs",
-  "scripts/verify-visual-diff.mjs",
+  // 3.6.0 — THE A11Y/CAROUSEL/STUDIO PACKAGE DELTAS (Tasks 1-3).
+  "css/cards.css",
+  "css/editorial.css",
+  "css/graph.css",
+  "css/timeline.css",
+  "react/cards.tsx", "react/cards.js", "react/cards.d.ts",
+  "react/editorial.tsx", "react/editorial.js", "react/editorial.d.ts",
+  "react/graph.tsx", "react/graph.js", "react/graph.d.ts",
+  "react/index.ts", "react/index.js", "react/index.d.ts",
+  // 3.6.0 — THE GATES + DOCS.
   "scripts/verify-a11y.mjs",
+  "scripts/verify-visual-diff.mjs",
+  "scripts/verify-examples.mjs",
+  "SYSTEM_PROMPT.md",
 ]);
 let b7Changed = [];
 try {
@@ -1382,11 +1408,10 @@ try {
   failures.push(`(b7) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
-  // scripts/goldens/ is the 3.5.0 golden-master base (NEW directory — the
-  // prefix exemption mirrors the SCRIPTS_330_ALLOWED check below).
+  // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.3.0 — outside the owner-authorized 3.4.0 zero-react WC set (the verify gates + verify-wc + the codex additions + the cortex selector/version adds)`,
+      `(b7) SAFETY: ${file} changed since v3.5.0 — outside the owner-authorized 3.6.0 set (the a11y/carousel/studio package deltas + the gates + the codex)`,
     );
   }
 }
@@ -1401,28 +1426,21 @@ const SCRIPTS_330_ALLOWED = new Set([
   "scripts/verify-mcp.mjs",
   "scripts/verify-visual-diff.mjs",
   "scripts/verify-a11y.mjs",
+  "scripts/verify-examples.mjs",
 ]);
 if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f) && !f.startsWith("scripts/goldens/"))) {
-  failures.push("(b7) SAFETY: scripts/ beyond the three authorized gates + the 3.5.0 certification scripts is LOCKED in 3.4.0/3.5.0 (verify.mjs stays BYTE-FROZEN)");
-}
-if (b7Changed.some((f) => f.startsWith("css/"))) {
-  // css/ must not change AT ALL — the e1 treaty is mirrored inside the
-  // shadow style strings, not by editing the package css.
-  failures.push("(b7) SAFETY: css/ is LOCKED in 3.4.0 (the shadow sheets mirror the anatomy; no css edit)");
-}
-if (b7Changed.some((f) => f.startsWith("react/"))) {
-  failures.push("(b7) SAFETY: react/ is LOCKED in 3.4.0 (wc/ is the framework-free twin, not a react edit)");
+  failures.push("(b7) SAFETY: scripts/ beyond the authorized gates + the certification scripts is LOCKED (verify.mjs stays BYTE-FROZEN)");
 }
 if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
   failures.push("(b7) SAFETY: tools/mcp-viz node_modules is LOCKED in 3.4.0");
 }
-// 3.5.0: the tokens.json meta bump is guarded — meta.version must be
-// EXACTLY 3.5.0 and everything the 3.2.0/3.4.0 guards don't explicitly
-// neutralize stays byte-equal (VALUES + the 50-token whitelist frozen).
+// 3.6.0: the tokens.json meta bump is guarded — meta.version must be
+// EXACTLY 3.6.0 and everything the guards don't explicitly neutralize
+// stays byte-equal (VALUES + the 50-token whitelist frozen).
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "3.5.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.5.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "3.6.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.6.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
 } catch (error) {
   failures.push(`(b7) cannot read tokens.json meta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
@@ -1458,7 +1476,17 @@ try {
     failures.push("(b7) SAFETY: themes.mocha --bg-canvas must be the alias var(--bg-base)");
   }
   for (const name of Object.keys(v310Mocha)) {
-    if (JSON.stringify(curMocha[name]) !== JSON.stringify(v310Mocha[name])) {
+    const before = v310Mocha[name];
+    const after = curMocha[name];
+    // 3.6.0 AUTHORIZATION: --text-muted gains ONLY the contrastTier
+    // metadata (the two-tier policy) — the VALUE stays byte-equal.
+    if (name === "--text-muted") {
+      if (before?.value !== after?.value) {
+        failures.push("(b7) SAFETY: themes.mocha.--text-muted VALUE changed — the two-tier policy adds metadata, it never retunes ink");
+      }
+      continue;
+    }
+    if (JSON.stringify(after) !== JSON.stringify(before)) {
       failures.push(`(b7) SAFETY: themes.mocha.${name} changed — the mocha values are byte-identical in 3.2.0`);
     }
   }
@@ -1486,8 +1514,43 @@ try {
   if (JSON.stringify(v310tokens.shared) !== JSON.stringify(currentTokens.shared)) {
     failures.push("(b7) SAFETY: tokens.json shared changed — LOCKED in 3.2.0");
   }
-  if (JSON.stringify(v310tokens.sigPalette) !== JSON.stringify(currentTokens.sigPalette)) {
-    failures.push("(b7) SAFETY: tokens.json sigPalette changed — the 26-token mocha palette is byte-identical in 3.2.0");
+  // 3.6.0 AUTHORIZATION: sigPalette entries gain ONLY the contrastTier
+  // key (the two-tier policy — "ink" | "display" on the 11 ink-family
+  // tokens); every other field (name/value/role/reserved/description/
+  // isNew) stays byte-equal per token.
+  {
+    const before = v310tokens.sigPalette?.tokens ?? {};
+    const after = currentTokens.sigPalette?.tokens ?? {};
+    if (JSON.stringify(Object.keys(before)) !== JSON.stringify(Object.keys(after))) {
+      failures.push("(b7) SAFETY: tokens.json sigPalette token SET changed — the 26-token family is frozen");
+    }
+    const INK_TIERS = { "--sig-pink-bright": "ink", "--sig-pink-soft": "ink", "--sig-pink-alt": "ink", "--sig-mauve-bright": "display", "--sig-mauve-soft": "ink", "--sig-lavender": "display", "--sig-sky": "ink", "--sig-cobalt": "ink", "--sig-peach": "display", "--sig-green": "ink", "--sig-yellow": "ink" };
+    const TIER_DOC_TOKENS = new Set(["--sig-mauve-bright", "--sig-lavender", "--sig-peach"]);
+    for (const [name, entry] of Object.entries(before)) {
+      const now = after[name] ?? {};
+      const { contrastTier: _tier, description: _desc, ...beforeCore } = entry;
+      const { contrastTier: tierNow, description: descNow, ...afterCore } = now;
+      if (JSON.stringify(beforeCore) !== JSON.stringify(afterCore)) {
+        failures.push(`(b7) SAFETY: tokens.json sigPalette.${name} changed beyond contrastTier — values/roles are byte-identical in 3.6.0`);
+      }
+      // 3.6.0: the three display-tier tokens may extend their DESCRIPTION
+      // with the two-tier usage note (the tier documentation mandate).
+      if (TIER_DOC_TOKENS.has(name)) {
+        const beforeDesc = entry.description ?? "";
+        if (typeof descNow !== "string" || !descNow.startsWith(beforeDesc) || !descNow.includes("DISPLAY tier")) {
+          failures.push(`(b7) SAFETY: sigPalette.${name}.description must EXTEND the v3.1.0 text with the DISPLAY-tier usage note`);
+        }
+      } else if (entry.description !== now.description) {
+        failures.push(`(b7) SAFETY: sigPalette.${name}.description changed — only the display-tier trio may document the tier`);
+      }
+      if (name in INK_TIERS) {
+        if (tierNow !== INK_TIERS[name]) {
+          failures.push(`(b7) SAFETY: sigPalette.${name}.contrastTier must be ${JSON.stringify(INK_TIERS[name])}, found ${JSON.stringify(tierNow ?? null)}`);
+        }
+      } else if (tierNow !== undefined) {
+        failures.push(`(b7) SAFETY: sigPalette.${name} must not carry contrastTier (only the 11 ink-family tokens are tiered)`);
+      }
+    }
   }
   // The NEW sigThemes section: the triad + the daylight inkVariants table.
   const sigThemes = currentTokens.sigThemes;
@@ -1542,15 +1605,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE V3.4.0 FROZEN PROOF — v3.3.0 baseline ----
-// Rebased 3.4.0 (the floor moves v3.2.0 → v3.3.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 3.4.0
+// ---- (n-hub4) THE 3.6.0 FROZEN PROOF — v3.5.0 baseline ----
+// Rebased 3.6.0 (the floor moves v3.3.0 → v3.5.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 3.6.0
 // list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.3.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v3.5.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1558,11 +1621,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.3.0 beyond the 3.4.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated zero-react WC set)`,
+      `(n-hub4) SAFETY: files changed since v3.5.0 beyond the 3.6.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated a11y/carousel/studio set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.5.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
@@ -1691,9 +1754,15 @@ if (/(className|data-testid)="[^"]*(bento__|bento-card)/.test(appSrc)) {
   if (!existsSync(goldensDir)) {
     failures.push("(v35) scripts/goldens/ is missing — the committed golden masters must exist");
   } else {
-    const goldens = readdirSync(goldensDir).filter((f) => f.endsWith(".png"));
-    if (goldens.length !== 5) {
-      failures.push(`(v35) scripts/goldens/ must carry EXACTLY 5 golden masters (the 5 views), found ${goldens.length}: ${goldens.join(", ")}`);
+    const goldens = readdirSync(goldensDir).filter((f) => f.endsWith(".png")).sort();
+    // 3.6.0: the census grows 5 → 7 (graph-studio + analytics-planner join;
+    // the owner-mandated re-certification regenerated all seven).
+    const EXPECTED_GOLDENS = [
+      "analytics-planner.png", "chronicle.png", "codex.png", "dashboard.png",
+      "graph-studio.png", "master-index.png", "pattern-studio.png",
+    ];
+    if (JSON.stringify(goldens) !== JSON.stringify(EXPECTED_GOLDENS)) {
+      failures.push(`(v35) scripts/goldens/ must carry EXACTLY the 7 golden masters (${EXPECTED_GOLDENS.join(", ")}), found ${goldens.length}: ${goldens.join(", ")}`);
     }
   }
 }
@@ -1930,19 +1999,26 @@ if (!nodeClearance.test(stylesCss)) {
 // The EmptyState dogfood needles retired with PlaceholderView (EmptyState
 // still lives: the package TimelineManager edge + the Set 06 studio frame).
 const INDEX_REQUIREMENTS = [
-  ['type View = "dashboard" | "studio" | "index" | "chronicle" | "codex"', "the 2.8.0 five-real-view union"],
+  [
+    'type View =\n  | "dashboard"\n  | "graph"\n  | "planner"\n  | "studio"\n  | "index"\n  | "chronicle"\n  | "codex"',
+    "the 3.6.0 seven-view union (the 6-view nav map + the memorial)",
+  ],
   ['HREF_TO_VIEW[window.location.hash] ?? "dashboard"', 'the 3.4.0 deep-link bootstrap — hash first, dashboard default (the cortex smoke still finds the timeline on the bare root URL: empty hash → "dashboard")'],
   ["function HubLink(", "the playground's link renderer for GlobalNav's as prop"],
   ["onNavigate: (href: string) => void", "the navigation callback contract"],
   ["event.preventDefault()", "no full-reload anchor navigation (negative-test target)"],
   ["function createHubLink(", "the factory closure feeding onNavigate/activeHref through GlobalNav's as contract"],
   ["as={navLink}", "the nav renders through the HubLink factory"],
+  ['{ href: VIEW_HREFS.dashboard, label: "Workbench" }', "the Workbench nav destination (3.6.0 — the 'Dashboard' label retires)"],
+  ['{ href: VIEW_HREFS.graph, label: "Graph Studio" }', "the Graph Studio nav destination (3.6.0)"],
+  ['{ href: VIEW_HREFS.planner, label: "Analytics & Planner" }', "the Analytics & Planner nav destination (3.6.0)"],
   ['{ href: VIEW_HREFS.studio, label: "Pattern Studio" }', "the Pattern Studio nav destination (2.8.0)"],
   ['{ href: VIEW_HREFS.index, label: "Index" }', "the Index nav destination"],
-  ['{ href: VIEW_HREFS.chronicle, label: "Chronicle" }', "the Chronicle nav destination (2.8.0)"],
   ['{ href: VIEW_HREFS.codex, label: "AI Codex" }', "the AI Codex nav destination (2.8.0)"],
+  ['"#/graph": "graph"', "the graph-studio routing entry (3.6.0)"],
+  ['"#/planner": "planner"', "the analytics-planner routing entry (3.6.0)"],
   ['"#/index": "index"', "the index routing entry"],
-  ['"#/chronicle": "chronicle"', "the chronicle routing entry (2.8.0)"],
+  ['"#/chronicle": "chronicle"', "the chronicle routing entry (2.8.0 — hash + palette reachable, off the nav map since 3.6.0)"],
   ['"#/codex": "codex"', "the codex routing entry (2.8.0)"],
   ['title: "THE MASTER INDEX"', "the index hero title"],
   ["every archetype · one catalog · zero dead ends", "the index hero subtitle (2.6.0: the catalog)"],
@@ -1954,12 +2030,13 @@ for (const [needle, label] of INDEX_REQUIREMENTS) {
 }
 
 // ---- (ix2) THE THREE GATEWAYS — 2.6.0: chromatic doors in the balanced row ----
-// Titles renamed per the 3.1.0 spec (Bento Workbench / Interactive
-// Graph & Planner / Pattern Studio); eyebrows WORKBENCH/PLANNER/STUDIO;
-// accents flamingo/lavender/peach through data-accent + --sig-accent.
+// 3.6.0 RETARGET: the doors are REAL now — WORKBENCH returns to the
+// bento, GRAPH STUDIO enters the canvas (#/graph), STUDIO enters the
+// catalog (#/studio); eyebrows WORKBENCH/GRAPH STUDIO/STUDIO; accents
+// flamingo/lavender/peach through data-accent + --sig-accent.
 const GATEWAYS = [
   ["WORKBENCH", "views/workbench.tsx", "Bento Workbench", "--color-cake-primary"],
-  ["PLANNER", "views/planner.tsx", "Interactive Graph & Planner", "--sig-lavender"],
+  ["GRAPH STUDIO", "views/graph-studio.tsx", "The Graph Studio", "--sig-lavender"],
   ["STUDIO", "views/studio.tsx", "Pattern Studio", "--sig-peach"],
 ];
 for (const [label, path, title, accent] of GATEWAYS) {
@@ -2193,9 +2270,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.7")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.8")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.7 (3.5.0: the title steps to v3.7 with the The Visual Cortex as a Product subsection — the codex grows the four MCP tools' param table, the attach-configs pointer, and the CI certification story)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.8 (3.6.0: the title steps to v3.8 with the Graph Studio / ShortcutModal / WorkspaceRepository sections — the 3.5.0 step to v3.7 carried the Visual Cortex subsection)",
   );
 }
 
@@ -2243,11 +2320,12 @@ for (const [needle, label] of SM3_REQUIREMENTS) {
   const editorialCss30 = readFileSync(resolve(root, "css/editorial.css"), "utf8");
   const CAR3_CSS = [
     [".sig-carousel__controls", "the docked control bar"],
-    [".sig-carousel--paged .sig-carousel__track", "the paged track (zero inter-page gap)"],
-    [".sig-carousel__page", "the page slide"],
-    ["grid-template-columns: repeat(3, 1fr)", "the 3-up page grid"],
+    [".sig-carousel__stage", "the 3.6.0 page-deck host (paged mode has NO scroll track)"],
+    [".sig-carousel__page", "the page grid"],
+    ["grid-template-columns: repeat(3, minmax(0, 1fr))", "the 3-up page grid (minmax(0,1fr) — no overflow)"],
+    ["align-items: stretch", "equal page-card heights (the owner grid contract)"],
     ["gap: var(--space-standard)", "the page's 16px internal gap"],
-    ["scroll-snap-align: start", "each page is a snap unit"],
+    [".sig-carousel__page[hidden]", "the hidden pages are display:none (display:grid would outrank the UA rule)"],
     ["@container (max-width: 640px)", "the narrow-cell page collapse"],
     [".sig-carousel__indicator", "the bar-docked readout"],
     [".sig-carousel__dots", "the dots (docked in the bar)"],
@@ -2263,16 +2341,10 @@ for (const [needle, label] of SM3_REQUIREMENTS) {
       "(car3) .sig-carousel__controls must be the flex control bar (prev · dots · indicator · next)",
     );
   }
-  const pageGrid = /\.sig-carousel__page\s*\{[^}]*flex: 0 0 100%;[^}]*grid-template-columns: repeat\(3, 1fr\);/s;
+  const pageGrid = /\.sig-carousel__page\s*\{[^}]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\);[^}]*align-items: stretch;/s;
   if (!pageGrid.test(editorialCss30)) {
     failures.push(
-      "(car3) .sig-carousel__page must be flex: 0 0 100% + repeat(3, 1fr) — ONE snap unit per page of three",
-    );
-  }
-  const pagedGap = /\.sig-carousel--paged \.sig-carousel__track\s*\{[^}]*gap: 0;/s;
-  if (!pagedGap.test(editorialCss30)) {
-    failures.push(
-      "(car3) the paged track must zero its own gap (the page owns the 16px internal gap) — scroll math depends on width-only strides",
+      "(car3) .sig-carousel__page must be the repeat(3, minmax(0,1fr)) + stretch grid — a TRUE 3-per-page grid (3.6.0)",
     );
   }
   for (const [needle, label] of [
@@ -2906,13 +2978,19 @@ for (const [needle, label] of [
   ["IntersectionObserver", "the free-scroll active-index sync (majority-visible wins)"],
   ["ratio >= 0.5", "the majority-visible threshold"],
   ["observer.disconnect()", "the IO cleanup on unmount"],
-  ["Math.round(track.scrollLeft / track.clientWidth) + 1", "the paged-3 page formula (scrollLeft / track width)"],
-  ["onScroll={handleScroll}", "the paged page-sync rides the native scroll event"],
-  ["requestAnimationFrame", "the rAF throttle — one state write per frame"],
-  ["cancelAnimationFrame", "the pending frame is cleaned up on unmount"],
+  // 3.6.0 AMENDMENT: the paged mode is a STATEFUL PAGE DECK — the
+  // scroll-track math retired with the scroll-based pages; the page
+  // index state + the inert sweep replace them.
+  ["Math.ceil(items.length / 3)", "the pure page-count math (pages of three)"],
+  ["const current = Math.min(page, pageCount)", "the clamped current page (deck shrink-safe)"],
+  ["el.inert = !isCurrent", "the inert sweep — off-screen pages leave the tab order (React-18 ref workaround)"],
+  ["hidden={!isCurrent}", "exactly ONE page visible"],
+  ['`Page ${current} of ${pageCount}`', "the paged indicator reads 'Page p of P'"],
+  ["goToPage(current + 1)", "the bounded Next step"],
+  ["ArrowRight", "the keyboard page flip"],
   ['"sig-carousel__controls"', "the docked control bar (prev · dots · indicator · next)"],
-  ['"sig-carousel__page"', "the paged-3 snap slide"],
-  ["Math.ceil(items.length / stride)", "the pure page-count math"],
+  ['"sig-carousel__page"', "the paged-3 page grid"],
+  ['"sig-carousel__stage"', "the page-deck host"],
 ]) {
   if (!editorialSrcAf.includes(needle)) {
     failures.push(`react/editorial.tsx must contain ${JSON.stringify(needle)} — (af3) ${label}`);
@@ -3834,7 +3912,7 @@ for (const [needle, label] of [
   ['data-testid="index-food"', "the food slab hook"],
   ['data-testid="index-chronicle"', "the chronicle slab hook"],
   ['title: "Bento Workbench"', "gateway door 1"],
-  ['title: "Interactive Graph & Planner"', "gateway door 2"],
+  ['title: "The Graph Studio"', "gateway door 2 (3.6.0 retitle)"],
   ['title: "Pattern Studio"', "gateway door 3"],
   ['accent: "--color-cake-primary"', "STRUCTURAL accent decision: the planner door wears Flamingo (the AccentToken union)"],
   ['title="Birria & Street Taco Catering"', "the commerce ContentCard"],
@@ -3981,8 +4059,8 @@ if (!existsSync(graphSrcPath)) {
     ["sig-graph sig-graph--focused", "the focused class driven by selection state"],
     ['"sig-graph"', "the bare canvas class"],
     ['className="sig-graph__edge"', "one path per node-with-parent"],
-    ["data-parent={node.parentId}", "the edge's parent hook"],
-    ["data-child={node.id}", "the edge's child hook"],
+    ["data-parent={edge.fromId}", "the edge's parent hook (3.6.0: the unified edge rows)"],
+    ["data-child={edge.toId}", "the edge's child hook"],
     ['className="sig-graph__node"', "the interactive node group"],
     ['role="button"', "nodes are buttons (aria contract)"],
     ["tabIndex={0}", "keyboard focus lands on the node"],
@@ -4060,8 +4138,18 @@ if (!existsSync(graphDtsPath)) {
     ["NODE_RADIUS = 34", "the generous radius (was 26)"],
     ["LABEL_MAX = 16", "the longer truncation threshold (was 12)"],
     ["elementFromPoint", "the tether hit test"],
-    ["GraphLink", "the links model type"],
-    ["data-link=\"true\"", "the extra-link edge marker"],
+    // 3.6.0 AMENDMENT: the links model grows the id-ed GraphEdge
+    // { id, fromId, toId }; the edge marker rides the kind.
+    ["export interface GraphEdge", "the links model type (GraphEdge { id, fromId, toId })"],
+    ["data-link={edge.kind === \"link\" || undefined}", "the explicit-link edge marker"],
+    ["export interface KnowledgeGraphHandle", "the imperative canvas handle (zoom/auto-arrange/select)"],
+    ["useImperativeHandle", "the handle wiring"],
+    ["onUnlinkEdge", "the Delete/Backspace unlink commit"],
+    ["isTypingTarget", "the typing-target guard on the global keys"],
+    ["sig-graph__edge-hit", "the invisible 14px hit path (a 1.5px hairline is unhittable)"],
+    ["parent:${node.id}", "the deterministic parent-edge id"],
+    ["searchQuery", "the search-dim prop"],
+    ["zoomAtCenter", "the center-anchored button zoom"],
   ];
   for (const [needle, label] of OB1_TSX) {
     const target = needle.includes("stroke-dasharray") || needle.includes("--sig-azure")
@@ -4079,14 +4167,17 @@ if (!existsSync(graphDtsPath)) {
   }
   for (const [needle, label] of [
     ['"sig.workspace.v3.graph-positions"', "the persisted dragged positions key"],
-    ['"sig.workspace.v3.links"', "the persisted extra links key"],
-    ["onMoveNode={moveNode}", "the drag wiring"],
-    ["onLinkNodes={linkNodes}", "the tether wiring"],
-    ["onAddNodeAt={addNodeAt}", "the spawn wiring"],
-    ["positions={positions}", "the positions round-trip"],
-    ["links={links}", "the links round-trip"],
+    ['"sig.workspace.v3.links"', "the persisted extra links key (3.6.0: GraphEdge records)"],
+    ["function useWorkspaceState", "3.6.0: the ONE workspace-state hook"],
+    ["onMoveNode={workspace.moveNode}", "the drag wiring (through the hook)"],
+    ["onLinkNodes={workspace.linkNodes}", "the tether wiring"],
+    ["onAddNodeAt={workspace.addNodeAt}", "the spawn wiring"],
+    ["positions={workspace.positions}", "the positions round-trip"],
+    ["links={workspace.links}", "the links round-trip"],
+    ["onUnlinkEdge={workspace.unlinkEdge}", "the 3.6.0 unlink wiring"],
     ["resetPositions()", "the reset clears the positions"],
     ["resetLinks()", "the reset clears the links"],
+    ["parent:", "the kind-resolved unlink prefix (parent:* clears the child's parentId)"],
   ]) {
     if (!appSrc.includes(needle)) {
       failures.push(`(ob1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
@@ -4245,7 +4336,7 @@ const TM_CSS_REQUIREMENTS = [
   ["font-variant-numeric: tabular-nums", "the counter's tabular digits"],
   [".sig-tmanager__settle[aria-pressed=\"true\"]", "the settled toggle selector"],
   ["color: var(--sig-green)", "the settled toggle's sig-green fill"],
-  [".sig-tmanager__row--settled .sig-tmanager__body", "the settled body"],
+  [".sig-tmanager__row--settled .sig-tmanager__title", "the settled dim (3.6.0: scoped to the TITLE — the body-wide 0.6 dim dragged the muted meta to 2.29:1, below the display floor)"],
   ["opacity: 0.6", "the settled fade"],
   ["text-decoration: line-through", "the settled strike-through"],
   [".sig-tmanager__done", "the settled chip"],
@@ -4312,7 +4403,8 @@ const PS_APP_REQUIREMENTS = [
   ['usePersistentState<TimelineItem[]>(\n    "sig.workspace.v3.timeline",', "the timeline array under its versioned key"],
   ["SEED_GRAPH", "the graph's seed fallback"],
   ["SEED_TIMELINE", "the timeline's seed fallback"],
-  ['{ version: "sig.workspace.v3", graph, timeline, links }', "the snapshot payload (3.0.0: the links model joins)"],
+  ['version: "sig.workspace.v3"', "the snapshot payload version (the links model joins — 3.6.0 GraphEdge shape)"],
+  ["links: normalizedLinks", "the links join the payload (normalized)"],
   ["signature-workspace.json", "the download filename"],
   ["URL.createObjectURL", "the download dance, step 1"],
   ["URL.revokeObjectURL", "the download dance, step 3 — revoke immediately"],
@@ -4336,30 +4428,31 @@ for (const [needle, label] of PS_APP_REQUIREMENTS) {
   }
 }
 
-// ---- (gp1) THE GRAPHS & PLANNER MODULE (2.7.0) -------------------------------------
-// The fourth module tab + the four-card assembly + the probe hooks + the
-// playground-local 2-up chart row.
+// ---- (gp1) THE ANALYTICS & PLANNER VIEW + THE GRAPH STUDIO (2.7.0; 3.6.0 the Studio split) ----
+// The "Graphs & Planner" module tab is RETIRED: the graph moved to the
+// dedicated Graph Studio view (canvas/HUD/inspector), the charts + the
+// Milestone Manager + the snapshot toolbar became the Analytics &
+// Planner view.
 const GP_REQUIREMENTS = [
-  ['type ModuleId = "core" | "data" | "forms" | "graph"', "the fourth module id"],
-  ['{ id: "graph", label: "Graphs & Planner" }', "the tab entry"],
-  ['moduleId === "graph"', "the tab's render branch"],
-  ["function GraphPlannerModule", "the module component (defined AFTER IndexView — the b5 audit slice stays 7 cards)"],
-  ["usePersistentState", "the persistence hook drives the module state"],
-  ['title="The Knowledge Graph"', "card 1"],
-  ["<KnowledgeGraph", "the graph primitive"],
+  ['type ModuleId = "core" | "data" | "forms"', "the module ids (3.6.0: the graph tab retired)"],
+  ["function useWorkspaceState", "3.6.0: the ONE workspace-state hook (the persistence owner)"],
+  ["function AnalyticsPlannerView", "the analytics view (charts + milestones + the snapshot toolbar)"],
+  ['view === "graph" ? (', "the graph-studio branch renders"],
+  ['view === "planner" ? (', "the analytics branch renders"],
+  ["<GraphStudioView", "the studio composition"],
+  ["<AnalyticsPlannerView workspace={workspace} />", "the analytics composition"],
+  ["<KnowledgeGraph", "the graph primitive (inside the studio component)"],
   ["addOn", "the graph's Add & Link toolbar"],
-  ['title="Spending by Department"', "card 2"],
+  ['title="Spending by Department"', "card: the bars"],
   ["<BarChart", "the bar chart primitive"],
   ['{ label: "Engineering", value: 800, max: 1000, colorToken: "--sig-cobalt" }', "a per-bar capacity max (3.0.0: the chromatic series)"],
-  ['title="Attendance Momentum"', "card 3"],
+  ['title="Attendance Momentum"', "card: the area"],
   ["<AreaChart", "the area chart primitive"],
   ['colorToken="--sig-sky"', "the sky series token"],
-  ['title="Milestone Manager"', "card 4"],
+  ['title="Milestone Manager"', "card: the manager"],
   ["<TimelineManager", "the manager primitive"],
   ["onInspect={modal.open}", "inspect composes the EventModal"],
   ['label="Milestone manager"', "the manager's accessible name"],
-  ['data-testid="module-graph"', "the module probe hook"],
-  ['data-testid="knowledge-graph"', "the graph probe hook"],
   ['data-testid="spending-bars"', "the bars probe hook"],
   ['data-testid="attendance-area"', "the area probe hook"],
   ['data-testid="milestone-manager"', "the manager probe hook"],
@@ -4370,6 +4463,43 @@ const GP_REQUIREMENTS = [
 for (const [needle, label] of GP_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
     failures.push(`(gp1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+  }
+}
+// The STUDIO component's own needles (playground/components/GraphStudio.tsx).
+{
+  const studioPath = resolve(root, "playground/components/GraphStudio.tsx");
+  if (!existsSync(studioPath)) {
+    failures.push("(gp1) playground/components/GraphStudio.tsx is missing — the Graph Studio view");
+  } else {
+    const studioSrc = readFileSync(studioPath, "utf8");
+    const GP_STUDIO = [
+      ["function GraphStudioView", "the studio view component"],
+      ["onUpdateNode", "the debounced inspector patch commit"],
+      ["onUnlinkEdge", "the unlink wiring"],
+      ["onSpawnLinkedChild", "the spawn-child wiring"],
+      ["onAutoArrange", "the auto-arrange wiring"],
+      ["useDebouncedNodeDraft", "the inspector's draft/debounce cell"],
+      ['data-testid="graph-studio"', "the studio probe hook"],
+      ['data-testid="studio-canvas"', "the canvas probe hook"],
+      ['data-testid="studio-inspector"', "the inspector probe hook"],
+      ['data-testid="studio-search"', "the HUD search probe hook"],
+      ['data-testid="studio-auto-arrange"', "the auto-arrange probe hook"],
+      ['data-testid="studio-count"', "the Nodes·Edges counter probe hook"],
+      ['data-testid="studio-spawn-child"', "the spawn probe hook"],
+      ['data-testid="studio-unlink-edge"', "the edge-card unlink probe hook"],
+      ['data-testid="studio-empty"', "the empty-state probe hook"],
+      ["<KnowledgeGraph", "the graph primitive"],
+      ["searchQuery={searchQuery}", "the search dim feeds the canvas"],
+      ["graphRef.current?.zoomIn()", "the imperative zoom"],
+      ["graphRef.current?.autoArrange()", "the imperative auto-arrange"],
+      ["graphRef.current?.selectNode(id)", "jump-to-target selects through the handle"],
+      ["Select a node to inspect it.", "the muted empty state"],
+    ];
+    for (const [needle, label] of GP_STUDIO) {
+      if (!studioSrc.includes(needle)) {
+        failures.push(`(gp1) GraphStudio.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+      }
+    }
   }
 }
 const GP_STYLES_REQUIREMENTS = [
@@ -4393,16 +4523,22 @@ if (!row2Collapse.test(stylesCss)) {
 // The nav map is 5 REAL views; the placeholder machinery is GONE (negative
 // needles: PlaceholderView/WorkshopView/PLACEHOLDERS must not exist).
 const NAV5_REQUIREMENTS = [
-  ['{ href: VIEW_HREFS.dashboard, label: "Dashboard" }', "view 1: the live bento"],
-  ['{ href: VIEW_HREFS.studio, label: "Pattern Studio" }', "view 2: the primary catalog"],
-  ['{ href: VIEW_HREFS.index, label: "Index" }', "view 3: the master index"],
-  ['{ href: VIEW_HREFS.chronicle, label: "Chronicle" }', "view 4: the Night of Versions"],
-  ['{ href: VIEW_HREFS.codex, label: "AI Codex" }', "view 5: the codex"],
+  ['{ href: VIEW_HREFS.dashboard, label: "Workbench" }', "view 1: the live bento (3.6.0 the Workbench)"],
+  ['{ href: VIEW_HREFS.graph, label: "Graph Studio" }', "view 2: the canvas (3.6.0)"],
+  ['{ href: VIEW_HREFS.planner, label: "Analytics & Planner" }', "view 3: the planning deck (3.6.0)"],
+  ['{ href: VIEW_HREFS.studio, label: "Pattern Studio" }', "view 4: the primary catalog"],
+  ['{ href: VIEW_HREFS.index, label: "Index" }', "view 5: the master index"],
+  ['{ href: VIEW_HREFS.codex, label: "AI Codex" }', "view 6: the codex"],
+  ['view === "graph" ? (', "the graph-studio branch renders"],
+  ['view === "planner" ? (', "the analytics branch renders"],
   ['view === "studio" ? (', "the studio branch renders"],
-  ['view === "chronicle" ? (', "the chronicle branch renders"],
+  ['view === "chronicle" ? (', "the chronicle branch renders (hash + palette reachable)"],
   ["function ChronicleView", "the chronicle view component"],
   ["title: \"THE PATTERN STUDIO\"", "the studio hero"],
   ["seven sets · fifty-six patterns · one-click copy", "the studio hero subtitle (3.4.0: Set 07 joins)"],
+  ["title: \"THE GRAPH STUDIO\"", "the studio hero (3.6.0)"],
+  ["nodes, links & the inspector · one canvas", "the graph-studio hero subtitle"],
+  ["title: \"ANALYTICS & PLANNER\"", "the analytics hero"],
 ];
 for (const [needle, label] of NAV5_REQUIREMENTS) {
   if (!appSrc.includes(needle)) {
@@ -4831,13 +4967,16 @@ if (!existsSync(llmsFullPath)) {
     ['onOpen={() => setPaletteOpen(true)}', "the launcher wiring"],
     ['data-testid="palette-trigger"', "the header trigger probe hook"],
     ['className="hub__cmdbar-trigger"', "the trigger button anatomy"],
-    ['label: "Go to Dashboard"', "command: dashboard view"],
+    ['label: "Go to Workbench"', "command: the workbench view (3.6.0)"],
+    ['label: "Go to Graph Studio"', "command: the graph studio view (3.6.0)"],
+    ['label: "Go to Analytics & Planner"', "command: the analytics view (3.6.0)"],
     ['label: "Go to Pattern Studio"', "command: studio view"],
     ['label: "Go to Master Index"', "command: index view"],
     ['label: "Go to Chronicle"', "command: chronicle view"],
     ['label: "Go to AI Codex"', "command: codex view"],
     ["label: `Studio: Set ${id} · ${SET_NAMES[id]}`", "command: the six studio sets"],
-    ['label: "Export Workspace JSON"', "command: the workspace export"],
+    ['label: "Export signature-workspace.json"', "command: the workspace export (3.6.0: links join the payload)"],
+    ['label: "Toggle 600ms latency"', "command: the repository rehearsal (3.6.0)"],
     ['label: "Toggle Reduced Motion Preview"', "command: the motion preview"],
     ['label: "Open Keyboard Shortcuts"', "command: the shortcuts dialog"],
     ['label: "Copy Codex llms.txt URL"', "command: the codex manifest URL"],
@@ -4845,13 +4984,37 @@ if (!existsSync(llmsFullPath)) {
     ['rootEl.dataset.motion = "reduced"', "the preview toggle sets the attribute"],
     ["buildStoredWorkspaceSnapshot()", "the export command reads the persisted mirror"],
     ["downloadJson(", "the shared download dance"],
-    ["ShortcutsDialog", "the shortcuts dialog exists"],
-    ['aria-label="Keyboard shortcuts"', "the dialog's accessible name"],
+    ["ShortcutModal", "the 3.6.0 shortcuts modal exists (components/ShortcutModal.tsx)"],
     ["<Breadcrumbs", "the breadcrumbs render in the shell"],
   ];
   for (const [needle, label] of APP_CMD) {
     if (!appSrc.includes(needle)) {
       failures.push(`(cmd1) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // The ShortcutModal's own needles (3.6.0).
+  {
+    const modalPath = resolve(root, "playground/components/ShortcutModal.tsx");
+    if (!existsSync(modalPath)) {
+      failures.push("(cmd1) playground/components/ShortcutModal.tsx is missing — the keyboard map");
+    } else {
+      const modalSrc = readFileSync(modalPath, "utf8");
+      const MODAL_NEEDLES = [
+        ['aria-label="Keyboard shortcuts"', "the modal's accessible name"],
+        ['"sig-modal-backdrop"', "the z-50 scrim (no second anatomy)"],
+        ["createPortal", "the portal"],
+        ["Open or close this keyboard map", "the ? entry"],
+        ["Flip a FlipCard to its back face", "the Space/Enter flip entry"],
+        ["Unlink the selected graph edge", "the Delete/Backspace entry"],
+        ["Flip a 3-by-3 carousel page", "the arrows entry"],
+        ["Nudge the selected graph node 8px", "the nudge entry"],
+        ["8px", "the 8px note"],
+      ];
+      for (const [needle, label] of MODAL_NEEDLES) {
+        if (!modalSrc.includes(needle)) {
+          failures.push(`(cmd1) ShortcutModal.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+        }
+      }
     }
   }
 }
@@ -5177,7 +5340,7 @@ if (!existsSync(llmsFullPath)) {
   const BC_APP = [
     [appSrc, 'label="You are here"', "the topbar breadcrumbs' accessible name"],
     [appSrc, '{ label: "engine", href: VIEW_HREFS.dashboard }', "the path's engine root"],
-    [appSrc, '{ label: "live-bento" }', "the dashboard's path tip"],
+    [appSrc, '{ label: "workbench" }', "the dashboard's path tip (3.6.0 the Workbench)"],
     [appSrc, "`set-${studioSet}`", "the studio path tracks the active set"],
     [frameSrcBc, 'label: "engine", href: "#/dashboard"', "the in-frame path's engine root"],
     [frameSrcBc, "label: `set-${setId}`", "the in-frame path's set segment"],
@@ -5207,7 +5370,14 @@ if (!existsSync(llmsFullPath)) {
   ];
   for (const [file, name] of memoTargets) {
     const src = readFileSync(resolve(root, file), "utf8");
-    if (!src.includes(`export const ${name} = memo(function ${name}(`)) {
+    // 3.6.0: KnowledgeGraph is memo(forwardRef(function KnowledgeGraph(…
+    // — the imperative handle); the others keep the bare memo shape.
+    const ok =
+      src.includes(`export const ${name} = memo(function ${name}(`) ||
+      (name === "KnowledgeGraph" &&
+        src.includes("export const KnowledgeGraph = memo(") &&
+        src.includes("forwardRef<KnowledgeGraphHandle, KnowledgeGraphProps>(function KnowledgeGraph("));
+    if (!ok) {
       failures.push(
         `(pf1) ${file} must wrap ${name} — export const ${name} = memo(function ${name}(…)); the named inner function IS the displayName`,
       );
@@ -5322,12 +5492,14 @@ if (!existsSync(llmsFullPath)) {
   } else {
     const hookSrc = readFileSync(hookPath, "utf8");
     const CUS_HOOK = [
-      ['usePersistentState<SigThemeName>(THEME_STORAGE_KEY, "mocha")', "the persisted theme state (default mocha)"],
-      ['usePersistentState<SigRadiusName>(RADIUS_STORAGE_KEY, "standard")', "the persisted radius state (default standard)"],
+      ['usePersistentState<SigPrefs>(PREFS_STORAGE_KEY, {', "3.6.0: the MERGED prefs state (one object, one key)"],
+      ['theme: "mocha"', "the merged prefs default theme"],
+      ['radius: "standard"', "the merged prefs default radius"],
+      ["PREFS_STORAGE_KEY", "the sig.workspace.v3.prefs key"],
+      ["legacyPrefsSeed", "the one-time legacy migration read (the per-axis v3.2.0 picks are adopted)"],
       ["document.documentElement.dataset.sigTheme = theme", "the documentElement mirror (sig-theme)"],
       ["document.documentElement.dataset.sigRadius = radius", "the documentElement mirror (sig-radius)"],
-      ["hasStored(THEME_STORAGE_KEY)", "the absent-default contract: a stored pick re-applies on load"],
-      ["appliedTheme", "the pick flag gating the theme mirror"],
+      ["applied.current", "the pick flag gating the attribute mirrors"],
       ["URL.createObjectURL", "the download blob dance"],
       ['anchor.download = "tokens.css"', "the download filename"],
       ["URL.revokeObjectURL", "the revoke"],
@@ -5368,7 +5540,7 @@ if (!existsSync(llmsFullPath)) {
     failures.push('(cus) verify-contrast.mjs must import the shared math from "./sig-contrast.ts" (badge ratio == gate ratio)');
   }
   for (const [needle, label] of [
-    ["const sig = useSigTheme();", "the Shell owns the ONE theme-state instance"],
+    ["const sig = useSigTheme(workspaceRepo);", "the Shell owns the ONE theme-state instance (3.6.0: with the repository leg)"],
     ["id: \"theme-mocha\"", "palette command: Theme: Mocha"],
     ["id: \"theme-oled\"", "palette command: Theme: OLED"],
     ["id: \"theme-daylight\"", "palette command: Theme: Daylight"],
@@ -5421,4 +5593,4 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions; 3.2.0 SURFACE ENGINE: (b7)/(n-hub4) rebased to v3.1.0 (themes.mocha + EXACTLY --bg-canvas, sigPalette/shared/latte byte-equal, the NEW sigThemes + geometryPresets sections, doctrine.themes/grid_8px exact strings), (th3) the canonical theme blocks cross-checked against the manifest ink variants, (rad2) the radius presets (standard 8/12 — 8px-grid-pure; sharp 0), (cus) the live customizer (one useSigTheme owner, aria-pressed panel, 16 badges on the shared sig-contrast math, download/copy), (pt11) whitelist 51, verify:contrast green on ALL THREE themes");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions; ; 3.6.0 GRAPH STUDIO RELEASE: (b7)/(n-hub4) REBASED to v3.5.0 with the enumerated a11y/carousel/studio authorization (css cards/editorial/graph/timeline + the react package quartet + the gates + goldens; demo/ bin/ verify.mjs byte-untouched), the tokens guard evolved for the TWO-TIER policy (--text-muted value-only; sigPalette contrastTier metadata on the 11 ink tokens + the three display-tier description extensions; VALUES byte-equal), the six-view map (Workbench/Graph Studio/Analytics & Planner/Pattern Studio/Master Index/AI Codex — Chronicle off the nav, hash+palette reachable), the (gp1) Studio split needles (the component block + the workspace hook + the edge model GraphEdge), the (af3)/(car3) true page-deck needles, the (cmd1) ShortcutModal block, the (cus) merged prefs needles, meta.version → 3.6.0; 3.2.0 SURFACE ENGINE intact: (th3) the canonical theme blocks cross-checked against the manifest ink variants, (rad2) the radius presets (standard 8/12 — 8px-grid-pure; sharp 0), (cus) the live customizer (one useSigTheme owner, aria-pressed panel, 16 badges on the shared sig-contrast math, download/copy/snippet), verify:contrast green on ALL THREE themes under the TWO-TIER policy (ct8); 3.6.0 SHIP.");

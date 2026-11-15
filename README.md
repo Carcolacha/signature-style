@@ -25,7 +25,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v3.5** system prompt so AI agents can extend the
+**Dynamic Signature Engine v3.8** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -291,6 +291,98 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 3.6.0 — Graph Studio, 3×3 Carousel, Zero-Defect A11y & Live Schema Sandbox
+
+The release closes every deferred a11y item, promotes the knowledge graph
+to its own view, and rehearses the async backend before it exists.
+
+#### The six-view map
+
+| View | Hash | What lives there |
+|---|---|---|
+| Workbench | `#/dashboard` | the 12-column live bento (the "Dashboard" nav label retires) |
+| **Graph Studio** | `#/graph` | the dot-matrix canvas, the floating HUD, the 340px inspector |
+| Analytics & Planner | `#/planner` | BarChart + AreaChart + the Milestone Manager + the snapshot toolbar |
+| Pattern Studio | `#/studio` | the 6-set taxonomy + the live theme customizer |
+| Master Index | `#/index` | the archetype catalog (the GRAPH STUDIO + STUDIO gateway doors now navigate for real) |
+| AI Codex | `#/codex` | tokens, rules & recipes |
+| Chronicle | `#/chronicle` | the Night of Versions memorial — off the nav bar, still hash- and palette-reachable |
+
+#### Graph Studio — the centerpiece
+
+- **The edge model grows up:** explicit edges are `GraphEdge { id, fromId, toId }` records
+  (persisted `sig.workspace.v3.links`, legacy `{from,to}` migrates on write); parent edges
+  stay derived (`parent:${childId}`). Every edge renders an invisible 14px hit path under
+  the hairline — click selects it (crimson `--sig-crimson`), `Delete`/`Backspace` unlinks
+  (typing-target guarded), the inspector shows the edge card with an Unlink button.
+- **The imperative handle:** `ref → { zoomIn, zoomOut, getZoom, autoArrange, selectNode }`
+  drives the HUD's zoom group (center-anchored), the Auto-Arrange button (clears persisted
+  positions → the deterministic layout re-runs → re-persists) and Jump-to-target.
+- **The inspector:** Title / Color Token (the 26-token Select) / Tags (comma-separated →
+  chips; `GraphNodeRecord.tags` joins the shared schema, enumerated) / Notes — debounced
+  300ms into the persisted graph; Connected Edges; Spawn linked child.
+- **The HUD:** Search Nodes (dims non-matching nodes/edges to 0.25), the tabular
+  `Nodes n · Edges e` counter, and the "?" shortcuts ghost button.
+
+#### The true 3×3 Carousel
+
+`paged-3` is no longer a scroll track — it is a **stateful page deck**: pages of three in
+`repeat(3, minmax(0, 1fr))` grids with equal heights, exactly one visible, the rest
+`hidden` **and** `inert`. Dots are one per PAGE (`6 items → 2 pages → 2 dots`), chevrons
+disable at the bounds, the indicator reads "Page p of P", and ←/→ flip pages. Free-scroll
+keeps the snap track + IntersectionObserver dots.
+
+#### Zero-Defect A11y
+
+- The v3.5.0 deferred finding closed: the master-index gateway doors wear the doctrine
+  halo (`:focus-visible → 2px var(--color-cake-primary)`; the spec's `--sig-primary` does
+  not exist — the mapping is documented in styles.css), with scoped
+  `:focus:not(:focus-visible)` outline kills on the doors and the action tile.
+- The **inert sweep**: FlipCard hidden faces swap `inert` with the flip; the aria-hidden
+  container-query probe is inert; the closed-`<details>` contract asserted, not re-implemented.
+- Real axe findings fixed: the ReferenceCard code well is keyboard-focusable with the halo;
+  `sig-stat-ring` honors `label` (progressbar accessible name); the settled-row dim is
+  scoped to the title (muted × 0.6 measured 2.29:1 — below the floor); WCAG 2.5.3 labels
+  (the copy buttons and the graph nodes now carry their visible text in their names).
+- The gate: axe **zero critical + serious + moderate on ALL SEVEN views**, color-contrast
+  adjudicated by the two-tier policy (every axe-flagged pair must still clear 3.0:1).
+
+#### The two-tier contrast policy
+
+`tokens.json → doctrine.contrastPolicy` + per-token `contrastTier` codify what the
+measurements say: ink-tier tokens (pink-bright 4.76, pink-soft 7.97, pink-alt 7.68,
+mauve-soft 6.19, sky 4.50, cobalt 5.97, green 7.25, yellow 9.89) carry body text at
+**≥4.5:1** — on ALL THREE canonical themes, no value changed. The sub-4.5 inks —
+mauve-bright 3.22, lavender 3.95, peach 4.22, `--text-muted` 3.40 — are declared
+**display tier (≥3.0:1)**: large headings (≥1.5rem/600), borders, fills, badges,
+caption metadata — never body text. Values stay frozen; the policy documents the tier
+and `verify:contrast` (ct8) enforces the metadata against the gate's own table.
+
+#### The WorkspaceRepository — the live schema sandbox
+
+`playground/workspace-repository.ts` is the async persistence seam
+(`getGraph/getTimeline/getPrefs/getLinks` + `save*` + `latency`). The studio HUD's
+"Simulate 600ms latency" toggle (and its palette command) turns every workspace save
+into a 600ms async round-trip: skeletons render in the affected cards, content returns
+on completion, and the error path (a save with an empty node title) rejects into the
+error toast. Swap the adapter for the FastAPI HTTP adapter when the backend ships —
+**`examples/fastapi-starter/`** is the runnable reference (FastAPI + stdlib sqlite3,
+CORS wired for `:5173`, the SCHEMA_V3 endpoints; excluded from the npm pack —
+`verify:examples` py_compiles it and proves the pack stays EXACTLY 64 files).
+
+#### Also in 3.6.0
+
+- **Theme/radius prefs merged** into one object under `sig.workspace.v3.prefs` (the
+  v3.2.0 per-axis keys migrate on first load) + **Copy Theme Snippet** in the customizer
+  (`<html data-sig-theme="…" data-sig-radius="…">` to the clipboard).
+- **The ShortcutModal** — `?` opens the full keyboard map (kbd chips) from any view.
+- **The command palette** grew to the full workflow set: seven "Go to" destinations,
+  the theme/radius commands, Simulate Async Load, Export `signature-workspace.json`
+  (now carrying links), the shortcuts modal, and the latency toggle.
+- **The system prompt** is now **v3.8** (Graph Studio, the repository pattern, the
+  carousel contract).
+
 
 ### 3.5.0 — Standalone Visual Cortex MCP Server & CI Pixel-Diff Certification
 
