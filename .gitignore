@@ -5,3 +5,5 @@ packages/signature-mcp/dist/
 playground/dist/
 .dev-server.log
 .vite-*.log
+__pycache__/
+*.pyc

@@ -75,6 +75,7 @@
     "verify:visual-diff": "node scripts/verify-visual-diff.mjs",
     "update:snapshots": "node scripts/verify-visual-diff.mjs --update-snapshots",
     "verify:a11y": "node scripts/verify-a11y.mjs",
+    "verify:examples": "node scripts/verify-examples.mjs",
     "llms": "node playground/generate-llms.mjs",
     "inspect": "node packages/signature-mcp/dist/server.js",
     "playground": "vite --config playground/vite.config.ts",
