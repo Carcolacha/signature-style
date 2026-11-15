@@ -241,6 +241,8 @@ import { SET_NAMES } from "./snippets.js";
 import type { SetId } from "./snippets.js";
 import { PALETTE } from "./palette.js";
 import { useSigTheme } from "./use-sig-theme.js";
+import { createLocalStorageRepository } from "./workspace-repository.js";
+import type { WorkspaceRepository } from "./workspace-repository.js";
 import { PatternStudioView } from "./components/PatternStudio.js";
 import { ThemeCustomizer } from "./components/ThemeCustomizer.js";
 import { CodexView } from "./components/CodexView.js";
@@ -847,14 +849,22 @@ function Shell() {
   const [view, setView] = useState<View>(
     () => HREF_TO_VIEW[window.location.hash] ?? "dashboard",
   );
+  // 3.6.0 — THE WORKSPACE + THE REPOSITORY REHEARSAL: one hook owns the
+  // persisted sig.workspace.v3.* arrays; writes ALSO ride the
+  // WorkspaceRepository adapter (the latency toggle simulates the async
+  // backend — skeletons in the affected cards, error toasts on invalid
+  // payloads; swap the adapter for FastAPI when the backend ships).
+  const [latencySim, setLatencySim] = useState(false);
+  const workspaceRepo = useMemo<WorkspaceRepository>(
+    () => createLocalStorageRepository({ latencyMs: latencySim ? 600 : 0 }),
+    [latencySim],
+  );
   // 3.2.0 — THE LIVE THEME STATE: one useSigTheme owns the surface theme +
   // radius (documentElement mirror + persistence + the contrast badges).
   // The customizer panel (Pattern Studio) and the palette commands below
   // share this instance — there is never a second writer.
-  const sig = useSigTheme();
-  // 3.6.0 — THE WORKSPACE: one hook owns the persisted sig.workspace.v3.*
-  // arrays for BOTH the Graph Studio and Analytics & Planner.
-  const workspace = useWorkspaceState();
+  const sig = useSigTheme(workspaceRepo);
+  const workspace = useWorkspaceState(workspaceRepo);
   // The studio's set filter, LIFTED — the command palette jumps into a
   // set directly (the studio renders controlled).
   const [studioSet, setStudioSet] = useState<SetId | "all">("all");
@@ -1088,6 +1098,7 @@ function Shell() {
             graph={workspace.graph}
             links={workspace.links}
             positions={workspace.positions}
+            saving={workspace.saving.graph === true}
             onUpdateNode={workspace.updateNode}
             onUnlinkEdge={workspace.unlinkEdge}
             onSpawnLinkedChild={workspace.spawnLinkedChild}
@@ -1096,6 +1107,25 @@ function Shell() {
             onLinkNodes={workspace.linkNodes}
             onAddNodeAt={workspace.addNodeAt}
             onOpenShortcuts={() => setShortcutsOpen(true)}
+            hudSlot={
+              <button
+                type="button"
+                className="graph-studio__latency"
+                aria-pressed={latencySim}
+                data-testid="studio-latency"
+                onClick={() => {
+                  setLatencySim((current) => !current);
+                  toast(
+                    "success",
+                    latencySim
+                      ? "Latency simulation off — workspace saves are instant again."
+                      : "Latency simulation on — workspace saves now take 600ms (watch the skeletons).",
+                  );
+                }}
+              >
+                Simulate 600ms latency
+              </button>
+            }
           />
         ) : view === "planner" ? (
           <AnalyticsPlannerView workspace={workspace} />
@@ -2770,8 +2800,17 @@ function normalizeEdge(raw: unknown): GraphEdge | null {
 /**
  * useWorkspaceState — THE ONE HOOK (the Studio split, 3.6.0). Every
  * mutation the two views need, one toast voice, one persistence story.
+ *
+ * THE REPOSITORY LEG (3.6.0): pass a WorkspaceRepository and every
+ * graph/timeline mutation ALSO rides repo.saveGraph/saveTimeline —
+ * debounced 250ms trailing (one burst = one save), each save rendered
+ * through `saving` (skeletons in the affected card) and validated by
+ * the adapter (invalid payloads reject into an error toast — the
+ * FastAPI rehearsal; see playground/workspace-repository.ts).
  */
-function useWorkspaceState() {
+const REPO_SAVE_DEBOUNCE_MS = 250;
+
+function useWorkspaceState(repo?: WorkspaceRepository) {
   const toast = useToast();
   // THE PERSISTENCE CONTRACT — versioned keys, seeds as fallbacks.
   const [graph, setGraph, resetGraph] = usePersistentState<GraphNode[]>(
@@ -2998,11 +3037,65 @@ function useWorkspaceState() {
     toast("error", "Local state reset");
   }, [resetGraph, resetTimeline, resetPositions, resetLinks, toast]);
 
+  /* -- THE REPOSITORY LEG (3.6.0): debounced async saves + skeletons -- */
+  const [saving, setSaving] = useState<{ graph?: boolean; timeline?: boolean }>({});
+  const saveTimers = useRef<{ graph?: number; timeline?: number }>({});
+  const firstGraphRender = useRef(true);
+  const firstTimelineRender = useRef(true);
+  useEffect(
+    () => () => {
+      if (saveTimers.current.graph !== undefined) window.clearTimeout(saveTimers.current.graph);
+      if (saveTimers.current.timeline !== undefined) window.clearTimeout(saveTimers.current.timeline);
+    },
+    [],
+  );
+  useEffect(() => {
+    if (repo === undefined) return;
+    if (firstGraphRender.current) {
+      firstGraphRender.current = false;
+      return;
+    }
+    if (saveTimers.current.graph !== undefined) window.clearTimeout(saveTimers.current.graph);
+    setSaving((current) => ({ ...current, graph: true }));
+    saveTimers.current.graph = window.setTimeout(() => {
+      saveTimers.current.graph = undefined;
+      repo
+        .saveGraph(graph)
+        .then(() => setSaving((current) => ({ ...current, graph: false })))
+        .catch(() => {
+          setSaving((current) => ({ ...current, graph: false }));
+          toast("error", "Workspace save failed — the graph payload was rejected (invalid node id/label?).");
+        });
+    }, REPO_SAVE_DEBOUNCE_MS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [graph, repo]);
+  useEffect(() => {
+    if (repo === undefined) return;
+    if (firstTimelineRender.current) {
+      firstTimelineRender.current = false;
+      return;
+    }
+    if (saveTimers.current.timeline !== undefined) window.clearTimeout(saveTimers.current.timeline);
+    setSaving((current) => ({ ...current, timeline: true }));
+    saveTimers.current.timeline = window.setTimeout(() => {
+      saveTimers.current.timeline = undefined;
+      repo
+        .saveTimeline(timeline)
+        .then(() => setSaving((current) => ({ ...current, timeline: false })))
+        .catch(() => {
+          setSaving((current) => ({ ...current, timeline: false }));
+          toast("error", "Workspace save failed — the timeline payload was rejected.");
+        });
+    }, REPO_SAVE_DEBOUNCE_MS);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [timeline, repo]);
+
   return {
     graph,
     timeline,
     links: normalizedLinks,
     positions,
+    saving,
     setGraph,
     setLinks,
     resetPositions,
@@ -3117,14 +3210,28 @@ function AnalyticsPlannerView({ workspace }: { workspace: WorkspaceState }) {
           </span>
         </div>
         <div data-testid="milestone-manager">
-          <TimelineManager
-            items={workspace.timeline}
-            onAdd={workspace.addMilestone}
-            onToggleSettled={workspace.toggleSettled}
-            onDelete={workspace.deleteMilestone}
-            onInspect={modal.open}
-            label="Milestone manager"
-          />
+          {/* 3.6.0 — THE REPOSITORY SKELETON: while a timeline save is in
+              flight (the 600ms latency rehearsal), the affected card
+              renders the skeleton row block; content returns on
+              completion. */}
+          {workspace.saving.timeline === true ? (
+            <table className="sig-data-table" aria-hidden="true">
+              <tbody>
+                <SkeletonTableRow columns={3} />
+                <SkeletonTableRow columns={3} />
+                <SkeletonTableRow columns={3} />
+              </tbody>
+            </table>
+          ) : (
+            <TimelineManager
+              items={workspace.timeline}
+              onAdd={workspace.addMilestone}
+              onToggleSettled={workspace.toggleSettled}
+              onDelete={workspace.deleteMilestone}
+              onInspect={modal.open}
+              label="Milestone manager"
+            />
+          )}
         </div>
         {modal.selectedEvent !== null && (
           <EventModal

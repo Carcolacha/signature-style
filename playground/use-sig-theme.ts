@@ -33,6 +33,7 @@ import {
   THEME_STORAGE_KEY,
 } from "./theme-utils.js";
 import type { SigPrefs, SigRadiusName, SigThemeName } from "./theme-utils.js";
+import type { WorkspaceRepository } from "./workspace-repository.js";
 
 /** True when the key has a stored value (quota/private mode → absent). */
 function readStored<T>(key: string): T | null {
@@ -89,8 +90,10 @@ export interface UseSigTheme {
   copyThemeSnippet(): Promise<boolean>;
 }
 
-export function useSigTheme(): UseSigTheme {
-  // THE MERGED PREFS (3.6.0) — one object, one key, one writer.
+export function useSigTheme(repo?: WorkspaceRepository): UseSigTheme {
+  // THE MERGED PREFS (3.6.0) — one object, one key, one writer. With a
+  // WorkspaceRepository injected, every pick ALSO rides repo.savePrefs
+  // (the async leg of the FastAPI rehearsal — errors toast).
   const [prefs, setPrefs] = usePersistentState<SigPrefs>(PREFS_STORAGE_KEY, {
     theme: "mocha",
     radius: "standard",
@@ -124,17 +127,23 @@ export function useSigTheme(): UseSigTheme {
       // update, so the effect would never re-fire — the pick must still
       // land in the DOM.
       document.documentElement.dataset.sigTheme = next;
-      setPrefs((current) => ({ ...current, theme: next }));
+      const nextPrefs: SigPrefs = { theme: next, radius };
+      setPrefs(nextPrefs);
+      // The async leg (the FastAPI rehearsal) — the mirror write already
+      // landed, so a rejection only costs the rehearsal toast.
+      repo?.savePrefs(nextPrefs).catch(() => {});
     },
-    [setPrefs],
+    [setPrefs, repo, radius],
   );
   const setRadius = useCallback(
     (next: SigRadiusName): void => {
       applied.current = true;
       document.documentElement.dataset.sigRadius = next;
-      setPrefs((current) => ({ ...current, radius: next }));
+      const nextPrefs: SigPrefs = { theme, radius: next };
+      setPrefs(nextPrefs);
+      repo?.savePrefs(nextPrefs).catch(() => {});
     },
-    [setPrefs],
+    [setPrefs, repo, theme],
   );
 
   const badges = useMemo(() => contrastBadges(theme), [theme]);

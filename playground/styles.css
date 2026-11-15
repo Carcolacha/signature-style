@@ -1300,6 +1300,34 @@
   outline-offset: 1px;
 }
 
+.graph-studio__latency {
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.graph-studio__latency:hover {
+  color: var(--text-main);
+  border-color: var(--color-cake-secondary);
+}
+
+.graph-studio__latency[aria-pressed="true"] {
+  color: var(--text-main);
+  border-color: var(--color-cake-primary);
+  font-weight: 600;
+}
+
+.graph-studio__latency:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
 .graph-studio__inspector {
   min-width: 0;
 }
