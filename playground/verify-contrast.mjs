@@ -15,10 +15,12 @@
  *
  *   MOCHA (the :root default — the historical contract, unchanged):
  *   (ct1) every INK-FLOOR token — the original 11 (cobalt carries blue's
- *         value) — measures ≥ 3.0:1 against BOTH --bg-surface (#313244)
- *         and --bg-base (#1E1E2E);
- *   (ct2) the 2.9.1-fixed token --sig-mauve-bright carries the stricter
- *         3.1:1 bar on BOTH backgrounds (headroom included);
+ *         value) — measures its DECLARED TIER floor against BOTH
+ *         --bg-surface (#313244) and --bg-base (#1E1E2E) — 4.5:1 for
+ *         ink-tier (body text), 3.0:1 for display-tier (3.6.0 policy);
+ *   (ct2) the 2.9.1-fixed token --sig-mauve-bright keeps its pinned hex
+ *         #9e5ff2 and rides its declared DISPLAY tier (3.0:1 floor) —
+ *         the 3.6.0 two-tier policy supersedes the 2.9.1 3.1 bar;
  *   (ct3) the fixed/pinned hexes are exactly the release's chosen values
  *         — mauve-bright #9e5ff2, cobalt #89b4fa;
  *   (ct4) the 15 CHROMATIC tokens are DECLARED FILL/SERIES accents and
@@ -34,15 +36,42 @@
  *
  *   DAYLIGHT ([data-sig-theme="daylight"] — the ink-variant theme):
  *   (ct6) the slate structure is exact (#F8FAFC / #FFFFFF / #F1F5F9 +
- *         the four dark ink rungs); the ink-floor 11 measure ≥ 3.0:1 vs
- *         #FFFFFF (the strictest daylight surface); ALL 16 chromatic
- *         tokens measure ≥ 3.1:1 vs #FFFFFF — the computed ink variants
- *         make this pass (each override documents its measured ratio in
- *         css + tokens.json);
+ *         the four dark ink rungs); the ink-tier tokens measure their
+ *         DECLARED tier floor vs #FFFFFF (the strictest daylight
+ *         surface); ALL 16 chromatic tokens measure ≥ 3.1:1 vs #FFFFFF
+ *         — the computed ink variants make this pass (each override
+ *         documents its measured ratio in css + tokens.json);
  *   (ct7) MANIFEST CROSS-CHECK: every --sig-* override in the css block
  *         equals tokens.json sigThemes.daylight.inkVariants' value, every
- *         documented ratio is a number ≥ 3.1 (canonical) / ≥ 3.0
- *         (ink-floor), and every "inherits" entry is NOT declared in css.
+ *         documented ratio is a number ≥ its tier's floor (canonical
+ *         fills ≥ 3.1 / ink-family ≥ 3.0), and every "inherits" entry is
+ *         NOT declared in css.
+ *
+ * 3.6.0 — THE TWO-TIER CONTRAST POLICY (ct8, the owner's Zero-Defect
+ * A11y release): tokens.json doctrine.contrastPolicy codifies the two
+ * WCAG tiers — bodyText ≥ 4.5:1 / displayAndFills ≥ 3.0:1 — and every
+ * ink-family token carries a declared contrastTier ("ink" | "display")
+ * in sigPalette.tokens. The MEASUREMENT (the release's evidence):
+ *
+ *   ink-tier   (≥4.5 required)   pink-bright 4.76 · pink-soft 7.97 ·
+ *                                pink-alt 7.68 · mauve-soft 6.19 ·
+ *                                sky 4.50 · cobalt 5.97 · green 7.25 ·
+ *                                yellow 9.89 (mocha surface)
+ *   display-tier(≥3.0 required)  mauve-bright 3.22 · lavender 3.95 ·
+ *                                peach 4.22 (mocha surface) — used at
+ *                                ≥1.5rem/600, borders, fills, badges,
+ *                                series strokes; never body text
+ *   metadata ink (display floor) --text-muted 3.40 surface / 4.44 base /
+ *                                3.85 inset — declared display tier in
+ *                                themes.mocha
+ *
+ * NO VALUE CHANGED: every declared ink-tier token already measures
+ * ≥4.5:1 on ALL THREE canonical themes (mocha surface+base, oled via
+ * inheritance, daylight via the computed ink variants) — the policy is
+ * documentation + enforcement, not a retune. The themeTable floors
+ * below are TIER-DRIVEN (was: a flat 3.0 ink floor with one 3.1
+ * special-case); (ct8) cross-checks the manifest metadata against the
+ * gate's own table so the two cannot drift.
  *
  * The ratios are computed per WCAG 2.x relative luminance by the SHARED
  * pure module playground/sig-contrast.ts — the same math the live
@@ -142,21 +171,29 @@ if (SURFACE === undefined || BASE === undefined) {
   process.exit(1);
 }
 
-/** The 26-token table: ink-floor tokens (3.0 bar; the 2.9.1 fix at 3.1)
- *  + the 3.0.0 chromatic fills (2.0 visibility bar, surface only). */
+/** The 26-token table (3.6.0 TIER-AWARE): each ink-family token declares
+ *  its contrastTier — "ink" (body text, 4.5 bar) or "display" (large
+ *  headings/fills/badges/captions, 3.0 bar) — mirrored by the
+ *  contrastTier metadata in tokens.json sigPalette.tokens (ct8). The
+ *  chromatic fills keep their visibility floors (2.0 mocha / 3.1 dark
+ *  themes). */
 const INK_FLOOR = [
-  ["--sig-pink-bright", null],
-  ["--sig-pink-soft", null],
-  ["--sig-pink-alt", null],
-  ["--sig-mauve-bright", "#9e5ff2"], // 2.9.1: was #8839ef (2.32:1 surface) — 3.1 bar
-  ["--sig-mauve-soft", null],
-  ["--sig-lavender", null],
-  ["--sig-sky", null],
-  ["--sig-cobalt", "#89b4fa"], // 3.0.0: the retired blue's value, carried
-  ["--sig-peach", null],
-  ["--sig-green", null],
-  ["--sig-yellow", null],
+  ["--sig-pink-bright", null, "ink"],
+  ["--sig-pink-soft", null, "ink"],
+  ["--sig-pink-alt", null, "ink"],
+  ["--sig-mauve-bright", "#9e5ff2", "display"], // 2.9.1: was #8839ef (2.32:1 surface); 3.6.0: display tier (3.22:1)
+  ["--sig-mauve-soft", null, "ink"],
+  ["--sig-lavender", null, "display"], // 3.6.0: 3.95:1 surface — display tier
+  ["--sig-sky", null, "ink"], // 4.50:1 — the knife-edge ink member
+  ["--sig-cobalt", "#89b4fa", "ink"], // 3.0.0: the retired blue's value, carried
+  ["--sig-peach", null, "display"], // 3.6.0: 4.22:1 surface — display tier
+  ["--sig-green", null, "ink"],
+  ["--sig-yellow", null, "ink"],
 ];
+/** The ink TIER floor per token — the two-tier policy's only knob. */
+const INK_TIER_FLOOR = { ink: 4.5, display: 3.0 };
+/** The metadata ink (muted) — display tier, declared in themes.mocha. */
+const METADATA_INK_FLOOR = 3.0;
 const CHROMATIC_FILLS = [
   ["--sig-orchid", "#F5C2E7"],
   ["--sig-cyan", "#64DFDF"],
@@ -194,18 +231,18 @@ if (mochaTokens["--sig-blue"] !== undefined) {
 
 const pad = (text, width) => (text.length >= width ? text : text + " ".repeat(width - text.length));
 
-/** Print a theme's 26-token ratio table; assert the per-theme floors. */
+/** Print a theme's 26-token ratio table; assert the TIER floors (3.6.0). */
 function themeTable(themeId) {
   const theme = THEMES[themeId];
   const fillFloor = themeId === "mocha" ? 2.0 : 3.1; // mocha keeps its 2.0 visibility contract
   const checkBase = themeId === "mocha"; // oled: black is darker than the surface (ratio grows); daylight: white is the strictest
   console.log("");
   console.log(`${themeId.toUpperCase()} — ${theme.label}`);
-  console.log(`  surface ${theme.surface} · base ${theme.base} · ink floor 3.0:1 · chromatic floor ${fillFloor.toFixed(1)}:1${themeId === "oled" ? " (vs surface AND true black)" : ""}`);
+  console.log(`  surface ${theme.surface} · base ${theme.base} · TIER floors: ink 4.5:1 (body) / display 3.0:1 (large+fills+metadata) · chromatic floor ${fillFloor.toFixed(1)}:1${themeId === "oled" ? " (vs surface AND true black)" : ""}`);
   console.log("");
-  console.log(`  ${pad("token", 24)} ${pad("hex", 9)} ${pad("vs surface", 12)} ${pad("vs base", 9)} floor  verdict`);
-  console.log(`  ${"-".repeat(70)}`);
-  for (const [name] of SIG_TOKENS) {
+  console.log(`  ${pad("token", 24)} ${pad("hex", 9)} ${pad("vs surface", 12)} ${pad("vs base", 9)} ${pad("tier", 9)} floor  verdict`);
+  console.log(`  ${"-".repeat(78)}`);
+  for (const [name, pinned, tier] of SIG_TOKENS) {
     const hex = theme.tokens[name];
     if (hex === undefined) {
       failures.push(`(${themeId}) ${name} unresolved on the ${themeId} theme — missing from :root and the block`);
@@ -214,26 +251,31 @@ function themeTable(themeId) {
     const vsSurface = contrastRatio(hex, theme.surface);
     const vsBase = contrastRatio(hex, theme.base);
     const chromatic = CHROMATIC_NAMES.has(name);
-    const floor = chromatic ? fillFloor : name === "--sig-mauve-bright" ? 3.1 : 3.0;
+    const floor = chromatic
+      ? fillFloor
+      : INK_TIER_FLOOR[tier ?? "ink"];
     const okSurface = vsSurface >= floor;
     const okBase = !checkBase || chromatic || vsBase >= floor;
     const ok = okSurface && okBase;
+    const tierLabel = chromatic ? "fill" : tier ?? "ink";
     const tag = chromatic
       ? themeId === "mocha"
         ? "  ← fill/series"
         : theme.tokens[name] !== mochaTokens[name]
           ? "  ← 3.2.0 daylight ink variant"
           : "  ← inherits mocha"
-      : "";
+      : tier === "display"
+        ? "  ← 3.6.0 display tier"
+        : "";
     console.log(
-      `  ${pad(name, 24)} ${pad(hex, 9)} ${pad(vsSurface.toFixed(2) + ":1", 12)} ${pad(vsBase.toFixed(2) + ":1", 9)} ${String(floor.toFixed(1)).padEnd(5)}  ${ok ? "PASS" : "FAIL"}${tag}`,
+      `  ${pad(name, 24)} ${pad(hex, 9)} ${pad(vsSurface.toFixed(2) + ":1", 12)} ${pad(vsBase.toFixed(2) + ":1", 9)} ${pad(tierLabel, 9)} ${String(floor.toFixed(1)).padEnd(5)}  ${ok ? "PASS" : "FAIL"}${tag}`,
     );
-    const gateId = themeId === "mocha" ? (chromatic ? "4" : name === "--sig-mauve-bright" ? "2" : "1") : themeId === "oled" ? "5" : "6";
+    const gateId = themeId === "mocha" ? (chromatic ? "4" : "8") : themeId === "oled" ? "5" : "6";
     if (!okSurface) {
-      failures.push(`(ct${gateId}) ${name} measures ${vsSurface.toFixed(3)}:1 on the ${themeId} surface ${theme.surface} — floor ${floor}:1 (hex ${hex})`);
+      failures.push(`(ct${gateId}) ${name} [${tierLabel}] measures ${vsSurface.toFixed(3)}:1 on the ${themeId} surface ${theme.surface} — tier floor ${floor}:1 (hex ${hex})`);
     }
     if (!okBase) {
-      failures.push(`(ct${gateId}) ${name} measures ${vsBase.toFixed(3)}:1 on the ${themeId} base ${theme.base} — floor ${floor}:1 (hex ${hex})`);
+      failures.push(`(ct${gateId}) ${name} [${tierLabel}] measures ${vsBase.toFixed(3)}:1 on the ${themeId} base ${theme.base} — tier floor ${floor}:1 (hex ${hex})`);
     }
   }
 }
@@ -323,6 +365,60 @@ if (daylightTokens !== null) {
   themeTable("daylight");
 }
 
+// ---- (ct8) THE TWO-TIER POLICY — manifest metadata cross-check (3.6.0) --------
+{
+  let manifest = {};
+  try {
+    manifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
+  } catch (error) {
+    failures.push(`(ct8) tokens.json unreadable — ${(error instanceof Error ? error.message : String(error))}`);
+  }
+  const policy = manifest.doctrine?.contrastPolicy;
+  if (policy === undefined || typeof policy !== "object") {
+    failures.push("(ct8) tokens.json doctrine.contrastPolicy is missing — the two-tier policy must be codified in the manifest");
+  } else {
+    if (typeof policy.bodyText !== "string" || !policy.bodyText.includes("4.5")) {
+      failures.push("(ct8) doctrine.contrastPolicy.bodyText must document the ≥ 4.5:1 WCAG AA body bar");
+    }
+    if (typeof policy.displayAndFills !== "string" || !policy.displayAndFills.includes("3.0")) {
+      failures.push("(ct8) doctrine.contrastPolicy.displayAndFills must document the ≥ 3.0:1 display bar");
+    }
+  }
+  const manifestTokens = manifest.sigPalette?.tokens ?? {};
+  for (const [name, , tier] of INK_FLOOR) {
+    const declared = manifestTokens[name]?.contrastTier;
+    if (declared !== tier) {
+      failures.push(`(ct8) ${name} must declare contrastTier "${tier}" in tokens.json sigPalette.tokens (found ${declared ?? "nothing"}) — the manifest and this gate cannot drift`);
+    }
+  }
+  // The metadata ink: muted must declare the display tier (the policy's
+  // caption/hints class) — the (a11y4) adjudication leans on it.
+  const mutedEntry = manifest.themes?.mocha?.tokens?.["--text-muted"];
+  if (typeof mutedEntry?.contrastTier !== "string" || !mutedEntry.contrastTier.startsWith("display")) {
+    failures.push("(ct8) --text-muted must declare a display contrastTier in themes.mocha (the 3.6.0 metadata-ink classification)");
+  }
+  // The metadata ink floor, measured: muted on all three theme surfaces.
+  const mutedChecks = [
+    ["mocha", THEMES.mocha],
+    ["oled", THEMES.oled],
+    ["daylight", THEMES.daylight],
+  ];
+  console.log("");
+  console.log("THE METADATA INK (--text-muted) — display tier (≥3.0:1), measured on every theme surface:");
+  for (const [label, theme] of mutedChecks) {
+    const hex = theme.tokens["--text-muted"];
+    if (hex === undefined) {
+      failures.push(`(ct8) --text-muted unresolved on ${label}`);
+      continue;
+    }
+    const ratio = contrastRatio(hex, theme.surface);
+    console.log(`  ${pad(label, 9)} ${pad(hex, 9)} vs ${pad(theme.surface, 9)} ${ratio.toFixed(3)}:1 ${ratio >= METADATA_INK_FLOOR ? "PASS" : "FAIL"}`);
+    if (ratio < METADATA_INK_FLOOR) {
+      failures.push(`(ct8) --text-muted measures ${ratio.toFixed(3)}:1 on the ${label} surface ${theme.surface} — below the ${METADATA_INK_FLOOR}:1 display floor`);
+    }
+  }
+}
+
 // ---- verdict -------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("");
@@ -331,5 +427,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log("");
-console.log("PASS — zero contrast debt on ALL THREE surface themes: mocha (ink ≥3.0 on surface AND base; fills ≥2.0 visibility), oled (all 26 ≥3.1 vs #0B0C10 AND #000000 — inheritance only adds headroom), daylight (all 26 ≥3.0 ink-floor / ≥3.1 canonical vs #FFFFFF via the computed ink variants); the manifest cross-check (ct7) mirrors every ratio");
+console.log("PASS — zero contrast debt on ALL THREE surface themes under the TWO-TIER POLICY (3.6.0): ink-tier tokens ≥4.5:1 (body text), display-tier tokens ≥3.0:1 (large headings, borders, fills, badges, caption metadata — mauve-bright/lavender/peach classified, values frozen), chromatic fills ≥2.0/3.1 visibility, metadata ink (--text-muted) ≥3.0:1 on every theme surface, doctrine.contrastPolicy codified + contrastTier metadata cross-checked (ct8); the manifest cross-check (ct7) mirrors every ratio");
 void luminance; // re-exported for consumers; the gate itself uses contrastRatio
