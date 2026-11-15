@@ -55,7 +55,7 @@
  * MotionReveal exactly one wrapper; KineticSurface one div + one
  * ::after (css-owned). Zero hex, zero shadows, tokens only.
  */
-import { type ReactNode } from "react";
+import { type MutableRefObject, type ReactNode } from "react";
 /**
  * SPRING PROGRESS — the AnimatedNumber easing, pure and gate-testable.
  * Input t is linear time 0→1; output is the spring-interpolated
@@ -150,8 +150,7 @@ export interface KineticSurfaceProps {
     className?: string;
     /** The surface's content. */
     children?: ReactNode;
-}
-/**
+} /**
  * `<KineticSurface>` — the cursor-tracking kinetic sheen.
  *
  * ONE `<div class="sig-kinetic-surface">` carrying the kinetic
@@ -171,3 +170,33 @@ export interface KineticSurfaceProps {
  * ```
  */
 export declare function KineticSurface({ accentToken, className, children, }: KineticSurfaceProps): import("react").JSX.Element;
+/** The refs a consumer attaches: the positioned container + the indicator. */
+export interface FlipIndicatorRefs<L extends HTMLElement = HTMLElement> {
+    /** Attach to the element that CONTAINS the active items (the tablist / the nav list). It must be the indicator's positioning context. */
+    listRef: MutableRefObject<L | null>;
+    /** Attach to the shared indicator span (css/motion.css .sig-tabs-indicator / .sig-nav-indicator). */
+    indicatorRef: MutableRefObject<HTMLSpanElement | null>;
+}
+/**
+ * `useFlipIndicator(activeSelector)` — the FLIP gliding-underline hook.
+ *
+ * Runs placement on EVERY commit (no dependency array): it measures the
+ * element matching `activeSelector` inside the list and no-ops when the
+ * box did not move — which is exactly "glide when the active tab/view
+ * changes, nothing otherwise". The first placement jumps (no previous
+ * box); subsequent changes FLIP. A ResizeObserver on the list recomputes
+ * WITHOUT the glide (resize is not navigation). Hidden lists (the 768px
+ * bar collapse, w === 0) are skipped entirely.
+ *
+ * @example
+ * ```tsx
+ * const { listRef, indicatorRef } = useFlipIndicator('[aria-selected="true"]');
+ * return (
+ *   <div role="tablist" className="sig-tabs" ref={listRef}>
+ *     {tabs.map(...)}
+ *     <span aria-hidden="true" className="sig-tabs-indicator" ref={indicatorRef} />
+ *   </div>
+ * );
+ * ```
+ */
+export declare function useFlipIndicator<L extends HTMLElement = HTMLElement>(activeSelector: string): FlipIndicatorRefs<L>;

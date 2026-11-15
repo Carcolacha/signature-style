@@ -30,6 +30,7 @@
 
 import { memo } from "react";
 import type { CSSProperties, ReactNode } from "react";
+import { useFlipIndicator } from "./motion.js";
 
 /**
  * One column of a `<DataTable>`: the row key it reads, the header text,
@@ -172,10 +173,23 @@ export interface TabsProps {
  * `<button type="button" role="tab" aria-selected>` per tab. ZERO
  * .is-active classes — attribute-driven, the same contract as the nav's
  * [aria-current="page"]: css/data.css styles [aria-selected="true"]
- * directly (Flamingo underline). Controlled: pass `activeId` and react
- * to `onChange(id)`; state stays with you. Panels are YOURS — render
- * the active branch yourself (the component ships no panel wrapper, no
- * context, nothing to un-flatten).
+ * directly. Controlled: pass `activeId` and react to `onChange(id)`;
+ * state stays with you. Panels are YOURS — render the active branch
+ * yourself (the component ships no panel wrapper, no context, nothing
+ * to un-flatten).
+ *
+ * 3.7.0 THE FLIP GLIDING INDICATOR: the per-tab border-bottom underline
+ * RETIRES — it teleported (the old tab's underline vanished while the
+ * new tab's appeared — two disconnected blinks). One shared
+ * .sig-tabs-indicator span now lives inside the tablist (aria-hidden —
+ * pure decoration; selection is announced by aria-selected, never by
+ * the underline) and GLIDES between tabs via the FLIP choreography of
+ * useFlipIndicator (react/motion.tsx): measure both boxes, invert to
+ * the previous geometry, play the transform to the new one over
+ * var(--dur-glide) var(--ease-glide). The aria-selected CONTRACT IS
+ * UNTOUCHED — the attribute is still the only state machine; the
+ * indicator is a projection of it. Reduced motion: the indicator jumps
+ * (tokens collapse to 1ms; css/motion.css + data.css stand down).
  *
  * @example
  * ```tsx
@@ -192,8 +206,9 @@ export interface TabsProps {
  * ```
  */
 export function Tabs({ tabs, activeId, onChange, label }: TabsProps) {
+  const { listRef, indicatorRef } = useFlipIndicator<HTMLDivElement>('[aria-selected="true"]');
   return (
-    <div role="tablist" aria-label={label} className="sig-tabs">
+    <div role="tablist" aria-label={label} className="sig-tabs" ref={listRef}>
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -206,6 +221,9 @@ export function Tabs({ tabs, activeId, onChange, label }: TabsProps) {
           {tab.label}
         </button>
       ))}
+      {/* THE shared underline — one element, gliding (aria-hidden: the
+          selection state lives in aria-selected, where it belongs). */}
+      <span aria-hidden="true" className="sig-tabs-indicator" ref={indicatorRef} />
     </div>
   );
 }

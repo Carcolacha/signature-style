@@ -111,6 +111,52 @@
 .sig-carousel__page[hidden] {
   display: none;
 }
+
+/* -- 3.7.0 THE DIRECTIONAL GLIDE -------------------------------------------
+   The deck records its travel direction (react/editorial.tsx sets
+   data-dir="next"|"prev" on the stage from the page-step comparison).
+   The INCOMING page (the :not([hidden]) one — freshly out of
+   display:none, which restarts css animations for free) enters from
+   that edge: translate3d(±24px, 0, 0) + opacity 0 → rest over
+   var(--dur-glide) var(--ease-glide). BOTH animated properties are on
+   the e1 treaty list. Free-scroll mode never gets data-dir — it keeps
+   its native snap scrolling. 24px = three grid steps. */
+@keyframes sig-page-glide-next {
+  from {
+    opacity: 0;
+    transform: translate3d(24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes sig-page-glide-prev {
+  from {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+.sig-carousel--paged[data-dir="next"] .sig-carousel__page:not([hidden]) {
+  animation: sig-page-glide-next var(--dur-glide, 280ms) var(--ease-glide, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+.sig-carousel--paged[data-dir="prev"] .sig-carousel__page:not([hidden]) {
+  animation: sig-page-glide-prev var(--dur-glide, 280ms) var(--ease-glide, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+/* Reduced-motion mercy: pages appear in place, no glide (the duration
+   tokens already collapse to 1ms; this is the explicit stand-down). */
+@media (prefers-reduced-motion: reduce) {
+  .sig-carousel--paged .sig-carousel__page:not([hidden]) {
+    animation: none;
+  }
+}
+[data-sig-motion="reduced"] .sig-carousel--paged .sig-carousel__page:not([hidden]) {
+  animation: none;
+}
 /* Container-aware: narrow cells stack the page to one column (the
    2.9.0 container-query pattern — containment rides the OUTER .sig-cell
    in the composition; no container ancestor → the 3-up grid stands). */

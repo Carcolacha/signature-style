@@ -34,6 +34,11 @@
  * aria-hidden="true" parked after each non-last item's content, so
  * screen readers hear the labels, never the punctuation.
  *
+ * 3.7.0 THE GLIDING INDICATOR: the bar's active underline is ONE shared
+ * .sig-nav-indicator element (FLIP — see useFlipIndicator in
+ * react/motion.tsx), not a per-link border. aria-current="page" remains
+ * THE active mechanism; the underline became its projection.
+ *
  * Pruning Protocol: zero wrapper divs in the bar, zero hardcoded
  * hexes — every color comes from tokens via css/nav.css.
  */
@@ -48,6 +53,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./primitives.js";
+import { useFlipIndicator } from "./motion.js";
 
 /** One navigation destination. */
 export interface NavItem {
@@ -117,6 +123,18 @@ function renderItems(
  * `document.body`. Closed renders nothing at all — no hidden chrome in
  * the DOM.
  *
+ * 3.7.0 THE FLIP GLIDING INDICATOR: the bar's per-link border-bottom
+ * underline retires for ONE shared .sig-nav-indicator inside the navbar
+ * that GLIDES between destinations (the FLIP choreography of
+ * useFlipIndicator — measure, invert, play — over var(--dur-glide)
+ * var(--ease-glide)). The aria-current CONTRACT IS UNTOUCHED: the
+ * attribute is still the only state machine (routers keep owning it via
+ * their own renderer); the indicator is a projection of it and hides
+ * itself when no [aria-current] exists (router mode, mobile collapse).
+ * THE DRAWER keeps the historical per-link underline — a vertical stack
+ * cannot share a horizontal glide; the drawer decision stands (see
+ * css/nav.css).
+ *
  * @example
  * ```tsx
  * <GlobalNav
@@ -135,6 +153,9 @@ export function GlobalNav({ items, as, activeHref }: GlobalNavProps) {
   const drawerRef = useRef<HTMLElement>(null);
   const Link: ElementType = as ?? "a";
   const plainAnchor = as === undefined;
+  // THE GLIDE — one indicator under the whole flat list. The drawer is
+  // portaled OUTSIDE the list, so only bar links are measured.
+  const { listRef, indicatorRef } = useFlipIndicator<HTMLUListElement>('[aria-current="page"]');
 
   // Escape closes — a document-level listener, cleaned up on unmount and
   // whenever the drawer closes, so it never leaks across toggles.
@@ -166,9 +187,13 @@ export function GlobalNav({ items, as, activeHref }: GlobalNavProps) {
   return (
     <>
       <nav className="sig-nav">
-        <ul className="sig-nav__list">
+        <ul className="sig-nav__list" ref={listRef}>
           {renderItems(Link, items, activeHref, plainAnchor)}
         </ul>
+        {/* THE shared underline — glides between destinations (3.7.0).
+            Sits inside the navbar (its positioning context), below the
+            hairline rail, aria-hidden like the tabs indicator. */}
+        <span aria-hidden="true" className="sig-nav-indicator" ref={indicatorRef} />
         <button
           ref={menuBtnRef}
           className="sig-nav__menu-btn"

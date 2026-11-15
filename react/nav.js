@@ -35,12 +35,18 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * aria-hidden="true" parked after each non-last item's content, so
  * screen readers hear the labels, never the punctuation.
  *
+ * 3.7.0 THE GLIDING INDICATOR: the bar's active underline is ONE shared
+ * .sig-nav-indicator element (FLIP — see useFlipIndicator in
+ * react/motion.tsx), not a per-link border. aria-current="page" remains
+ * THE active mechanism; the underline became its projection.
+ *
  * Pruning Protocol: zero wrapper divs in the bar, zero hardcoded
  * hexes — every color comes from tokens via css/nav.css.
  */
 import { useCallback, useEffect, useRef, useState, } from "react";
 import { createPortal } from "react-dom";
 import { Icon } from "./primitives.js";
+import { useFlipIndicator } from "./motion.js";
 /**
  * The props spread onto every rendered link. `plainAnchor` gates
  * aria-current: only self-rendered <a> elements get it — a router
@@ -67,6 +73,18 @@ function renderItems(Link, items, activeHref, plainAnchor, onClick) {
  * `document.body`. Closed renders nothing at all — no hidden chrome in
  * the DOM.
  *
+ * 3.7.0 THE FLIP GLIDING INDICATOR: the bar's per-link border-bottom
+ * underline retires for ONE shared .sig-nav-indicator inside the navbar
+ * that GLIDES between destinations (the FLIP choreography of
+ * useFlipIndicator — measure, invert, play — over var(--dur-glide)
+ * var(--ease-glide)). The aria-current CONTRACT IS UNTOUCHED: the
+ * attribute is still the only state machine (routers keep owning it via
+ * their own renderer); the indicator is a projection of it and hides
+ * itself when no [aria-current] exists (router mode, mobile collapse).
+ * THE DRAWER keeps the historical per-link underline — a vertical stack
+ * cannot share a horizontal glide; the drawer decision stands (see
+ * css/nav.css).
+ *
  * @example
  * ```tsx
  * <GlobalNav
@@ -85,6 +103,9 @@ export function GlobalNav({ items, as, activeHref }) {
     const drawerRef = useRef(null);
     const Link = as ?? "a";
     const plainAnchor = as === undefined;
+    // THE GLIDE — one indicator under the whole flat list. The drawer is
+    // portaled OUTSIDE the list, so only bar links are measured.
+    const { listRef, indicatorRef } = useFlipIndicator('[aria-current="page"]');
     // Escape closes — a document-level listener, cleaned up on unmount and
     // whenever the drawer closes, so it never leaks across toggles.
     useEffect(() => {
@@ -112,7 +133,7 @@ export function GlobalNav({ items, as, activeHref }) {
             menuBtnRef.current?.focus();
         }
     }, [menuOpen]);
-    return (_jsxs(_Fragment, { children: [_jsxs("nav", { className: "sig-nav", children: [_jsx("ul", { className: "sig-nav__list", children: renderItems(Link, items, activeHref, plainAnchor) }), _jsx("button", { ref: menuBtnRef, className: "sig-nav__menu-btn", type: "button", "aria-label": "Open menu", "aria-expanded": menuOpen, "aria-controls": "sig-nav-drawer", onClick: open, children: _jsx(Icon, { name: "Menu", "aria-hidden": true }) })] }), menuOpen &&
+    return (_jsxs(_Fragment, { children: [_jsxs("nav", { className: "sig-nav", children: [_jsx("ul", { className: "sig-nav__list", ref: listRef, children: renderItems(Link, items, activeHref, plainAnchor) }), _jsx("span", { "aria-hidden": "true", className: "sig-nav-indicator", ref: indicatorRef }), _jsx("button", { ref: menuBtnRef, className: "sig-nav__menu-btn", type: "button", "aria-label": "Open menu", "aria-expanded": menuOpen, "aria-controls": "sig-nav-drawer", onClick: open, children: _jsx(Icon, { name: "Menu", "aria-hidden": true }) })] }), menuOpen &&
                 createPortal(_jsx("div", { className: "sig-modal-backdrop", onClick: close, children: _jsxs("aside", { id: "sig-nav-drawer", ref: drawerRef, className: "sig-nav-drawer", "data-open": "true", role: "dialog", "aria-modal": "true", "aria-label": "Menu", tabIndex: -1, onClick: (domEvent) => domEvent.stopPropagation(), children: [_jsx("ul", { className: "sig-nav-drawer__list", children: renderItems(Link, items, activeHref, plainAnchor, close) }), _jsx("button", { className: "sig-modal-close", type: "button", "aria-label": "Close menu", onClick: close, children: _jsx(Icon, { name: "X", "aria-hidden": true }) })] }) }), document.body)] }));
 }
 export default GlobalNav;

@@ -9,11 +9,17 @@
    (`--z-overlay` 40). The drawer is a `--z-modal` (50) sibling of the
    modal card, so an open menu always beats the page it navigates.
 
-   THE ACTIVE MECHANISM: there is no `.is-active` class. Every link
-   carries a transparent 2px bottom border at rest, and the current
-   page's link turns that underline Flamingo — driven entirely by
-   `[aria-current="page"]`. The attribute IS the state, so router
-   solutions (React Router's NavLink) get the active style for free.
+   THE ACTIVE MECHANISM: there is no `.is-active` class. 3.7.0 — the
+   per-link border underline RETIRED from the BAR: the underline is ONE
+   shared .sig-nav-indicator element that GLIDES between destinations
+   (the FLIP choreography, useFlipIndicator in react/motion.tsx, over
+   var(--dur-glide) var(--ease-glide); transform is the only animated
+   property — the e1 treaty). [aria-current="page"] REMAINS the active
+   mechanism — it drives the link's ink and feeds the indicator; the
+   underline is its projection. The DRAWER keeps the historical
+   per-link underline: a vertical stack has no horizontal glide, and
+   the drawer decision (one active visual, one place to read it)
+   stands.
 
    MOBILE (<= 768px, Pillar 2): the flat list hides and the hamburger
    appears. The drawer is a full-height side sheet sliding from the
@@ -60,14 +66,15 @@
   list-style: none;
 }
 
-/* Nav links — inline-flex so the press transform has a transformable box. */
+/* Nav links — inline-flex so the press transform has a transformable box.
+   3.7.0: the border-bottom underline is GONE from the bar links — the
+   shared .sig-nav-indicator below owns it now. */
 .sig-nav__link {
   display: inline-flex;
   align-items: center;
   color: var(--text-muted);
   text-decoration: none;
   padding: var(--space-standard) 0;
-  border-bottom: 2px solid transparent;
   transition: var(--transition-standard), var(--transition-transform);
 }
 
@@ -79,10 +86,43 @@
   transform: scale(0.97);
 }
 
-/* THE active mechanism: the aria-current attribute IS the state. */
+/* THE active mechanism: the aria-current attribute IS the state — it
+   drives the ink; the Flamingo underline below is its gliding shadow. */
 .sig-nav__link[aria-current="page"] {
   color: var(--text-main);
-  border-bottom-color: var(--color-cake-primary);
+}
+
+/* THE GLIDING INDICATOR (3.7.0) — one Flamingo underline for the whole
+   bar. useFlipIndicator measures the [aria-current="page"] link and
+   FLIPs the indicator between boxes: only `transform` ever transitions;
+   the inline width/base-position swaps happen inside the inverted
+   frames. The navbar (position: sticky) is the positioning context. */
+.sig-nav-indicator {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0; /* measured width set inline by the hook */
+  background: var(--color-cake-primary);
+  transform: translate3d(0, 0, 0);
+  transform-origin: left center;
+  transition: transform var(--dur-glide, 280ms) var(--ease-glide, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* Pillar 2 mobile shift: the flat list collapses, the hamburger appears —
+   the indicator hides with its list (the drawer carries the underline). */
+@media (max-width: 768px) {
+  .sig-nav__list {
+    display: none;
+  }
+
+  .sig-nav-indicator {
+    display: none;
+  }
+
+  .sig-nav__menu-btn {
+    display: inline-flex;
+  }
 }
 
 /* Doctrine focus ring — identical to cascade.css / timeline.css. */
@@ -115,17 +155,6 @@
   transform: scale(0.97);
 }
 
-/* Pillar 2 mobile shift: the flat list collapses, the hamburger appears. */
-@media (max-width: 768px) {
-  .sig-nav__list {
-    display: none;
-  }
-
-  .sig-nav__menu-btn {
-    display: inline-flex;
-  }
-}
-
 /* The mobile menu — full-height side drawer sliding in from the right.
    Sits at --z-modal (50): above the navbar, sibling to the modal card. */
 .sig-nav-drawer {
@@ -146,8 +175,10 @@
 }
 
 /* Vertical link stack — drawer links wear the same .sig-nav__link class
-   as the flat bar (bottom-border aria-current underline kept on purpose;
-   see the header decision), just stacked and full-width. */
+   as the flat bar, just stacked and full-width. 3.7.0 DRAWER DECISION
+   STANDS: the drawer keeps the historical per-link bottom-border
+   underline — a vertical stack has no horizontal glide to share, and
+   the drawer is a separate surface from the gliding bar. */
 .sig-nav-drawer__list {
   display: flex;
   flex-direction: column;
@@ -156,6 +187,14 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.sig-nav-drawer__list .sig-nav__link {
+  border-bottom: 2px solid transparent;
+}
+
+.sig-nav-drawer__list .sig-nav__link[aria-current="page"] {
+  border-bottom-color: var(--color-cake-primary);
 }
 
 /* ---- 2.9.0 <Breadcrumbs> — the Shed-style mono path -----------------------
@@ -209,12 +248,19 @@
 }
 
 /* Motion is a gift, not a requirement: no transitions when the visitor
-   asked for reduced motion (the base layer's global guard also runs). */
+   asked for reduced motion (the base layer's global guard also runs).
+   3.7.0: the gliding indicator JUMPS between destinations — and the
+   duration tokens already collapsed to 1ms in css/tokens.css. */
 @media (prefers-reduced-motion: reduce) {
   .sig-nav__link,
   .sig-nav__menu-btn,
   .sig-nav-drawer,
+  .sig-nav-indicator,
   .sig-breadcrumbs a {
     transition: none;
   }
+}
+
+[data-sig-motion="reduced"] .sig-nav-indicator {
+  transition: none;
 }

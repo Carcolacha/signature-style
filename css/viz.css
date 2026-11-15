@@ -339,3 +339,69 @@
     transition: none;
   }
 }
+
+/* ==========================================================================
+   3.7.0 THE SVG SWEEPS — chart lines draw themselves on mount (the
+   kinetic engine's data entrances). The mechanism is the pathLength=1
+   trick, zero dependencies: react/viz.tsx stamps pathLength={1} on the
+   AreaChart line path and the Sparkline polyline, which NORMALIZES the
+   stroke length, so css can dash it as [1] (one dash spanning the whole
+   path) and animate stroke-dashoffset 1 → 0 — the pen draws the line
+   once, --dur-kinetic-out × --ease-kinetic-out (the high-velocity
+   deceleration: the sweep leaves the gate at 61% progress by 11% of the
+   timeline). ONLY stroke-dashoffset animates — pure SVG paint, no
+   layout, no treaty risk. The line paths carry NO inline dash
+   attributes, so these rules own the dash entirely.
+   ========================================================================== */
+
+/* The normalized dash state: offset 1 hides the stroke, 0 shows it. */
+.sig-area__line,
+.sig-spark__line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sig-line-sweep var(--dur-kinetic-out, 380ms) var(--ease-kinetic-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+@keyframes sig-line-sweep {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Reduced-motion mercy: the line appears DRAWN (dashoffset 0), never
+   half-swept or missing — and the ring arc (below) jumps to its value. */
+@media (prefers-reduced-motion: reduce) {
+  .sig-area__line,
+  .sig-spark__line {
+    animation: none;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+}
+[data-sig-motion="reduced"] .sig-area__line,
+[data-sig-motion="reduced"] .sig-spark__line {
+  animation: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+
+/* -- 3.7.0 THE STATRING ARC — the value change now rides the SNAPPY
+   SPRING (the v2.5.0-era playground rule retired — the package owns
+   its own physics now). The progress arc is the SECOND circle of the
+   documented StatRing anatomy (track + progress + boundary hairline —
+   react/viz.tsx renders them in that order), so :nth-of-type(2) is the
+   arc on every StatRing, zoomable wrapper or bare dial alike. The
+   dashoffset itself is set by the component (the value); only its
+   CHANGES glide here, spring-overshooting through the snappy curve. */
+svg[role="progressbar"] circle:nth-of-type(2) {
+  transition: stroke-dashoffset var(--dur-spring-snappy, 320ms) var(--ease-spring-snappy, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  svg[role="progressbar"] circle:nth-of-type(2) {
+    transition: none;
+  }
+}
+[data-sig-motion="reduced"] svg[role="progressbar"] circle:nth-of-type(2) {
+  transition: none;
+}

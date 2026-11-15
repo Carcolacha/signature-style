@@ -90,7 +90,7 @@ export function Sparkline({ data, colorToken = "--sig-sky", width = 120, height 
         return null;
     }
     const { line, area } = sparkPoints(data, width, height);
-    return (_jsxs("svg", { role: "img", "aria-label": label ?? "trend", viewBox: `0 0 ${width} ${height}`, preserveAspectRatio: "none", width: width, height: height, children: [_jsx("polygon", { points: area, fill: `color-mix(in srgb, var(${colorToken}) 15%, transparent)` }), _jsx("polyline", { points: line, fill: "none", stroke: `var(${colorToken})`, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" })] }));
+    return (_jsxs("svg", { role: "img", "aria-label": label ?? "trend", viewBox: `0 0 ${width} ${height}`, preserveAspectRatio: "none", width: width, height: height, children: [_jsx("polygon", { points: area, fill: `color-mix(in srgb, var(${colorToken}) 15%, transparent)` }), _jsx("polyline", { className: "sig-spark__line", points: line, pathLength: 1, fill: "none", stroke: `var(${colorToken})`, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" })] }));
 }
 /**
  * `<StatCard>` — the KPI card (2.4.0).
@@ -307,7 +307,7 @@ export const AreaChart = memo(function AreaChart({ points, colorToken = "--sig-s
     const first = coords[0];
     const last = coords[coords.length - 1];
     const area = `${line} L ${last.x} ${AREA_PLOT_BOTTOM} L ${first.x} ${AREA_PLOT_BOTTOM} Z`;
-    return (_jsxs("svg", { role: "img", "aria-label": label ?? `Area chart of ${points.length} points`, className: "sig-area", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, style: { height }, children: [_jsx("defs", { children: _jsxs("linearGradient", { id: gradientId, x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: `color-mix(in srgb, var(${colorToken}) 30%, transparent)` }), _jsx("stop", { offset: "100%", stopColor: "transparent" })] }) }), _jsx("path", { className: "sig-area__fill", d: area, fill: `url(#${gradientId})` }), _jsx("path", { className: "sig-area__line", d: line, style: { stroke: `var(${colorToken})` }, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }), points.map((point, index) => {
+    return (_jsxs("svg", { role: "img", "aria-label": label ?? `Area chart of ${points.length} points`, className: "sig-area", viewBox: `0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`, style: { height }, children: [_jsx("defs", { children: _jsxs("linearGradient", { id: gradientId, x1: "0", y1: "0", x2: "0", y2: "1", children: [_jsx("stop", { offset: "0%", stopColor: `color-mix(in srgb, var(${colorToken}) 30%, transparent)` }), _jsx("stop", { offset: "100%", stopColor: "transparent" })] }) }), _jsx("path", { className: "sig-area__fill", d: area, fill: `url(#${gradientId})` }), _jsx("path", { className: "sig-area__line", d: line, pathLength: 1, style: { stroke: `var(${colorToken})` }, strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round" }), points.map((point, index) => {
                 const coord = coords[index];
                 if (coord === undefined)
                     return null;

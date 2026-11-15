@@ -59,12 +59,18 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
+  type MutableRefObject,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
+
+/** Layout effect where a DOM exists, plain effect under SSR (the ThemeProvider pattern). */
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * THE INSTANT-MOTION PROBE — shared by all three primitives. True when
@@ -300,9 +306,7 @@ export interface KineticSurfaceProps {
   className?: string;
   /** The surface's content. */
   children?: ReactNode;
-}
-
-/**
+}/**
  * `<KineticSurface>` — the cursor-tracking kinetic sheen.
  *
  * ONE `<div class="sig-kinetic-surface">` carrying the kinetic
@@ -375,4 +379,124 @@ export function KineticSurface({
       {children}
     </div>
   );
+}
+
+/* ==========================================================================
+   THE FLIP INDICATOR — the shared gliding-underline mechanics
+   (3.7.0). <Tabs> and <GlobalNav> both retire their per-tab border
+   underline (it TELEPORTS — the old underline disappears on one tab and
+   appears on another) for ONE shared indicator element that GLIDES.
+   The motion is FLIP: First, measure the previous and the new active
+   element's boxes (offsetLeft/offsetWidth — layout reads, one per
+   change); Last, invert — paint the indicator at the PREVIOUS box
+   (transition suppressed) with scaleX shaped so it renders exactly the
+   old geometry over the new base width; Invert→Play — force one reflow
+   to lock the inverted frame, re-enable the css glide transition
+   (--dur-glide × --ease-glide), then transform to the new box. Only
+   transform ever transitions (the e1 treaty); the width swap is
+   instantaneous and invisible because the inverted scaleX covers it.
+   First placement (mount) jumps without gliding — there is no previous
+   box to glide FROM. A ResizeObserver recompute resizes/jumps without
+   gliding (a media-query collapse is not navigation).
+   ========================================================================== */
+
+/** The refs a consumer attaches: the positioned container + the indicator. */
+export interface FlipIndicatorRefs<L extends HTMLElement = HTMLElement> {
+  /** Attach to the element that CONTAINS the active items (the tablist / the nav list). It must be the indicator's positioning context. */
+  listRef: MutableRefObject<L | null>;
+  /** Attach to the shared indicator span (css/motion.css .sig-tabs-indicator / .sig-nav-indicator). */
+  indicatorRef: MutableRefObject<HTMLSpanElement | null>;
+}
+
+/** One measured box — offsetLeft/offsetWidth relative to the list. */
+interface FlipBox {
+  x: number;
+  w: number;
+}
+
+/**
+ * `useFlipIndicator(activeSelector)` — the FLIP gliding-underline hook.
+ *
+ * Runs placement on EVERY commit (no dependency array): it measures the
+ * element matching `activeSelector` inside the list and no-ops when the
+ * box did not move — which is exactly "glide when the active tab/view
+ * changes, nothing otherwise". The first placement jumps (no previous
+ * box); subsequent changes FLIP. A ResizeObserver on the list recomputes
+ * WITHOUT the glide (resize is not navigation). Hidden lists (the 768px
+ * bar collapse, w === 0) are skipped entirely.
+ *
+ * @example
+ * ```tsx
+ * const { listRef, indicatorRef } = useFlipIndicator('[aria-selected="true"]');
+ * return (
+ *   <div role="tablist" className="sig-tabs" ref={listRef}>
+ *     {tabs.map(...)}
+ *     <span aria-hidden="true" className="sig-tabs-indicator" ref={indicatorRef} />
+ *   </div>
+ * );
+ * ```
+ */
+export function useFlipIndicator<L extends HTMLElement = HTMLElement>(
+  activeSelector: string,
+): FlipIndicatorRefs<L> {
+  const listRef = useRef<L | null>(null);
+  const indicatorRef = useRef<HTMLSpanElement | null>(null);
+  const prevBoxRef = useRef<FlipBox | null>(null);
+
+  // MEASURE + INVERT + PLAY, every commit. Placement is a layout read
+  // per commit — cheap at nav/tablist scale, and the no-deps form means
+  // the hook needs no cooperation from the consumer's state.
+  useIsomorphicLayoutEffect(() => {
+    const list = listRef.current;
+    const el = indicatorRef.current;
+    if (list === null || el === null) return;
+    const active = list.querySelector(activeSelector);
+    if (!(active instanceof HTMLElement)) return;
+    const next: FlipBox = { x: active.offsetLeft, w: active.offsetWidth };
+    if (next.w === 0) return; // collapsed (mobile bar) — nothing to place
+    const prev = prevBoxRef.current;
+    if (prev === null || (prev.x === next.x && prev.w === next.w)) {
+      // FIRST placement (or nothing moved): jump straight to the box.
+      el.style.transition = "none";
+      el.style.width = `${next.w}px`;
+      el.style.transform = `translate3d(${next.x}px, 0, 0)`;
+      void el.offsetWidth; // lock before the css transition rule resumes
+      el.style.transition = "";
+    } else {
+      // FLIP — invert to the previous box, then play to the new one.
+      el.style.transition = "none";
+      el.style.width = `${next.w}px`;
+      el.style.transform = `translate3d(${prev.x}px, 0, 0) scaleX(${prev.w / next.w})`;
+      void el.offsetWidth; // THE INVERT: lock the old-geometry frame
+      el.style.transition = ""; // THE PLAY: the css glide takes over
+      el.style.transform = `translate3d(${next.x}px, 0, 0)`;
+    }
+    prevBoxRef.current = next;
+  });
+
+  // Resize recompute — jump, never glide (a breakpoint collapse is not
+  // a navigation the visitor should see fly).
+  useEffect(() => {
+    const list = listRef.current;
+    const el = indicatorRef.current;
+    if (list === null || el === null || typeof ResizeObserver === "undefined") {
+      return undefined;
+    }
+    const observer = new ResizeObserver(() => {
+      const active = list.querySelector(activeSelector);
+      if (!(active instanceof HTMLElement)) return;
+      const next: FlipBox = { x: active.offsetLeft, w: active.offsetWidth };
+      if (next.w === 0) return;
+      el.style.transition = "none";
+      el.style.width = `${next.w}px`;
+      el.style.transform = `translate3d(${next.x}px, 0, 0)`;
+      void el.offsetWidth;
+      el.style.transition = "";
+      prevBoxRef.current = next;
+    });
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, [activeSelector]);
+
+  return { listRef, indicatorRef };
 }

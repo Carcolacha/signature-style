@@ -133,6 +133,10 @@ export interface CarouselProps {
  * ZERO-DEPENDENCY MOTION: free-scroll scrolling uses `behavior:
  * "smooth"` unless the visitor prefers reduced motion — matchMedia is
  * read ONCE per component instance. The IO is disconnected on unmount.
+ * 3.7.0 THE DIRECTIONAL GLIDE: paged mode records its travel direction
+ * and the incoming page glides in from that edge (±24px + opacity,
+ * var(--dur-glide) var(--ease-glide), css/editorial.css); free-scroll
+ * keeps its native snap. Reduced motion: pages appear in place.
  *
  * @example
  * ```tsx
@@ -146,6 +150,11 @@ export interface CarouselProps {
 export function Carousel({ label, mode = "free-scroll", children }: CarouselProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [page, setPage] = useState(1);
+  // 3.7.0 THE DIRECTIONAL GLIDE — which way the deck last moved. The
+  // incoming page animates from ±24px (translate3d + opacity 0) to rest
+  // over var(--dur-glide) var(--ease-glide); css/editorial.css answers
+  // [data-dir="next"|"prev"] on the stage. Free-scroll keeps snap.
+  const [direction, setDirection] = useState<"next" | "prev">("next");
   // Read ONCE per instance — no listener, no re-render churn.
   const reduceMotion = useRef<boolean>(
     typeof window !== "undefined" &&
@@ -195,9 +204,13 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
     return width > 0 ? width : track.clientWidth;
   };
 
-  /** paged-3 — the stateful page step (the deck's ONLY mover). */
+  /** paged-3 — the stateful page step (the deck's ONLY mover). The
+   *  direction the deck travels is recorded here so the css glide knows
+   *  which edge the incoming page enters from (3.7.0). */
   const goToPage = (next: number): void => {
-    setPage(Math.min(pageCount, Math.max(1, next)));
+    const target = Math.min(pageCount, Math.max(1, next));
+    setDirection(target >= current ? "next" : "prev");
+    setPage(target);
   };
 
   /** free-scroll — scroll to the item at `index` (0-based). */
@@ -228,11 +241,14 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
     <div
       className={paged ? "sig-carousel sig-carousel--paged" : "sig-carousel"}
       onKeyDown={handleKeyDown}
+      {...(paged ? { "data-dir": direction } : {})}
     >
       {paged ? (
         // THE PAGE DECK (3.6.0): every page renders (stable DOM), ONE is
         // visible; the non-current wrappers carry hidden + inert so
         // their content leaves the a11y tree AND the tab order.
+        // 3.7.0: data-dir on the stage carries the travel direction —
+        // css/editorial.css glides the incoming page from that edge.
         <div className="sig-carousel__stage" role="group" aria-label={label}>
           {Array.from({ length: pageCount }, (_, pageIdx) => {
             const isCurrent = pageIdx === current - 1;

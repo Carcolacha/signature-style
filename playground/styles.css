@@ -137,21 +137,16 @@
   }
 }
 
-/* ---- LIVE RING (2.5.0) ------------------------------------------------------
-   The attendance ring reacts to allocations: the stroke-dashoffset transition
-   lives HERE, scoped to the composition (react/viz.tsx is byte-frozen
-   and the StatRing ships no css — it is pure SVG attributes; the
-   selector targets the ring's role="progressbar" svg inside the card).
-   Reduced motion: the ring jumps, it does not glide. */
-.sig-surface-card svg[role="progressbar"] circle {
-  transition: stroke-dashoffset 0.3s ease-out;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sig-surface-card svg[role="progressbar"] circle {
-    transition: none;
-  }
-}
+/* ---- LIVE RING (2.5.0; RETIRED 3.7.0 — the package owns the physics now)
+   The attendance ring's stroke-dashoffset glide MOVED to css/viz.css
+   (the 3.7.0 kinetic engine): svg[role="progressbar"] circle:nth-of-type(2)
+   — the progress arc, the second circle of the documented StatRing
+   anatomy — now transitions over var(--dur-spring-snappy) ×
+   var(--ease-spring-snappy), the damped fast spring. The composition
+   rule is retired rather than retuned because styles.css is UNLAYERED:
+   it would outrank the package's cascade rule and freeze the ring on
+   the old 0.3s ease-out. Deleting it lets the spring tokens through.
+   Reduced motion: the ring jumps, it does not glide (css/viz.css). */
 
 /* ---- staggered load-in (1.5.1; 2.5.0: retargeted to the bento cells) -------
    The composition animates the bento's direct children (banner, KPI

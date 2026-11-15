@@ -391,8 +391,14 @@ export function Sparkline({
         points={area}
         fill={`color-mix(in srgb, var(${colorToken}) 15%, transparent)`}
       />
+      {/* 3.7.0 THE MOUNT SWEEP — pathLength={1} + the sig-spark__line
+          class join the AreaChart's dash sweep (css/viz.css draws the
+          line once on mount). The class is the css handle; geometry
+          stays pure SVG attributes. */}
       <polyline
+        className="sig-spark__line"
         points={line}
+        pathLength={1}
         fill="none"
         stroke={`var(${colorToken})`}
         strokeWidth={2}
@@ -811,9 +817,14 @@ export const AreaChart = memo(function AreaChart({
         </linearGradient>
       </defs>
       <path className="sig-area__fill" d={area} fill={`url(#${gradientId})`} />
+      {/* 3.7.0 THE MOUNT SWEEP — pathLength={1} normalizes the stroke so
+          css/viz.css can dash it as [1] and animate dashoffset 1 → 0
+          (the line draws itself once on mount, --dur-kinetic-out ×
+          --ease-kinetic-out). Pure attribute + css; no JS, no deps. */}
       <path
         className="sig-area__line"
         d={line}
+        pathLength={1}
         style={{ stroke: `var(${colorToken})` }}
         strokeWidth={2}
         strokeLinecap="round"

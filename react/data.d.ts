@@ -120,10 +120,23 @@ export interface TabsProps {
  * `<button type="button" role="tab" aria-selected>` per tab. ZERO
  * .is-active classes — attribute-driven, the same contract as the nav's
  * [aria-current="page"]: css/data.css styles [aria-selected="true"]
- * directly (Flamingo underline). Controlled: pass `activeId` and react
- * to `onChange(id)`; state stays with you. Panels are YOURS — render
- * the active branch yourself (the component ships no panel wrapper, no
- * context, nothing to un-flatten).
+ * directly. Controlled: pass `activeId` and react to `onChange(id)`;
+ * state stays with you. Panels are YOURS — render the active branch
+ * yourself (the component ships no panel wrapper, no context, nothing
+ * to un-flatten).
+ *
+ * 3.7.0 THE FLIP GLIDING INDICATOR: the per-tab border-bottom underline
+ * RETIRES — it teleported (the old tab's underline vanished while the
+ * new tab's appeared — two disconnected blinks). One shared
+ * .sig-tabs-indicator span now lives inside the tablist (aria-hidden —
+ * pure decoration; selection is announced by aria-selected, never by
+ * the underline) and GLIDES between tabs via the FLIP choreography of
+ * useFlipIndicator (react/motion.tsx): measure both boxes, invert to
+ * the previous geometry, play the transform to the new one over
+ * var(--dur-glide) var(--ease-glide). The aria-selected CONTRACT IS
+ * UNTOUCHED — the attribute is still the only state machine; the
+ * indicator is a projection of it. Reduced motion: the indicator jumps
+ * (tokens collapse to 1ms; css/motion.css + data.css stand down).
  *
  * @example
  * ```tsx

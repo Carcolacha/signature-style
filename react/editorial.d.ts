@@ -121,6 +121,10 @@ export interface CarouselProps {
  * ZERO-DEPENDENCY MOTION: free-scroll scrolling uses `behavior:
  * "smooth"` unless the visitor prefers reduced motion — matchMedia is
  * read ONCE per component instance. The IO is disconnected on unmount.
+ * 3.7.0 THE DIRECTIONAL GLIDE: paged mode records its travel direction
+ * and the incoming page glides in from that edge (±24px + opacity,
+ * var(--dur-glide) var(--ease-glide), css/editorial.css); free-scroll
+ * keeps its native snap. Reduced motion: pages appear in place.
  *
  * @example
  * ```tsx

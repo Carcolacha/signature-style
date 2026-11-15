@@ -106,7 +106,15 @@
   }
 
   /* -- the module switcher: attribute-driven, exactly like the nav ----------- */
+  /* 3.7.0 THE FLIP GLIDING INDICATOR: the per-tab border-bottom underline
+     is RETIRED — it teleported between tabs. One shared
+     .sig-tabs-indicator (positioned by the tablist, fed by
+     useFlipIndicator in react/motion.tsx) now GLIDES. The aria-selected
+     contract is untouched: [aria-selected="true"] still drives the text
+     state; the underline is its projection. The tablist grows
+     position: relative — it is the indicator's positioning context. */
   .sig-tabs {
+    position: relative;
     display: flex;
     gap: var(--space-tight);
     border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
@@ -117,7 +125,6 @@
     color: var(--text-muted);
     padding: var(--space-tight) var(--space-standard);
     border: none;
-    border-bottom: 2px solid transparent;
     font: inherit;
     font-size: 0.875rem;
     font-weight: 500;
@@ -130,14 +137,43 @@
   .sig-tabs__tab:active {
     transform: scale(0.97); /* the press physics */
   }
-  /* THE active mechanism — no .is-active class exists in the system. */
+  /* THE active mechanism — no .is-active class exists in the system. The
+     underline color moved to the shared indicator below (3.7.0). */
   .sig-tabs__tab[aria-selected="true"] {
     color: var(--text-main);
-    border-bottom-color: var(--color-cake-primary);
   }
   .sig-tabs__tab:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
+  }
+  /* THE GLIDING INDICATOR — transform is the ONLY animated property (the
+     e1 treaty); the width/base-position swaps happen instantly between
+     the FLIP's inverted frames and are invisible by construction.
+     transform-origin left so the scaleX inverted frame grows/shrinks
+     toward the travel direction's leading edge. */
+  .sig-tabs-indicator {
+    position: absolute;
+    left: 0;
+    bottom: -1px; /* cover the tablist's own hairline rail */
+    height: 2px;
+    width: 0; /* useFlipIndicator sets the measured width inline */
+    background: var(--color-cake-primary);
+    transform: translate3d(0, 0, 0);
+    transform-origin: left center;
+    transition: transform var(--dur-glide, 280ms) var(--ease-glide, cubic-bezier(0.4, 0, 0.2, 1));
+  }
+  /* Reduced-motion mercy: the underline JUMPS between tabs (and the
+     duration tokens already collapsed to 1ms in css/tokens.css). */
+  @media (prefers-reduced-motion: reduce) {
+    .sig-tabs__tab {
+      transition: none;
+    }
+    .sig-tabs-indicator {
+      transition: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-tabs-indicator {
+    transition: none;
   }
 
   /* -- the persistent note: the toast strip's never-dismissing sibling ------- */
@@ -148,12 +184,5 @@
     padding: var(--space-standard);
     color: var(--text-main);
     font-size: 0.875rem;
-  }
-
-  /* Motion is a gift, not a requirement. */
-  @media (prefers-reduced-motion: reduce) {
-    .sig-tabs__tab {
-      transition: none;
-    }
   }
 }

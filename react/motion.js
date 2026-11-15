@@ -56,7 +56,9 @@ import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
  * MotionReveal exactly one wrapper; KineticSurface one div + one
  * ::after (css-owned). Zero hex, zero shadows, tokens only.
  */
-import { useCallback, useEffect, useRef, useState, } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, } from "react";
+/** Layout effect where a DOM exists, plain effect under SSR (the ThemeProvider pattern). */
+const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
 /**
  * THE INSTANT-MOTION PROBE — shared by all three primitives. True when
  * the visitor asked the OS for reduced motion, or when any
@@ -207,25 +209,6 @@ export function MotionReveal({ variant = "fade-up", staggerIndex, delay, classNa
     };
     return (_jsx("div", { ref: hostRef, className: `sig-motion-reveal sig-motion-reveal--${variant}${className !== undefined ? ` ${className}` : ""}`, "data-in": revealed ? "true" : undefined, style: style, children: children }));
 }
-/**
- * `<KineticSurface>` — the cursor-tracking kinetic sheen.
- *
- * ONE `<div class="sig-kinetic-surface">` carrying the kinetic
- * behavior: onPointerMove writes --ptr-x / --ptr-y (PIXEL coordinates
- * within the element) through a rAF-throttled setter — at most one
- * custom-property write per frame, the latest pointer position wins.
- * css/motion.css paints the sheen as a ::after radial gradient
- * anchored at those coordinates, fading in on hover (opacity is the
- * ONLY transition — the position updates are direct repaints, never
- * animations). The rAF is cancelled on unmount.
- *
- * @example
- * ```tsx
- * <KineticSurface accentToken="--sig-violet-glow">
- *   <p>Move the cursor across me.</p>
- * </KineticSurface>
- * ```
- */
 export function KineticSurface({ accentToken = "--sig-cyan", className, children, }) {
     const hostRef = useRef(null);
     const frameRef = useRef(null);
@@ -263,4 +246,91 @@ export function KineticSurface({ accentToken = "--sig-cyan", className, children
         };
     }, []);
     return (_jsx("div", { ref: hostRef, className: className !== undefined ? `sig-kinetic-surface ${className}` : "sig-kinetic-surface", style: { "--sig-kinetic-accent": `var(${accentToken})` }, onPointerMove: handlePointerMove, children: children }));
+}
+/**
+ * `useFlipIndicator(activeSelector)` — the FLIP gliding-underline hook.
+ *
+ * Runs placement on EVERY commit (no dependency array): it measures the
+ * element matching `activeSelector` inside the list and no-ops when the
+ * box did not move — which is exactly "glide when the active tab/view
+ * changes, nothing otherwise". The first placement jumps (no previous
+ * box); subsequent changes FLIP. A ResizeObserver on the list recomputes
+ * WITHOUT the glide (resize is not navigation). Hidden lists (the 768px
+ * bar collapse, w === 0) are skipped entirely.
+ *
+ * @example
+ * ```tsx
+ * const { listRef, indicatorRef } = useFlipIndicator('[aria-selected="true"]');
+ * return (
+ *   <div role="tablist" className="sig-tabs" ref={listRef}>
+ *     {tabs.map(...)}
+ *     <span aria-hidden="true" className="sig-tabs-indicator" ref={indicatorRef} />
+ *   </div>
+ * );
+ * ```
+ */
+export function useFlipIndicator(activeSelector) {
+    const listRef = useRef(null);
+    const indicatorRef = useRef(null);
+    const prevBoxRef = useRef(null);
+    // MEASURE + INVERT + PLAY, every commit. Placement is a layout read
+    // per commit — cheap at nav/tablist scale, and the no-deps form means
+    // the hook needs no cooperation from the consumer's state.
+    useIsomorphicLayoutEffect(() => {
+        const list = listRef.current;
+        const el = indicatorRef.current;
+        if (list === null || el === null)
+            return;
+        const active = list.querySelector(activeSelector);
+        if (!(active instanceof HTMLElement))
+            return;
+        const next = { x: active.offsetLeft, w: active.offsetWidth };
+        if (next.w === 0)
+            return; // collapsed (mobile bar) — nothing to place
+        const prev = prevBoxRef.current;
+        if (prev === null || (prev.x === next.x && prev.w === next.w)) {
+            // FIRST placement (or nothing moved): jump straight to the box.
+            el.style.transition = "none";
+            el.style.width = `${next.w}px`;
+            el.style.transform = `translate3d(${next.x}px, 0, 0)`;
+            void el.offsetWidth; // lock before the css transition rule resumes
+            el.style.transition = "";
+        }
+        else {
+            // FLIP — invert to the previous box, then play to the new one.
+            el.style.transition = "none";
+            el.style.width = `${next.w}px`;
+            el.style.transform = `translate3d(${prev.x}px, 0, 0) scaleX(${prev.w / next.w})`;
+            void el.offsetWidth; // THE INVERT: lock the old-geometry frame
+            el.style.transition = ""; // THE PLAY: the css glide takes over
+            el.style.transform = `translate3d(${next.x}px, 0, 0)`;
+        }
+        prevBoxRef.current = next;
+    });
+    // Resize recompute — jump, never glide (a breakpoint collapse is not
+    // a navigation the visitor should see fly).
+    useEffect(() => {
+        const list = listRef.current;
+        const el = indicatorRef.current;
+        if (list === null || el === null || typeof ResizeObserver === "undefined") {
+            return undefined;
+        }
+        const observer = new ResizeObserver(() => {
+            const active = list.querySelector(activeSelector);
+            if (!(active instanceof HTMLElement))
+                return;
+            const next = { x: active.offsetLeft, w: active.offsetWidth };
+            if (next.w === 0)
+                return;
+            el.style.transition = "none";
+            el.style.width = `${next.w}px`;
+            el.style.transform = `translate3d(${next.x}px, 0, 0)`;
+            void el.offsetWidth;
+            el.style.transition = "";
+            prevBoxRef.current = next;
+        });
+        observer.observe(list);
+        return () => observer.disconnect();
+    }, [activeSelector]);
+    return { listRef, indicatorRef };
 }

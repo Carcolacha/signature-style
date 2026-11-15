@@ -29,6 +29,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
  * callouts hold context on the page.
  */
 import { memo } from "react";
+import { useFlipIndicator } from "./motion.js";
 /**
  * Column → cell className (2.4.1). The numeric convenience composes
  * with the alignment utility — a money column carries BOTH classes.
@@ -83,10 +84,23 @@ export const DataTable = memo(function DataTable({ columns, rows, caption }) {
  * `<button type="button" role="tab" aria-selected>` per tab. ZERO
  * .is-active classes — attribute-driven, the same contract as the nav's
  * [aria-current="page"]: css/data.css styles [aria-selected="true"]
- * directly (Flamingo underline). Controlled: pass `activeId` and react
- * to `onChange(id)`; state stays with you. Panels are YOURS — render
- * the active branch yourself (the component ships no panel wrapper, no
- * context, nothing to un-flatten).
+ * directly. Controlled: pass `activeId` and react to `onChange(id)`;
+ * state stays with you. Panels are YOURS — render the active branch
+ * yourself (the component ships no panel wrapper, no context, nothing
+ * to un-flatten).
+ *
+ * 3.7.0 THE FLIP GLIDING INDICATOR: the per-tab border-bottom underline
+ * RETIRES — it teleported (the old tab's underline vanished while the
+ * new tab's appeared — two disconnected blinks). One shared
+ * .sig-tabs-indicator span now lives inside the tablist (aria-hidden —
+ * pure decoration; selection is announced by aria-selected, never by
+ * the underline) and GLIDES between tabs via the FLIP choreography of
+ * useFlipIndicator (react/motion.tsx): measure both boxes, invert to
+ * the previous geometry, play the transform to the new one over
+ * var(--dur-glide) var(--ease-glide). The aria-selected CONTRACT IS
+ * UNTOUCHED — the attribute is still the only state machine; the
+ * indicator is a projection of it. Reduced motion: the indicator jumps
+ * (tokens collapse to 1ms; css/motion.css + data.css stand down).
  *
  * @example
  * ```tsx
@@ -103,7 +117,8 @@ export const DataTable = memo(function DataTable({ columns, rows, caption }) {
  * ```
  */
 export function Tabs({ tabs, activeId, onChange, label }) {
-    return (_jsx("div", { role: "tablist", "aria-label": label, className: "sig-tabs", children: tabs.map((tab) => (_jsx("button", { type: "button", role: "tab", "aria-selected": activeId === tab.id, className: "sig-tabs__tab", onClick: () => onChange(tab.id), children: tab.label }, tab.id))) }));
+    const { listRef, indicatorRef } = useFlipIndicator('[aria-selected="true"]');
+    return (_jsxs("div", { role: "tablist", "aria-label": label, className: "sig-tabs", ref: listRef, children: [tabs.map((tab) => (_jsx("button", { type: "button", role: "tab", "aria-selected": activeId === tab.id, className: "sig-tabs__tab", onClick: () => onChange(tab.id), children: tab.label }, tab.id))), _jsx("span", { "aria-hidden": "true", className: "sig-tabs-indicator", ref: indicatorRef })] }));
 }
 /**
  * Status → strip token, INLINE as `--status` for css/data.css's
