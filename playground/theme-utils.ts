@@ -76,9 +76,21 @@ interface ManifestShape {
 }
 const doc = manifest as unknown as ManifestShape;
 
-/** Persisted workspace keys (the v3 contract: versioned prefixes). */
-export const THEME_STORAGE_KEY = "sig.workspace.v3.theme";
-export const RADIUS_STORAGE_KEY = "sig.workspace.v3.radius";
+/** Persisted workspace keys (the v3 contract: versioned prefixes).
+ *  3.6.0 — THEME + RADIUS MERGE INTO ONE PREFS OBJECT under
+ *  sig.workspace.v3.prefs ({ theme, radius } — one key, one writer);
+ *  the two v3.2.0 per-axis keys remain as the ONE-TIME migration read
+ *  (useSigTheme adopts them on first load, then writes the merged
+ *  object only). */
+export const PREFS_STORAGE_KEY = "sig.workspace.v3.prefs";
+export const THEME_STORAGE_KEY = "sig.workspace.v3.theme"; // legacy — migration read only
+export const RADIUS_STORAGE_KEY = "sig.workspace.v3.radius"; // legacy — migration read only
+
+/** The merged prefs shape (3.6.0) — the sig.workspace.v3.prefs payload. */
+export interface SigPrefs {
+  readonly theme: SigThemeName;
+  readonly radius: SigRadiusName;
+}
 
 /** The resolved token map per theme: :root → theme overrides. */
 function resolveTheme(overrides: Record<string, string>): Record<string, string> {

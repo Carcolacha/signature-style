@@ -33,6 +33,8 @@ export interface ThemeCustomizerProps {
   readonly badges: readonly ContrastBadge[];
   readonly onDownload: () => void;
   readonly onCopy: () => Promise<boolean>;
+  /** 3.6.0 — the clipboard write of the <html data-sig-theme data-sig-radius> snippet. */
+  readonly onCopySnippet: () => Promise<boolean>;
 }
 
 export function ThemeCustomizer({
@@ -43,6 +45,7 @@ export function ThemeCustomizer({
   badges,
   onDownload,
   onCopy,
+  onCopySnippet,
 }: ThemeCustomizerProps) {
   const toast = useToast();
 
@@ -68,6 +71,16 @@ export function ThemeCustomizer({
         ok
           ? "CSS variables copied — the active theme's :root block is on your clipboard."
           : "Clipboard unavailable — use Download tokens.css instead.",
+      ),
+    );
+  };
+  const copySnippet = (): void => {
+    onCopySnippet().then((ok) =>
+      toast(
+        ok ? "success" : "error",
+        ok
+          ? `Theme snippet copied — <html data-sig-theme="${theme}" data-sig-radius="${radius}"> is on your clipboard.`
+          : "Clipboard unavailable — the attributes are data-sig-theme / data-sig-radius.",
       ),
     );
   };
@@ -155,6 +168,16 @@ export function ThemeCustomizer({
           onClick={copy}
         >
           <Icon name="Copy" size={14} aria-hidden /> Copy CSS Variables
+        </button>
+        {/* 3.6.0 — THE THEME SNIPPET: the one-line attribute pair a
+            consumer pastes onto their own <html> to wear this surface. */}
+        <button
+          type="button"
+          className="studio__customizer-btn"
+          data-testid="customizer-copy-snippet"
+          onClick={copySnippet}
+        >
+          <Icon name="Code" size={14} aria-hidden /> Copy Theme Snippet
         </button>
       </div>
     </SurfaceCard>

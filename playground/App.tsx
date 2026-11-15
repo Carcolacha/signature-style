@@ -1096,6 +1096,7 @@ function Shell() {
                 badges={sig.badges}
                 onDownload={sig.downloadTokensCss}
                 onCopy={sig.copyTokensCss}
+                onCopySnippet={sig.copyThemeSnippet}
               />
             }
           />
