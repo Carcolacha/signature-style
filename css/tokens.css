@@ -212,6 +212,20 @@
     --dur-kinetic-out: calc(var(--sig-motion-scale, 1) * 380ms);
     --dur-glide: calc(var(--sig-motion-scale, 1) * 280ms);
     --sig-motion-scale: 1; /* the time-dilation master — Slow-Mo sets 0.25 */
+
+    /* THE DIAL-SCOPE GOTCHA (documented where it bites): a custom
+       property's inner var() substitutes on the DECLARING element —
+       the :root declarations above compute with :root's scale (1) and
+       that token stream ("calc(1 * 280ms)") is what descendants
+       inherit, so a subtree setting --sig-motion-scale inline would
+       NOT dilate its durations without re-derivation. The
+       [style*="--sig-motion-scale"] block in the mercy section below
+       re-declares the four durations on any element whose inline style
+       carries the dial (the Motion Lab root; any consumer following
+       the same pattern), and the re-derived streams inherit from
+       there. Declare the dial inline (or via a class that sets BOTH
+       the scale and the four calcs) — never via an ancestor's
+       setProperty alone. */
   }
 
   /* -- the white version: 100% official Catppuccin Latte --------------------- */
@@ -370,7 +384,18 @@
      reduced node dilates its whole subtree). Durations fall to 1ms:
      transitions become effectively instant, the MotionReveal entrances
      land immediately, the FLIP indicator jumps without gliding. The
-     curves themselves are irrelevant at 1ms and stay untouched. */
+     curves themselves are irrelevant at 1ms and stay untouched.
+
+     ORDER IS LOAD-BEARING: this block comes AFTER the dial-scope block
+     below, so a node that carries BOTH (the Motion Lab root with
+     Slow-Mo on AND the preview on) resolves to the mercy 1ms — mercy
+     always beats slow-motion. */
+  [style*="--sig-motion-scale"] {
+    --dur-spring-snappy: calc(var(--sig-motion-scale, 1) * 320ms);
+    --dur-spring-gentle: calc(var(--sig-motion-scale, 1) * 480ms);
+    --dur-kinetic-out: calc(var(--sig-motion-scale, 1) * 380ms);
+    --dur-glide: calc(var(--sig-motion-scale, 1) * 280ms);
+  }
   @media (prefers-reduced-motion: reduce) {
     :root {
       --dur-spring-snappy: 1ms;

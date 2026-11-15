@@ -25,7 +25,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v3.8** system prompt so AI agents can extend the
+**Dynamic Signature Engine v3.9** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -291,6 +291,102 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 3.7.0 — The Intelligent Kinetic Engine, Motion Lab & Live Data Choreography
+
+The engine learns to MOVE — native `linear()` springs, a time-dilation
+dial, one gliding underline, and a live zero-key data stage — with the
+same discipline: zero external animation dependencies (native CSS
+`linear()` curves, `@keyframes`, `rAF`, `IntersectionObserver` only),
+the e1 motion amendment (animate ONLY transform / opacity / clip-path /
+custom properties — `box-shadow` NEVER, gate-enforced), and reduced-motion
+mercy on every animation.
+
+#### The kinetic tokens (whitelist 51 → 60)
+
+Nine motion tokens join `css/tokens.css` (`:root`), `tokens.json`
+(`motionTokens`) and the ThemeProvider whitelist; the 50 color tokens
+are byte-frozen:
+
+| Token | Value | Role |
+|---|---|---|
+| `--ease-spring-snappy` | `linear(0, 0.44 6.4%, … 1 69.1%, 1)` | damped fast spring — detents, toggles, ring arcs |
+| `--ease-spring-gentle` | `linear(0, 0.36 8.9%, … 1)` | smooth harmonic — reveals, number rolls |
+| `--ease-kinetic-out` | `linear(0, 0.61 10.8%, … 1)` | high-velocity deceleration — chart sweeps |
+| `--ease-glide` | `linear(0, 0.63 14.5%, … 1)` | sliding indicators — FLIP underline, pages |
+| `--dur-spring-snappy` | `calc(var(--sig-motion-scale, 1) * 320ms)` | snappy duration |
+| `--dur-spring-gentle` | `calc(var(--sig-motion-scale, 1) * 480ms)` | gentle duration |
+| `--dur-kinetic-out` | `calc(var(--sig-motion-scale, 1) * 380ms)` | sweep duration |
+| `--dur-glide` | `calc(var(--sig-motion-scale, 1) * 280ms)` | glide duration |
+| `--sig-motion-scale` | `1` | the time-dilation master (Slow-Mo sets 0.25) |
+
+`linear()` is Chrome 113+ / Safari 17.2 / Firefox 112+; a
+`@supports not (transition-timing-function: linear(0, 1))` block
+re-declares the four as cubic-bezier approximations (snappy 0.34,1.56,0.64,1 ·
+gentle 0.25,1.25,0.45,1 · kinetic-out 0.16,1,0.3,1 · glide 0.4,0,0.2,1).
+Under `prefers-reduced-motion: reduce` AND the
+`[data-sig-motion="reduced"]` root override, all four durations collapse
+to 1ms.
+
+#### The kinetic primitives (`react/motion.tsx`, NEW)
+
+- **`<AnimatedNumber value prefix suffix decimals duration>`** — rAF
+  roll from the previous value, spring-interpolated (easeOutQuint + a
+  damped 2% overshoot peaking at 70%), tabular-nums, no aria-live (the
+  final value lands), instant under reduced motion.
+- **`<MotionReveal variant staggerIndex delay>`** — IntersectionObserver
+  once-entrance: `fade-up` / `scale-in` / `clip-reveal`; the stagger
+  wave rides `calc(index × 45ms)`; replay = remount.
+- **`<KineticSurface accentToken>`** — cursor-tracking sheen:
+  rAF-throttled `--ptr-x/--ptr-y` writes, a 240px radial-gradient
+  `::after`, opacity-only fade (the position repaints, never animates).
+
+#### The FLIP gliding indicators + directional choreography
+
+`<Tabs>` and `<GlobalNav>` retire their teleporting per-item underline
+for ONE shared indicator (`.sig-tabs-indicator` / `.sig-nav-indicator`)
+that glides via the FLIP mechanics of `useFlipIndicator` — measure both
+boxes, invert to the previous geometry, play the transform over
+`var(--dur-glide) var(--ease-glide)`. The `aria-selected` /
+`aria-current` contracts are untouched (the drawer keeps its per-link
+underline). `<Carousel>` paged mode records its travel direction and
+the incoming page glides in from that edge (±24px + opacity).
+`<AreaChart>`/`<Sparkline>` lines draw themselves on mount
+(`pathLength={1}` + a dashoffset sweep), and the StatRing arc now
+rides the snappy spring.
+
+#### The Motion Lab (`#/motion`)
+
+A new view stages the engine: a sticky glass control bar (Speed
+Multiplier **1.0× / 0.25× Slow-Mo** — sets `--sig-motion-scale` on the
+lab root; **Replay Choreography** — remount key re-arms every entrance;
+**Reduced Motion Preview** — the `data-sig-motion="reduced"` toggle)
+over six PatternFrame showcases: 01 the staggered bento cascade, 02 the
+Snappy-vs-Gentle spring detents (LAB-only scoped overrides), 03 the
+cursor-tracked kinetic sheen trio, 04 the FLIP gliding navigation, 05
+rolling telemetry (AnimatedNumber + StatRing + Sparkline), and 06 the
+**live zero-key API choreography** — the fallback-first pattern against
+`api.open-meteo.com` (deterministic offline sample renders FIRST,
+labeled as a sample; the live fetch swaps in on success; SkeletonCard
+during the window; failure keeps the fallback and toasts on manual
+refetches; AbortController on unmount).
+
+#### Also in 3.7.0
+
+- Gates: `(mo1)` motion tokens + fallback + mercy · `(mo2)` the Motion
+  Lab view + six showcases + control bar · `(mo3)` the FLIP indicators
+  (transform-only transition; the per-tab underline must be GONE) ·
+  `(mo4)` AnimatedNumber rAF + instant reduced motion · `(mo5)` the sheen
+  ptr-vars + opacity-only · `(mo6)` the Open-Meteo URL + fallback-first ·
+  `(e1-motion)` zero box-shadow animations in motion.css/viz.css/tokens.css
+  (`@keyframes` blocks included). Negative-tested: deleting the
+  `@supports` fallback block fails `(mo1)`.
+- Pack: EXACTLY 67 files (64 + `css/motion.css` + `react/motion.js` +
+  `react/motion.d.ts`; the `!react/motion.tsx` negation joins the files
+  array). The a11y + visual-diff censuses grow to the eight-view map.
+- `SYSTEM_PROMPT.md` title steps to **v3.9** with the kinetic recipes;
+  `llms.txt`/`llms-full.txt` regenerated (60 tokens, Set 08 · Motion &
+  Kinetics).
 
 ### 3.6.0 — Graph Studio, 3×3 Carousel, Zero-Defect A11y & Live Schema Sandbox
 

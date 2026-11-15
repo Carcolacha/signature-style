@@ -827,13 +827,17 @@ if (!selfWired) {
 // SEPARATE private package (packages/signature-mcp) outside the files
 // allowlist, and scripts/goldens/ rides the repo, not the tarball; the
 // (b3) proof stays EXACTLY 64.
+// 3.7.0 AMENDMENT: the kinetic motion promotion adds the ninth negation
+// ("!react/motion.tsx"), same precedent — the source never ships, its
+// compiled motion.js/.d.ts do; the (b3) proof grows 64 → 67 (the motion
+// trio: css/motion.css + react/motion.js + react/motion.d.ts).
 const FROZEN_KEYS = ["exports", "main", "peerDependencies", "peerDependenciesMeta"];
 const WC_EXPORT = {
   types: "./dist/wc/index.d.ts",
   import: "./dist/wc/signature-wc.es.js",
   default: "./dist/wc/signature-wc.es.js",
 };
-const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx", "!react/command.tsx", "!react/skeleton.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx", "!react/command.tsx", "!react/skeleton.tsx", "!react/motion.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -868,18 +872,20 @@ if (v140pkg !== null) {
   const expectedFiles = ["bin", ...(v140pkg.files ?? []), "dist/wc", ...FILES_NEGATIONS];
   if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
     failures.push(
-      "(b2) package.json files must be \"bin\" (3.3.0) + the v1.4.0 array + \"dist/wc\" (the 3.4.0 WC amendment) EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx — the packing contract evolves documented steps",
+      "(b2) package.json files must be \"bin\" (3.3.0) + the v1.4.0 array + \"dist/wc\" (the 3.4.0 WC amendment) EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx + !react/motion.tsx (3.7.0) — the packing contract evolves documented steps",
     );
   }
 }
 
-// ---- (b3) npm pack stays EXACTLY 64 files (3.4.0: 60 + the dist/wc
-// quartet — signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts;
-// the wc/src sources stay OUT of the tarball like the react .tsx
-// sources). 3.3.0 was 60 (58 + bin/cli.mjs + bin/themes.mjs); 2.9.0
-// history: 52 → 58 (css/command.css + css/skeleton.css +
+// ---- (b3) npm pack grows to EXACTLY 67 files (3.7.0: 64 + the kinetic
+// motion trio — css/motion.css + react/motion.js + react/motion.d.ts;
+// the react/motion.tsx source stays OUT of the tarball like every react
+// .tsx source). 3.4.0 was 64 (60 + the dist/wc quartet —
+// signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts); 3.3.0
+// was 60 (58 + bin/cli.mjs + bin/themes.mjs); 2.9.0 history:
+// 52 → 58 (css/command.css + css/skeleton.css +
 // react/command.{js,d.ts} + react/skeleton.{js,d.ts}); playground/ and
-// tools/ stay excluded by the files array. ----
+// packages/ and scripts/goldens/ stay excluded by the files array. ----
 let packOutput = "";
 try {
   // npm notice lines (incl. "total files:") go to STDERR — capture both streams.
@@ -898,9 +904,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "64") {
+} else if (totalFiles[1] !== "67") {
   failures.push(
-    `(b3) npm pack must stay at exactly 64 files (3.4.0: 60 + the dist/wc quartet — signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts), found ${totalFiles[1]}`,
+    `(b3) npm pack must pack EXACTLY 67 files (3.7.0: 64 + the kinetic motion trio — css/motion.css + react/motion.js + react/motion.d.ts), found ${totalFiles[1]}`,
   );
 }
 
@@ -1360,6 +1366,36 @@ if (oldTimeline !== null) {
 // label contract + the WC carousel 2.5.3 aria labels. tokens.json gains
 // meta.version 3.6.0 + the TWO-TIER metadata (guarded below — VALUES
 // byte-frozen).
+// 3.7.0 REBASE (the floor moves v3.5.0 → v3.6.0): THE INTELLIGENT
+// KINETIC ENGINE, MOTION LAB & LIVE DATA CHOREOGRAPHY. The
+// owner-authorized 3.7.0 deltas, and NOTHING else — demo/ bin/ wc/ stay
+// byte-identical. The AUTHORIZED_370 set = the 3.5.0/3.6.0 accumulation
+// PLUS:
+//   css/tokens.css      — the Motion section (9 kinetic tokens) + the
+//                         @supports fallback + the mercy blocks (Task 1)
+//   css/motion.css      — NEW: the kinetic primitives' styles (Task 2)
+//   css/signature-style.css — +1 layered import (motion.css, Task 2)
+//   css/data.css        — the FLIP tab indicator (Task 3)
+//   css/nav.css         — the FLIP nav indicator (Task 3)
+//   css/viz.css         — the SVG sweeps + the ring spring (Task 3)
+//   css/editorial.css   — the directional page glide (Task 3)
+//   react/motion.{tsx,js,d.ts}      — NEW: the kinetic primitives (Task 2)
+//   react/ThemeProvider.{tsx,js,d.ts} — whitelist 51 → 60 (Task 1)
+//   react/data.{tsx,js,d.ts}   — the Tabs FLIP refactor (Task 3)
+//   react/nav.{tsx,js,d.ts}    — the GlobalNav FLIP refactor (Task 3)
+//   react/editorial.{tsx,js,d.ts} — the directional carousel (Task 3)
+//   react/viz.{tsx,js,d.ts}    — pathLength={1} sweep normalization (Task 3)
+//   react/index.{ts,js,d.ts}   — the motion umbrella exports (Task 2)
+//   scripts/verify.mjs         — the (mo1)-(mo6) + (e1-motion) gates
+//   scripts/verify-cli.mjs     — gatePack 64 → 67
+//   scripts/verify-a11y.mjs / verify-visual-diff.mjs — the 8-view census
+//                         (+ the Motion Lab) + the goldens re-cert
+//   scripts/goldens/    — the owner-mandated re-certification
+//   SYSTEM_PROMPT.md    — title → v3.9 + the kinetic recipes
+// tokens.json gains meta.version 3.7.0 + the motionTokens section
+// (guarded below — the COLOR VALUES stay byte-frozen). playground/ is
+// NOT under the freeze (the composition layer); README/package.json/lock
+// are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 // The v3.4.0 authorized delta set, PLUS the 3.5.0 authorization. The
 // tools/mcp-viz entries authorize the DELETIONS (git diff name-only
@@ -1393,6 +1429,20 @@ const AUTHORIZED_330 = new Set([
   "scripts/verify-visual-diff.mjs",
   "scripts/verify-examples.mjs",
   "SYSTEM_PROMPT.md",
+  // 3.7.0 — THE KINETIC ENGINE PACKAGE DELTAS (Tasks 1-3) + gates/docs.
+  "css/tokens.css",
+  "css/motion.css",
+  "css/signature-style.css",
+  "css/data.css",
+  "css/nav.css",
+  "css/viz.css",
+  "react/motion.tsx", "react/motion.js", "react/motion.d.ts",
+  "react/ThemeProvider.tsx", "react/ThemeProvider.js", "react/ThemeProvider.d.ts",
+  "react/data.tsx", "react/data.js", "react/data.d.ts",
+  "react/nav.tsx", "react/nav.js", "react/nav.d.ts",
+  "react/viz.tsx", "react/viz.js", "react/viz.d.ts",
+  "scripts/verify-cli.mjs",
+  "scripts/verify-mcp.mjs",
 ]);
 let b7Changed = [];
 try {
@@ -1411,7 +1461,7 @@ for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.5.0 — outside the owner-authorized 3.6.0 set (the a11y/carousel/studio package deltas + the gates + the codex)`,
+      `(b7) SAFETY: ${file} changed since v3.6.0 — outside the owner-authorized 3.7.0 set (the kinetic-engine package deltas + the gates + the codex)`,
     );
   }
 }
@@ -1434,13 +1484,30 @@ if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f
 if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
   failures.push("(b7) SAFETY: tools/mcp-viz node_modules is LOCKED in 3.4.0");
 }
-// 3.6.0: the tokens.json meta bump is guarded — meta.version must be
-// EXACTLY 3.6.0 and everything the guards don't explicitly neutralize
-// stays byte-equal (VALUES + the 50-token whitelist frozen).
+// 3.7.0: the tokens.json meta bump is guarded — meta.version must be
+// EXACTLY 3.7.0 and everything the guards don't explicitly neutralize
+// stays byte-equal (VALUES + the 26-color family frozen). The NEW
+// motionTokens section is the one authorized addition: EXACTLY the 9
+// kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "3.6.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.6.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "3.7.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.7.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  }
+  const MOTION_NAMES_370 = [
+    "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
+    "--dur-spring-snappy", "--dur-spring-gentle", "--dur-kinetic-out", "--dur-glide",
+    "--sig-motion-scale",
+  ];
+  const motionNow = tokensNow.motionTokens?.tokens ?? {};
+  const motionNames = Object.keys(motionNow).filter((k) => k !== "contract");
+  for (const name of MOTION_NAMES_370) {
+    if (!(name in motionNow)) {
+      failures.push(`(b7) SAFETY: tokens.json motionTokens is missing ${name} (the 3.7.0 kinetic tokens)`);
+    }
+  }
+  if (motionNames.length !== MOTION_NAMES_370.length) {
+    failures.push(`(b7) SAFETY: tokens.json motionTokens must carry EXACTLY the 9 kinetic tokens, found ${motionNames.length}`);
   }
 } catch (error) {
   failures.push(`(b7) cannot read tokens.json meta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
@@ -1605,15 +1672,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 3.6.0 FROZEN PROOF — v3.5.0 baseline ----
-// Rebased 3.6.0 (the floor moves v3.3.0 → v3.5.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 3.6.0
+// ---- (n-hub4) THE 3.7.0 FROZEN PROOF — v3.6.0 baseline ----
+// Rebased 3.7.0 (the floor moves v3.5.0 → v3.6.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 3.7.0
 // list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.5.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v3.6.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1621,11 +1688,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.5.0 beyond the 3.6.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated a11y/carousel/studio set)`,
+      `(n-hub4) SAFETY: files changed since v3.6.0 beyond the 3.7.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated kinetic-engine set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.5.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.6.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
@@ -1757,12 +1824,14 @@ if (/(className|data-testid)="[^"]*(bento__|bento-card)/.test(appSrc)) {
     const goldens = readdirSync(goldensDir).filter((f) => f.endsWith(".png")).sort();
     // 3.6.0: the census grows 5 → 7 (graph-studio + analytics-planner join;
     // the owner-mandated re-certification regenerated all seven).
+    // 3.7.0: motion-lab.png joins — the census is 8 (the Motion Lab view;
+    // the nav gained an item, so ALL seven were re-certified too).
     const EXPECTED_GOLDENS = [
       "analytics-planner.png", "chronicle.png", "codex.png", "dashboard.png",
-      "graph-studio.png", "master-index.png", "pattern-studio.png",
+      "graph-studio.png", "master-index.png", "motion-lab.png", "pattern-studio.png",
     ];
     if (JSON.stringify(goldens) !== JSON.stringify(EXPECTED_GOLDENS)) {
-      failures.push(`(v35) scripts/goldens/ must carry EXACTLY the 7 golden masters (${EXPECTED_GOLDENS.join(", ")}), found ${goldens.length}: ${goldens.join(", ")}`);
+      failures.push(`(v35) scripts/goldens/ must carry EXACTLY the 8 golden masters (${EXPECTED_GOLDENS.join(", ")}), found ${goldens.length}: ${goldens.join(", ")}`);
     }
   }
 }
@@ -2000,8 +2069,8 @@ if (!nodeClearance.test(stylesCss)) {
 // still lives: the package TimelineManager edge + the Set 06 studio frame).
 const INDEX_REQUIREMENTS = [
   [
-    'type View =\n  | "dashboard"\n  | "graph"\n  | "planner"\n  | "studio"\n  | "index"\n  | "chronicle"\n  | "codex"',
-    "the 3.6.0 seven-view union (the 6-view nav map + the memorial)",
+    'type View =\n  | "dashboard"\n  | "graph"\n  | "planner"\n  | "motion"\n  | "studio"\n  | "index"\n  | "chronicle"\n  | "codex"',
+    "the 3.7.0 eight-view union (the 7-view nav map + the memorial)",
   ],
   ['HREF_TO_VIEW[window.location.hash] ?? "dashboard"', 'the 3.4.0 deep-link bootstrap — hash first, dashboard default (the cortex smoke still finds the timeline on the bare root URL: empty hash → "dashboard")'],
   ["function HubLink(", "the playground's link renderer for GlobalNav's as prop"],
@@ -2012,6 +2081,7 @@ const INDEX_REQUIREMENTS = [
   ['{ href: VIEW_HREFS.dashboard, label: "Workbench" }', "the Workbench nav destination (3.6.0 — the 'Dashboard' label retires)"],
   ['{ href: VIEW_HREFS.graph, label: "Graph Studio" }', "the Graph Studio nav destination (3.6.0)"],
   ['{ href: VIEW_HREFS.planner, label: "Analytics & Planner" }', "the Analytics & Planner nav destination (3.6.0)"],
+  ['{ href: VIEW_HREFS.motion, label: "Motion Lab" }', "the Motion Lab nav destination (3.7.0)"],
   ['{ href: VIEW_HREFS.studio, label: "Pattern Studio" }', "the Pattern Studio nav destination (2.8.0)"],
   ['{ href: VIEW_HREFS.index, label: "Index" }', "the Index nav destination"],
   ['{ href: VIEW_HREFS.codex, label: "AI Codex" }', "the AI Codex nav destination (2.8.0)"],
@@ -2282,9 +2352,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.8")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.9")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.8 (3.6.0: the title steps to v3.8 with the Graph Studio / ShortcutModal / WorkspaceRepository sections — the 3.5.0 step to v3.7 carried the Visual Cortex subsection)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.9 (3.7.0: the title steps to v3.9 with the Kinetic Engine / Motion Lab / live-data recipes — the 3.6.0 step to v3.8 carried the Graph Studio sections)",
   );
 }
 

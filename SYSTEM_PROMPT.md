@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v3.8 — Graph Studio, Zero-Defect A11y & the Live Schema Sandbox (Standalone Identity)
+# System Instruction: The Dynamic Signature Engine v3.9 — The Intelligent Kinetic Engine, Motion Lab & Live Data Choreography (Standalone Identity)
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -881,6 +881,98 @@ Opens on the "?" key from ANY view (a window listener guarded by `isTypingTarget
 ### The WorkspaceRepository — the FastAPI rehearsal (3.6.0)
 
 `playground/workspace-repository.ts` is the SEAM between the UI and where the workspace lives: `getGraph/getTimeline/getPrefs/getLinks` (sync reads) + `saveGraph/saveTimeline/savePrefs/saveLinks` (async writes) + `readonly latency`. `createLocalStorageRepository({ latencyMs })` backs it with localStorage — 0ms instant (today) or 600ms (the studio HUD's "Simulate 600ms latency" toggle / the palette command). DURING a save's in-flight window the affected card renders skeletons (the inspector's SkeletonCard, the Milestone Manager's SkeletonTableRow rows); on completion the content returns. THE ERROR PATH is validation, not a toggle: `saveGraph` rejects any payload with an empty node id/label (the shared/schema.ts wire contract) — clear a node's Title and the debounced commit rejects into the error toast. Swap this adapter for the FastAPI HTTP adapter when the backend ships (the runnable reference lives in `examples/fastapi-starter/` — FastAPI + stdlib sqlite3, CORS wired for :5173, `docs/SCHEMA_V3.md`'s endpoints; excluded from the npm pack). The reactive mirror (usePersistentState's debounced write) stays the source of UI truth — the repo write is the async leg the backend will replace.
+
+### The Kinetic Motion Tokens (3.7.0 — the four springs + the fallback note)
+
+The Motion section of `css/tokens.css` (`:root`, theme-independent, all nine on the ThemeProvider whitelist): four NATIVE `linear()` spring curves, four scale-derived durations, one time-dilation master. Zero animation libraries — a `linear()` IS the sampled spring, stop-listed by hand:
+
+```css
+--ease-spring-snappy: linear(0, 0.44 6.4%, 0.83 12.9%, 1.02 18.6%, 1.08 24.2%, 1.09 28.9%, 1.05 34.9%, 0.98 42.4%, 0.97 48.5%, 1.01 58.6%, 1 69.1%, 1); /* damped fast spring — detents, toggles, ring arcs */
+--ease-spring-gentle: linear(0, 0.36 8.9%, 0.68 17.9%, 0.9 26.1%, 1.01 34.9%, 1.06 44.4%, 1.05 55.4%, 0.99 69.1%, 1); /* smooth harmonic — reveals, number rolls */
+--ease-kinetic-out:   linear(0, 0.61 10.8%, 0.91 22.7%, 1.02 34.3%, 1.05 45.5%, 1.01 61.4%, 1); /* high-velocity deceleration — chart sweeps */
+--ease-glide:         linear(0, 0.63 14.5%, 0.95 30.2%, 1.02 42.5%, 0.99 57.1%, 1); /* sliding indicators — FLIP underline, page glides */
+
+--dur-spring-snappy: calc(var(--sig-motion-scale, 1) * 320ms);
+--dur-spring-gentle: calc(var(--sig-motion-scale, 1) * 480ms);
+--dur-kinetic-out:   calc(var(--sig-motion-scale, 1) * 380ms);
+--dur-glide:         calc(var(--sig-motion-scale, 1) * 280ms);
+--sig-motion-scale: 1; /* the dial — Slow-Mo sets 0.25 */
+```
+
+FALLBACK NOTE: `linear()` is Chrome 113+ / Safari 17.2 / Firefox 112+. `css/tokens.css` carries a `@supports not (transition-timing-function: linear(0, 1))` block re-declaring the four as cubic-bezier approximations — snappy → `cubic-bezier(0.34, 1.56, 0.64, 1)`, gentle → `cubic-bezier(0.25, 1.25, 0.45, 1)`, kinetic-out → `cubic-bezier(0.16, 1, 0.3, 1)`, glide → `cubic-bezier(0.4, 0, 0.2, 1)` — so older engines keep the overshoot character without the multi-bounce settle. REDUCED-MOTION MERCY: under `@media (prefers-reduced-motion: reduce)` AND the `[data-sig-motion="reduced"]` root override, all four durations collapse to 1ms (transitions effectively instant). THE E1 MOTION AMENDMENT: only `transform`, `opacity`, `clip-path` and CSS custom properties may ever animate — `box-shadow` NEVER does (gate-enforced).
+
+### <AnimatedNumber> (3.7.0)
+
+```tsx
+import { AnimatedNumber } from "@edwyn/signature-style/react";
+
+<AnimatedNumber value={1740} prefix="$" />
+<AnimatedNumber value={63.4} suffix="%" decimals={1} />
+```
+
+ONE `<span class="sig-animated-number">` (tabular-nums). rAF roll from the previous value over `duration` (default 480ms), spring-interpolated: easeOutQuint arrival + a damped 2% overshoot peaking at 70%, landing exactly on the final value. No aria-live — the interpolation is decorative; the final value always lands in the DOM. Reduced motion / `[data-sig-motion="reduced"]`: instant set.
+
+### <MotionReveal> (3.7.0)
+
+```tsx
+import { MotionReveal } from "@edwyn/signature-style/react";
+
+{cards.map((card, index) => (
+  <MotionReveal key={card.id} variant="fade-up" staggerIndex={index}>
+    <StatCard {...card} />
+  </MotionReveal>
+))}
+```
+
+IntersectionObserver once-entrance (disconnects after revealing). `variant`: "fade-up" (opacity + translateY(16px)) | "scale-in" (opacity + scale(0.96)) | "clip-reveal" (clip-path inset wipe). `staggerIndex` → `--stagger-index` → transition-delay `calc(index × 45ms)` — the diagonal wave; `delay` (ms) adds on top. Replay = remount (bump a React key). Reduced motion / no-IO environments: revealed immediately on first paint.
+
+### <KineticSurface> (3.7.0)
+
+```tsx
+import { KineticSurface } from "@edwyn/signature-style/react";
+
+<KineticSurface accentToken="--sig-cyan">
+  <p>Move the cursor across me.</p>
+</KineticSurface>
+```
+
+`onPointerMove` writes `--ptr-x` / `--ptr-y` (pixel coords within the element) through a rAF-THROTTLED setter; css/motion.css paints a 240px `radial-gradient` sheen at those coordinates (`::after`), fading in on hover. The POSITION repaints — it never animates; opacity is the only transition. `accentToken`: any `--sig-*` token (default `--sig-cyan`). Self-contained — no exported tracking hook.
+
+### The Motion Lab time-dilation pattern (3.7.0)
+
+One custom property dilates EVERY kinetic duration on a subtree — set `--sig-motion-scale` on any container (the Motion Lab's control bar sets it on its root; 0.25 = quarter speed, the springs visibly overshoot):
+
+```tsx
+<section style={{ "--sig-motion-scale": 0.25 }}>
+  <MotionReveal variant="fade-up">…</MotionReveal>
+  <AnimatedNumber value={63} suffix="%" />
+</section>
+```
+
+Pair it with the preview mercy — `data-sig-motion="reduced"` on the same container collapses the four duration tokens to 1ms (the OS-level `prefers-reduced-motion` is honored automatically by css/tokens.css).
+
+### The fallback-first data pattern (3.7.0)
+
+Live data choreography with zero keys: render deterministic offline sample data FIRST (labeled as a sample — never fake "live"), fetch the real stream on mount, swap in on success, keep the fallback on failure. AbortController cleans up on unmount and on every re-fetch:
+
+```tsx
+const [data, setData] = useState(SAMPLE_SERIES); // deterministic, labeled
+const [status, setStatus] = useState("fallback"); // fallback|loading|live|error
+
+useEffect(() => {
+  const controller = new AbortController();
+  setStatus("loading");
+  fetch(OPEN_METEO_URL, { signal: controller.signal })
+    .then((res) => { if (!res.ok) throw new Error(String(res.status)); return res.json(); })
+    .then((json) => { setData(toSeries(json)); setStatus("live"); })
+    .catch((err) => {
+      if (err.name !== "AbortError") setStatus("error"); // fallback retained
+    });
+  return () => controller.abort();
+}, []);
+```
+
+The reference stage is the Motion Lab's Showcase 06 (Open-Meteo, zero-auth, `forecast_days=1`). Failure is quiet on the auto-mount run (the sample IS the state) and loud on manual refetches (a toast names the failure).
 
 ## Execution Rules:
 - Use the Theme Provider Pattern for the base layout.

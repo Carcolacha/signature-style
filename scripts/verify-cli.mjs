@@ -323,12 +323,23 @@ function gateCli2() {
   process.stdout.write("\ngate cli2 — theme drift needle (themes.mjs vs tokens.css :root)\n");
   const parsed = parseTokensRoot();
   const mocha = THEMES.mocha.tokens;
+  // 3.7.0 AMENDMENT: the nine kinetic MOTION tokens live in :root but
+  // are NOT theme tokens — the CLI's theme map stays a COLOR theme map
+  // (mocha/latte swaps), and the motion tokens are mirrored in
+  // tokens.json motionTokens + swept by verify.mjs (mo1). They are
+  // neutralized here exactly like the (b7) values-freeze neutralizes
+  // documented deltas.
+  const MOTION_TOKENS_370 = new Set([
+    "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
+    "--dur-spring-snappy", "--dur-spring-gentle", "--dur-kinetic-out", "--dur-glide",
+    "--sig-motion-scale",
+  ]);
   const drifted = Object.keys(mocha).filter((key) => mocha[key] !== parsed.map[key]);
-  const unmapped = parsed.order.filter((key) => !(key in mocha));
+  const unmapped = parsed.order.filter((key) => !(key in mocha) && !MOTION_TOKENS_370.has(key));
   const stale = Object.keys(mocha).filter((key) => !(key in parsed.map));
   check(
     drifted.length === 0 && unmapped.length === 0 && stale.length === 0,
-    `cli2 \u00b7 themes.mocha mirrors tokens.css :root exactly (${parsed.order.length} declarations)`,
+    `cli2 \u00b7 themes.mocha mirrors tokens.css :root exactly (${parsed.order.length} declarations; the 9 motion tokens mirror in tokens.json motionTokens, not the theme map)`,
     `drifted: ${drifted.join(", ") || "none"} \u00b7 unmapped-in-map: ${unmapped.join(", ") || "none"} \u00b7 stale-in-map: ${stale.join(", ") || "none"}`,
   );
 }
@@ -346,7 +357,7 @@ function gateCli3() {
 }
 
 // ---------------------------------------------------------------------------
-// Gate b3 — the tarball grows 60 → EXACTLY 64
+// Gate b3 — the tarball grows 64 → EXACTLY 67
 // ---------------------------------------------------------------------------
 function gatePack() {
   process.stdout.write("\ngate b3 — pack expectation\n");
@@ -355,11 +366,11 @@ function gatePack() {
   const notice = `${res.stdout ?? ""}\n${res.stderr ?? ""}`;
   const match = notice.match(/total files:\s*(\d+)/);
   const total = match ? Number(match[1]) : -1;
-  // 60 (the 3.3.0 tarball) + the dist/wc quartet — signature-wc.es.js +
-  // index.d.ts + base.d.ts + elements.d.ts: the compiled bundle AND the
-  // tsc-honest declarations ship (the wc/src sources stay out, like the
-  // react .tsx sources).
-  check(total === 64, "b3 \u00b7 pack reports EXACTLY 64 files (60 + the dist/wc quartet: signature-wc.es.js + index.d.ts + base.d.ts + elements.d.ts)", `found ${total}`);
+  // 64 (the 3.4.0 tarball) + the kinetic motion trio — css/motion.css +
+  // react/motion.js + react/motion.d.ts: the new stylesheet ships and the
+  // compiled primitive bundle ships (the react/motion.tsx source stays
+  // out, like every react .tsx source — the negations precedent).
+  check(total === 67, "b3 \u00b7 pack reports EXACTLY 67 files (64 + the kinetic motion trio: css/motion.css + react/motion.js + react/motion.d.ts)", `found ${total}`);
 }
 
 // ---------------------------------------------------------------------------

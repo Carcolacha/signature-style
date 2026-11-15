@@ -1239,6 +1239,276 @@ for (const feedbackExport of [
   }
 }
 
+// ---- (mo) THE KINETIC MOTION GATES (3.7.0) -----------------------------------
+// (mo1) MOTION TOKENS: the nine kinetic tokens exist in tokens.css's :root
+//       Motion section with their exact linear() values, the durations
+//       derive from --sig-motion-scale via calc(), the @supports
+//       cubic-bezier fallback block is present, and BOTH mercy triggers
+//       (prefers-reduced-motion + [data-sig-motion="reduced"]) collapse
+//       the durations to 1ms. tokens.json motionTokens mirrors all nine
+//       (whitelist parity is gate (d); the manifest values here).
+const MOTION_TOKEN_NAMES = [
+  "--ease-spring-snappy",
+  "--ease-spring-gentle",
+  "--ease-kinetic-out",
+  "--ease-glide",
+  "--dur-spring-snappy",
+  "--dur-spring-gentle",
+  "--dur-kinetic-out",
+  "--dur-glide",
+  "--sig-motion-scale",
+];
+const MOTION_CURVES = [
+  ["--ease-spring-snappy", "linear(0, 0.44 6.4%, 0.83 12.9%, 1.02 18.6%, 1.08 24.2%, 1.09 28.9%, 1.05 34.9%, 0.98 42.4%, 0.97 48.5%, 1.01 58.6%, 1 69.1%, 1)", "cubic-bezier(0.34, 1.56, 0.64, 1)"],
+  ["--ease-spring-gentle", "linear(0, 0.36 8.9%, 0.68 17.9%, 0.9 26.1%, 1.01 34.9%, 1.06 44.4%, 1.05 55.4%, 0.99 69.1%, 1)", "cubic-bezier(0.25, 1.25, 0.45, 1)"],
+  ["--ease-kinetic-out", "linear(0, 0.61 10.8%, 0.91 22.7%, 1.02 34.3%, 1.05 45.5%, 1.01 61.4%, 1)", "cubic-bezier(0.16, 1, 0.3, 1)"],
+  ["--ease-glide", "linear(0, 0.63 14.5%, 0.95 30.2%, 1.02 42.5%, 0.99 57.1%, 1)", "cubic-bezier(0.4, 0, 0.2, 1)"],
+];
+const MOTION_DURATIONS = [
+  ["--dur-spring-snappy", "320ms"],
+  ["--dur-spring-gentle", "480ms"],
+  ["--dur-kinetic-out", "380ms"],
+  ["--dur-glide", "280ms"],
+];
+if (rootDeclarations === null) {
+  failures.push("(mo1) cannot check motion tokens — no :root block found");
+} else {
+  for (const name of MOTION_TOKEN_NAMES) {
+    if (!rootDeclarations.includes(`${name}:`)) {
+      failures.push(`(mo1) motion token ${name} missing from the tokens.css :root block`);
+    }
+  }
+  for (const [name, linear, fallback] of MOTION_CURVES) {
+    const linearPattern = new RegExp(`${name}\\s*:\\s*${linear.replace(/[(),%]/g, "\\$&")}`);
+    if (!linearPattern.test(rootDeclarations)) {
+      failures.push(`(mo1) ${name} must carry its exact linear() spring sampling`);
+    }
+    if (!css.includes(fallback)) {
+      failures.push(`(mo1) the @supports fallback for ${name} (${fallback}) is missing from css/tokens.css`);
+    }
+  }
+  for (const [name, ms] of MOTION_DURATIONS) {
+    const pattern = new RegExp(`${name}\\s*:\\s*calc\\(var\\(--sig-motion-scale, 1\\) \\* ${ms.replace("ms", "ms")}\\)`);
+    if (!pattern.test(rootDeclarations)) {
+      failures.push(`(mo1) ${name} must derive from the dial: calc(var(--sig-motion-scale, 1) * ${ms})`);
+    }
+  }
+  if (!rootDeclarations.includes("--sig-motion-scale: 1")) {
+    failures.push("(mo1) the time-dilation master --sig-motion-scale must default to 1");
+  }
+  if (!css.includes("@supports not (transition-timing-function: linear(0, 1))")) {
+    failures.push("(mo1) css/tokens.css must carry the @supports cubic-bezier fallback block for the linear() springs");
+  }
+  if (!css.includes("[data-sig-motion=\"reduced\"]")) {
+    failures.push("(mo1) css/tokens.css must carry the [data-sig-motion=\"reduced\"] duration collapse (the mercy override)");
+  }
+  const mercyBlocks = css.match(/\[data-sig-motion="reduced"\]\s*\{([^}]*)\}/g) ?? [];
+  const mercyOk = mercyBlocks.some((block) => (block.match(/1ms/g) ?? []).length >= 4);
+  if (!mercyOk) {
+    failures.push("(mo1) the [data-sig-motion=\"reduced\"] block must collapse all four durations to 1ms");
+  }
+}
+try {
+  const motionManifest = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8")).motionTokens?.tokens ?? {};
+  const manifestNames = Object.keys(motionManifest).filter((k) => k !== "contract");
+  for (const name of MOTION_TOKEN_NAMES) {
+    if (!manifestNames.includes(name)) {
+      failures.push(`(mo1) tokens.json motionTokens is missing ${name}`);
+    }
+  }
+  if (manifestNames.length !== MOTION_TOKEN_NAMES.length) {
+    failures.push(`(mo1) tokens.json motionTokens must carry EXACTLY the 9 kinetic tokens, found ${manifestNames.length}`);
+  }
+} catch (error) {
+  failures.push(`(mo1) tokens.json motionTokens unreadable — ${(error instanceof Error ? error.message : String(error))}`);
+}
+
+// (mo2) MOTION LAB: the view, the nav/palette/breadcrumb wiring, the six
+//       showcase hooks, the control bar, the time dial + the mercy attr.
+const motionLabPath = resolve(root, "playground/components/MotionLab.tsx");
+const appSrc370 = readFileSync(resolve(root, "playground/App.tsx"), "utf8");
+const motionLab = existsSync(motionLabPath) ? readFileSync(motionLabPath, "utf8") : "";
+if (!existsSync(motionLabPath)) {
+  failures.push("(mo2) playground/components/MotionLab.tsx is missing — the Motion Lab view ships its own component");
+} else {
+  const MO2_APP_NEEDLES = [
+    ['"#/motion"', "the Motion Lab href in the routing tables"],
+    ['label: "Motion Lab"', "the GlobalNav item"],
+    ['label: "Go to Motion Lab"', "the command palette jump"],
+    ['label: "motion-lab"', "the breadcrumb path"],
+  ];
+  for (const [needle, label] of MO2_APP_NEEDLES) {
+    if (!appSrc370.includes(needle)) {
+      failures.push(`(mo2) App.tsx must contain ${needle} — ${label}`);
+    }
+  }
+  const MO2_LAB_NEEDLES = [
+    ['data-testid="motion-bar"', "the sticky control bar"],
+    ['data-testid="motion-speed-slow"', "the 0.25× Slow-Mo segment"],
+    ['data-testid="motion-replay"', "the Replay Choreography button"],
+    ['data-testid="motion-reduced"', "the Reduced Motion Preview toggle"],
+    ['data-testid="motion-stagger"', "showcase 01 — the stagger cascade"],
+    ['data-testid="motion-detents"', "showcase 02 — the spring detents"],
+    ['data-testid="motion-sheen"', "showcase 03 — the kinetic sheen"],
+    ['data-testid="motion-flip"', "showcase 04 — the FLIP tabs"],
+    ['data-testid="motion-telemetry"', "showcase 05 — rolling telemetry"],
+    ['data-testid="motion-weather"', "showcase 06 — the open-meteo stage"],
+    ['"--sig-motion-scale"', "the time dial set on the lab root"],
+    ['"data-sig-motion"', "the reduced-preview attribute toggle"],
+    ["MOTION_SNIPPETS", "the Set 08 copy payloads"],
+    ["PatternFrame", "the Copy Card frames"],
+  ];
+  for (const [needle, label] of MO2_LAB_NEEDLES) {
+    if (!motionLab.includes(needle)) {
+      failures.push(`(mo2) MotionLab.tsx must contain ${needle} — ${label}`);
+    }
+  }
+}
+
+// (mo3) FLIP INDICATOR: the shared gliding element with a transform-only
+//       transition in BOTH data.css (.sig-tabs-indicator) and nav.css
+//       (.sig-nav-indicator); the hook wired in BOTH sources; and the
+//       TELEPORTING per-tab underline must be GONE (comment prose may
+//       narrate the retirement — rule selectors may not resurrect it).
+const dataCss370 = readFileSync(resolve(root, "css/data.css"), "utf8");
+const navCss370 = readFileSync(resolve(root, "css/nav.css"), "utf8");
+const dataStripped370 = dataCss370.replace(/\/\*[\s\S]*?\*\//g, "");
+const navStripped370 = navCss370.replace(/\/\*[\s\S]*?\*\//g, "");
+if (!dataStripped370.includes(".sig-tabs-indicator")) {
+  failures.push("(mo3) css/data.css must carry the shared .sig-tabs-indicator element");
+}
+if (!/\.sig-tabs-indicator\s*\{[^}]*transition:\s*transform var\(--dur-glide/.test(dataStripped370)) {
+  failures.push("(mo3) .sig-tabs-indicator must glide via transform var(--dur-glide) — transform is the ONLY animated property");
+}
+if (!readFileSync(resolve(root, "react/data.tsx"), "utf8").includes("useFlipIndicator")) {
+  failures.push("(mo3) react/data.tsx must wire useFlipIndicator (the FLIP mechanics)");
+}
+if (!/\.sig-nav-indicator\s*\{/.test(navStripped370)) {
+  failures.push("(mo3) css/nav.css must carry the shared .sig-nav-indicator element");
+}
+if (!/\.sig-nav-indicator\s*\{[^}]*transition:\s*transform var\(--dur-glide/.test(navStripped370)) {
+  failures.push("(mo3) .sig-nav-indicator must glide via transform var(--dur-glide) — transform is the ONLY animated property");
+}
+if (!readFileSync(resolve(root, "react/nav.tsx"), "utf8").includes("useFlipIndicator")) {
+  failures.push("(mo3) react/nav.tsx must wire useFlipIndicator (the FLIP mechanics)");
+}
+if (/\.sig-tabs__tab[^{]*\{[^}]*border-bottom/.test(dataStripped370)) {
+  failures.push("(mo3) css/data.css still declares a per-tab border-bottom underline — the FLIP indicator replaced it (3.7.0)");
+}
+// The BAR links (not the drawer) must have lost their underline: strip
+// the drawer-scoped rules, then demand no bare .sig-nav__link border.
+const navNoDrawer = navStripped370.replace(/\.sig-nav-drawer__list[^{]*\{[^}]*\}/g, "");
+if (/\.sig-nav__link\s*\{[^}]*border-bottom/.test(navNoDrawer)) {
+  failures.push("(mo3) css/nav.css still declares a bar-link border-bottom underline — the FLIP indicator replaced it (3.7.0; the drawer keeps its own)");
+}
+
+// (mo4) ANIMATEDNUMBER: rAF interpolation + the instant-motion probes +
+//       the spring sampling helper + the umbrella exports.
+const motionSrc370 = readFileSync(resolve(root, "react/motion.tsx"), "utf8");
+const MO4_NEEDLES = [
+  ["requestAnimationFrame", "the rAF interpolation loop"],
+  ["springProgress", "the exported spring sampling helper"],
+  ["prefers-reduced-motion", "the OS-level mercy probe"],
+  ['[data-sig-motion="reduced"]', "the root-override mercy probe"],
+  ["cancelAnimationFrame", "the loop cleanup"],
+  ["tabular-nums", null], // css-side, checked below; harmless here
+];
+for (const [needle, label] of MO4_NEEDLES) {
+  if (label !== null && !motionSrc370.includes(needle)) {
+    failures.push(`(mo4) react/motion.tsx must contain ${needle} — ${label}`);
+  }
+}
+if (!motionSrc370.includes("AnimatedNumber") || !motionSrc370.includes("MotionReveal") || !motionSrc370.includes("KineticSurface")) {
+  failures.push("(mo4) react/motion.tsx must export AnimatedNumber, MotionReveal and KineticSurface");
+}
+const motionCss370 = readFileSync(resolve(root, "css/motion.css"), "utf8");
+if (!motionCss370.includes(".sig-animated-number") || !motionCss370.includes("font-variant-numeric: tabular-nums")) {
+  failures.push("(mo4) css/motion.css must pin .sig-animated-number to tabular-nums (digits never jitter)");
+}
+for (const name of ["AnimatedNumber", "MotionReveal", "KineticSurface", "springProgress"]) {
+  if (!new RegExp(`\\b${name}\\b`).test(indexDts)) {
+    failures.push(`(mo4) react/index.d.ts must re-export ${name} from the umbrella entry point`);
+  }
+  if (name !== "MotionReveal" && name !== "KineticSurface" && !new RegExp(`\\b${name}\\b`).test(indexJs)) {
+    failures.push(`(mo4) react/index.js must re-export ${name} from the umbrella entry point`);
+  }
+}
+
+// (mo5) KINETICSURFACE: the rAF-throttled --ptr-x/--ptr-y writes + the
+//       opacity-only sheen (::after radial gradient at the pointer; the
+//       POSITION repaints, it never animates).
+const MO5_NEEDLES = [
+  ['setProperty("--ptr-x"', "the pointer-x custom-property write"],
+  ['setProperty("--ptr-y"', "the pointer-y custom-property write"],
+  ["requestAnimationFrame", "the rAF throttle"],
+];
+for (const [needle, label] of MO5_NEEDLES) {
+  if (!motionSrc370.includes(needle)) {
+    failures.push(`(mo5) react/motion.tsx must contain ${needle} — ${label}`);
+  }
+}
+const sheenRule = motionCss370.match(/\.sig-kinetic-surface::after\s*\{[^}]*\}/s);
+if (sheenRule === null) {
+  failures.push("(mo5) css/motion.css must paint the sheen as a .sig-kinetic-surface::after rule");
+} else {
+  if (!sheenRule[0].includes("radial-gradient")) {
+    failures.push("(mo5) the sheen must be a radial-gradient");
+  }
+  if (!sheenRule[0].includes("var(--ptr-x") || !sheenRule[0].includes("var(--ptr-y")) {
+    failures.push("(mo5) the sheen must anchor at var(--ptr-x)/var(--ptr-y)");
+  }
+  if (!/transition:\s*opacity\b/.test(sheenRule[0])) {
+    failures.push("(mo5) the sheen's ONLY transition must be opacity (the position repaints — it never animates)");
+  }
+  if (/transition:[^;]*transform/.test(sheenRule[0]) || /box-shadow/.test(sheenRule[0])) {
+    failures.push("(mo5) the sheen must not transition transform or box-shadow (the e1 treaty)");
+  }
+}
+if (!motionCss370.includes(".sig-kinetic-surface:hover::after")) {
+  failures.push("(mo5) the sheen must fade in on hover (.sig-kinetic-surface:hover::after)");
+}
+
+// (mo6) OPEN-METEO + FALLBACK-FIRST: the zero-auth URL, the AbortController
+//       cleanup, the deterministic labeled sample rendering FIRST, the live
+//       swap reading the FETCH payload (never hardcoded "live" values),
+//       the refetch control, the skeleton loading state.
+const MO6_NEEDLES = [
+  ["https://api.open-meteo.com/v1/forecast?latitude=31.76&longitude=-106.48&hourly=temperature_2m,wind_speed_10m&forecast_days=1", "the zero-auth Open-Meteo URL (exact)"],
+  ["new AbortController()", "the per-fetch AbortController"],
+  ["abort()", "the cleanup abort (unmount + re-fetch)"],
+  ["Deterministic offline sample", "the fallback's honest label (never fake-live)"],
+  ["Refetch Live Stream", "the manual retry control"],
+  ["SkeletonCard", "the loading state"],
+  ["json.hourly?.temperature_2m", "the live swap reads the FETCH payload"],
+  ["json.hourly?.wind_speed_10m", "the live swap reads the FETCH payload"],
+  ['useState<WeatherSeries>', "the fallback-first state (the sample IS the opening value)"],
+];
+for (const [needle, label] of MO6_NEEDLES) {
+  if (!motionLab.includes(needle)) {
+    failures.push(`(mo6) MotionLab.tsx must contain ${needle} — ${label}`);
+  }
+}
+if ((motionLab.replace(/\/\*[\s\S]*?\*\//g, "").match(/api\.open-meteo\.com/g) ?? []).length !== 1) {
+  failures.push("(mo6) the Open-Meteo URL must appear EXACTLY once in code (one endpoint constant; no shadow requests)");
+}
+// "Live" may only be claimed inside the fetch success chain.
+const liveClaimOutsideFetch = motionLab.includes('"Live · Open-Meteo"') &&
+  !/\.then\([\s\S]*?"Live · Open-Meteo"[\s\S]*?\}\s*\}\s*\)\s*\n?\s*\.catch/.test(motionLab);
+if (liveClaimOutsideFetch) {
+  failures.push('(mo6) the "Live · Open-Meteo" label may only be set from the fetch success chain — no hardcoded live values');
+}
+
+// (e1-motion) THE E1 MOTION SCAN: the motion-bearing stylesheets animate
+// box-shadow ZERO times — declarations only (comment prose is free to
+// narrate the treaty), @keyframes blocks included.
+for (const rel of ["css/motion.css", "css/viz.css", "css/tokens.css"]) {
+  const text = readFileSync(resolve(root, rel), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const shadowDecls = text.match(/box-shadow\s*:/g);
+  if (shadowDecls !== null) {
+    failures.push(`(e1-motion) ${rel} declares box-shadow ${shadowDecls.length}× — the motion treaty animates ONLY transform/opacity/clip-path/custom properties`);
+  }
+}
+
 // ---- (pure) THE STANDALONE PURITY GATE (3.1.0, the release gate) ------------
 // The owner-mandated centerpiece: the working tree carries ZERO banned
 // domain vocabulary. verify-standalone.mjs owns the scan (the

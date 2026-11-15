@@ -1,7 +1,7 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "3.6.0",
-  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.5.0 The Visual Cortex as a Product: packages/signature-mcp — the standalone 4-tool MCP server inspect_layout · audit_contrast · audit_e1_shadows · capture_viewport_matrix, attach configs in packages/signature-mcp/README.md; 3.4.0 Zero-React Native Web Components: SIX framework-free custom elements — sig-surface-card, sig-badge, sig-progress-bar, sig-stat-ring, sig-callout, sig-carousel — driven entirely by the --sig-* tokens via import \"@edwyn/signature-style/wc\"; 3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init`; 3.6.0 Graph Studio — the dedicated canvas/HUD/inspector view with the GraphEdge edge model (click-select, Delete/Backspace unlink), the TRUE 3×3 page-deck Carousel, the two-tier contrast policy (ink 4.5:1 body / display 3.0:1, values frozen), the zero-defect a11y gate (axe zero crit/serious/moderate + the inert sweep), the WorkspaceRepository latency rehearsal (skeletons + toasts ahead of FastAPI), and the fastapi-starter reference backend).",
+  "version": "3.7.0",
+  "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.7.0 The Intelligent Kinetic Engine, Motion Lab & Live Data Choreography: four native linear() spring easing tokens + scale-derived durations behind the --sig-motion-scale time-dilation dial (cubic-bezier @supports fallback), the kinetic primitives AnimatedNumber (spring-interpolated rAF number roll) / MotionReveal (IntersectionObserver once-entrance with 45ms stagger waves) / KineticSurface (rAF-throttled cursor-tracking sheen), the FLIP gliding indicators on Tabs + GlobalNav, the directional carousel page glide, the pathLength SVG line sweeps + the spring-arc StatRing, the Motion Lab view (#/motion — Slow-Mo time dilation, replay choreography, the reduced-motion preview, six showcases including the zero-key Open-Meteo fallback-first live choreography), and the e1-motion gate: box-shadow is NEVER animated; 3.5.0 The Visual Cortex as a Product: packages/signature-mcp — the standalone 4-tool MCP server inspect_layout · audit_contrast · audit_e1_shadows · capture_viewport_matrix, attach configs in packages/signature-mcp/README.md; 3.4.0 Zero-React Native Web Components: SIX framework-free custom elements — sig-surface-card, sig-badge, sig-progress-bar, sig-stat-ring, sig-callout, sig-carousel — driven entirely by the --sig-* tokens via import \"@edwyn/signature-style/wc\"; 3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init`).",
   "type": "module",
   "license": "MIT",
   "author": "edwyn",
@@ -54,7 +54,8 @@
     "!react/graph.tsx",
     "!react/timeline-manager.tsx",
     "!react/command.tsx",
-    "!react/skeleton.tsx"
+    "!react/skeleton.tsx",
+    "!react/motion.tsx"
   ],
   "sideEffects": [
     "*.css"

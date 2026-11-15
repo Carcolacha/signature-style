@@ -19,6 +19,9 @@
  *        .sig-surface-card with width>0 && height>0);
  *   (s2b) the studio zero-react proof (carried from 3.4.0): inspecting
  *        #/studio returns alive rects for every sig-* custom element;
+ *   (s2c) the MOTION LAB navigation probe (3.7.0): inspecting #/motion
+ *        returns EXACTLY 6 alive .pattern-frame rects + ≥ 3 alive
+ *        .sig-kinetic-surface rects;
  *   (s3) audit_contrast returns a summary with numeric passCount +
  *        failCount and ≥ 1 measured element;
  *   (s4) audit_e1_shadows returns sanctionedCount ≥ 1 and a violations
@@ -155,6 +158,25 @@ try {
   }
   const wcAliveTotal = WC_SELECTORS.reduce((sum, s) => sum + wcReport[s].alive, 0);
   console.log(`studio wc hits: ${WC_SELECTORS.map((s) => `${s}=${wcReport[s].alive} alive`).join(" · ")} (total ${wcAliveTotal})`);
+
+  // (s2c) the MOTION LAB navigation probe (3.7.0): #/motion mounts the
+  // kinetic stage — the six showcase pattern-frames and the sheen
+  // surfaces measure alive rects.
+  const motionLayout = await rpc.call("tools/call", {
+    name: "inspect_layout",
+    arguments: { url: `${URL_TO_INSPECT}/#/motion` },
+  });
+  assert(motionLayout.isError !== true, `motion-lab inspect_layout errored: ${JSON.stringify(motionLayout.content)}`);
+  const motionPayload = JSON.parse(motionLayout.content[0].text);
+  const motionFrames = motionPayload.hits.filter(
+    (h) => h.selector === ".pattern-frame" && h.rect.width > 0 && h.rect.height > 0,
+  );
+  assert(motionFrames.length === 6, `motion-lab probe: expected EXACTLY 6 alive .pattern-frame rects, found ${motionFrames.length}`);
+  const sheenHits = motionPayload.hits.filter(
+    (h) => h.selector === ".sig-kinetic-surface" && h.rect.width > 0 && h.rect.height > 0,
+  );
+  assert(sheenHits.length >= 3, `motion-lab probe: the kinetic sheen surfaces are not mounting (found ${sheenHits.length} alive)`);
+  console.log(`motion-lab hits: pattern-frame=${motionFrames.length} · kinetic-surface=${sheenHits.length}`);
 
   // (s3) audit_contrast — numeric pass/fail summary, ≥ 1 measured element.
   const contrast = await rpc.call("tools/call", {

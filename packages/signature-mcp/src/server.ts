@@ -101,6 +101,11 @@ const DEFAULT_SELECTORS: readonly string[] = [
   ".sig-graph__node",
   ".sig-bars__bar",
   ".sig-tmanager__count",
+  // THE MOTION LAB (3.7.0): the Copy Card frames + the kinetic sheen
+  // surfaces (the s2c navigation probe reads them).
+  ".pattern-frame",
+  ".sig-kinetic-surface",
+  ".sig-motion-reveal",
   // THE ZERO-REACT SURFACE: the six sig-* custom elements (the studio's
   // Set 07 mounts them; the cortex must see the shadow hosts).
   "sig-surface-card",

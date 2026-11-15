@@ -88,6 +88,7 @@ const VIEWS = [
   { name: "dashboard", hash: "" },
   { name: "graph-studio", hash: "#/graph" },
   { name: "analytics-planner", hash: "#/planner" },
+  { name: "motion-lab", hash: "#/motion" },
   { name: "pattern-studio", hash: "#/studio" },
   { name: "master-index", hash: "#/index" },
   { name: "chronicle", hash: "#/chronicle" },
