@@ -38,7 +38,7 @@
  */
 
 import { Children, useEffect, useRef, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from "react";
 import { Icon, type IconName } from "./primitives.js";
 
 /**
@@ -80,15 +80,19 @@ export interface CarouselProps {
   /** The accessible name for the scroll region (role="region"). */
   label?: string;
   /**
-   * 3.0.0 — THE MODE. "free-scroll" (default) is the historical snap
-   * strip: every child is a content-width snap unit, Prev/Next advance
-   * ONE ITEM, dots are one per child, and the active index syncs
-   * through an IntersectionObserver (majority-visible item = active —
-   * 3.0.0 replaces the old scrollLeft/itemWidth scroll math). "paged-3"
+   * 3.0.0 — THE MODE; 3.6.0 rebuilds paged-3 as TRUE PAGE GRIDS.
+   * "free-scroll" (default) is the historical snap strip: every child is
+   * a content-width snap unit, Prev/Next advance ONE ITEM, dots are one
+   * per child, and the active index syncs through an
+   * IntersectionObserver (majority-visible item = active). "paged-3"
    * chunks the children into pages of THREE (pure math: ceil(n / 3))
-   * and renders each page as ONE snap unit — a `repeat(3, 1fr)` grid
-   * with the 16px gap (css: .sig-carousel__page); Prev/Next advance
-   * ±1 PAGE, dots are one per PAGE, the indicator reads "p / P".
+   * and renders a STATEFUL PAGE DECK — one `.sig-carousel__page` grid
+   * (repeat(3, minmax(0, 1fr)), 16px gap, stretch) visible at a time;
+   * non-current page wrappers carry `hidden` + `inert` (the inert
+   * sweep: off-screen pages leave both the a11y tree and the tab
+   * order), dots are ONE PER PAGE, Prev/Next step pages and disable at
+   * the bounds, the indicator reads "Page p of P", and ←/→ (focus
+   * anywhere inside the carousel) flip pages.
    */
   mode?: "paged-3" | "free-scroll";
   /** The items — must already be `<CarouselItem>` elements. */
@@ -96,37 +100,39 @@ export interface CarouselProps {
 }
 
 /**
- * `<Carousel>` — the horizontal scroll strip (3.0.0: TWO MODES).
+ * `<Carousel>` — the horizontal strip (3.0.0: TWO MODES; 3.6.0: the
+ * paged mode is a TRUE 3×3 page deck).
  *
- * THE 3.0.0 ANATOMY — the mechanics move to a DOCKED CONTROL BAR: the
- * track rides on top (full width, never squeezed between buttons), and
- * BELOW it one `.sig-carousel__controls` flex row: prev · dots ·
- * indicator ("1 / N", aria-live polite) · next. The readout never
- * overlaps card content — it lives in its own bar.
+ * THE ANATOMY — a full-width stage on top, and BELOW it one
+ * `.sig-carousel__controls` flex row: prev · dots · indicator · next.
+ * The readout never overlaps card content — it lives in its own bar.
  *
  * free-scroll (DEFAULT — the historical behavior): every child is a
  * content-width snap unit (`flex: 0 0 auto` + scroll-snap-align), the
  * chevrons scrollBy ±ONE ITEM WIDTH, dots are one per child and
- * clickable (`scrollTo({ left: index * itemWidth })`). 3.0.0 UPGRADE:
- * the active-index sync is an IntersectionObserver — the track's items
- * are observed and the MAJORITY-VISIBLE item (intersectionRatio ≥ 0.5,
- * highest wins) is the active dot. The old per-pixel scroll math is
- * gone; the track's scroll handler now only drives the paged mode.
+ * clickable (`scrollTo({ left: index * itemWidth })`), and the active
+ * index syncs through an IntersectionObserver — the track's items are
+ * observed and the MAJORITY-VISIBLE item (intersectionRatio ≥ 0.5,
+ * highest wins) is the active dot.
  *
- * paged-3: the children are chunked into PAGES OF THREE (pure math:
- * pageCount = ceil(count / 3)) and each page renders as ONE snap unit
- * — a `.sig-carousel__page` slide wearing the 100% width and the
- * `repeat(3, 1fr)` grid with the 16px gap (css/editorial.css). The
- * chevrons advance ±1 PAGE (`scrollTo(page × track.clientWidth)`),
- * dots are one per page, and the indicator reads "p / P" (pages). The
- * active page syncs from the track's scroll event, rAF-throttled (one
- * state write per frame), with the page formula
- * `Math.round(scrollLeft / track.clientWidth) + 1`.
+ * paged-3 (3.6.0 REBUILD — the owner's "true 3-per-page grids" spec):
+ * the children chunk into PAGES OF THREE (`pageCount = ceil(n / 3)`)
+ * rendered as a STATEFUL PAGE DECK — a page-index state, not a scroll
+ * track. Every page wrapper renders as a `.sig-carousel__page` grid
+ * (`repeat(3, minmax(0, 1fr))`, 16px gap, `align-items: stretch` for
+ * equal heights; collapses to `1fr` under a 640px container); exactly
+ * one is visible (conditional `hidden`), and the non-current wrappers
+ * also carry `inert` (React 18 has no inert prop — the ref callback
+ * workaround; React 19 could take `inert={...}` directly) so Tab never
+ * lands in an off-screen page. Prev/Next step ±1 page and DISABLE at
+ * the bounds; dots are ONE PER PAGE (never per item in paged mode) and
+ * clickable; the indicator reads "Page p of P" in tabular-nums; ←/→
+ * (captured on the root, so focus may rest on any control inside) flip
+ * pages too.
  *
- * ZERO-DEPENDENCY MOTION: scrolling uses `behavior: "smooth"` unless
- * the visitor prefers reduced motion — matchMedia is read ONCE per
- * component instance. The IO is disconnected on unmount; the pending
- * rAF frame is cancelled on unmount.
+ * ZERO-DEPENDENCY MOTION: free-scroll scrolling uses `behavior:
+ * "smooth"` unless the visitor prefers reduced motion — matchMedia is
+ * read ONCE per component instance. The IO is disconnected on unmount.
  *
  * @example
  * ```tsx
@@ -139,7 +145,6 @@ export interface CarouselProps {
  */
 export function Carousel({ label, mode = "free-scroll", children }: CarouselProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const frameRef = useRef<number | null>(null);
   const [page, setPage] = useState(1);
   // Read ONCE per instance — no listener, no re-render churn.
   const reduceMotion = useRef<boolean>(
@@ -148,20 +153,13 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
   );
   const items = Children.toArray(children);
   const paged = mode === "paged-3";
-  const stride = paged ? 3 : 1;
-  const pageCount = Math.max(1, Math.ceil(items.length / stride));
+  const pageCount = Math.max(1, Math.ceil(items.length / 3));
+  // The clamped current page (item-count changes can shrink the deck).
+  const current = Math.min(page, pageCount);
 
-  useEffect(() => {
-    return () => {
-      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
-    };
-  }, []);
-
-  // THE INTERSECTION OBSERVER (3.0.0, free-scroll): observe the items,
+  // THE INTERSECTION OBSERVER (free-scroll): observe the items,
   // majority-visible wins. Ratios land in a Map keyed by item index;
-  // each callback picks the highest ≥ 0.5. This replaces the scroll
-  // math the indicator used to run — the track's own scroll handler
-  // only serves paged-3's page sync now.
+  // each callback picks the highest ≥ 0.5.
   useEffect(() => {
     if (paged || typeof IntersectionObserver === "undefined") return;
     const track = trackRef.current;
@@ -197,93 +195,108 @@ export function Carousel({ label, mode = "free-scroll", children }: CarouselProp
     return width > 0 ? width : track.clientWidth;
   };
 
+  /** paged-3 — the stateful page step (the deck's ONLY mover). */
+  const goToPage = (next: number): void => {
+    setPage(Math.min(pageCount, Math.max(1, next)));
+  };
+
+  /** free-scroll — scroll to the item at `index` (0-based). */
   const scrollToIndex = (index: number): void => {
     const track = trackRef.current;
     if (track === null) return;
-    const left = paged ? index * track.clientWidth : index * itemWidthOf(track);
-    track.scrollTo({ left, behavior: reduceMotion.current ? "auto" : "smooth" });
+    track.scrollTo({ left: index * itemWidthOf(track), behavior: reduceMotion.current ? "auto" : "smooth" });
   };
 
   const scrollByItem = (direction: -1 | 1): void => {
-    // paged-3 strides PAGE-wise; free-scroll strides item-wise.
-    const next = Math.min(pageCount, Math.max(1, page + direction));
-    scrollToIndex(next - 1);
+    scrollToIndex(Math.min(items.length, Math.max(1, current + direction)) - 1);
   };
 
-  // THE PAGE TRACKER (paged-3) — rAF-throttled: coalesce the per-pixel
-  // scroll events into one state write per frame. The page formula is
-  // stride math: Math.round(scrollLeft / track.clientWidth) + 1.
-  const handleScroll = (): void => {
+  // paged-3 — ←/→ flip pages when focus rests anywhere inside the
+  // carousel (the dots and the chevrons included).
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>): void => {
     if (!paged) return;
-    if (frameRef.current !== null) return;
-    frameRef.current = requestAnimationFrame(() => {
-      frameRef.current = null;
-      const track = trackRef.current;
-      if (track === null) return;
-      setPage(
-        Math.min(pageCount, Math.round(track.scrollLeft / track.clientWidth) + 1),
-      );
-    });
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goToPage(current + 1);
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goToPage(current - 1);
+    }
   };
 
   return (
-    <div className={paged ? "sig-carousel sig-carousel--paged" : "sig-carousel"}>
-      <div
-        className="sig-carousel__track"
-        ref={trackRef}
-        tabIndex={0}
-        role="region"
-        aria-label={label}
-        onScroll={handleScroll}
-      >
-        {paged
-          ? // Pages of three: chunk ONCE, render each page as ONE snap
-            // slide (width 100%); the page owns the 3-up grid + gap.
-            Array.from({ length: pageCount }, (_, pageIdx) => (
+    <div
+      className={paged ? "sig-carousel sig-carousel--paged" : "sig-carousel"}
+      onKeyDown={handleKeyDown}
+    >
+      {paged ? (
+        // THE PAGE DECK (3.6.0): every page renders (stable DOM), ONE is
+        // visible; the non-current wrappers carry hidden + inert so
+        // their content leaves the a11y tree AND the tab order.
+        <div className="sig-carousel__stage" role="group" aria-label={label}>
+          {Array.from({ length: pageCount }, (_, pageIdx) => {
+            const isCurrent = pageIdx === current - 1;
+            return (
               <div
                 key={pageIdx}
                 className="sig-carousel__page"
-                style={{ flex: "0 0 100%" }}
+                hidden={!isCurrent}
+                ref={(el) => {
+                  if (el !== null) el.inert = !isCurrent;
+                }}
               >
                 {items.slice(pageIdx * 3, pageIdx * 3 + 3)}
               </div>
-            ))
-          : children}
-      </div>
-      {/* THE DOCKED CONTROL BAR (3.0.0): prev · dots · indicator · next.
-          The "1 / N" readout is bar-docked metadata — never overlapping
-          card content. */}
+            );
+          })}
+        </div>
+      ) : (
+        <div
+          className="sig-carousel__track"
+          ref={trackRef}
+          tabIndex={0}
+          role="region"
+          aria-label={label}
+        >
+          {children}
+        </div>
+      )}
+      {/* THE DOCKED CONTROL BAR: prev · dots · indicator · next. Paged
+          mode reads "Page p of P" (tabular-nums) and disables the
+          chevrons at the bounds; free-scroll keeps the "1 / N" readout. */}
       <div className="sig-carousel__controls">
         <button
           type="button"
           className="sig-carousel__btn"
           aria-label="Previous"
-          onClick={() => scrollByItem(-1)}
+          disabled={paged && current <= 1}
+          onClick={() => (paged ? goToPage(current - 1) : scrollByItem(-1))}
         >
           <Icon name="ChevronLeft" aria-hidden />
         </button>
         {items.length > 0 && (
           <div className="sig-carousel__dots">
-            {Array.from({ length: pageCount }, (_, index) => (
+            {Array.from({ length: paged ? pageCount : items.length }, (_, index) => (
               <button
                 key={index}
                 type="button"
                 className="sig-carousel__dot"
-                data-active={index === page - 1 ? "true" : "false"}
+                data-active={index === current - 1 ? "true" : "false"}
                 aria-label={paged ? `Go to page ${index + 1}` : `Go to item ${index + 1}`}
-                onClick={() => scrollToIndex(index)}
+                onClick={() => (paged ? goToPage(index + 1) : scrollToIndex(index))}
               />
             ))}
           </div>
         )}
         <span className="sig-carousel__indicator" aria-live="polite">
-          {page} / {pageCount}
+          {paged ? `Page ${current} of ${pageCount}` : `${current} / ${Math.max(items.length, 1)}`}
         </span>
         <button
           type="button"
           className="sig-carousel__btn"
           aria-label="Next"
-          onClick={() => scrollByItem(1)}
+          disabled={paged && current >= pageCount}
+          onClick={() => (paged ? goToPage(current + 1) : scrollByItem(1))}
         >
           <Icon name="ChevronRight" aria-hidden />
         </button>

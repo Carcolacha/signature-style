@@ -2218,10 +2218,9 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
             className="sig-cell"
           >
             {/* 3.0.0 — THE LIVE MODE TOGGLE PILL (two-button segmented,
-                aria-pressed IS the state, the tabs/nav contract): flips
-                the Field Notes Carousel between paged-3 (3-up pages,
-                page-striding chevrons, per-page dots) and free-scroll
-                (the historical snap strip, IO-synced dots). */}
+                aria-pressed IS the state, the tabs/nav contract); 3.6.0
+                relabels to the true-grid contract: paged-3 is a real
+                3-per-page deck, free-scroll stays the snap strip. */}
             <div
               className="hub__mode-toggle"
               role="group"
@@ -2233,14 +2232,14 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
                 aria-pressed={carouselMode === "paged-3"}
                 onClick={() => setCarouselMode("paged-3")}
               >
-                3-up pages
+                3-by-3 Paged
               </button>
               <button
                 type="button"
                 aria-pressed={carouselMode === "free-scroll"}
                 onClick={() => setCarouselMode("free-scroll")}
               >
-                Free scroll
+                Fluid Scroll
               </button>
             </div>
             <Carousel label="Developer & lifestyle cards" mode={carouselMode}>
@@ -2272,6 +2271,12 @@ function IndexView({ onNavigate }: { onNavigate: (href: string) => void }) {
                 <div className="hub__mini-card">
                   <strong>Chronology</strong>
                   <span>Timelines that breathe — the past is a lane.</span>
+                </div>
+              </CarouselItem>
+              <CarouselItem className="hub__clipping">
+                <div className="hub__mini-card">
+                  <strong>Graph Studio</strong>
+                  <span>Nodes are data — tether, drag, inspect, unlink.</span>
                 </div>
               </CarouselItem>
             </Carousel>

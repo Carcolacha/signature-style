@@ -2,20 +2,23 @@
    EDITORIAL — carousel, prose, announcements (2.4.0 "Form Wrappers &
    Editorial Primitives"; 2.4.1 grows the indicator, the mauve bar,
    kbd/code, h3, and the banner action; 3.0.0 restructures the carousel
-   to the docked control bar and adds the paged-3 mode). Layered into
-   `cascade` by signature-style.css (imported after data.css).
+   to the docked control bar and adds the paged-3 mode; 3.6.0 rebuilds
+   paged-3 as TRUE 3×3 page grids). Layered into `cascade` by
+   signature-style.css (imported after data.css).
 
    THREE PATTERNS, THREE CLASS FAMILIES:
-   - .sig-carousel (+ __track / __item / __page / __controls / __btn /
-     __dots / __dot / __indicator) — the horizontal scroll strip, TWO
-     MODES (3.0.0): free-scroll (default — the historical item-snap
-     strip, its active dot synced by an IntersectionObserver: the
-     majority-visible item wins) and paged-3 (the children chunked into
-     pages of three, each page ONE snap slide wearing the repeat(3, 1fr)
-     grid + 16px gap; chevrons stride pages, dots are per page, the
-     indicator reads "p / P"). The DOCKED CONTROL BAR is the 3.0.0
-     anatomy: prev · dots · indicator · next in one flex row UNDER the
-     full-width track — the readout never overlaps card content.
+   - .sig-carousel (+ __track / __stage / __item / __page / __controls /
+     __btn / __dots / __dot / __indicator) — the horizontal strip, TWO
+     MODES: free-scroll (default — the historical item-snap strip, its
+     active dot synced by an IntersectionObserver: the majority-visible
+     item wins) and paged-3 (3.6.0: a STATEFUL PAGE DECK —
+     .sig-carousel__stage hosting every .sig-carousel__page grid
+     (repeat(3, minmax(0,1fr)), 16px gap, stretch; [hidden] pages are
+     display:none + inert), one page visible at a time; chevrons stride
+     pages and disable at the bounds, dots are per page, the indicator
+     reads "Page p of P"). The DOCKED CONTROL BAR is the anatomy: prev ·
+     dots · indicator · next in one flex row UNDER the full-width
+     stage/track — the readout never overlaps card content.
    - .sig-prose — the editorial slot: ONE container, styled
      DESCENDANTS. p (0.875rem, 1.6 line-height), h3 (0.9375rem/600),
      blockquote (inset well + 4px MAUVE left rule — owner override,
@@ -75,11 +78,16 @@
   outline-offset: 2px;
 }
 
-/* paged-3: the PAGES are the snap units (width 100% each), so the
-   track's own inter-page gap must be ZERO — every page carries its own
-   internal 16px grid gap (the 8px standard step, per the owner spec). */
-.sig-carousel--paged .sig-carousel__track {
-  gap: 0;
+/* paged-3 (3.6.0): NO TRACK — the paged mode renders the stateful page
+   DECK (.sig-carousel__stage) instead of a scroll strip; the zero-gap
+   track rule died with the scroll-based pages. The track class serves
+   free-scroll only now. */
+
+/* THE PAGE DECK (3.6.0): a plain block host — every .sig-carousel__page
+   renders inside it, exactly ONE visible (the non-current wrappers
+   carry [hidden] + inert from the component). */
+.sig-carousel__stage {
+  display: block;
 }
 
 .sig-carousel__item {
@@ -87,18 +95,21 @@
   scroll-snap-align: start;
 }
 
-/* 3.0.0 — THE PAGE SLIDE (paged-3): ONE snap unit wearing the full
-   track width; inside it, the chunked children sit in a repeat(3, 1fr)
-   grid with the 16px gap (gap: var(--space-standard)). Pure math on
-   the component side: pages = ceil(items / 3). */
+/* 3.6.0 — THE TRUE PAGE GRID (paged-3): each page is a
+   repeat(3, minmax(0, 1fr)) grid with the 16px gap and equal heights
+   (align-items: stretch). Pure math on the component side:
+   pages = ceil(items / 3). NOTE the explicit [hidden] display:none —
+   display:grid would otherwise OUTRANK the UA's [hidden] rule and
+   every "hidden" page would paint anyway. */
 .sig-carousel__page {
-  flex: 0 0 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-standard);
-  scroll-snap-align: start;
   align-items: stretch;
   min-width: 0;
+}
+.sig-carousel__page[hidden] {
+  display: none;
 }
 /* Container-aware: narrow cells stack the page to one column (the
    2.9.0 container-query pattern — containment rides the OUTER .sig-cell
