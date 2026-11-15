@@ -218,6 +218,7 @@ import {
   CommandPalette,
   Breadcrumbs,
   Icon,
+  isTypingTarget,
   SkeletonLine,
   SkeletonCard,
   SkeletonTableRow,
@@ -243,6 +244,7 @@ import { PALETTE } from "./palette.js";
 import { useSigTheme } from "./use-sig-theme.js";
 import { createLocalStorageRepository } from "./workspace-repository.js";
 import type { WorkspaceRepository } from "./workspace-repository.js";
+import { ShortcutModal } from "./components/ShortcutModal.js";
 import { PatternStudioView } from "./components/PatternStudio.js";
 import { ThemeCustomizer } from "./components/ThemeCustomizer.js";
 import { CodexView } from "./components/CodexView.js";
@@ -444,60 +446,10 @@ function downloadJson(text: string, filename: string): void {
 }
 
 /**
- * ShortcutsDialog (2.9.0) — the palette's "Open Keyboard Shortcuts"
- * dialog: the modal conventions (the package's own
- * .sig-modal-backdrop scrim + .sig-modal-close button, reused — the
- * Pruning Protocol forbids growing a second anatomy) around a compact
- * local card. Escape and the backdrop close; focus starts on the card.
+ * ShortcutsDialog (2.9.0) — RETIRED in 3.6.0: the map grew into
+ * playground/components/ShortcutModal.tsx (the "?" key, the full
+ * shortcut table with kbd chips, the same scrim conventions).
  */
-function ShortcutsDialog({ onClose }: { onClose: () => void }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    cardRef.current?.focus();
-    const onKeyDown = (domEvent: KeyboardEvent): void => {
-      if (domEvent.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-  return createPortal(
-    <div className="sig-modal-backdrop" onClick={onClose}>
-      <div
-        ref={cardRef}
-        className="hub__shortcuts-card"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Keyboard shortcuts"
-        tabIndex={-1}
-        onClick={(domEvent) => domEvent.stopPropagation()}
-      >
-        <div className="hub__shortcuts-row">
-          <h2>Keyboard shortcuts</h2>
-          <button className="sig-modal-close" type="button" aria-label="Close" onClick={onClose}>
-            <Icon name="X" aria-hidden />
-          </button>
-        </div>
-        <div className="hub__shortcuts-row">
-          <kbd className="sig-action-tile__kbd">⌘K / Ctrl K</kbd>
-          <span>Open or close the command palette</span>
-        </div>
-        <div className="hub__shortcuts-row">
-          <kbd className="sig-action-tile__kbd">↑ ↓</kbd>
-          <span>Move through the filtered commands</span>
-        </div>
-        <div className="hub__shortcuts-row">
-          <kbd className="sig-action-tile__kbd">↵</kbd>
-          <span>Run the selected command</span>
-        </div>
-        <div className="hub__shortcuts-row">
-          <kbd className="sig-action-tile__kbd">esc</kbd>
-          <span>Close the palette, a dialog, or the event modal</span>
-        </div>
-      </div>
-    </div>,
-    document.body,
-  );
-}
 
 /**
  * The OWNER's source-data contract — the shape his records actually
@@ -870,6 +822,18 @@ function Shell() {
   const [studioSet, setStudioSet] = useState<SetId | "all">("all");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  // 3.6.0 — THE "?" KEY: the keyboard map opens from anywhere (the
+  // v2.9.0 typing-target guard applies — a "?" typed into an input is a
+  // character, not a command; the palette's own input included).
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== "?") return;
+      if (isTypingTarget(event.target)) return;
+      setShortcutsOpen((current) => !current);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
   const navigate = useCallback((href: string) => setView(HREF_TO_VIEW[href] ?? "dashboard"), []);
   // 2.9.1 THE SIM RUNNER REGISTRY — BentoCore registers its measuring
   // runner HERE (imperative by design: the refs live where the slots
@@ -1161,7 +1125,7 @@ function Shell() {
         onClose={() => setPaletteOpen(false)}
         onOpen={() => setPaletteOpen(true)}
       />
-      {shortcutsOpen && <ShortcutsDialog onClose={() => setShortcutsOpen(false)} />}
+      {shortcutsOpen && <ShortcutModal onClose={() => setShortcutsOpen(false)} />}
       {/* 2.9.0 — THE CONTAINER-QUERY PROOF FIXTURE (the release blocker's
           stage, off-screen but LAID OUT). The SAME MatchupCard, StatCard
           and ContentCard render inside a 280px .sig-cell and a 900px
