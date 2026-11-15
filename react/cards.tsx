@@ -144,6 +144,18 @@ export interface FlipCardProps {
  */
 export function FlipCard({ front, back, onFlip }: FlipCardProps) {
   const [flipped, setFlipped] = useState(false);
+  // THE INERT SWEEP (3.6.0): the HIDDEN face carries `inert` so Tab can
+  // never land on content inside a face that is not visible
+  // (backface-visibility hides it optically, not from the a11y tree).
+  // React 18 has no boolean `inert` prop (that API is React 19+) — the
+  // ref-effect workaround below is the documented equivalent; both faces
+  // swap in ONE commit so focus integrity never splits.
+  const frontFaceRef = useRef<HTMLSpanElement>(null);
+  const backFaceRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (frontFaceRef.current !== null) frontFaceRef.current.inert = flipped;
+    if (backFaceRef.current !== null) backFaceRef.current.inert = !flipped;
+  }, [flipped]);
   return (
     <button
       type="button"
@@ -156,11 +168,11 @@ export function FlipCard({ front, back, onFlip }: FlipCardProps) {
       }}
     >
       <span className="sig-flip-card__inner">
-        <span className="sig-flip-card__face sig-flip-card__front">
+        <span ref={frontFaceRef} className="sig-flip-card__face sig-flip-card__front">
           <span className="sig-flip-card__tag">FRONT</span>
           {front}
         </span>
-        <span className="sig-flip-card__face sig-flip-card__back">
+        <span ref={backFaceRef} className="sig-flip-card__face sig-flip-card__back">
           <span className="sig-flip-card__tag">BACK</span>
           {back}
         </span>
@@ -512,7 +524,13 @@ export function ReferenceCard({
         )}
       </div>
       <h3 className="sig-reference-card__title">{title}</h3>
-      <pre className="sig-reference-card__code">
+      <pre
+        className="sig-reference-card__code"
+        /* 3.6.0 a11y: the snippet well is a scrollable region — keyboard
+           access is REQUIRED (axe scrollable-region-focusable). */
+        tabIndex={0}
+        aria-label={`Code snippet: ${title}`}
+      >
         <code>{code}</code>
       </pre>
       <footer className="sig-reference-card__footer">

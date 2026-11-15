@@ -903,6 +903,10 @@ function SigWcStatRingPreview() {
         size={120}
         accent-token="--sig-cobalt"
         show-value="true"
+        /* 3.6.0 a11y: role=progressbar hosts REQUIRE an accessible name
+           (axe aria-progressbar-name) — the element renders it from the
+           `label` attribute. */
+        label="Interactive progress ring"
       ></sig-stat-ring>
       <Button size="sm" variant="secondary" onClick={crank}>
         setAttribute(&quot;value&quot;, &quot;{ringValue >= 85 ? 40 : 85}&quot;)

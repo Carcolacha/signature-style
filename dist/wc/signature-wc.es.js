@@ -381,7 +381,7 @@ class SigStatRing extends SigElement {
     this.adoptStyles(RING_CSS);
   }
   static get observedAttributes() {
-    return ["value", "total", "unit", "size", "accent-token", "show-value"];
+    return ["value", "total", "unit", "size", "accent-token", "show-value", "label"];
   }
   /** @returns The SVG dial: hairline boundary over track over arc + text. */
   buildAnatomy() {
@@ -438,6 +438,8 @@ class SigStatRing extends SigElement {
     this.setAttribute("aria-valuemin", "0");
     this.setAttribute("aria-valuemax", "100");
     this.setAttribute("aria-valuenow", String(Math.round(percent)));
+    const ringLabel = this.getAttribute("label");
+    if (ringLabel !== null) this.setAttribute("aria-label", ringLabel);
     return dial;
   }
 }
@@ -620,7 +622,7 @@ controls_fn = function(track) {
   prev.type = "button";
   prev.className = "ghost";
   prev.textContent = "‹ Prev";
-  prev.setAttribute("aria-label", "previous items");
+  prev.setAttribute("aria-label", "‹ Prev — previous items");
   prev.addEventListener("click", () => __privateMethod(this, _SigCarousel_instances, advance_fn).call(this, -1, track));
   const dots = document.createElement("div");
   dots.className = "dots";
@@ -638,7 +640,7 @@ controls_fn = function(track) {
   next.type = "button";
   next.className = "ghost";
   next.textContent = "Next ›";
-  next.setAttribute("aria-label", "next items");
+  next.setAttribute("aria-label", "Next › — next items");
   next.addEventListener("click", () => __privateMethod(this, _SigCarousel_instances, advance_fn).call(this, 1, track));
   const indicator = document.createElement("span");
   indicator.className = "indicator";

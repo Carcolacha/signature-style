@@ -18,5 +18,10 @@ export default defineConfig({
   server: {
     port: 5173,
     strictPort: true,
+    // 3.6.0 (ops): polling file watching — this repo lives on a WSL
+    // /mnt/c mount where inotify events never fire, so the dev server
+    // would serve stale modules after edits (HMR silently dead). Polling
+    // restores hot reload on drvfs; harmless on native filesystems.
+    watch: { usePolling: true, interval: 300 },
   },
 });

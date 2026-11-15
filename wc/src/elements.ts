@@ -404,7 +404,7 @@ ${REDUCED_MOTION}
  */
 export class SigStatRing extends SigElement {
   static get observedAttributes(): string[] {
-    return ["value", "total", "unit", "size", "accent-token", "show-value"];
+    return ["value", "total", "unit", "size", "accent-token", "show-value", "label"];
   }
 
   constructor() {
@@ -488,10 +488,15 @@ export class SigStatRing extends SigElement {
     dial.appendChild(svg);
 
     // The ARIA contract on the host: progressbar + valuenow.
+    // 3.6.0 a11y: a progressbar REQUIRES an accessible name (axe
+    // aria-progressbar-name) — the `label` attribute mirrors the
+    // SigProgressBar contract (label → aria-label on the host).
     this.setAttribute("role", "progressbar");
     this.setAttribute("aria-valuemin", "0");
     this.setAttribute("aria-valuemax", "100");
     this.setAttribute("aria-valuenow", String(Math.round(percent)));
+    const ringLabel = this.getAttribute("label");
+    if (ringLabel !== null) this.setAttribute("aria-label", ringLabel);
     return dial;
   }
 }
@@ -694,7 +699,9 @@ export class SigCarousel extends SigElement {
     prev.type = "button";
     prev.className = "ghost";
     prev.textContent = "‹ Prev";
-    prev.setAttribute("aria-label", "previous items");
+    // WCAG 2.5.3 (axe label-content-name-mismatch): the accessible name
+    // must CONTAIN the visible text — the description rides AFTER it.
+    prev.setAttribute("aria-label", "‹ Prev — previous items");
     prev.addEventListener("click", () => this.#advance(-1, track));
 
     const dots = document.createElement("div");
@@ -714,7 +721,8 @@ export class SigCarousel extends SigElement {
     next.type = "button";
     next.className = "ghost";
     next.textContent = "Next ›";
-    next.setAttribute("aria-label", "next items");
+    // WCAG 2.5.3: same contract as the Prev button — visible text first.
+    next.setAttribute("aria-label", "Next › — next items");
     next.addEventListener("click", () => this.#advance(1, track));
 
     const indicator = document.createElement("span");

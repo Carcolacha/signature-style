@@ -127,6 +127,16 @@
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
+  /* 3.6.0 — ZERO UA OUTLINE BLEED (scoped): the tile already rings with
+     the doctrine halo on keyboard focus (:focus-visible above); this
+     companion kills the UA default for mouse/programmatic focus on THIS
+     element only. TOKEN MAPPING NOTE: the owner spec wrote
+     "var(--sig-primary)" — no such token exists in the 50-token
+     whitelist; the doctrine ring ink is the structural Flamingo
+     --color-cake-primary (the same token every package control uses). */
+  .sig-action-tile:focus:not(:focus-visible) {
+    outline: none;
+  }
   .sig-action-tile__well {
     display: inline-flex;
     align-items: center;
@@ -529,6 +539,13 @@
     font-size: 0.8125rem;
     line-height: 1.5;
     color: var(--text-bright);
+  }
+  /* 3.6.0 a11y: the well is keyboard-focusable (scrollable-region
+     contract, tabIndex on the component) — it rings with the doctrine
+     halo like every other focus stop. */
+  .sig-reference-card__code:focus-visible {
+    outline: 2px solid var(--color-cake-primary);
+    outline-offset: 2px;
   }
   .sig-reference-card__code code {
     font-family: inherit;

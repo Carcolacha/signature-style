@@ -89,11 +89,25 @@ export function ActionTile({ title, subtitle, icon, kbdShortcut, onClick }) {
  */
 export function FlipCard({ front, back, onFlip }) {
     const [flipped, setFlipped] = useState(false);
+    // THE INERT SWEEP (3.6.0): the HIDDEN face carries `inert` so Tab can
+    // never land on content inside a face that is not visible
+    // (backface-visibility hides it optically, not from the a11y tree).
+    // React 18 has no boolean `inert` prop (that API is React 19+) — the
+    // ref-effect workaround below is the documented equivalent; both faces
+    // swap in ONE commit so focus integrity never splits.
+    const frontFaceRef = useRef(null);
+    const backFaceRef = useRef(null);
+    useEffect(() => {
+        if (frontFaceRef.current !== null)
+            frontFaceRef.current.inert = flipped;
+        if (backFaceRef.current !== null)
+            backFaceRef.current.inert = !flipped;
+    }, [flipped]);
     return (_jsx("button", { type: "button", className: "sig-flip-card", "aria-pressed": flipped, onClick: () => {
             const next = !flipped;
             setFlipped(next);
             onFlip?.(next);
-        }, children: _jsxs("span", { className: "sig-flip-card__inner", children: [_jsxs("span", { className: "sig-flip-card__face sig-flip-card__front", children: [_jsx("span", { className: "sig-flip-card__tag", children: "FRONT" }), front] }), _jsxs("span", { className: "sig-flip-card__face sig-flip-card__back", children: [_jsx("span", { className: "sig-flip-card__tag", children: "BACK" }), back] })] }) }));
+        }, children: _jsxs("span", { className: "sig-flip-card__inner", children: [_jsxs("span", { ref: frontFaceRef, className: "sig-flip-card__face sig-flip-card__front", children: [_jsx("span", { className: "sig-flip-card__tag", children: "FRONT" }), front] }), _jsxs("span", { ref: backFaceRef, className: "sig-flip-card__face sig-flip-card__back", children: [_jsx("span", { className: "sig-flip-card__tag", children: "BACK" }), back] })] }) }));
 }
 /**
  * `<AccordionCard>` — the zero-JS accordion (2.5.0).
@@ -241,7 +255,10 @@ export function ReferenceCard({ tag, title, code, accentToken, link, onCopied, c
     const classes = className !== undefined
         ? `sig-reference-card ${className}`
         : "sig-reference-card";
-    return (_jsxs("section", { className: classes, ...accentProps(accentToken), children: [_jsxs("div", { className: "sig-reference-card__top", children: [_jsx("span", { className: "sig-reference-card__tag", children: tag }), link !== undefined && (_jsx("a", { className: "sig-reference-card__link", href: link, target: "_blank", rel: "noreferrer", "aria-label": `Open reference: ${title}`, children: _jsx(Icon, { name: "ArrowUpRight", "aria-hidden": true }) }))] }), _jsx("h3", { className: "sig-reference-card__title", children: title }), _jsx("pre", { className: "sig-reference-card__code", children: _jsx("code", { children: code }) }), _jsxs("footer", { className: "sig-reference-card__footer", children: [_jsx(Button, { variant: "ghost", size: "sm", leftIcon: "Copy", onClick: copy, children: copied ? "Copied!" : "Copy Snippet" }), link !== undefined && (_jsx("a", { className: "sig-reference-card__anchor", href: link, children: "Reference \u2197" }))] })] }));
+    return (_jsxs("section", { className: classes, ...accentProps(accentToken), children: [_jsxs("div", { className: "sig-reference-card__top", children: [_jsx("span", { className: "sig-reference-card__tag", children: tag }), link !== undefined && (_jsx("a", { className: "sig-reference-card__link", href: link, target: "_blank", rel: "noreferrer", "aria-label": `Open reference: ${title}`, children: _jsx(Icon, { name: "ArrowUpRight", "aria-hidden": true }) }))] }), _jsx("h3", { className: "sig-reference-card__title", children: title }), _jsx("pre", { className: "sig-reference-card__code", 
+                /* 3.6.0 a11y: the snippet well is a scrollable region — keyboard
+                   access is REQUIRED (axe scrollable-region-focusable). */
+                tabIndex: 0, "aria-label": `Code snippet: ${title}`, children: _jsx("code", { children: code }) }), _jsxs("footer", { className: "sig-reference-card__footer", children: [_jsx(Button, { variant: "ghost", size: "sm", leftIcon: "Copy", onClick: copy, children: copied ? "Copied!" : "Copy Snippet" }), link !== undefined && (_jsx("a", { className: "sig-reference-card__anchor", href: link, children: "Reference \u2197" }))] })] }));
 }
 /**
  * `<TierCard>` — the pricing tier (2.6.0).

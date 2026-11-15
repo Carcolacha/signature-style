@@ -1120,7 +1120,20 @@ function Shell() {
           genuinely differ (matchup grid-template-columns, stat-card
           display, content-card column count). aria-hidden: it is a
           measuring instrument, not content. */}
-      <div className="hub__cq-probe" aria-hidden="true" data-testid="cq-probe">
+      <div
+        className="hub__cq-probe"
+        aria-hidden="true"
+        data-testid="cq-probe"
+        /* 3.6.0 a11y: aria-hidden alone still left the probe's inner
+           buttons/dots focusable (axe aria-hidden-focus, serious). The
+           ref sets `inert` (React 18 has no inert prop — React 19
+           would take inert={true}) so the fixture leaves BOTH the
+           a11y tree AND the tab order. Inert does not affect layout —
+           the container-query measurements are untouched. */
+        ref={(el) => {
+          if (el !== null) el.inert = true;
+        }}
+      >
         <div className="hub__cq-narrow sig-cell">
           <MatchupCard
             left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}

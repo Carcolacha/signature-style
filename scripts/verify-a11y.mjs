@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * verify-a11y.mjs — THE ACCESSIBILITY CERTIFICATION (3.5.0).
+ * verify-a11y.mjs — THE ACCESSIBILITY CERTIFICATION (3.5.0; grown 3.6.0
+ * "Zero-Defect A11y": axe zero critical/serious/moderate + the inert
+ * sweep + the two-tier contrast adjudication).
  *
- * Playwright keyboard audit across the 5 real views at 1440×900:
+ * Playwright keyboard audit across the real views at 1440×900:
  *
  *   (a11y1) TAB ORDER — press Tab (≤ 60 stops per view), collect the
  *           focused element sequence and assert:
@@ -18,17 +20,18 @@
  *           (c) THE FOCUS HALO — every stop shows a visible ring:
  *               computed outline-width ≥ 2px on the focused element OR
  *               (the :has() composition case, e.g. .sig-radio-card) on
- *               an ancestor within 3 levels. EXCEPTION (enumerated, the
- *               e1-allowlist precedent): .hub__card--gateway (the
- *               master-index gateway buttons) still show the UA-default
- *               1px ring — a REAL finding, css/ is frozen this release,
- *               owner-deferred; the gate pins the exception to this ONE
- *               class so a regression elsewhere still fails.
+ *               an ancestor within 3 levels. 3.6.0: the v3.5.0
+ *               .hub__card--gateway exception is RETIRED — the gateway
+ *               doors wear the doctrine halo
+ *               (:focus-visible → 2px var(--color-cake-primary), see
+ *               playground/styles.css) and the exception table is EMPTY;
+ *               a dedicated probe asserts the gateway ring resolves.
  *   (a11y2) HALO INK — strict var(--color-cake-primary) assertion scoped
  *           to the elements whose css DECLARES the doctrine ring
- *           (.sig-btn buttons, nav links, inputs) — those must resolve
- *           outline-color to the token's rgb at 2px; every other halo is
- *           CENSUSED (UA-default rings reported, not failed).
+ *           (.sig-btn buttons, nav links, inputs, the gateway doors) —
+ *           those must resolve outline-color to the token's rgb at 2px;
+ *           every other halo is CENSUSED (UA-default rings reported, not
+ *           failed).
  *   (a11y3) LIVE REGIONS — the toast region exists with
  *           role="status" + aria-live="polite"; firing a toast via the
  *           dashboard's btn-toast hook UPDATES the live region's text;
@@ -37,20 +40,40 @@
  *           aria-selected (the module switcher), a radiogroup (the
  *           attendance RadioCardGroup).
  *   (a11y4) AXE — axe-core (bundled devDependency, injected into the
- *           page — offline-safe, no CDN) runs on the dashboard; ZERO
- *           critical violations may exist; serious/moderate findings are
- *           REPORTED (note: axe's color-contrast runs the 4.5:1 AA bar —
- *           the package doctrine pins 3.0/3.1 for the token inks; the
- *           runtime bar lives in the audit_contrast MCP tool).
+ *           page — offline-safe, no CDN) runs on EVERY view.
+ *           3.6.0: ZERO critical + serious + moderate violations
+ *           (was: zero critical, serious/moderate reported). THE
+ *           TWO-TIER ADJUDICATION: axe's color-contrast rule applies the
+ *           4.5:1 AA body-text bar to every text node — but the engine's
+ *           token VALUES are byte-frozen (the v0.3.0 structural freeze)
+ *           and the owner's two-tier contrast policy (tokens.json
+ *           doctrine.contrastTiers) classifies the sub-4.5 metadata inks
+ *           (--text-muted 3.40:1, lavender 3.95:1, peach 4.21:1 on
+ *           surface) as DISPLAY/METADATA tier — "≥ 3.0:1; never body
+ *           copy at body-size emphasis". The gate therefore ADJUDICATES
+ *           color-contrast findings instead of swallowing them: every
+ *           flagged fg/bg pair is recomputed with the shared WCAG math
+ *           and must clear the 3.0:1 display floor — any pair below it
+ *           FAILS the gate (a real regression cannot hide). All
+ *           non-color-contrast critical/serious/moderate findings fail
+ *           outright.
+ *   (a11y5) THE INERT SWEEP (3.6.0) — hidden content is INERT, not
+ *           merely invisible: the cq-probe fixture (aria-hidden) must be
+ *           inert; the FlipCard's hidden face must be inert (back when
+ *           unflipped, front when flipped); the AccordionCard asserts
+ *           the NATIVE contract (a closed <details> already removes its
+ *           body from the a11y tree — asserted, not re-implemented); the
+ *           mobile drawer unmounts when closed (asserted statically in
+ *           playground/verify-playground (nav gates)).
  *
  * Requires the dev server on http://localhost:5173 (`npm run playground`).
- * Exit 0 = ALL PASS; exit 1 = any (a11y1)-(a11y3) failure or any critical
- * axe violation.
+ * Exit 0 = ALL PASS; exit 1 = any (a11y1)-(a11y5) failure.
  */
 import { chromium } from "playwright";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { contrastRatio } from "../playground/sig-contrast.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -59,7 +82,7 @@ const MAX_STOPS = 60;
 const WIDTH = 1440;
 const HEIGHT = 900;
 
-/** The 5 certified views (same census as verify-visual-diff). */
+/** The certified views (same census as verify-visual-diff). */
 const VIEWS = [
   { name: "dashboard", hash: "" },
   { name: "pattern-studio", hash: "#/studio" },
@@ -69,13 +92,22 @@ const VIEWS = [
 ];
 
 /**
- * The enumerated halo exception (the e1-allowlist precedent): classes
- * allowed to show a sub-2px ring this release, each with its reason.
- * css/ is FROZEN in 3.5.0 — fixing these needs an owner release.
+ * THE TWO-TIER DISPLAY FLOOR (3.6.0) — the adjudication bar for axe's
+ * color-contrast findings. The policy: tokens measuring ≥3.0 but <4.5
+ * are declared DISPLAY/METADATA tier (tokens.json
+ * doctrine.contrastTiers) — never body copy at body-size emphasis; the
+ * 4.5 body bar is enforced per token by verify:contrast's tier gate
+ * (ct8). ANY flagged pair below 3.0 here is a real failure.
  */
-const HALO_EXCEPTIONS = new Map([
-  [".hub__card--gateway", "master-index gateway buttons render the UA-default 1px ring (no focus-visible rule targets bare interactive SurfaceCards in the frozen css) — owner-deferred follow-up"],
-]);
+const DISPLAY_FLOOR = 3.0;
+
+/**
+ * The halo exception table — EMPTY since 3.6.0 (the gateway doors wear
+ * the doctrine halo; see playground/styles.css). The mechanism stays:
+ * an exception added here must document its reason, and the (a11y1)
+ * census reports exception hits per view so regressions stay visible.
+ */
+const HALO_EXCEPTIONS = new Map([]);
 
 const failures = [];
 const axeFindings = [];
@@ -141,7 +173,7 @@ function stopProbe() {
     ancestorHalo: ancestorHalo(el),
     docIndex: docIndexOf(el),
     // The doctrine ring is DECLARED for these (the strict ink sample).
-    doctrineRing: el.matches(".sig-btn, .sig-nav__link, .sig-nav__menu-btn, input, textarea, select"),
+    doctrineRing: el.matches(".sig-btn, .sig-nav__link, .sig-nav__menu-btn, .hub__card--gateway, input, textarea, select"),
     scrollable: !isInteractive(el) ? false : ["a", "button", "input", "select", "textarea", "summary"].includes(el.tagName.toLowerCase()) || el.getAttribute("tabindex") !== null ? false : true,
     cls,
   };
@@ -299,47 +331,153 @@ try {
     const inkCensus = {};
     for (const s of haloStops) inkCensus[s.outlineColor] = (inkCensus[s.outlineColor] ?? 0) + 1;
 
-    console.log(`${view.name.padEnd(15)} stops=${contentStops.length}  interactive=${contentStops.length - nonInteractive.length}  halos=${haloStops.length}/${contentStops.length}  ink={${Object.entries(inkCensus).map(([c, n]) => `${c.split(" ").slice(0, 2).join(" ")}×${n}`).join(", ")}}  wraps=${wraps}  exceptions=${exceptionHits.length} (.hub__card--gateway)`);
+    console.log(`${view.name.padEnd(15)} stops=${contentStops.length}  interactive=${contentStops.length - nonInteractive.length}  halos=${haloStops.length}/${contentStops.length}  ink={${Object.entries(inkCensus).map(([c, n]) => `${c.split(" ").slice(0, 2).join(" ")}×${n}`).join(", ")}}  wraps=${wraps}  exceptions=${exceptionHits.length}${exceptionHits.length > 0 ? ` (${[...HALO_EXCEPTIONS.keys()].join(", ")})` : ""}`);
     await page.close();
   }
 
-  // ---- (a11y4) AXE — the dashboard, injected from the bundled devDep -------
+  // ---- (a11y1c) THE GATEWAY HALO PROBE — the retired exception's tombstone:
+  // the master-index gateway doors must resolve the DOCTRINE ring on
+  // keyboard focus (2px var(--color-cake-primary)), never the UA default.
+  {
+    const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
+    await page.goto(`${URL_BASE}/#/index`, { waitUntil: "networkidle", timeout: 30000 });
+    await page.waitForTimeout(600);
+    const resolvedCake = await cakePrimaryRgb(page);
+    const gatewayHalo = await page.evaluate(() => {
+      const door = document.querySelector('[data-testid="index-gateways"] .hub__card--gateway');
+      if (door === null) return null;
+      door.focus();
+      const st = getComputedStyle(door);
+      return { width: st.outlineWidth, color: st.outlineColor };
+    });
+    if (gatewayHalo === null) {
+      failures.push("(a11y1c) no .hub__card--gateway door found on the master index — the halo probe has no target");
+    } else if (!(parseFloat(gatewayHalo.width) >= 2 && gatewayHalo.color === resolvedCake)) {
+      failures.push(`(a11y1c) the gateway door halo regressed to the UA default — got ${gatewayHalo.width} ${gatewayHalo.color}, expected 2px ${resolvedCake} (the 3.6.0 doctrine rule in playground/styles.css is missing or overridden)`);
+    } else {
+      console.log(`gateway halo probe: ${gatewayHalo.width} ${gatewayHalo.color} — the v3.5.0 exception stays retired`);
+    }
+    await page.close();
+  }
+
+  // ---- (a11y4) AXE — EVERY view, tier-adjudicated --------------------------
   {
     const axeSource = readFileSync(resolve(root, "node_modules", "axe-core", "axe.min.js"), "utf8");
+    for (const view of VIEWS) {
+      const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
+      await page.goto(`${URL_BASE}/${view.hash}`, { waitUntil: "networkidle", timeout: 30000 });
+      await page.waitForTimeout(600);
+      await page.addScriptTag({ content: axeSource });
+      const axeResult = await page.evaluate(async () => {
+        const axe = window.axe;
+        return await axe.run(document, {
+          runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] },
+        });
+      });
+      for (const violation of axeResult.violations) {
+        axeFindings.push({
+          view: view.name,
+          impact: violation.impact,
+          id: violation.id,
+          help: violation.help,
+          nodes: violation.nodes.length,
+        });
+        if (violation.id === "color-contrast") {
+          // THE TWO-TIER ADJUDICATION: axe applies the 4.5 AA body bar;
+          // the frozen-token policy declares sub-4.5 metadata inks
+          // display-tier. Every flagged pair must still clear 3.0.
+          const belowFloor = [];
+          for (const node of violation.nodes) {
+            const summary = node.failureSummary ?? "";
+            for (const match of summary.matchAll(/foreground color: (#[0-9a-f]+), background color: (#[0-9a-f]+)/gi)) {
+              const ratio = contrastRatio(match[1], match[2]);
+              if (ratio < DISPLAY_FLOOR) {
+                belowFloor.push(`${match[1]} on ${match[2]} = ${ratio.toFixed(2)}:1 (${node.target.join(" ")})`);
+              }
+            }
+          }
+          if (belowFloor.length > 0) {
+            failures.push(`(a11y4/${view.name}) AXE color-contrast BELOW the 3.0 display floor: ${belowFloor.slice(0, 4).join("; ")}`);
+          } else {
+            console.log(`axe color-contrast adjudication (${view.name}): every flagged pair clears the ${DISPLAY_FLOOR}:1 display floor — the two-tier policy (tokens.json doctrine.contrastTiers) owns the 4.5 body bar (verify:contrast ct8)`);
+          }
+          continue;
+        }
+        if (["critical", "serious", "moderate"].includes(violation.impact ?? "")) {
+          failures.push(`(a11y4/${view.name}) AXE ${violation.impact?.toUpperCase()}: ${violation.id} — ${violation.help} (${violation.nodes.length} node(s))`);
+        }
+      }
+      await page.close();
+    }
+  }
+
+  // ---- (a11y5) THE INERT SWEEP — hidden means inert -------------------------
+  {
     const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
     await page.goto(URL_BASE + "/", { waitUntil: "networkidle", timeout: 30000 });
-    await page.addScriptTag({ content: axeSource });
-    const axeResult = await page.evaluate(async () => {
-      const axe = window.axe;
-      return await axe.run(document, {
-        runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"] },
-      });
+    await page.waitForTimeout(600);
+    const inertCensus = await page.evaluate(() => {
+      const probe = document.querySelector('[data-testid="cq-probe"]');
+      const flip = document.querySelector(".sig-flip-card");
+      const flipBack = flip?.querySelector(".sig-flip-card__back") ?? null;
+      const flipFront = flip?.querySelector(".sig-flip-card__front") ?? null;
+      const accordion = document.querySelector("details.sig-accordion");
+      // Flip the card open — the read happens AFTER a settle tick (the
+      // click commits through React state → effect, so the probe must
+      // yield before asserting the swap).
+      if (flip !== null) flip.click();
+      return {
+        probeInert: probe?.inert ?? null,
+        flipFound: flip !== null,
+        frontRest: flipFront?.inert ?? null,
+        backRest: flipBack?.inert ?? null,
+        accordionIsDetails: accordion instanceof HTMLDetailsElement,
+        accordionClosedByDefault: accordion?.open === false,
+        accordionBody: accordion?.querySelector(".sig-accordion__body") !== null,
+      };
     });
-    const critical = axeResult.violations.filter((v) => v.impact === "critical");
-    for (const violation of axeResult.violations) {
-      axeFindings.push({
-        impact: violation.impact,
-        id: violation.id,
-        help: violation.help,
-        nodes: violation.nodes.length,
+    // The settled post-flip read (one React commit later), then restore.
+    let afterFlip = null;
+    if (inertCensus.flipFound) {
+      await page.waitForTimeout(100);
+      afterFlip = await page.evaluate(() => {
+        const flip = document.querySelector(".sig-flip-card");
+        const read = {
+          front: flip?.querySelector(".sig-flip-card__front")?.inert ?? null,
+          back: flip?.querySelector(".sig-flip-card__back")?.inert ?? null,
+        };
+        flip?.click(); // restore
+        return read;
       });
+      await page.waitForTimeout(100);
     }
-    if (critical.length > 0) {
-      for (const violation of critical) {
-        failures.push(`(a11y4) AXE CRITICAL: ${violation.id} — ${violation.help} (${violation.nodes.length} nodes)`);
-      }
+    if (inertCensus.probeInert !== true) {
+      failures.push(`(a11y5) the cq-probe fixture is not inert (${inertCensus.probeInert}) — its focusable buttons/dots stay in the tab order behind aria-hidden (axe aria-hidden-focus)`);
     }
+    if (inertCensus.backRest !== true || inertCensus.frontRest !== false) {
+      failures.push(`(a11y5) the FlipCard's hidden face is not inert at rest (front=${String(inertCensus.frontRest)}, back=${String(inertCensus.backRest)}) — Tab would land inside the invisible face`);
+    }
+    if (afterFlip === null || afterFlip.front !== true || afterFlip.back !== false) {
+      failures.push(`(a11y5) the FlipCard's inert sweep does not swap on flip (${JSON.stringify(afterFlip)}) — the visible face must become inert-proof the other way round`);
+    }
+    // THE NATIVE DETAILS CONTRACT (asserted, not re-implemented): a
+    // closed <details> already removes its body from the a11y tree and
+    // the tab order — the browser owns disclosure semantics.
+    if (!inertCensus.accordionIsDetails || !inertCensus.accordionClosedByDefault || !inertCensus.accordionBody) {
+      failures.push(`(a11y5) the AccordionCard native contract regressed (isDetails=${inertCensus.accordionIsDetails}, closed=${inertCensus.accordionClosedByDefault}, hasBody=${inertCensus.accordionBody})`);
+    }
+    console.log(`inert sweep: probe=${inertCensus.probeInert} · flip rest front=${inertCensus.frontRest}/back=${inertCensus.backRest} · flipped front=${afterFlip?.front}/back=${afterFlip?.back} · accordion native details closed-by-default ✓`);
     await page.close();
   }
 
   console.log("");
   if (axeFindings.length > 0) {
-    console.log("AXE FINDINGS (wcag2a/2aa scan, dashboard — color-contrast runs axe's 4.5:1 AA bar; the package doctrine pins 3.0/3.1, enforced at runtime by the audit_contrast MCP tool):");
+    console.log("AXE FINDINGS (wcag2a/2aa/21a/21aa, ALL views — color-contrast adjudicated by the two-tier policy; every non-contrast critical/serious/moderate FAILS):");
     for (const finding of axeFindings) {
-      console.log(`  [${finding.impact ?? "min impact"}] ${finding.id}: ${finding.help} — ${finding.nodes} node(s)`);
+      console.log(`  [${finding.view}] [${finding.impact ?? "min impact"}] ${finding.id}: ${finding.help} — ${finding.nodes} node(s)`);
     }
   } else {
-    console.log("AXE FINDINGS: zero violations (wcag2a/2aa/21a/21aa scan, dashboard)");
+    console.log("AXE FINDINGS: zero violations (wcag2a/2aa/21a/21aa scan, all views)");
   }
 
   console.log("");
@@ -348,7 +486,7 @@ try {
     for (const failure of failures) console.error(`  - ${failure}`);
     process.exit(1);
   }
-  console.log(`PASS — a11y certification: tab order (≤ ${MAX_STOPS} stops × ${VIEWS.length} views, no traps, DOM order, clean wrap), focus halos ≥2px (enumerated exception: .hub__card--gateway, owner-deferred), doctrine-ring ink = var(--color-cake-primary), live region fires, role census (progressbar/tablist/radiogroup), axe zero-critical`);
+  console.log(`PASS — a11y certification: tab order (≤ ${MAX_STOPS} stops × ${VIEWS.length} views, no traps, DOM order, clean wrap), focus halos ≥2px (exception table EMPTY — the gateway halo probe pins the 3.6.0 doctrine rule), doctrine-ring ink = var(--color-cake-primary), live region fires, role census (progressbar/tablist/radiogroup), axe zero critical/serious/moderate on ALL views (color-contrast adjudicated at the 3.0 display floor), inert sweep (probe + FlipCard faces + native details)`);
 } finally {
   await browser.close();
 }

@@ -370,11 +370,15 @@
   font-weight: 500;
 }
 
-/* Settled rows fade and strike through — the work is done. */
-.sig-tmanager__row--settled .sig-tmanager__body {
-  opacity: 0.6;
-}
+/* Settled rows: the TITLE fades (effective ink ≥3:1 — text-main at 60%
+   over the inset still clears the display floor) and strikes through —
+   the work is done. 3.6.0 a11y: the dim used to ride the WHOLE body
+   (opacity 0.6), which dragged the muted meta + the green done chip
+   below the 3:1 display floor (muted × 0.6 measured 2.29:1 — an axe
+   color-contrast serious). The dim is scoped to the title; the meta and
+   the done chip read at full ink (muted 3.85:1, green ~7:1 on inset). */
 .sig-tmanager__row--settled .sig-tmanager__title {
+  opacity: 0.6;
   text-decoration: line-through;
 }
 

@@ -96,7 +96,10 @@ function CopyCard({
       variant="secondary"
       leftIcon={copied ? "Check" : "Copy"}
       onClick={handleCopy}
-      aria-label={`Copy the ${componentName} snippet`}
+      /* WCAG 2.5.3 (axe label-content-name-mismatch): the accessible
+         name must CONTAIN the visible text ("Copy Card" / "Copied!"),
+         so the label is state-derivative — one source, both states. */
+      aria-label={copied ? `Copied! — the ${componentName} snippet` : `Copy Card — the ${componentName} snippet`}
       data-testid="pf-copy"
     >
       {copied ? "Copied!" : "Copy Card"}

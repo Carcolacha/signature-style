@@ -413,6 +413,27 @@
   color: var(--text-main);
 }
 
+/* 3.6.0 — THE GATEWAY FOCUS DOCTRINE (closes the v3.5.0 axe finding that
+   the a11y gate pinned as HALO_EXCEPTIONS). The gateway doors are bare
+   interactive <button>s wearing the package's surface classes — no
+   :focus-visible rule targeted them, so keyboard focus fell back to the
+   UA-default 1px ring. The doctrine halo, exactly as every package
+   control draws it (css/primitives.css, css/nav.css, css/cards.css):
+   2px var(--color-cake-primary) + 2px offset. NOTE THE TOKEN MAPPING:
+   the owner spec wrote "var(--sig-primary)" — no such token exists in
+   the 50-token whitelist; the doctrine ring ink is the STRUCTURAL
+   Flamingo --color-cake-primary (the same token css/nav.css:91 and
+   css/cascade.css:148 already ring with). Zero UA bleed: the
+   :focus:not(:focus-visible) companion below kills the outline for
+   mouse/programmatic focus on THIS element only — never a global kill. */
+.hub__card--gateway:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+.hub__card--gateway:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .hub__gateway-desc {
   margin: 0;
   color: var(--text-muted);
