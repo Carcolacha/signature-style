@@ -87,6 +87,21 @@ const TOKEN_KEYS = [
     "--sig-azure",
     "--sig-tangerine",
     "--sig-neon-green",
+    /* 3.7.0 KINETIC MOTION TOKENS — the four native linear() spring curves
+       (cubic-bezier fallbacks declared in the tokens.css @supports block),
+       the four scale-derived durations and the --sig-motion-scale
+       time-dilation master. Whitelist 51 → 60; the manifest mirrors them
+       in tokens.json motionTokens (gate mo1). Motion is theme-independent —
+       defined once in :root like the other shared tokens. */
+    "--ease-spring-snappy",
+    "--ease-spring-gentle",
+    "--ease-kinetic-out",
+    "--ease-glide",
+    "--dur-spring-snappy",
+    "--dur-spring-gentle",
+    "--dur-kinetic-out",
+    "--dur-glide",
+    "--sig-motion-scale",
 ];
 /** Canonical layer order — must be the first style in the document (VULN-2). */
 const LAYER_ORDER = "@layer tokens, base, cascade, overrides;";

@@ -179,6 +179,39 @@
     --sig-azure: #228AF2;
     --sig-tangerine: #F25622;
     --sig-neon-green: #56F222;
+
+    /* -- MOTION TOKENS (3.7.0 "The Intelligent Kinetic Engine") -------------
+        Theme-independent kinetic constants, defined once in :root next to
+        the other shared tokens. The curves are NATIVE CSS linear() easing
+        functions (Chrome 113+ / Safari 17.2 / Firefox 112+ — no external
+        animation library, the zero-dependency doctrine holds): a linear()
+        IS the sampled spring, stop-listed by hand, so the damped
+        overshoot (>1.0) and the settle are exact, not approximated.
+
+        The four durations ride ONE master dial — --sig-motion-scale — so
+        a consumer (or the Motion Lab's Slow-Mo) can dilate EVERY spring
+        on the page with a single custom property: calc(scale × 320ms).
+        Scale 0.25 = slow-motion; the springs visibly overshoot.
+
+        REDUCED-MOTION MERCY: under @media (prefers-reduced-motion:
+        reduce) AND under the [data-sig-motion="reduced"] root override
+        (see the block after the geometry presets), all four durations
+        collapse to 1ms — transitions become effectively instant. The
+        overrides live BELOW :root so they win the cascade at equal
+        specificity (later declaration wins).
+
+        Whitelist: 51 → 60 (the 9 kinetic tokens join
+        react/ThemeProvider TOKEN_KEYS; gate (d) parity + the new (mo1)
+        manifest gate). ---------------------------------------------------- */
+    --ease-spring-snappy: linear(0, 0.44 6.4%, 0.83 12.9%, 1.02 18.6%, 1.08 24.2%, 1.09 28.9%, 1.05 34.9%, 0.98 42.4%, 0.97 48.5%, 1.01 58.6%, 1 69.1%, 1); /* damped fast spring — detents, toggles, ring arcs */
+    --ease-spring-gentle: linear(0, 0.36 8.9%, 0.68 17.9%, 0.9 26.1%, 1.01 34.9%, 1.06 44.4%, 1.05 55.4%, 0.99 69.1%, 1); /* smooth harmonic — larger surfaces, number rolls */
+    --ease-kinetic-out: linear(0, 0.61 10.8%, 0.91 22.7%, 1.02 34.3%, 1.05 45.5%, 1.01 61.4%, 1); /* high-velocity deceleration — chart sweeps */
+    --ease-glide: linear(0, 0.63 14.5%, 0.95 30.2%, 1.02 42.5%, 0.99 57.1%, 1); /* sliding indicators — FLIP underline, page glides */
+    --dur-spring-snappy: calc(var(--sig-motion-scale, 1) * 320ms);
+    --dur-spring-gentle: calc(var(--sig-motion-scale, 1) * 480ms);
+    --dur-kinetic-out: calc(var(--sig-motion-scale, 1) * 380ms);
+    --dur-glide: calc(var(--sig-motion-scale, 1) * 280ms);
+    --sig-motion-scale: 1; /* the time-dilation master — Slow-Mo sets 0.25 */
   }
 
   /* -- the white version: 100% official Catppuccin Latte --------------------- */
@@ -304,5 +337,52 @@
   [data-sig-radius="sharp"] {
     --radius-ui: 0px;
     --radius-card: 0px;
+  }
+
+  /* -- MOTION FALLBACK (3.7.0) — linear() is Chrome 113+ / Safari 17.2 /
+     Firefox 112+. Where linear() is unsupported, the four spring curves
+     re-declare as cubic-bezier approximations (same names, same slots —
+     the cascade replaces, nothing else changes):
+       spring-snappy → cubic-bezier(0.34, 1.56, 0.64, 1)  (the classic
+                         overshooting "back-out" spring)
+       spring-gentle → cubic-bezier(0.25, 1.25, 0.45, 1)  (a softer
+                         harmonic overshoot)
+       kinetic-out   → cubic-bezier(0.16, 1, 0.3, 1)      (the expo-out
+                         deceleration)
+       glide         → cubic-bezier(0.4, 0, 0.2, 1)       (material
+                         standard — smooth, no overshoot)
+     The approximations lose the multi-bounce settle of linear() but
+     keep the overshoot character and the velocity profile; the
+     durations and the motion-scale dial are unaffected. */
+  @supports not (transition-timing-function: linear(0, 1)) {
+    :root {
+      --ease-spring-snappy: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-spring-gentle: cubic-bezier(0.25, 1.25, 0.45, 1);
+      --ease-kinetic-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-glide: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  /* -- MOTION MERCY (3.7.0) — reduced motion collapses the springs -------
+     Two triggers, same effect: the OS-level @media prefers-reduced-motion
+     and the [data-sig-motion="reduced"] root override (a PREVIEW switch
+     any consumer can flip at any scope — custom properties inherit, so a
+     reduced node dilates its whole subtree). Durations fall to 1ms:
+     transitions become effectively instant, the MotionReveal entrances
+     land immediately, the FLIP indicator jumps without gliding. The
+     curves themselves are irrelevant at 1ms and stay untouched. */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --dur-spring-snappy: 1ms;
+      --dur-spring-gentle: 1ms;
+      --dur-kinetic-out: 1ms;
+      --dur-glide: 1ms;
+    }
+  }
+  [data-sig-motion="reduced"] {
+    --dur-spring-snappy: 1ms;
+    --dur-spring-gentle: 1ms;
+    --dur-kinetic-out: 1ms;
+    --dur-glide: 1ms;
   }
 }
