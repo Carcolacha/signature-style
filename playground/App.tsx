@@ -939,12 +939,28 @@ function Shell() {
     })),
     {
       id: "export-workspace",
-      label: "Export Workspace JSON",
-      keywords: "snapshot download save backup budget workspace json export",
+      label: "Export signature-workspace.json",
+      keywords: "snapshot download save backup budget workspace json export links graph timeline",
       icon: "Download",
       run: () => {
         downloadJson(buildStoredWorkspaceSnapshot(), "signature-workspace.json");
-        toast("success", "Workspace snapshot exported — signature-workspace.json.");
+        toast("success", "Workspace snapshot exported — signature-workspace.json (graph + timeline + links).");
+      },
+    },
+    {
+      id: "toggle-latency",
+      label: "Toggle 600ms latency",
+      keywords: "latency async slow network simulate repository skeleton workspace",
+      icon: "Timer",
+      hint: latencySim ? "on" : "dev",
+      run: () => {
+        setLatencySim((current) => !current);
+        toast(
+          "success",
+          latencySim
+            ? "Latency simulation off — workspace saves are instant again."
+            : "Latency simulation on — workspace saves now take 600ms (watch the skeletons).",
+        );
       },
     },
     {
@@ -1031,7 +1047,7 @@ function Shell() {
       icon: "Copy",
       run: copyThemeCss,
     },
-  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim, sig, downloadThemeCss, copyThemeCss]);
+  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim, sig, downloadThemeCss, copyThemeCss, latencySim]);
 
   return (
     <>

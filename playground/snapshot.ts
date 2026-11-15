@@ -29,6 +29,8 @@ export interface WorkspaceSnapshot {
   version: string;
   graph: GraphNode[];
   timeline: TimelineItem[];
+  /** 3.6.0 — the explicit links (the GraphEdge shape), optional for older payloads. */
+  links?: Array<{ id: string; fromId: string; toId: string }>;
 }
 
 /**
@@ -38,23 +40,31 @@ export interface WorkspaceSnapshot {
 export function buildWorkspaceSnapshot(
   graph: GraphNode[],
   timeline: TimelineItem[],
+  links: Array<{ id: string; fromId: string; toId: string }> = [],
 ): string {
   const payload: WorkspaceSnapshot = {
     version: WORKSPACE_SNAPSHOT_VERSION,
     graph,
     timeline,
+    ...(links.length > 0 ? { links } : {}),
   };
   return JSON.stringify(payload, null, 2);
 }
 
 /**
  * Read the PERSISTED workspace mirror out of localStorage (the command
- * path — the palette lives outside the Graphs & Planner module, so it
- * reads the mirror that usePersistentState keeps current). Corrupt or
- * missing keys fall back to empty arrays; an export of an empty
- * workspace is an honest export.
+ * path — the palette lives outside the Graph Studio view, so it reads
+ * the mirror that usePersistentState keeps current). Corrupt or missing
+ * keys fall back to empty arrays; an export of an empty workspace is an
+ * honest export. 3.6.0: the links array joins the payload (normalized
+ * to the GraphEdge { id, fromId, toId } shape — legacy { from, to }
+ * entries migrate through a synthetic id).
  */
-export function readStoredWorkspace(): { graph: GraphNode[]; timeline: TimelineItem[] } {
+export function readStoredWorkspace(): {
+  graph: GraphNode[];
+  timeline: TimelineItem[];
+  links: Array<{ id: string; fromId: string; toId: string }>;
+} {
   const readArray = (key: string): unknown[] => {
     try {
       const raw = window.localStorage.getItem(key);
@@ -65,9 +75,23 @@ export function readStoredWorkspace(): { graph: GraphNode[]; timeline: TimelineI
       return [];
     }
   };
+  const normalizeEdge = (raw: unknown): { id: string; fromId: string; toId: string } | null => {
+    if (typeof raw !== "object" || raw === null) return null;
+    const edge = raw as { id?: unknown; fromId?: unknown; toId?: unknown; from?: unknown; to?: unknown };
+    if (typeof edge.id === "string" && typeof edge.fromId === "string" && typeof edge.toId === "string") {
+      return { id: edge.id, fromId: edge.fromId, toId: edge.toId };
+    }
+    if (typeof edge.from === "string" && typeof edge.to === "string") {
+      return { id: `legacy:${edge.from}:${edge.to}`, fromId: edge.from, toId: edge.to };
+    }
+    return null;
+  };
   return {
     graph: readArray("sig.workspace.v3.graph") as GraphNode[],
     timeline: readArray("sig.workspace.v3.timeline") as TimelineItem[],
+    links: readArray("sig.workspace.v3.links")
+      .map(normalizeEdge)
+      .filter((edge): edge is { id: string; fromId: string; toId: string } => edge !== null),
   };
 }
 
