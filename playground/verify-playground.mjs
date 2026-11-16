@@ -1318,7 +1318,7 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v3.3.0 are owner-authorized ----------
+// ---- (b7) SAFETY PROOF: core deltas vs v3.8.0 are owner-authorized ----------
 // 3.4.0 REBASE (the floor moves v3.2.0 → v3.3.0): the ZERO-REACT NATIVE
 // WEB COMPONENTS release. The owner-mandated 3.4.0 deltas, and NOTHING
 // else — css/, react/, demo/, bin/ and the tokens.json VALUES stay
@@ -1379,46 +1379,58 @@ if (oldTimeline !== null) {
 //                          9-view census + the goldens re-cert
 //   scripts/goldens/    — the owner-mandated re-certification
 //   SYSTEM_PROMPT.md    — title → v4.0 + the Full-Page Layout Blueprints
-// tokens.json gains meta.version 3.8.0 (guarded below — the COLOR
+// tokens.json gains meta.version 3.9.0 (guarded below — the COLOR
 // VALUES stay byte-frozen; motionTokens carries EXACTLY the 9 kinetic
 // tokens, unchanged). playground/ is NOT under the freeze (the
 // composition layer); README/package.json/lock are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 const AUTHORIZED_330 = new Set([
-  // 3.8.0 — THE TEMPLATE RELEASE DELTAS (Tasks 1-4).
-  "bin/cli.mjs",
-  "bin/templates.mjs",
-  "scripts/verify-cli.mjs",
-  "scripts/verify-mcp.mjs",
-  "scripts/verify-a11y.mjs",
-  "scripts/verify-visual-diff.mjs",
-  "SYSTEM_PROMPT.md",
+  // 3.9.0 — THE FOUR-DEFECT RELEASE DELTAS (enumerated honestly):
+  // StatRing enum (T1), templates container reflow (T2), workbench
+  // proportions (T3), the graph studio engine (T4), the kinetic suite
+  // (T5), the gates + cert probes + the template-sources regen (T6).
+  "css/viz.css", // T1: the .sig-stat-ring box contract
+  "css/motion.css", // T5: the kinetic suite (@property, beam, tilt, beacon, wave)
+  "css/graph.css", // T4: nodeKind paint + non-free cursors
+  "react/viz.tsx", "react/viz.js", "react/viz.d.ts", // T1: the enum
+  "react/graph.tsx", "react/graph.js", "react/graph.d.ts", // T4: the layout engine
+  "react/motion.tsx", "react/motion.js", "react/motion.d.ts", // T5: the suite
+  "react/index.ts", "react/index.js", "react/index.d.ts", // T4+T5: the exports
+  "SYSTEM_PROMPT.md", // T6: the title steps to v4.1 + the new recipes
+  "scripts/verify.mjs", // T6: the (ring2)+(mm1)-(mm5) additive gates
+  "scripts/gates-v390.mjs", // T6: the pure mm gates
+  "scripts/verify-negative-v390.mjs", // T6: the negative tests
+  "scripts/verify-mcp.mjs", // T6: the (s2f)/(s2g) probes
+  "scripts/regen-template-sources.mjs", // T2: the (tpl1) parity regen tool
+  "scripts/verify-cli.mjs", // (carried 3.8.0 — no edit this release)
+  "scripts/verify-a11y.mjs", // (carried 3.8.0 — no edit this release)
+  "scripts/verify-visual-diff.mjs", // (carried 3.8.0 — no edit this release)
+  "bin/cli.mjs", "bin/templates.mjs", // (carried 3.8.0 — no edit this release)
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v3.7.0", "--name-only", "--", ...B7_LOCKED_330],
+    ["diff", "v3.8.0", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v3.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v3.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.7.0 — outside the owner-authorized 3.8.0 set (the cli template expansion + the gates + the codex)`,
+      `(b7) SAFETY: ${file} changed since v3.8.0 — outside the owner-authorized 3.9.0 set (the four-defect release: ring enum, container reflow, workbench, graph studio, kinetic suite, gates)`,
     );
   }
 }
-// 3.4.0 rule: scripts/ beyond the three authorized gates is LOCKED.
-// 3.5.0 AMENDMENT: the certification scripts join (verify-mcp,
-// verify-visual-diff, verify-a11y, the goldens/ masters) — scripts/
-// verify.mjs itself stays BYTE-FROZEN (no edit this release).
+// 3.9.0 rule: scripts/ beyond the authorized gates + the certification
+// scripts is LOCKED. verify.mjs GROWS this release (the (ring2)+(mm1)-(mm5)
+// additive block — enumerated); every existing gate logic is untouched.
 const SCRIPTS_330_ALLOWED = new Set([
   "scripts/verify.mjs",
   "scripts/verify-cli.mjs",
@@ -1427,6 +1439,9 @@ const SCRIPTS_330_ALLOWED = new Set([
   "scripts/verify-visual-diff.mjs",
   "scripts/verify-a11y.mjs",
   "scripts/verify-examples.mjs",
+  "scripts/gates-v390.mjs",
+  "scripts/verify-negative-v390.mjs",
+  "scripts/regen-template-sources.mjs",
 ]);
 if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f) && !f.startsWith("scripts/goldens/"))) {
   failures.push("(b7) SAFETY: scripts/ beyond the authorized gates + the certification scripts is LOCKED (verify.mjs stays BYTE-FROZEN)");
@@ -1441,8 +1456,8 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
 // kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "3.8.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.8.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "3.9.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.9.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
   const MOTION_NAMES_370 = [
     "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
@@ -1622,15 +1637,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 3.8.0 FROZEN PROOF — v3.7.0 baseline ----
-// Rebased 3.8.0 (the floor moves v3.6.0 → v3.7.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 3.8.0
+// ---- (n-hub4) THE 3.9.0 FROZEN PROOF — v3.8.0 baseline ----
+// Rebased 3.9.0 (the floor moves v3.7.0 → v3.8.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 3.9.0
 // list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.7.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v3.8.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1638,11 +1653,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.7.0 beyond the 3.8.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated template-release set)`,
+      `(n-hub4) SAFETY: files changed since v3.8.0 beyond the 3.9.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated four-defect release set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
@@ -1779,6 +1794,7 @@ if (/(className|data-testid)="[^"]*(bento__|bento-card)/.test(appSrc)) {
     const EXPECTED_GOLDENS = [
       "analytics-planner.png", "chronicle.png", "codex.png", "dashboard.png",
       "graph-studio.png", "master-index.png", "motion-lab.png", "pattern-studio.png",
+      "templates.png", // joined 3.8.0 — the studio view's golden master
     ];
     if (JSON.stringify(goldens) !== JSON.stringify(EXPECTED_GOLDENS)) {
       failures.push(`(v35) scripts/goldens/ must carry EXACTLY the 8 golden masters (${EXPECTED_GOLDENS.join(", ")}), found ${goldens.length}: ${goldens.join(", ")}`);
@@ -2302,9 +2318,9 @@ if (!/never invent tokens; never hardcode hex/i.test(systemPrompt)) {
     'SYSTEM_PROMPT.md must end the contract with the law: "never invent tokens; never hardcode hex"',
   );
 }
-if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v3.9")) {
+if (!systemPrompt.startsWith("# System Instruction: The Dynamic Signature Engine v4.1")) {
   failures.push(
-    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v3.9 (3.7.0: the title steps to v3.9 with the Kinetic Engine / Motion Lab / live-data recipes — the 3.6.0 step to v3.8 carried the Graph Studio sections)",
+    "SYSTEM_PROMPT.md title must move to The Dynamic Signature Engine v4.1 (3.9.0: the title steps to v4.1 with the kinetic-suite / graph-authoring / container-stage recipes — the 3.8.0 step to v4.0 carried the templates)",
   );
 }
 

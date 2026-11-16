@@ -151,6 +151,7 @@ import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync, spawnSync } from "node:child_process";
+import { runV390Gates } from "./gates-v390.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -1550,6 +1551,32 @@ try {
   }
 } catch (error) {
   failures.push(`(ring2) could not read the StatRing sources — ${(error instanceof Error ? error.message : String(error))}`);
+}
+
+// ---- (mm1)-(mm5) THE v3.9.0 RELEASE GATES -----------------------------------
+// The gate functions live in scripts/gates-v390.mjs (pure functions over
+// file contents) so scripts/verify-negative-v390.mjs can run the SAME
+// gates against MUTATED copies — the negative tests prove every gate
+// here can actually fail.
+{
+  const read = (rel) => readFileSync(resolve(root, rel), "utf8");
+  const mmFiles = {
+    styles: read("playground/styles.css"),
+    saas: read("playground/templates/SaasLandingTemplate.tsx"),
+    docs: read("playground/templates/DocsReaderTemplate.tsx"),
+    telemetry: read("playground/templates/TelemetryCenterTemplate.tsx"),
+    viz: read("react/viz.tsx"),
+    vizCss: read("css/viz.css"),
+    app: read("playground/App.tsx"),
+    cards: read("css/cards.css"),
+    graph: read("react/graph.tsx"),
+    expansion: read("playground/graph-expansion.ts"),
+    studio: read("playground/components/GraphStudio.tsx"),
+    motionCss: read("css/motion.css"),
+    motion: read("react/motion.tsx"),
+  };
+  const mmFailures = runV390Gates(mmFiles);
+  failures.push(...mmFailures);
 }
 
 // ---- (pure) THE STANDALONE PURITY GATE (3.1.0, the release gate) ------------

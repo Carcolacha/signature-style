@@ -153,6 +153,15 @@ interface SigBadgeProps {
 
 Two bigger pieces build on the primitives — they are components, not primitives, and they never receive new CSS files without their own layer in the bundle.
 
+> **3.9.0 note — the ring is an enum.** `<StatRing>`'s `size` prop takes
+> `"sm" | "md" | "lg"` (88 / 128 / 168 px, default `"md"`) — the bare
+> number is retired, and css/viz.css pins the dial with `aspect-ratio:
+> 1/1; flex-shrink: 0` so no flex row can stretch it. The same release
+> adds four kinetic primitives (`AuroraBorderCard`, `TiltSurface`,
+> `StatusBeacon`, `WaveformBars`) and the full-viewport Graph Studio's
+> tree/radial layout engine — see the README's 3.9.0 chapter and the
+> Motion Lab (`#/motion`) for the live anatomy.
+
 #### `<EventTimeline>` — the chronological event timeline
 
 A flat CSS Grid: one container (`.sig-timeline`) whose **direct children** are date headers (`h2`), node circles, and event content blocks — no row wrappers, and the vertical line is the container's `::before` pseudo-element, never a div. Desktop events alternate left/right around a center line; at **max-width 768px** the line moves to the far left and everything stacks right (pure CSS, no JS breakpoint). Sticky date headers pin at `z-index: var(--z-sticky)` (10) with opaque backgrounds, and content scrolls beneath them. An empty `events` array renders `<EmptyState icon="CalendarX">` immediately — no line, no chrome.

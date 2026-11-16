@@ -225,6 +225,47 @@ try {
   }
   console.log(`templates matrix: ${templatesMatrixPayload.matrix.map((m) => `${m.viewport}=${m.bytes}B`).join(" · ")}`);
 
+  // (s2f) THE FULL-VIEWPORT GRAPH STUDIO probe (3.9.0): #/graph mounts
+  // the full-bleed studio — the stage, the toolbar + dock HUD cards
+  // and the canvas svg all measure alive rects (the deep geometry —
+  // 100vh math, the z-rung, the blur — is the cortex probe's job).
+  const graphLayout = await rpc.call("tools/call", {
+    name: "inspect_layout",
+    arguments: {
+      url: `${URL_TO_INSPECT}/#/graph`,
+      selectors: ["[data-testid=\"graph-studio\"]", "[data-testid=\"studio-toolbar\"]", "[data-testid=\"studio-dock\"]", "svg.sig-graph"],
+    },
+  });
+  assert(graphLayout.isError !== true, `graph inspect_layout errored: ${JSON.stringify(graphLayout.content)}`);
+  const graphPayload = JSON.parse(graphLayout.content[0].text);
+  const aliveGraph = (selector) =>
+    graphPayload.hits.filter((h) => h.selector === selector && h.rect.width > 0 && h.rect.height > 0).length;
+  assert(aliveGraph('[data-testid="graph-studio"]') === 1, "graph probe: the studio root is not mounting");
+  assert(aliveGraph('[data-testid="studio-toolbar"]') === 1, "graph probe: the toolbar HUD is not mounting");
+  assert(aliveGraph('[data-testid="studio-dock"]') === 1, "graph probe: the action dock HUD is not mounting");
+  assert(aliveGraph("svg.sig-graph") === 1, "graph probe: the canvas svg is not mounting");
+  console.log(`graph hits: studio=${aliveGraph('[data-testid="graph-studio"]')} · toolbar=${aliveGraph('[data-testid="studio-toolbar"]')} · dock=${aliveGraph('[data-testid="studio-dock"]')} · svg=${aliveGraph("svg.sig-graph")}`);
+
+  // (s2g) THE KINETIC SUITE probe (3.9.0): #/motion mounts the new
+  // primitives — aurora cards, the tilt surface, the beacon, the
+  // waveform bars all measure alive rects.
+  const suiteLayout = await rpc.call("tools/call", {
+    name: "inspect_layout",
+    arguments: {
+      url: `${URL_TO_INSPECT}/#/motion`,
+      selectors: [".sig-aurora-card", ".sig-tilt-surface", ".sig-beacon", ".sig-waveform__bar"],
+    },
+  });
+  assert(suiteLayout.isError !== true, `kinetic suite inspect_layout errored: ${JSON.stringify(suiteLayout.content)}`);
+  const suitePayload = JSON.parse(suiteLayout.content[0].text);
+  const aliveSuite = (selector) =>
+    suitePayload.hits.filter((h) => h.selector === selector && h.rect.width > 0 && h.rect.height > 0).length;
+  assert(aliveSuite(".sig-aurora-card") >= 2, `kinetic suite probe: the aurora cards are not mounting (${aliveSuite(".sig-aurora-card")} alive)`);
+  assert(aliveSuite(".sig-tilt-surface") >= 1, "kinetic suite probe: the tilt surface is not mounting");
+  assert(aliveSuite(".sig-beacon") >= 1, "kinetic suite probe: the beacons are not mounting");
+  assert(aliveSuite(".sig-waveform__bar") >= 4, `kinetic suite probe: the waveform bars are not mounting (${aliveSuite(".sig-waveform__bar")} alive)`);
+  console.log(`kinetic suite hits: aurora=${aliveSuite(".sig-aurora-card")} · tilt=${aliveSuite(".sig-tilt-surface")} · beacon=${aliveSuite(".sig-beacon")} · bars=${aliveSuite(".sig-waveform__bar")}`);
+
   // (s3) audit_contrast — numeric pass/fail summary, ≥ 1 measured element.
   const contrast = await rpc.call("tools/call", {
     name: "audit_contrast",

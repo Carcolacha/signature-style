@@ -292,6 +292,80 @@ and dropped; unknown keys are warned and dropped.
 
 ## Changelog
 
+### 3.9.0 — Full-Viewport Tree & Mind-Map Graph Studio, Colorful Kinetic Suite & Responsive Layout Closure
+
+The four diagnosed defects, fixed and PROVEN (the cortex probe
+`playground/probe-v390-cortex.mjs` measures every number below live):
+
+| # | The defect (v3.8.0) | The fix (3.9.0) | The proof |
+|---|---|---|---|
+| 1 | The Templates Studio emulator lied: the templates' reflow never answered the 375px stage inside a 1920px window — the Telemetry grid stayed 12 columns (9.25px tracks) and its KPI tiles physically overlapped, because each template declared its container ON its own root and a container query cannot restyle its own container (the breakpoint rewrites were dead CSS). | ONE shared container name `template-stage`, declared by the studio stage AND each template root (standalone purity); the telemetry grid moved to an inner wrapper the queries can legally restyle; three tiers everywhere (12-col >1024 / 2-col 640–1024 / 1-col <640 for telemetry; 3→2→1 for SaaS; docs keeps its ≤1023 collapse). | Stage 375/768/1440 → three distinct computed grid states; tiles pairwise-disjoint; zero stage overflow (`probe-v390-templates.mjs`, `--before` mode documents the v3.8.0 baseline). |
+| 2 | The Motion Lab StatRing ballooned to ~700px: `size` was a bare number and the svg had no box contract, so a wide flex row stretched it. | BREAKING: `size` is now the enum `"sm" \| "md" \| "lg"` (88 / 128 / 168 px, default `"md"` — legacy numbers warn and fall back to md). The enum resolves to an inline `--ring-size`; css/viz.css answers with the `.sig-stat-ring` box: exact width/height, `aspect-ratio: 1/1`, `flex-shrink: 0` — it can never stretch again. All call sites migrated (Motion Lab, Telemetry gauges, Pattern Studio, the Workbench ring). | The Motion Lab ring measures EXACTLY 128×128 inside the wide telemetry row (cortex c1). |
+| 3 | The Workbench Chromatic Palette sat in a span-3 cell (264px) where the auto-fill grid resolved to ONE column — 26 swatches stacked vertically and the page stretched to 4609px. | The palette moves to the WIDE BOTTOM COMPARTMENT (`sig-span-12`, the row math kept hole-free by promoting Telemetry to row-span 2); the swatch grid packs `repeat(auto-fill, minmax(120px, 1fr))`; the FlipCard's 220px floor is pinned by the mm3 gate + probe. | Page height 4609 → 3279 (−1330px, −29%); 10 swatch columns at 1440; FlipCard 220px; zero overlapping bento cells (cortex c2). |
+| 4 | The Motion Lab was static and cryptic: entrances fired before scroll, nothing explained itself, no per-card trigger. | Every one of the SIX frames now carries (a) a plain-English explanation line, (b) a per-card **Play Effect** button (per-frame remount keys), (c) an IntersectionObserver auto-trigger — entrances fire when the frame scrolls into view (verified: unvisited frames hold hidden). | Cortex c4: 6 frames × 3 contracts; IO holds + reveals on scroll. |
+
+**The full-viewport Graph Studio.** The view BYPASSES the shell —
+full-bleed under the 56px nav (`width: 100%; height: calc(100vh -
+56px); position: relative; overflow: hidden`, the 24px dot-matrix
+board edge to edge, the svg filling the stage via a ResizeObserver).
+**THE LAYOUT ENGINE**: nodes gain `nodeKind?: "root" | "branch" |
+"leaf" | "note"` (dashed ring for notes; `data-kind` + `data-layout-mode`
+stamped for probes) and the canvas gains `layoutMode?: "free" | "tree" |
+"radial"` (default `free` — the untouched contract). Two new pure,
+gate-testable helpers: `layoutTree` (deterministic top-down tidy:
+hash-sorted, leaf slots, parents centered, one row per depth) and
+`layoutRadial` (the historical ring engine under its mode name), plus
+`treeEdge`'s vertical cubic Beziers. Dragging/nudging is free-mode only
+— the deterministic layouts are the law. **THE 3 FLOATING HUD CARDS**
+(`.graph-hud` + the `.sig-surface-card` elevation, position absolute,
+z-30, the bd1-sanctioned blur): ① top-left toolbar — Search (dims
+non-matches 0.25), the Free/Tree/Radial segmented switcher, Auto-Layout,
+Zoom − / tabular % / Zoom +, the Nodes·Edges counter; ② bottom-center
+Action Dock — + Add Node, + Spawn Branch, **AI Expand Node** (a LOCAL
+heuristic generator — `playground/graph-expansion.ts`: curated pools
+per token bucket, deterministic id-hash seeds, distinct four-token
+accents, NO network; same selection = same sub-nodes, probe-proven
+across a reset/re-expand cycle), Reset Canvas, Export JSON; ③ the
+right inspector (320px, floats on selection, ✕ collapses) — Title,
+Node Kind, the 16-swatch chromatic picker, Tags, Notes, Connected
+Edges (unlink + jump). The layout mode persists through the EXISTING
+`sig.workspace.v3.prefs` object (optional `graphLayout` field); edge
+unlink is preserved AND FIXED — the pan handler's pointer capture had
+been swallowing real edge clicks since 3.6.0 (capture retargeted the
+follow-up click; the gates only ever dispatched synthetic events).
+60fps drag re-verified (rAF median 16.7ms).
+
+**The Colorful Kinetic Suite** (4 new primitives, zero external
+animation deps, every one standing down under reduced motion):
+
+| Primitive | Signature | Mechanism |
+|---|---|---|
+| `AuroraBorderCard` | `accentTokens?` (default cyan/orchid/mint/cobalt) · `trigger?: "hover" \| "always"` | css/motion.css REGISTERS `--sig-beam-angle` (`@property`, syntax `"<angle>"`); the `::before` is a conic-gradient masked to a 2px ring. NEVER a box-shadow. Fallback: no-`@property` engines keep a static 4-color ring. |
+| `TiltSurface` | `tilt?: number` (default 4) · `accentToken?` | `perspective(600px)` rotateX/rotateY tracking the pointer via the KineticSurface rAF math extended with `--tilt-x/--tilt-y`; the sheen rides along. |
+| `StatusBeacon` | `status` · `colorToken` · `size?` (default 8) | One `role="status"` span + a `::after` ping (scale 1→2.2, fade — transform/opacity only). Reduced motion: static dot. |
+| `WaveformBars` | `data?` · `bars?` (default 12) · `active?` · `colorToken?` | Per-bar animation-delay equalizer (`calc(--bar-i × 90ms)` on the snappy spring); heights from `data` (normalized) or the deterministic golden-angle curve. |
+
+Also: the Motion Lab's frame mix refreshed (01 Chromatic Stagger Wave ·
+02 Aurora Beam & 3D Tilt + the sheen trio · 03 Spring Detents, kept ·
+04 FLIP Tabs & Elastic Drawer · 05 Proportional Rolling Telemetry ·
+06 Open-Meteo, restyled with the status beacon + cyan/violet chart
+pair); `PatternFrame` grew the `note` explanation prop; and one suite
+lesson is documented in-code — Chrome's IntersectionObserver applies
+the target's own clip-path to the intersection, so `clip-reveal`
+(zero-area clip) can never trigger its own reveal.
+
+**Gates grown**: (ring2) evolved + (mm1) container reflow, (mm2) ring
+enum, (mm3) workbench, (mm4) graph studio, (mm5) kinetic suite — as
+pure functions in `scripts/gates-v390.mjs`, run by verify.mjs AND by
+the negative tests (`scripts/verify-negative-v390.mjs`: deleting the
+`@property` block trips mm5, deleting the stage `container-type` trips
+mm1 — every gate proven able to fail). verify:mcp grew the (s2f) graph
+HUD + (s2g) kinetic-suite presence probes. Pack count unchanged (68 —
+no new shipped files; all growth landed in existing packed files).
+tokens.json meta → 3.9.0, VALUES frozen (the whitelist stays 60 — the
+owner's "--sig-amber" maps to our `--sig-yellow`; the "--sig-primary"
+halo maps to `--color-cake-primary`; both documented mappings).
+
 ### 3.8.0 — Full-Page Layout Templates, Interactive Viewport Previewer & CLI Template Expansion
 
 The engine now scaffolds **entire sites**: three self-contained full-page

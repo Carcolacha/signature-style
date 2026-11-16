@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v4.0 — Full-Page Layout Templates, Interactive Viewport Previewer & CLI Template Expansion (Standalone Identity)
+# System Instruction: The Dynamic Signature Engine v4.1 — Full-Viewport Graph Studio, the Colorful Kinetic Suite & Container-Query Stage Authoring (Standalone Identity)
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -704,6 +704,20 @@ const nodes: GraphNode[] = [
 
 THE 3.0.0 OBSIDIAN INTERACTIONS: generous nodes (r 34, 13px labels, 16-char truncation + a `<title>` full-label tooltip); DRAG at 60fps — pointerdown captures, pointermove mutates the node `<g>` transform DIRECTLY (rAF, zero setState per move), pointerup commits ONCE via `onMoveNode` (persist the position and feed it back through `positions`; keyboard parity: arrows nudge the selected node 8px); PAN on empty-canvas drag + WHEEL zoom (0.5×–2.5×, anchored at the cursor — both in viewBox math, so node coordinates stay in graph space); DOUBLE-CLICK empty canvas spawns a node at that coordinate (`onAddNodeAt`, nearest node or root parents it); RIGHT-CLICK a node enters TETHER mode — a live dashed azure line (`--sig-azure`, 6 4, 1.5px) chases the cursor and releasing over another node fires `onLinkNodes(fromId, toId)`; Escape cancels any in-flight drag/tether. THE LINKS MODEL (3.6.0): parent edges stay DERIVED from `parentId` (deterministic id `parent:${childId}`); NON-parent tethers are EXPLICIT `GraphEdge { id, fromId, toId }` records in the consumer's persisted `links` array (sig.workspace.v3.links — legacy `{from,to}` entries migrate on first write), handed back through the `links` prop. EVERY edge renders an invisible 14px hit path under the visible hairline (a 1.5px line is unhittable): clicking an edge selects it — the stroke flips to `--sig-crimson` at 2.5px (`data-selected`), `onSelectEdge` reports `{ id, kind: "parent" | "link", fromId, toId }`, and Delete/Backspace (typing-target guarded by the exported `isTypingTarget`) fires `onUnlinkEdge(edgeId)` — resolve the kind by prefix: `parent:*` unlinks by clearing the child's `parentId`, anything else is removed from the links array. Escape deselects. THE SEARCH DIM: a non-empty `searchQuery` prop dims every node/edge whose label does not substring-match (the HUD search drives it). THE IMPERATIVE HANDLE: `ref` carries `KnowledgeGraphHandle { zoomIn, zoomOut, getZoom, autoArrange, selectNode }` — center-anchored zoom buttons, auto-arrange (delegates to `onAutoArrange`: the consumer clears its persisted custom positions, the deterministic layout re-runs and re-persists), jump-to-target selection; every pan/zoom reports through `onViewChange` (the live zoom readout). Nodes carry optional `tags?: string[]` (the inspector's comma-separated field → chips).
 
+3.9.0 THE LAYOUT ENGINE + NODE AUTHORING — nodes gain `nodeKind?: "root" | "branch" | "leaf" | "note"` (semantic metadata: the inspector edits it, the canvas stamps `data-kind`, css/graph.css paints notes with a dashed ring — old snapshots without it render unchanged), and the canvas gains `layoutMode?: "free" | "tree" | "radial"` (default `"free"` = the untouched contract: the deterministic radial base + your persisted `positions` winning). `"radial"` runs the ring engine (`layoutRadial`, the historical `layoutGraph` under its mode name) with NO drag overlay; `"tree"` runs the pure top-down tidy layout (`layoutTree`, exported and gate-testable: hash-sorted structure, leaf slots left→right, parents centered over children, one row per depth, vertical cubic Beziers via `treeEdge` — smooth and tangle-free by row separation) — in tree/radial modes dragging is DISABLED (the layout is the law); pan/zoom, tether, dbl-click spawn and edge unlink stay live. Persist the mode with your workspace prefs; Auto-Arrange re-runs whichever mode is active and clears the persisted custom positions:
+
+```tsx
+<KnowledgeGraph
+  nodes={[
+    { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", nodeKind: "root" },
+    { id: "tokens", label: "Token Layer", parentId: "root", categoryToken: "--sig-azure", nodeKind: "branch" },
+    { id: "notes", label: "Field Notes", parentId: "tokens", categoryToken: "--sig-mint", nodeKind: "note" },
+  ]}
+  layoutMode="tree"   /* deterministic top-down tidy — same nodes, same coordinates */
+/>
+graphRef.current?.autoArrange(); /* re-runs the ACTIVE mode's layout */
+```
+
 ### <BarChart>
 
 The capacity bar chart (2.7.0) — pure SVG, one group per datum: an inset rounded track out to the datum's `max` (default: the chart scale), the chromatic value bar, a hover-revealed tabular readout, the mono axis label, and dashed `strokeDasharray "4 4"` reference lines at 25/50/75% of the scale. `orientation` flips the bars (`"vertical"` default | `"horizontal"`):
@@ -973,6 +987,72 @@ import { KineticSurface } from "@edwyn/signature-style/react";
 ```
 
 `onPointerMove` writes `--ptr-x` / `--ptr-y` (pixel coords within the element) through a rAF-THROTTLED setter; css/motion.css paints a 240px `radial-gradient` sheen at those coordinates (`::after`), fading in on hover. The POSITION repaints — it never animates; opacity is the only transition. `accentToken`: any `--sig-*` token (default `--sig-cyan`). Self-contained — no exported tracking hook.
+
+### <AuroraBorderCard> (3.9.0)
+
+```tsx
+import { AuroraBorderCard } from "@edwyn/signature-style/react";
+
+<AuroraBorderCard accentTokens={["--sig-cyan", "--sig-orchid", "--sig-mint", "--sig-cobalt"]} trigger="hover">
+  <p>The beam spins on hover.</p>
+</AuroraBorderCard>
+<AuroraBorderCard trigger="always">
+  <p>The beam never sleeps — for exactly ONE hero card, not ten.</p>
+</AuroraBorderCard>
+```
+
+A rotating conic border beam cycling the accent tokens. css/motion.css REGISTERS `--sig-beam-angle` (CSS `@property`, syntax `"<angle>"`, initial `0deg`) so the keyframe rotation interpolates per frame; the card's `::before` is a conic-gradient masked to a 2px ring (the content-box exclude composite — the border-beam technique). NO box-shadow is ever animated — the e1 treaty's registered-custom-property clause. Fallback: engines without `@property` keep a static 4-color conic ring (unregistered angles cannot interpolate); reduced motion holds the ring still.
+
+### <TiltSurface> (3.9.0)
+
+```tsx
+import { TiltSurface } from "@edwyn/signature-style/react";
+
+<TiltSurface tilt={6} accentToken="--sig-rose-glow">
+  <p>Tilt with the cursor — the sheen rides along.</p>
+</TiltSurface>
+```
+
+`perspective(600px) rotateX/rotateY` (±`tilt` degrees, default 4) tracking the pointer through the KineticSurface rAF math extended with `--tilt-x`/`--tilt-y`. Reduced motion pins the transform flat (the opacity-only sheen stays). `accentToken`: any `--sig-*` token (default `--sig-cyan`).
+
+### <StatusBeacon> (3.9.0)
+
+```tsx
+import { StatusBeacon } from "@edwyn/signature-style/react";
+
+<StatusBeacon status="live" colorToken="--sig-green" />
+<StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
+```
+
+One `role="status"` span (the dot in `colorToken`); its `::after` ring scales 1 → 2.2 and fades — the classic ping, transform/opacity only. Reduced motion: a static dot (the ring never renders). `size`: the dot's px diameter (default 8).
+
+### <WaveformBars> (3.9.0)
+
+```tsx
+import { WaveformBars } from "@edwyn/signature-style/react";
+
+<WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
+<WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />
+```
+
+The spring-animated equalizer: N bars (default 12), per-bar animation-delay `calc(--bar-i × 90ms)` riding `--ease-spring-snappy`. Heights from `data` (normalized to the tallest) or the DETERMINISTIC golden-angle curve (`0.3 + 0.7·|sin(i·2.399 + 1.2)|` — no `Math.random`; same input, same bars). `role="img"` + `label` for the accessible name. Reduced motion: static bars.
+
+### Container-query stage authoring (3.9.0)
+
+Full-page compositions must reflow to their CONTAINER, never the window viewport (a 375px preview inside a 1920px window must actually collapse — the media-query emulator lie). Declare the container ONCE on the stage and answer it with `@container` queries under the shared name:
+
+```css
+/* the stage (the preview wrapper) — ONE shared container name */
+.tpl-stage {
+  container-type: inline-size;
+  container-name: template-stage;
+}
+/* the composition answers the stage width — three tiers */
+@container template-stage (max-width: 1024px) { .my-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@container template-stage (max-width: 639px)  { .my-grid { grid-template-columns: minmax(0, 1fr); } }
+```
+
+THE SELF-CONTAINER TRAP: a container query CANNOT restyle its own container element — if the grid lives on the same element that declares `container-type`, the breakpoint rewrites are dead CSS. Put the grid on an inner wrapper (a descendant), or let the stage carry the container. Every grid track wears `minmax(0, 1fr)` so no child can force the track wider.
 
 ### The Motion Lab time-dilation pattern (3.7.0)
 
