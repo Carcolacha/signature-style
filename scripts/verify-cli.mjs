@@ -17,19 +17,36 @@
  *        sentinel survives ([skip]); with --force it is replaced by the
  *        mocha values ([overwrite]).
  *     D  detection labels — folded into A ("vite-react") and B ("html").
+ *     E  (3.8.0) mock React project — saas: exit 0 ·
+ *        SignatureSaasLanding.tsx carries the "SaasLanding" marker + the
+ *        "@edwyn/signature-style/react" import + the embedded <style> +
+ *        README names the template + the install note.
+ *     F  (3.8.0) mock React project — docs: same shape (DocsReader).
+ *     G  (3.8.0) BOTH flavors — telemetry: vite-react dir →
+ *        SignatureTelemetryCenter.tsx (marker + import); html dir →
+ *        signature-starter.html carries TelemetryCenter + the tokens link
+ *        + the mirror contract note.
  *
  *   GATES:
  *     cli1  bin/cli.mjs exists · shebang first line · every import specifier
  *           is node: or relative (zero external deps) · themes.mjs is a pure
- *           data module (no imports at all).
+ *           data module (no imports at all) · templates.mjs is a pure data
+ *           module too (3.8.0).
  *     cli2  THE DRIFT NEEDLE — bin/themes.mjs mocha tokens must equal the
  *           css/tokens.css :root block declaration-for-declaration. If
  *           tokens.css mocha values ever change, this gate FAILS and the
  *           CLI map must be regenerated.
  *     cli3  package.json wiring — bin entry, files += "bin", both scripts.
- *     b3    `npm pack --dry-run` reports EXACTLY 60 files (the 58-file
- *           3.2.0 tarball + bin/cli.mjs + bin/themes.mjs — the CLI ships
- *           both: cli.mjs imports themes.mjs at npx runtime).
+ *     tpl3  (3.8.0) THE CLI TEMPLATE PARITY — PAGE_TEMPLATES (bin) carries
+ *           EXACTLY saas/docs/telemetry with markers + "@edwyn" imports in
+ *           every tsxSource + the mirror contract note in every htmlSource,
+ *           and the ids match playground/template-registry.ts 3 = 3 (the
+ *           drift-lite needle: a registry id without a bin entry — or vice
+ *           versa — fails).
+ *     b3    `npm pack --dry-run` reports EXACTLY 68 files (the 67-file
+ *           3.7.0 tarball + bin/templates.mjs — the CLI ships it: cli.mjs
+ *           imports templates.mjs at npx runtime; playground files are
+ *           excluded).
  *
  * Cleanup: every tmp dir dies in a finally. Exit 0 only when ALL green.
  */
@@ -184,8 +201,102 @@ function scenarioC() {
 }
 
 // ---------------------------------------------------------------------------
-// Gate cli1 — shebang + zero external imports
+// Scenario E — mock React (vite.config.ts + vite dep) · saas (3.8.0)
 // ---------------------------------------------------------------------------
+function scenarioE() {
+  process.stdout.write("\nscenario E — mock React (vite) \u00b7 saas \u00b7 oled\n");
+  const dir = mkdtempSync(join(tmpdir(), "sig-cli-e-"));
+  try {
+    writeFileSync(join(dir, "vite.config.ts"), "export default {};\n");
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ dependencies: { vite: "^5.0.0" } }));
+
+    const res = runInit(dir, ["--template", "saas", "--theme", "oled", "--yes"]);
+    check(res.status === 0, "E \u00b7 exit 0", `status ${res.status}; stderr: ${res.stderr.slice(0, 300)}`);
+    check(res.stdout.includes("Next steps"), "E \u00b7 summary printout");
+
+    const tsx = read(join(dir, "SignatureSaasLanding.tsx"));
+    check(tsx.length > 0, "E \u00b7 SignatureSaasLanding.tsx written");
+    check(tsx.includes("SaasLanding"), "E \u00b7 the SaasLanding marker");
+    check(tsx.includes('from "@edwyn/signature-style/react"'), "E \u00b7 the @edwyn/signature-style/react import");
+    check(tsx.includes("<style>"), "E \u00b7 the embedded <style> (self-contained)");
+    check(tsx.includes("export default"), "E \u00b7 the default-export page");
+    check(!tsx.includes("signature-bento.css"), "E \u00b7 no companion css (styles are embedded)");
+    check(!existsSync(join(dir, "signature-bento.css")), "E \u00b7 no signature-bento.css companion written");
+    check(existsSync(join(dir, "signature-tokens.css")), "E \u00b7 signature-tokens.css written");
+    check(res.stdout.includes("npm i @edwyn/signature-style"), "E \u00b7 the install note rides the summary");
+
+    const readme = read(join(dir, "README-SIGNATURE.md"));
+    check(readme.includes("SaaS Landing"), "E \u00b7 README names the template");
+    check(readme.includes('import "@edwyn/signature-style/css"'), "E \u00b7 README carries the tokens-css import note");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scenario F — mock React (vite.config.ts + vite dep) · docs (3.8.0)
+// ---------------------------------------------------------------------------
+function scenarioF() {
+  process.stdout.write("\nscenario F — mock React (vite) \u00b7 docs \u00b7 mocha\n");
+  const dir = mkdtempSync(join(tmpdir(), "sig-cli-f-"));
+  try {
+    writeFileSync(join(dir, "vite.config.ts"), "export default {};\n");
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ dependencies: { vite: "^5.0.0" } }));
+
+    const res = runInit(dir, ["--template", "docs", "--yes"]);
+    check(res.status === 0, "F \u00b7 exit 0", `status ${res.status}; stderr: ${res.stderr.slice(0, 300)}`);
+
+    const tsx = read(join(dir, "SignatureDocsReader.tsx"));
+    check(tsx.length > 0, "F \u00b7 SignatureDocsReader.tsx written");
+    check(tsx.includes("DocsReader"), "F \u00b7 the DocsReader marker");
+    check(tsx.includes('from "@edwyn/signature-style/react"'), "F \u00b7 the @edwyn/signature-style/react import");
+    check(tsx.includes("@container"), "F \u00b7 the container-query collapse (1023px) ships");
+    check(tsx.includes("prefers-reduced-motion"), "F \u00b7 the reduced-motion guard ships");
+
+    const invalid = runInit(dir, ["--template", "pricing", "--yes"]);
+    check(invalid.status === 1 && invalid.stderr.includes('invalid --template "pricing"'), "F \u00b7 an unknown --template is a clean exit-1 error");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scenario G — BOTH flavors · telemetry (3.8.0): vite-react tsx + html mirror
+// ---------------------------------------------------------------------------
+function scenarioG() {
+  process.stdout.write("\nscenario G — telemetry \u00b7 vite-react tsx + html static mirror\n");
+  const dir = mkdtempSync(join(tmpdir(), "sig-cli-g-"));
+  const htmlDir = mkdtempSync(join(tmpdir(), "sig-cli-g-html-"));
+  try {
+    // G1 — the vite-react flavor.
+    writeFileSync(join(dir, "vite.config.ts"), "export default {};\n");
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ dependencies: { vite: "^5.0.0" } }));
+    const res = runInit(dir, ["--template", "telemetry", "--yes"]);
+    check(res.status === 0, "G \u00b7 tsx flavor exit 0", `status ${res.status}; stderr: ${res.stderr.slice(0, 300)}`);
+    const tsx = read(join(dir, "SignatureTelemetryCenter.tsx"));
+    check(tsx.includes("TelemetryCenter"), "G \u00b7 the TelemetryCenter marker (tsx)");
+    check(tsx.includes('from "@edwyn/signature-style/react"'), "G \u00b7 the @edwyn/signature-style/react import (tsx)");
+    check(!existsSync(join(dir, "signature-starter.html")), "G \u00b7 tsx flavor does NOT emit the html mirror");
+
+    // G2 — the html flavor: the STATIC mirror.
+    writeFileSync(join(htmlDir, "index.html"), "<!doctype html>\n<html></html>\n");
+    const resHtml = runInit(htmlDir, ["--template", "telemetry", "--yes"]);
+    check(resHtml.status === 0, "G \u00b7 html flavor exit 0", `status ${resHtml.status}; stderr: ${resHtml.stderr.slice(0, 300)}`);
+    const mirror = read(join(htmlDir, "signature-starter.html"));
+    check(mirror.includes("TelemetryCenter"), "G \u00b7 the TelemetryCenter marker (html)");
+    check(mirror.includes('./signature-tokens.css'), "G \u00b7 the mirror links the tokens css");
+    check(mirror.includes("STATIC mirror") || mirror.includes("static mirror"), "G \u00b7 the mirror contract is documented in the file");
+    check(mirror.includes("prefers-reduced-motion"), "G \u00b7 the mirror carries the reduced-motion guard");
+    const mirrorHexes = mirror.match(/#[0-9a-f]{3,8}\b/gi);
+    check(mirrorHexes === null, "G \u00b7 the mirror is token-driven, zero hex", (mirrorHexes ?? []).join(", "));
+    check(resHtml.stdout.includes("STATIC mirror"), "G \u00b7 the summary names the static mirror");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(htmlDir, { recursive: true, force: true });
+  }
+}
+
+
 /**
  * Strip comments and TEMPLATE literals from source, keeping plain strings
  * — the gate needs to READ real import specifiers (always plain strings)
@@ -273,6 +384,9 @@ function skipTemplate(src, start) {
   return i;
 }
 
+// ---------------------------------------------------------------------------
+// Gate cli1 — shebang + zero external imports
+// ---------------------------------------------------------------------------
 /**
  * Gate cli1 — shebang + zero external imports.
  */
@@ -289,6 +403,16 @@ function gateCli1() {
   check(external.length === 0, "cli1 \u00b7 every import is node: or relative", external.join(", "));
   const themesSrc = read(join(root, "bin", "themes.mjs"));
   check(!/^import[\s ]/m.test(themesSrc), "cli1 \u00b7 bin/themes.mjs is a pure data module (no imports)");
+  const templatesSrc = read(join(root, "bin", "templates.mjs"));
+  check(templatesSrc.length > 0, "cli1 \u00b7 bin/templates.mjs exists");
+  // templates.mjs EMBEDS the three full-page sources as template
+  // literals (they legitimately contain `import ... from "react"`
+  // lines at column 0), so the naive ^import scan would false-trip —
+  // run the same template/comment-stripping pass used on cli.mjs and
+  // demand zero REAL import statements in the stripped source.
+  const templatesReal = stripCommentsAndTemplates(templatesSrc);
+  const templateImports = [...templatesReal.matchAll(/(^|\n)\s*import[\s(]/g)];
+  check(templateImports.length === 0, "cli1 \u00b7 bin/templates.mjs is a pure data module (no real imports — embedded template-literal content stripped first)", `${templateImports.length} stripped-source import hits`);
 }
 
 // ---------------------------------------------------------------------------
@@ -357,7 +481,48 @@ function gateCli3() {
 }
 
 // ---------------------------------------------------------------------------
-// Gate b3 — the tarball grows 64 → EXACTLY 67
+// Gate tpl3 — THE CLI TEMPLATE PARITY (3.8.0)
+// ---------------------------------------------------------------------------
+/**
+ * Gate tpl3 — the page templates ship complete + the registry parity
+ * (the drift-lite needle: every registry id has exactly one bin entry).
+ */
+async function gateTpl3() {
+  process.stdout.write("\ngate tpl3 — cli template expansion + registry parity\n");
+  const { PAGE_TEMPLATES, PAGE_TEMPLATE_NAMES } = await import(join(root, "bin", "templates.mjs"));
+  const ids = Object.keys(PAGE_TEMPLATES);
+  check(
+    JSON.stringify(PAGE_TEMPLATE_NAMES) === JSON.stringify(["saas", "docs", "telemetry"]),
+    "tpl3 \u00b7 PAGE_TEMPLATE_NAMES is exactly [saas, docs, telemetry]",
+    JSON.stringify(PAGE_TEMPLATE_NAMES),
+  );
+  for (const id of ids) {
+    const entry = PAGE_TEMPLATES[id];
+    check(entry.marker.length > 0 && entry.tsxSource.includes(entry.marker), `tpl3 \u00b7 ${id} tsxSource carries its marker (${entry.marker})`);
+    check(entry.tsxSource.includes('from "@edwyn/signature-style/react"'), `tpl3 \u00b7 ${id} tsxSource imports @edwyn/signature-style/react`);
+    check(entry.tsxSource.includes("export default"), `tpl3 \u00b7 ${id} tsxSource is a default-export page`);
+    check(entry.tsxSource.includes("prefers-reduced-motion"), `tpl3 \u00b7 ${id} tsxSource carries the reduced-motion guard`);
+    check(entry.htmlSource.includes(entry.marker), `tpl3 \u00b7 ${id} htmlSource carries its marker`);
+    check(entry.htmlSource.includes("signature-tokens.css"), `tpl3 \u00b7 ${id} htmlSource links the tokens css`);
+  }
+  // THE DRIFT-LITE NEEDLE — registry ids ↔ bin entries, 3 = 3.
+  const registrySrc = read(join(root, "playground", "template-registry.ts"));
+  const registryIds = [...new Set([...registrySrc.matchAll(/id: "(saas|docs|telemetry)"/g)].map((m) => m[1]))].sort();
+  const binIds = ids.slice().sort();
+  check(
+    registryIds.length === 3 && JSON.stringify(registryIds) === JSON.stringify(binIds),
+    `tpl3 \u00b7 registry ids parity 3 = 3 (registry: ${registryIds.join(",")} · bin: ${binIds.join(",")})`,
+    `registry ${JSON.stringify(registryIds)} vs bin ${JSON.stringify(binIds)}`,
+  );
+  // The cli.mjs wiring: the page templates are real --template choices.
+  const cliSrc = read(CLI);
+  check(cliSrc.includes("PAGE_TEMPLATES, PAGE_TEMPLATE_NAMES"), "tpl3 \u00b7 cli.mjs imports the template map");
+  check(cliSrc.includes('["minimal", "bento", ...PAGE_TEMPLATE_NAMES]'), "tpl3 \u00b7 cli.mjs TEMPLATE_NAMES grows the page templates");
+  check(cliSrc.includes("opts.template in PAGE_TEMPLATES"), "tpl3 \u00b7 cli.mjs buildFiles handles the page templates");
+}
+
+// ---------------------------------------------------------------------------
+// Gate b3 — the tarball grows 67 → EXACTLY 68
 // ---------------------------------------------------------------------------
 function gatePack() {
   process.stdout.write("\ngate b3 — pack expectation\n");
@@ -366,18 +531,17 @@ function gatePack() {
   const notice = `${res.stdout ?? ""}\n${res.stderr ?? ""}`;
   const match = notice.match(/total files:\s*(\d+)/);
   const total = match ? Number(match[1]) : -1;
-  // 64 (the 3.4.0 tarball) + the kinetic motion trio — css/motion.css +
-  // react/motion.js + react/motion.d.ts: the new stylesheet ships and the
-  // compiled primitive bundle ships (the react/motion.tsx source stays
-  // out, like every react .tsx source — the negations precedent).
-  check(total === 67, "b3 \u00b7 pack reports EXACTLY 67 files (64 + the kinetic motion trio: css/motion.css + react/motion.js + react/motion.d.ts)", `found ${total}`);
+  // 67 (the 3.7.0 tarball) + bin/templates.mjs — the full-page template
+  // map the CLI imports at npx runtime (playground files excluded — the
+  // templates ride the EMBEDDED copies in bin/templates.mjs).
+  check(total === 68, "b3 \u00b7 pack reports EXACTLY 68 files (67 + bin/templates.mjs — the full-page template map)", `found ${total}`);
 }
 
 // ---------------------------------------------------------------------------
 // run everything
 // ---------------------------------------------------------------------------
-for (const layer of [scenarioA, scenarioB, scenarioC, gateCli1, gateCli2, gateCli3, gatePack]) {
-  layer();
+for (const layer of [scenarioA, scenarioB, scenarioC, scenarioE, scenarioF, scenarioG, gateCli1, gateCli2, gateCli3, gateTpl3, gatePack]) {
+  await layer();
 }
 
 if (failures.length > 0) {
@@ -385,5 +549,5 @@ if (failures.length > 0) {
   for (const failure of failures) process.stderr.write(`  \u2717 ${failure}\n`);
   process.exitCode = 1;
 } else {
-  process.stdout.write(`\nPASS — verify:cli: ${passed} checks green (scenarios A\u2013D + gates cli1/cli2/cli3/b3; tmp dirs cleaned)\n`);
+  process.stdout.write(`\nPASS — verify:cli: ${passed} checks green (scenarios A\u2013G + gates cli1/cli2/cli3/tpl3/b3; tmp dirs cleaned)\n`);
 }

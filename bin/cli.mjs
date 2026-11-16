@@ -1,19 +1,23 @@
 #!/usr/bin/env node
 /**
- * bin/cli.mjs — @edwyn/signature-style · the zero-dependency scaffolder (3.3.0)
+ * bin/cli.mjs — @edwyn/signature-style · the zero-dependency scaffolder (3.3.0; 3.8.0 the page templates)
  * ----------------------------------------------------------------------------
- *   npx @edwyn/signature-style init [--template minimal|bento] [--theme mocha|oled|daylight]
+ *   npx @edwyn/signature-style init [--template minimal|bento|saas|docs|telemetry]
+ *                                   [--theme mocha|oled|daylight]
  *                                   [--dir <path>] [--force] [--yes]
  *
  * ZERO EXTERNAL DEPENDENCIES — node: built-ins only (fs, path, process,
- * readline) plus the embedded theme map (./themes.mjs). No commander, no
- * chalk, no build step: plain ESM, run straight from the tarball.
+ * readline) plus the embedded theme map (./themes.mjs) and the embedded
+ * full-page template map (./templates.mjs). No commander, no chalk, no
+ * build step: plain ESM, run straight from the tarball.
  *
  * FRAMEWORK DETECTION (in --dir):
- *   vite.config.* or a vite dependency → "vite-react" (bento → SignatureStarter.tsx)
- *   next.config.*                      → "next"       (bento → SignatureStarter.tsx)
- *   index.html (without those)         → "html"       (bento → signature-starter.html)
- *   empty directory                    → "fresh"      (bento → signature-starter.html)
+ *   vite.config.* or a vite dependency → "vite-react" (bento → SignatureStarter.tsx;
+ *                                        page templates → Signature<Name>.tsx)
+ *   next.config.*                      → "next"       (same tsx flavor)
+ *   index.html (without those)         → "html"       (bento → signature-starter.html;
+ *                                        page templates → the static mirror)
+ *   empty directory                    → "fresh"      (same html flavor)
  *   anything else                      → "html" fallback (the universal self-contained page)
  *
  * SAFE INJECTION: every generated file is existence-checked first — an
@@ -30,8 +34,9 @@ import { isAbsolute, join, resolve } from "node:path";
 import { createInterface } from "node:readline";
 import process from "node:process";
 import { THEMES, THEME_NAMES, resolveThemeTokens } from "./themes.mjs";
+import { PAGE_TEMPLATES, PAGE_TEMPLATE_NAMES } from "./templates.mjs";
 
-const TEMPLATE_NAMES = ["minimal", "bento"];
+const TEMPLATE_NAMES = ["minimal", "bento", ...PAGE_TEMPLATE_NAMES];
 const PKG = "@edwyn/signature-style";
 
 // Piped-output robustness: a consumer that closes the pipe early (e.g.
@@ -566,6 +571,8 @@ ${BENTO_CSS.split("\n").map((line) => "    " + line).join("\n")}
  */
 function renderReadme(ctx) {
   const isTsx = ctx.detection.starter === "tsx" && ctx.template === "bento";
+  const pageTemplate = ctx.template in PAGE_TEMPLATES ? PAGE_TEMPLATES[ctx.template] : null;
+  const pageIsTsx = pageTemplate !== null && ctx.detection.starter === "tsx";
   const files = ["`signature-tokens.css` — the resolved **" + ctx.theme + "** theme as one `:root` block (geometry preset **standard** baked in: 8px UI / 12px cards)"];
   if (ctx.template === "bento") {
     if (isTsx) {
@@ -575,11 +582,22 @@ function renderReadme(ctx) {
       files.push("`signature-starter.html` — a self-contained bento page (links the tokens, mirrors the grid inline, zero JS)");
     }
   }
+  if (pageTemplate !== null) {
+    if (pageIsTsx) {
+      files.push("`" + pageTemplate.tsxName + "` — the **" + pageTemplate.label + "** full-page template: one self-contained default-export page built from `@edwyn/signature-style/react` exports, carrying its own embedded token-driven `<style>` (container queries + reduced-motion honored)");
+    } else {
+      files.push("`signature-starter.html` — the **" + pageTemplate.label + "** STATIC MIRROR: the same blueprint as plain HTML + the tokens variables. A mirror is NOT the React statefulness (no live billing math / filters / manager state) — one honest snapshot, zero JS");
+    }
+  }
   files.push("`README-SIGNATURE.md` — this file");
 
-  const wire = isTsx
-    ? "```js\n// in your entry (e.g. src/main.tsx) — once, BEFORE your own styles\nimport \"./signature-tokens.css\";\n```\n\nThen render the starter anywhere:\n\n```tsx\nimport SignatureStarter from \"./SignatureStarter\";\n\n<SignatureStarter />\n```"
-    : "```html\n<link rel=\"stylesheet\" href=\"./signature-tokens.css\" />\n```\n\nThen open `signature-starter.html` (or serve the folder) — it links the tokens itself.";
+  const wire = pageIsTsx
+    ? "```js\n// in your entry (e.g. src/main.tsx) — once, BEFORE your own styles\nimport \"@edwyn/signature-style/css\";\n```\n\nInstall the engine (the template imports its React exports):\n\n```bash\nnpm i " + PKG + "\n```\n\nThen render the template anywhere:\n\n```tsx\nimport " + pageTemplate.tsxName.replace(/\\.tsx$/, "") + " from \"./" + pageTemplate.tsxName.replace(/\\.tsx$/, "") + "\";\n\n<" + pageTemplate.tsxName.replace(/\\.tsx$/, "") + " />\n```"
+    : pageTemplate !== null
+      ? "```html\n<link rel=\"stylesheet\" href=\"./signature-tokens.css\" />\n```\n\nThen open `signature-starter.html` (or serve the folder) — it links the tokens itself. Want the LIVE React blueprint (real state: billing math, filters, the manager)? Scaffold the same template into a vite/next project."
+      : isTsx
+        ? "```js\n// in your entry (e.g. src/main.tsx) — once, BEFORE your own styles\nimport \"./signature-tokens.css\";\n```\n\nThen render the starter anywhere:\n\n```tsx\nimport SignatureStarter from \"./SignatureStarter\";\n\n<SignatureStarter />\n```"
+        : "```html\n<link rel=\"stylesheet\" href=\"./signature-tokens.css\" />\n```\n\nThen open `signature-starter.html` (or serve the folder) — it links the tokens itself.";
 
   const generatedList = files.map((f) => "- " + f).join("\n");
 
@@ -726,18 +744,21 @@ USAGE
   npx ${PKG} init [flags]
 
 FLAGS
-  --template <minimal|bento>       starter template (default: minimal)
+  --template <minimal|bento|saas|docs|telemetry>
+                                   starter template (default: minimal; the
+                                   page templates emit a full-page blueprint
+                                   per framework detection)
   --theme <mocha|oled|daylight>    surface theme for signature-tokens.css (default: mocha)
   --dir <path>                     target directory (default: current directory)
   --force                          overwrite existing generated files
   --yes                            skip interactive prompts (CI-safe)
   -h, --help                       show this help
 
-FRAMEWORK DETECTION (drives the bento template output)
-  next.config.*                      -> next        (SignatureStarter.tsx)
-  vite.config.* / vite dependency    -> vite-react  (SignatureStarter.tsx)
-  index.html                         -> html        (signature-starter.html)
-  empty directory                    -> fresh       (signature-starter.html)
+FRAMEWORK DETECTION (drives the bento + page-template output)
+  next.config.*                      -> next        (<Name>Template.tsx / SignatureStarter.tsx)
+  vite.config.* / vite dependency    -> vite-react  (<Name>Template.tsx / SignatureStarter.tsx)
+  index.html                         -> html        (signature-starter.html — the static mirror)
+  empty directory                    -> fresh       (signature-starter.html — the static mirror)
 
 SAFE INJECTION
   Existing files are never overwritten without --force ([skip] notice).
@@ -746,6 +767,8 @@ SAFE INJECTION
 EXAMPLES
   npx ${PKG} init --template bento --theme oled --yes
   npx ${PKG} init --dir ./client --template bento --force
+  npx ${PKG} init --template saas --yes        # the SaaS Landing full-page blueprint
+  npx ${PKG} init --template telemetry --theme oled --yes
 `);
 }
 
@@ -872,6 +895,13 @@ function hasDependency(targetDir, name) {
 /**
  * Build the file plan for the resolved options.
  *
+ * 3.8.0 — the page templates (saas | docs | telemetry): tsx flavor →
+ * the full React blueprint (Signature<Name>.tsx, imports from
+ * "@edwyn/signature-style/react", self-contained styles); html flavor
+ * → the static signature-starter.html mirror. No companion css (the
+ * templates carry their own embedded <style>); signature-tokens.css
+ * always ships.
+ *
  * @param {{theme: string, template: string, dir: string}} opts
  * @param {{label: string, starter: string, reason: string}} detection
  * @returns {Array<{name: string, content: string}>}
@@ -884,6 +914,13 @@ function buildFiles(opts, detection) {
       plan.push({ name: "signature-bento.css", content: BENTO_CSS });
     } else {
       plan.push({ name: "signature-starter.html", content: HTML_STARTER });
+    }
+  } else if (opts.template in PAGE_TEMPLATES) {
+    const pageTemplate = PAGE_TEMPLATES[opts.template];
+    if (detection.starter === "tsx") {
+      plan.push({ name: pageTemplate.tsxName, content: pageTemplate.tsxSource });
+    } else {
+      plan.push({ name: pageTemplate.htmlName, content: pageTemplate.htmlSource });
     }
   }
   plan.push({
@@ -924,10 +961,19 @@ function injectFiles(plan, targetDir, force) {
  */
 function printSummary(opts, detection, targetDir) {
   const tsx = opts.template === "bento" && detection.starter === "tsx";
+  const pageTemplate = opts.template in PAGE_TEMPLATES ? PAGE_TEMPLATES[opts.template] : null;
+  const pageTsx = pageTemplate !== null && detection.starter === "tsx";
   const steps = [];
   if (tsx) {
     steps.push(`import "./signature-tokens.css" once in your entry (e.g. src/main.tsx) — before your styles`);
     steps.push(`render <SignatureStarter /> anywhere in your app`);
+  } else if (pageTsx && pageTemplate !== null) {
+    steps.push(`npm i ${PKG} (the template imports its React exports)`);
+    steps.push(`import "@edwyn/signature-style/css" once in your entry (e.g. src/main.tsx) — before your styles`);
+    steps.push(`render <${pageTemplate.tsxName.replace(/\.tsx$/, "")} /> anywhere in your app`);
+  } else if (pageTemplate !== null) {
+    steps.push(`open signature-starter.html — it links ./signature-tokens.css itself (the ${pageTemplate.label} STATIC mirror)`);
+    steps.push(`want the LIVE React blueprint? scaffold ${opts.template} into a vite/next project`);
   } else if (opts.template === "bento") {
     steps.push(`open signature-starter.html — it links ./signature-tokens.css itself`);
   } else {

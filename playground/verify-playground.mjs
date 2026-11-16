@@ -904,9 +904,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "67") {
+} else if (totalFiles[1] !== "68") {
   failures.push(
-    `(b3) npm pack must pack EXACTLY 67 files (3.7.0: 64 + the kinetic motion trio — css/motion.css + react/motion.js + react/motion.d.ts), found ${totalFiles[1]}`,
+    `(b3) npm pack must pack EXACTLY 68 files (3.8.0: 67 + bin/templates.mjs — the full-page template map), found ${totalFiles[1]}`,
   );
 }
 
