@@ -176,6 +176,15 @@ const SAAS_TEMPLATE_CSS = `
   text-decoration: none;
 }
 .sig-tpl-saas__footer a:hover { color: var(--text-bright); text-decoration: underline; }
+/* THE DOCTRINE FOCUS RING — every interactive element in the template
+   rings Flamingo (2px + offset); the browser default never shows. */
+.sig-tpl-saas a:focus-visible,
+.sig-tpl-saas button:focus-visible,
+.sig-tpl-saas summary:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-ui);
+}
 .sig-tpl-saas__fineprint {
   margin: 0;
   font-size: 0.75rem;

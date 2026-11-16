@@ -107,6 +107,14 @@ const TELEMETRY_TEMPLATE_CSS = `
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
+/* THE DOCTRINE FOCUS RING — every interactive element in the template
+   rings Flamingo (2px + offset); the browser default never shows. */
+.sig-tpl-telemetry input:focus-visible,
+.sig-tpl-telemetry button:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-ui);
+}
 @container tpl-telemetry (max-width: 1023px) {
   .sig-tpl-telemetry { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .sig-tpl-telemetry > .span-3 { grid-column: span 3; }

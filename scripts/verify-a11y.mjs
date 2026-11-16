@@ -83,13 +83,16 @@ const WIDTH = 1440;
 const HEIGHT = 900;
 
 /** The certified views (same census as verify-visual-diff). 3.6.0: the
- *  SIX-view map — the Graph Studio + Analytics & Planner join. */
+ *  SIX-view map — the Graph Studio + Analytics & Planner join. 3.7.0:
+ *  the Motion Lab joins. 3.8.0: the TEMPLATES STUDIO joins (the
+ *  9-view model). */
 const VIEWS = [
   { name: "dashboard", hash: "" },
   { name: "graph-studio", hash: "#/graph" },
   { name: "analytics-planner", hash: "#/planner" },
   { name: "motion-lab", hash: "#/motion" },
   { name: "pattern-studio", hash: "#/studio" },
+  { name: "templates", hash: "#/templates" },
   { name: "master-index", hash: "#/index" },
   { name: "chronicle", hash: "#/chronicle" },
   { name: "codex", hash: "#/codex" },

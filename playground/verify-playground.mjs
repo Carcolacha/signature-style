@@ -1366,102 +1366,52 @@ if (oldTimeline !== null) {
 // label contract + the WC carousel 2.5.3 aria labels. tokens.json gains
 // meta.version 3.6.0 + the TWO-TIER metadata (guarded below — VALUES
 // byte-frozen).
-// 3.7.0 REBASE (the floor moves v3.5.0 → v3.6.0): THE INTELLIGENT
-// KINETIC ENGINE, MOTION LAB & LIVE DATA CHOREOGRAPHY. The
-// owner-authorized 3.7.0 deltas, and NOTHING else — demo/ bin/ wc/ stay
-// byte-identical. The AUTHORIZED_370 set = the 3.5.0/3.6.0 accumulation
-// PLUS:
-//   css/tokens.css      — the Motion section (9 kinetic tokens) + the
-//                         @supports fallback + the mercy blocks (Task 1)
-//   css/motion.css      — NEW: the kinetic primitives' styles (Task 2)
-//   css/signature-style.css — +1 layered import (motion.css, Task 2)
-//   css/data.css        — the FLIP tab indicator (Task 3)
-//   css/nav.css         — the FLIP nav indicator (Task 3)
-//   css/viz.css         — the SVG sweeps + the ring spring (Task 3)
-//   css/editorial.css   — the directional page glide (Task 3)
-//   react/motion.{tsx,js,d.ts}      — NEW: the kinetic primitives (Task 2)
-//   react/ThemeProvider.{tsx,js,d.ts} — whitelist 51 → 60 (Task 1)
-//   react/data.{tsx,js,d.ts}   — the Tabs FLIP refactor (Task 3)
-//   react/nav.{tsx,js,d.ts}    — the GlobalNav FLIP refactor (Task 3)
-//   react/editorial.{tsx,js,d.ts} — the directional carousel (Task 3)
-//   react/viz.{tsx,js,d.ts}    — pathLength={1} sweep normalization (Task 3)
-//   react/index.{ts,js,d.ts}   — the motion umbrella exports (Task 2)
-//   scripts/verify.mjs         — the (mo1)-(mo6) + (e1-motion) gates
-//   scripts/verify-cli.mjs     — gatePack 64 → 67
-//   scripts/verify-a11y.mjs / verify-visual-diff.mjs — the 8-view census
-//                         (+ the Motion Lab) + the goldens re-cert
+// 3.8.0 REBASE (the floor moves v3.6.0 → v3.7.0): FULL-PAGE LAYOUT
+// TEMPLATES, INTERACTIVE VIEWPORT PREVIEWER & CLI TEMPLATE EXPANSION.
+// The owner-authorized 3.8.0 deltas, and NOTHING else — css/ react/
+// wc/ demo/ tools/ stay byte-identical (0-line diff). The
+// AUTHORIZED_380 set:
+//   bin/cli.mjs            — the --template expansion (saas|docs|telemetry)
+//   bin/templates.mjs      — NEW: the embedded full-page template map
+//   scripts/verify-cli.mjs — scenarios E/F/G + gate tpl3 + (b3) 67 → 68
+//   scripts/verify-mcp.mjs — the Templates navigation probe + matrix
+//   scripts/verify-a11y.mjs / scripts/verify-visual-diff.mjs — the
+//                          9-view census + the goldens re-cert
 //   scripts/goldens/    — the owner-mandated re-certification
-//   SYSTEM_PROMPT.md    — title → v3.9 + the kinetic recipes
-// tokens.json gains meta.version 3.7.0 + the motionTokens section
-// (guarded below — the COLOR VALUES stay byte-frozen). playground/ is
-// NOT under the freeze (the composition layer); README/package.json/lock
-// are release plumbing.
+//   SYSTEM_PROMPT.md    — title → v4.0 + the Full-Page Layout Blueprints
+// tokens.json gains meta.version 3.8.0 (guarded below — the COLOR
+// VALUES stay byte-frozen; motionTokens carries EXACTLY the 9 kinetic
+// tokens, unchanged). playground/ is NOT under the freeze (the
+// composition layer); README/package.json/lock are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
-// The v3.4.0 authorized delta set, PLUS the 3.5.0 authorization. The
-// tools/mcp-viz entries authorize the DELETIONS (git diff name-only
-// lists deleted files by their old paths). scripts/verify.mjs stays in
-// the set from 3.4.0 — it is byte-frozen going FORWARD (no edit this
-// release; the (m1) needle lived in THIS file, never in verify.mjs).
 const AUTHORIZED_330 = new Set([
-  // 3.5.0 authorization (carried: the certification scripts exist since
-  // v3.5.0 — the floor moved PAST them, so they no longer diff).
-  "scripts/verify.mjs",
+  // 3.8.0 — THE TEMPLATE RELEASE DELTAS (Tasks 1-4).
+  "bin/cli.mjs",
+  "bin/templates.mjs",
   "scripts/verify-cli.mjs",
-  "scripts/verify-wc.mjs",
   "scripts/verify-mcp.mjs",
-  "tools/mcp-viz/server.ts",
-  "tools/mcp-viz/smoke.mjs",
-  "tools/mcp-viz/README.md",
-  "tools/mcp-viz/package-lock.json",
-  "tools/mcp-viz/package.json",
-  "tools/mcp-viz/tsconfig.json",
-  // 3.6.0 — THE A11Y/CAROUSEL/STUDIO PACKAGE DELTAS (Tasks 1-3).
-  "css/cards.css",
-  "css/editorial.css",
-  "css/graph.css",
-  "css/timeline.css",
-  "react/cards.tsx", "react/cards.js", "react/cards.d.ts",
-  "react/editorial.tsx", "react/editorial.js", "react/editorial.d.ts",
-  "react/graph.tsx", "react/graph.js", "react/graph.d.ts",
-  "react/index.ts", "react/index.js", "react/index.d.ts",
-  // 3.6.0 — THE GATES + DOCS.
   "scripts/verify-a11y.mjs",
   "scripts/verify-visual-diff.mjs",
-  "scripts/verify-examples.mjs",
   "SYSTEM_PROMPT.md",
-  // 3.7.0 — THE KINETIC ENGINE PACKAGE DELTAS (Tasks 1-3) + gates/docs.
-  "css/tokens.css",
-  "css/motion.css",
-  "css/signature-style.css",
-  "css/data.css",
-  "css/nav.css",
-  "css/viz.css",
-  "react/motion.tsx", "react/motion.js", "react/motion.d.ts",
-  "react/ThemeProvider.tsx", "react/ThemeProvider.js", "react/ThemeProvider.d.ts",
-  "react/data.tsx", "react/data.js", "react/data.d.ts",
-  "react/nav.tsx", "react/nav.js", "react/nav.d.ts",
-  "react/viz.tsx", "react/viz.js", "react/viz.d.ts",
-  "scripts/verify-cli.mjs",
-  "scripts/verify-mcp.mjs",
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v3.3.0", "--name-only", "--", ...B7_LOCKED_330],
+    ["diff", "v3.7.0", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v3.3.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v3.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.6.0 — outside the owner-authorized 3.7.0 set (the kinetic-engine package deltas + the gates + the codex)`,
+      `(b7) SAFETY: ${file} changed since v3.7.0 — outside the owner-authorized 3.8.0 set (the cli template expansion + the gates + the codex)`,
     );
   }
 }
@@ -1491,8 +1441,8 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
 // kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "3.7.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.7.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "3.8.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.8.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
   const MOTION_NAMES_370 = [
     "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
@@ -1672,15 +1622,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 3.7.0 FROZEN PROOF — v3.6.0 baseline ----
-// Rebased 3.7.0 (the floor moves v3.5.0 → v3.6.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 3.7.0
+// ---- (n-hub4) THE 3.8.0 FROZEN PROOF — v3.7.0 baseline ----
+// Rebased 3.8.0 (the floor moves v3.6.0 → v3.7.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 3.8.0
 // list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.6.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v3.7.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1688,11 +1638,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.6.0 beyond the 3.7.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated kinetic-engine set)`,
+      `(n-hub4) SAFETY: files changed since v3.7.0 beyond the 3.8.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated template-release set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.6.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.7.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
@@ -2069,8 +2019,8 @@ if (!nodeClearance.test(stylesCss)) {
 // still lives: the package TimelineManager edge + the Set 06 studio frame).
 const INDEX_REQUIREMENTS = [
   [
-    'type View =\n  | "dashboard"\n  | "graph"\n  | "planner"\n  | "motion"\n  | "studio"\n  | "index"\n  | "chronicle"\n  | "codex"',
-    "the 3.7.0 eight-view union (the 7-view nav map + the memorial)",
+    'type View =\n  | "dashboard"\n  | "graph"\n  | "planner"\n  | "motion"\n  | "studio"\n  | "templates"\n  | "index"\n  | "chronicle"\n  | "codex"',
+    "the 3.8.0 nine-view union (the 8-view nav map + the memorial)",
   ],
   ['HREF_TO_VIEW[window.location.hash] ?? "dashboard"', 'the 3.4.0 deep-link bootstrap — hash first, dashboard default (the cortex smoke still finds the timeline on the bare root URL: empty hash → "dashboard")'],
   ["function HubLink(", "the playground's link renderer for GlobalNav's as prop"],
@@ -5672,6 +5622,150 @@ if (!existsSync(llmsFullPath)) {
     if (!stylesCss.includes(needle)) {
       failures.push(`(cus) styles.css must contain ${needle} — ${label}`);
     }
+  }
+}
+
+// ---- (tpl1) THE FULL-PAGE TEMPLATE REGISTRY (3.8.0) ------------------------------
+// The templates dir + the registry + the SNIPPET data layer: exactly three
+// entries, each carrying id/name/description/Component/source, the source
+// strings mechanically derived from the shipped .tsx files (registry parity),
+// package-only imports, embedded <style>, reduced-motion guards, zero hex.
+const registryPath = join(playground, "template-registry.ts");
+const sourcesPath = join(playground, "template-sources.ts");
+if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
+  failures.push("(tpl1) playground/template-registry.ts + playground/template-sources.ts must exist — the full-page template registry");
+} else {
+  const registrySrc = readFileSync(registryPath, "utf8");
+  const sourcesSrc = readFileSync(sourcesPath, "utf8");
+  const TPL1_REGISTRY_NEEDLES = [
+    ["PAGE_TEMPLATES: Array<{", "the typed PAGE_TEMPLATES array"],
+    ['id: "saas"', "entry: saas"],
+    ['id: "docs"', "entry: docs"],
+    ['id: "telemetry"', "entry: telemetry"],
+    ["Component: SaasLandingTemplate", "saas carries the LIVE component"],
+    ["Component: DocsReaderTemplate", "docs carries the LIVE component"],
+    ["Component: TelemetryCenterTemplate", "telemetry carries the LIVE component"],
+    ["source: TEMPLATE_SOURCES.saas", "saas carries its SNIPPET string"],
+    ["source: TEMPLATE_SOURCES.docs", "docs carries its SNIPPET string"],
+    ["source: TEMPLATE_SOURCES.telemetry", "telemetry carries its SNIPPET string"],
+    ["TEMPLATE_SLUGS", "the breadcrumb slug map"],
+  ];
+  for (const [needle, label] of TPL1_REGISTRY_NEEDLES) {
+    if (!registrySrc.includes(needle)) {
+      failures.push(`(tpl1) template-registry.ts must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // The three .tsx files: default export + package-only imports + embedded
+  // style + reduced motion + zero hex.
+  for (const [file, marker] of [
+    ["SaasLandingTemplate.tsx", "SaasLanding"],
+    ["DocsReaderTemplate.tsx", "DocsReader"],
+    ["TelemetryCenterTemplate.tsx", "TelemetryCenter"],
+  ]) {
+    const tplSrc = readFileSync(join(playground, "templates", file), "utf8");
+    if (!tplSrc.includes(`export default function ${marker}Template`)) {
+      failures.push(`(tpl1) playground/templates/${file} must default-export ${marker}Template`);
+    }
+    if (!tplSrc.includes('from "@edwyn/signature-style/react"')) {
+      failures.push(`(tpl1) playground/templates/${file} must import from @edwyn/signature-style/react (standalone purity)`);
+    }
+    if (!tplSrc.includes("<style>")) {
+      failures.push(`(tpl1) playground/templates/${file} must carry its embedded <style> block (self-contained)`);
+    }
+    if (!tplSrc.includes("prefers-reduced-motion")) {
+      failures.push(`(tpl1) playground/templates/${file} must carry the prefers-reduced-motion guard`);
+    }
+    const tplHexes = tplSrc.match(/#[0-9a-f]{3,8}\b/gi);
+    if (tplHexes !== null) {
+      failures.push(`(tpl1) playground/templates/${file} contains hex literal(s) ${[...new Set(tplHexes)].join(", ")} — tokens only (zero hex)`);
+    }
+    // The SNIPPET leg mirrors the component file (the registry source must
+    // equal the data-layer string).
+    const escaped = tplSrc.trimEnd().replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
+    if (!sourcesSrc.includes(escaped)) {
+      failures.push(`(tpl1) template-sources.ts must embed ${file}'s content verbatim (the SNIPPET strings are mechanically derived — drift between the live component and the copy payload is forbidden)`);
+    }
+  }
+  if (!/export type TemplateId = "saas" \| "docs" \| "telemetry"/.test(sourcesSrc)) {
+    failures.push('(tpl1) template-sources.ts must declare TemplateId = "saas" | "docs" | "telemetry"');
+  }
+}
+
+// ---- (tpl2) THE TEMPLATES STUDIO (3.8.0) ------------------------------------------
+// The #/templates view: nav item + palette jumps + breadcrumbs, the FLIP
+// template tabs, the viewport emulator, the scoped theme switcher, the
+// Preview/Code toggle and Copy Full Page — plus the studio chrome css.
+{
+  const studioSrc = readFileSync(join(playground, "components", "TemplatesStudio.tsx"), "utf8");
+  const TPL2_APP_NEEDLES = [
+    ['templates: "#/templates"', "the view href"],
+    ['"#/templates": "templates"', "the routing table entry"],
+    ['| "templates"', "the View union grows"],
+    ['{ href: VIEW_HREFS.templates, label: "Templates" }', "the nav item"],
+    ["view === \"templates\" ? (", "the render branch"],
+    ["<TemplatesStudioView activeId={activeTemplate} onActiveChange={setActiveTemplate} />", "the controlled studio mount"],
+    ["const [activeTemplate, setActiveTemplate] = useState<TemplateId>(\"saas\")", "the LIFTED active-template state"],
+    ["TEMPLATE_SLUGS[activeTemplate]", "the breadcrumbs read the slug (engine / templates / saas-landing)"],
+    ['id: "view-templates"', "the palette view jump"],
+    ["Templates: ${template.name}", "the palette per-template jumps"],
+    ['title: "THE TEMPLATES STUDIO"', "the hero"],
+    ["three full-page blueprints · preview, theme & copy · one CLI command each", "the hero subtitle"],
+  ];
+  for (const [needle, label] of TPL2_APP_NEEDLES) {
+    if (!appSrc.includes(needle)) {
+      failures.push(`(tpl2) App.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const TPL2_STUDIO_NEEDLES = [
+    ["data-testid=\"tpl-studio-bar\"", "the sticky control bar"],
+    ["data-testid={`tpl-viewport-${tab.id}`}", "the viewport emulator segmented control"],
+    ["data-testid={`tpl-theme-${tab.id}`}", "the theme segmented control"],
+    ['data-testid="tpl-copy-full"', "the Copy Full Page button"],
+    ['data-testid="tpl-stage"', "the stage"],
+    ['data-testid="tpl-preview"', "the live preview mount"],
+    ['data-testid="tpl-code"', "the Full TSX Code pre/code"],
+    ['data-testid="tpl-copied-chip"', "the mint confirmation chip"],
+    ["STAGE_WIDTHS", "the Desktop/Tablet/Mobile width map"],
+    ['tablet: "768px"', "the tablet width"],
+    ['mobile: "375px"', "the mobile width"],
+    ['"100%"', "the desktop width"],
+    ['data-sig-theme={theme === "mocha" ? undefined : theme}', "the SCOPED theme switch (attribute on the stage wrapper; mocha = absent)"],
+    ["onChange={(id) => onActiveChange(id as TemplateId)}", "the FLIP template tabs drive the lifted state"],
+    ["{active?.source ?? \"\"}", "Code renders the registry source"],
+    ["--sig-mint", "the mint accent (the copied chip; the owner note — not mint-glow)"],
+    ["role=\"status\"", "the copied chip announces politely"],
+  ];
+  for (const [needle, label] of TPL2_STUDIO_NEEDLES) {
+    if (!studioSrc.includes(needle)) {
+      failures.push(`(tpl2) TemplatesStudio.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const TPL2_CSS_NEEDLES = [
+    [".tpl-studio__bar {", "the control bar rule"],
+    ["position: sticky;", "the bar is sticky"],
+    ["z-index: var(--z-sticky);", "the bar rides the sticky rung"],
+    ["backdrop-filter: blur(8px)", "the glass"],
+    ["transition: width var(--dur-glide) var(--ease-glide);", "the emulator's width transition (layout work IS the point)"],
+    [".tpl-studio__copied[data-visible=\"true\"] {", "the mint chip's visible state"],
+    ["color: var(--sig-mint);", "the mint ink"],
+    [".tpl-studio__code {", "the code well"],
+    ["@media (prefers-reduced-motion: reduce)", "the studio's reduced-motion guard"],
+    [".tpl-studio__stage {", "the stage rule"],
+  ];
+  for (const [needle, label] of TPL2_CSS_NEEDLES) {
+    if (!stylesCss.includes(needle)) {
+      failures.push(`(tpl2) styles.css must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // The theme-scope mechanism, documented in the css: the tokens.css theme
+  // blocks are PLAIN attribute selectors, so a div wrapper re-themes its
+  // subtree (the tokens.css file itself is FROZEN — the claim lives here).
+  if (!stylesCss.includes("data-sig-theme for the SCOPED preview")) {
+    failures.push("(tpl2) styles.css must document the scoped theme mechanism (the stage wrapper carries data-sig-theme; the theme blocks are plain attribute selectors)");
+  }
+  const studioHexes = studioSrc.match(/#[0-9a-f]{3,8}\b/gi);
+  if (studioHexes !== null) {
+    failures.push(`(tpl2) TemplatesStudio.tsx contains hex literal(s) ${[...new Set(studioHexes)].join(", ")} — tokens only (zero hex)`);
   }
 }
 

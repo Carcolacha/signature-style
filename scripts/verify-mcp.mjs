@@ -22,6 +22,13 @@
  *   (s2c) the MOTION LAB navigation probe (3.7.0): inspecting #/motion
  *        returns EXACTLY 6 alive .pattern-frame rects + ≥ 3 alive
  *        .sig-kinetic-surface rects;
+ *   (s2d) the TEMPLATES STUDIO navigation probe (3.8.0): inspecting
+ *        #/templates returns alive rects for the studio root, the
+ *        control bar, the stage wrap + stage, and the LIVE default
+ *        template (the SaaS landing + its pricing tiers);
+ *   (s2e) the 4-VIEWPORT matrix ON THE TEMPLATES VIEW (3.8.0):
+ *        capture_viewport_matrix on #/templates returns exactly 4
+ *        non-empty shots (375 / 768 / 1440 / 1920);
  *   (s3) audit_contrast returns a summary with numeric passCount +
  *        failCount and ≥ 1 measured element;
  *   (s4) audit_e1_shadows returns sanctionedCount ≥ 1 and a violations
@@ -177,6 +184,46 @@ try {
   );
   assert(sheenHits.length >= 3, `motion-lab probe: the kinetic sheen surfaces are not mounting (found ${sheenHits.length} alive)`);
   console.log(`motion-lab hits: pattern-frame=${motionFrames.length} · kinetic-surface=${sheenHits.length}`);
+
+  // (s2d) the TEMPLATES STUDIO navigation probe (3.8.0): #/templates
+  // mounts the studio — the stage wrap + stage measure alive rects,
+  // the control bar, the template tabs and the copy control are all
+  // present, and the preview mounts the live template (the SaaS
+  // landing default: the pricing section is in the DOM).
+  const templatesLayout = await rpc.call("tools/call", {
+    name: "inspect_layout",
+    arguments: {
+      url: `${URL_TO_INSPECT}/#/templates`,
+      selectors: [".tpl-studio", ".tpl-studio__bar", ".tpl-studio__stage-wrap", ".tpl-studio__stage", ".sig-tpl-saas", ".sig-tpl-saas__tiers"],
+    },
+  });
+  assert(templatesLayout.isError !== true, `templates inspect_layout errored: ${JSON.stringify(templatesLayout.content)}`);
+  const templatesPayload = JSON.parse(templatesLayout.content[0].text);
+  const aliveTpl = (selector) =>
+    templatesPayload.hits.filter((h) => h.selector === selector && h.rect.width > 0 && h.rect.height > 0).length;
+  assert(aliveTpl(".tpl-studio") === 1, "templates probe: the studio root is not mounting");
+  assert(aliveTpl(".tpl-studio__bar") === 1, "templates probe: the control bar is not mounting");
+  assert(aliveTpl(".tpl-studio__stage-wrap") === 1, "templates probe: the stage wrap is not mounting");
+  assert(aliveTpl(".tpl-studio__stage") === 1, "templates probe: the stage is not mounting");
+  assert(aliveTpl(".sig-tpl-saas") === 1, "templates probe: the default template (SaaS Landing) is not mounting live");
+  assert(aliveTpl(".sig-tpl-saas__tiers") === 1, "templates probe: the SaaS pricing tiers are not mounting");
+  console.log(`templates hits: studio=${aliveTpl(".tpl-studio")} · bar=${aliveTpl(".tpl-studio__bar")} · stage=${aliveTpl(".tpl-studio__stage")} · saas=${aliveTpl(".sig-tpl-saas")}`);
+
+  // (s2e) the 4-VIEWPORT sweep ON THE TEMPLATES VIEW (3.8.0): the
+  // doctrine matrix captured on #/templates — the studio + the stage
+  // must render non-empty at 375 / 768 / 1440 / 1920.
+  const templatesMatrix = await rpc.call("tools/call", {
+    name: "capture_viewport_matrix",
+    arguments: { url: `${URL_TO_INSPECT}/#/templates`, path: "/tmp/opencode/viewport-matrix-templates" },
+  });
+  assert(templatesMatrix.isError !== true, `templates capture_viewport_matrix errored: ${JSON.stringify(templatesMatrix.content)}`);
+  const templatesMatrixPayload = JSON.parse(templatesMatrix.content[0].text);
+  assert(templatesMatrixPayload.matrix.length === 4, `templates matrix must return exactly 4 rows, got ${templatesMatrixPayload.matrix?.length}`);
+  for (const row of templatesMatrixPayload.matrix) {
+    assert(typeof row.bytes === "number" && row.bytes > 0, `templates viewport ${row.viewport} bytes is ${row.bytes}`);
+    assert(statSync(row.path).size > 0, `templates matrix file ${row.path} is empty`);
+  }
+  console.log(`templates matrix: ${templatesMatrixPayload.matrix.map((m) => `${m.viewport}=${m.bytes}B`).join(" · ")}`);
 
   // (s3) audit_contrast — numeric pass/fail summary, ≥ 1 measured element.
   const contrast = await rpc.call("tools/call", {

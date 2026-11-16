@@ -1,13 +1,13 @@
 /**
- * TEMPLATE-SOURCES — the full-page templates' DATA layer (3.8.0).
+ * TEMPLATE-SOURCES — the full-page templates'"'"' DATA layer (3.8.0).
  *
- * The registry's Component leg lives in the React .tsx files; THIS
- * module is the SNIPPET leg: every template's formatted standalone
+ * The registry'"'"'s Component leg lives in the React .tsx files; THIS
+ * module is the SNIPPET leg: every template'"'"'s formatted standalone
  * source, mechanically derived from its shipped component file by the
  * authoring transform (the .tsx file content verbatim — same imports
  * from "@edwyn/signature-style/react", the embedded <style> CSS, the
  * same default export). PURE STRINGS on purpose: the llms generator
- * (Node ≥ 23.6 strips .ts types but cannot import .tsx), the studio's
+ * (Node ≥ 23.6 strips .ts types but cannot import .tsx), the studio'"'"'s
  * Full TSX Code view and the Copy Full Page button all read from here,
  * so the copy payloads can never drift from the live components.
  *
@@ -36,7 +36,7 @@ export const TEMPLATE_META: Record<TemplateId, { name: string; description: stri
   },
 };
 
-/** id → the template's full standalone TSX source. */
+/** id → the template'"'"'s full standalone TSX source. */
 export const TEMPLATE_SOURCES: Record<TemplateId, string> = {
   saas: `
 /**
@@ -217,6 +217,15 @@ const SAAS_TEMPLATE_CSS = \`
   text-decoration: none;
 }
 .sig-tpl-saas__footer a:hover { color: var(--text-bright); text-decoration: underline; }
+/* THE DOCTRINE FOCUS RING — every interactive element in the template
+   rings Flamingo (2px + offset); the browser default never shows. */
+.sig-tpl-saas a:focus-visible,
+.sig-tpl-saas button:focus-visible,
+.sig-tpl-saas summary:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-ui);
+}
 .sig-tpl-saas__fineprint {
   margin: 0;
   font-size: 0.75rem;
@@ -673,6 +682,14 @@ const DOCS_TEMPLATE_CSS = \`
 }
 .sig-tpl-docs__chapters a:hover,
 .sig-tpl-docs__outline a:hover { color: var(--text-bright); }
+/* THE DOCTRINE FOCUS RING — every interactive element in the template
+   rings Flamingo (2px + offset); the browser default never shows. */
+.sig-tpl-docs a:focus-visible,
+.sig-tpl-docs button:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-ui);
+}
 .sig-tpl-docs__chapters a[aria-current="true"] {
   border-left-color: var(--color-cake-primary);
   color: var(--text-bright);
@@ -1080,6 +1097,14 @@ const TELEMETRY_TEMPLATE_CSS = \`
   font-size: 0.75rem;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
+}
+/* THE DOCTRINE FOCUS RING — every interactive element in the template
+   rings Flamingo (2px + offset); the browser default never shows. */
+.sig-tpl-telemetry input:focus-visible,
+.sig-tpl-telemetry button:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-ui);
 }
 @container tpl-telemetry (max-width: 1023px) {
   .sig-tpl-telemetry { grid-template-columns: repeat(6, minmax(0, 1fr)); }

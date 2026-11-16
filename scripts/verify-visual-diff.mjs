@@ -64,13 +64,16 @@ const TOLERANCE = 0.001;
 
 /** The certified views: name → deep link (the hash bootstrap lands cold).
  *  3.6.0: the SIX-view map — graph-studio + analytics-planner join.
- *  3.7.0: the MOTION LAB joins (the 8th view; goldens re-certified). */
+ *  3.7.0: the MOTION LAB joins (the 8th view; goldens re-certified).
+ *  3.8.0: the TEMPLATES STUDIO joins (the 9th view; goldens re-certified
+ *  with intent — the studio + templates are NEW visuals). */
 const VIEWS = [
   { name: "dashboard", hash: "" },
   { name: "graph-studio", hash: "#/graph" },
   { name: "analytics-planner", hash: "#/planner" },
   { name: "motion-lab", hash: "#/motion" },
   { name: "pattern-studio", hash: "#/studio" },
+  { name: "templates", hash: "#/templates" },
   { name: "master-index", hash: "#/index" },
   { name: "chronicle", hash: "#/chronicle" },
   { name: "codex", hash: "#/codex" },

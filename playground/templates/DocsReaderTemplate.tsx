@@ -104,6 +104,14 @@ const DOCS_TEMPLATE_CSS = `
 }
 .sig-tpl-docs__chapters a:hover,
 .sig-tpl-docs__outline a:hover { color: var(--text-bright); }
+/* THE DOCTRINE FOCUS RING — every interactive element in the template
+   rings Flamingo (2px + offset); the browser default never shows. */
+.sig-tpl-docs a:focus-visible,
+.sig-tpl-docs button:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-ui);
+}
 .sig-tpl-docs__chapters a[aria-current="true"] {
   border-left-color: var(--color-cake-primary);
   color: var(--text-bright);
