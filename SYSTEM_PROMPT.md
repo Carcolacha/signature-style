@@ -307,11 +307,11 @@ Chromatic-colored budget bar with the limit caption; `colorToken` accepts `--sig
 
 ### <StatRing>
 
-The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only. 3.0.0 ZOOM + DETAIL: the dial defaults to 120px; pass `total` (+ optional `unit`) and the ring becomes zoomable — hover/press scale(1.07), a click toggles the detail strip ("85% · 170 / 200 Seats", tabular-nums, the 0fr→1fr slide, reduced-motion safe):
+The ratio dial — SVG, three circles, centered readout on by default; `strokeWidth` is `4 | 8` only. 3.9.0 SIZE ENUM (BREAKING): `size` takes the enum `"sm" | "md" | "lg"` (88 / 128 / 168 px, default `"md"`) — the bare number is retired, and the enum resolves to a `--ring-size` box that `flex-shrink: 0; aspect-ratio: 1/1` keeps EXACT in any flex row (a wide flex container can never balloon the dial again). ZOOM + DETAIL: pass `total` (+ optional `unit`) and the ring becomes zoomable — hover/press scale(1.07), a click toggles the detail strip ("85% · 170 / 200 Seats", tabular-nums, the 0fr→1fr slide, reduced-motion safe):
 
 ```tsx
-<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />
-<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" total={200} unit="Seats" />
+<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" size="md" />
+<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" size="lg" total={200} unit="Seats" />
 ```
 
 ### <DataTable>

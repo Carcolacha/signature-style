@@ -8,11 +8,26 @@ export function ProgressBar({ value, colorToken, label, limitText }) {
     const clamped = Math.min(100, Math.max(0, value));
     return (_jsxs(_Fragment, { children: [_jsx("div", { className: "sig-progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": clamped, "aria-label": label, children: _jsx("div", { className: "sig-progress__fill", style: { width: `${clamped}%`, background: `var(${colorToken})` } }) }), limitText !== undefined && (_jsx("div", { className: "sig-progress__caption", children: limitText }))] }));
 }
-export function StatRing({ value, colorToken, size = 120, strokeWidth = 8, showValue = true, label, total, unit, }) {
+/** The enum's exact px diameters — 8px-grid multiples, frozen values. */
+export const STAT_RING_SIZES = {
+    sm: 88,
+    md: 128,
+    lg: 168,
+};
+export function StatRing({ value, colorToken, size = "md", strokeWidth = 8, showValue = true, label, total, unit, }) {
     if (!colorToken.startsWith("--sig-")) {
         console.warn(`[signature-style] dropped "${colorToken}" — StatRing accepts --sig-* tokens only (Rule of Engagement: structural chrome keeps Flamingo/Teal).`);
         return null;
     }
+    // 3.9.0 — the enum resolution. A legacy number (the pre-3.9.0
+    // contract) warns once and falls back to "md" — JS consumers get a
+    // loud migration signal instead of a silently ballooning dial.
+    let sizeName = size;
+    if (typeof sizeName === "number") {
+        console.warn(`[signature-style] StatRing size={${sizeName}} is retired (3.9.0) — use the enum "sm" | "md" | "lg" (88 / 128 / 168). Rendering "md".`);
+        sizeName = "md";
+    }
+    const px = STAT_RING_SIZES[sizeName];
     // 3.0.0 — the internal EXPAND state (the zoom): a click toggles
     // data-expanded on the wrapper (css/viz.css answers scale(1.07)) and
     // slides the detail strip open (the 0fr → 1fr grid trick).
@@ -21,12 +36,12 @@ export function StatRing({ value, colorToken, size = 120, strokeWidth = 8, showV
     const radius = 44;
     const circumference = 2 * Math.PI * radius;
     // px → viewBox units: identical visual weight at every size.
-    const strokeUnits = (strokeWidth / size) * 100;
+    const strokeUnits = (strokeWidth / px) * 100;
     const hasDetail = total !== undefined && total > 0;
     const numerator = hasDetail
         ? Math.round((clamped / 100) * total)
         : 0;
-    const ring = (_jsxs("svg", { role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": clamped, "aria-label": label, viewBox: "0 0 100 100", children: [_jsx("circle", { cx: "50", cy: "50", r: radius, fill: "none", stroke: "var(--bg-inset)", strokeWidth: strokeUnits }), _jsx("circle", { cx: "50", cy: "50", r: radius, fill: "none", stroke: `var(${colorToken})`, strokeWidth: strokeUnits, strokeLinecap: "round", strokeDasharray: circumference, strokeDashoffset: circumference * (1 - clamped / 100), transform: "rotate(-90 50 50)" }), _jsx("circle", { cx: "50", cy: "50", r: 47.5, fill: "none", stroke: "color-mix(in srgb, var(--text-muted) 20%, transparent)", strokeWidth: 1.5 }), showValue && (_jsxs("text", { x: "50", y: "50", textAnchor: "middle", dominantBaseline: "central", fill: "var(--text-main)", style: {
+    const ring = (_jsxs("svg", { role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": clamped, "aria-label": label, className: "sig-stat-ring", viewBox: "0 0 100 100", style: { "--ring-size": `${px}px` }, children: [_jsx("circle", { cx: "50", cy: "50", r: radius, fill: "none", stroke: "var(--bg-inset)", strokeWidth: strokeUnits }), _jsx("circle", { cx: "50", cy: "50", r: radius, fill: "none", stroke: `var(${colorToken})`, strokeWidth: strokeUnits, strokeLinecap: "round", strokeDasharray: circumference, strokeDashoffset: circumference * (1 - clamped / 100), transform: "rotate(-90 50 50)" }), _jsx("circle", { cx: "50", cy: "50", r: 47.5, fill: "none", stroke: "color-mix(in srgb, var(--text-muted) 20%, transparent)", strokeWidth: 1.5 }), showValue && (_jsxs("text", { x: "50", y: "50", textAnchor: "middle", dominantBaseline: "central", fill: "var(--text-main)", style: {
                     fontVariantNumeric: "tabular-nums",
                     fontWeight: 600,
                     fontSize: 24,
@@ -35,7 +50,7 @@ export function StatRing({ value, colorToken, size = 120, strokeWidth = 8, showV
         // The bare dial (pre-3.0.0 consumers): svg direct, nothing new.
         return ring;
     }
-    return (_jsxs("div", { className: "sig-ring", "data-expanded": detail || undefined, children: [_jsx("div", { className: "sig-ring__dial", style: { width: size, height: size }, onClick: () => setDetail((current) => !current), children: ring }), _jsx("div", { className: "sig-ring__detail", "data-open": detail || undefined, children: _jsxs("div", { className: "sig-ring__detail-inner", children: [clamped, "% \u00B7 ", numerator, " / ", total, " ", unit ?? ""] }) })] }));
+    return (_jsxs("div", { className: "sig-ring", "data-expanded": detail || undefined, children: [_jsx("div", { className: "sig-ring__dial", style: { "--ring-size": `${px}px` }, onClick: () => setDetail((current) => !current), children: ring }), _jsx("div", { className: "sig-ring__detail", "data-open": detail || undefined, children: _jsxs("div", { className: "sig-ring__detail-inner", children: [clamped, "% \u00B7 ", numerator, " / ", total, " ", unit ?? ""] }) })] }));
 }
 /**
  * The PURE geometry helper — data in, viewBox points out. No DOM, no

@@ -3890,23 +3890,32 @@ if (!chronicleNode.test(cardsCss26)) {
   const RING2_CSS = [
     [".sig-ring__dial", "the square dial wrapper"],
     ["aspect-ratio: 1 / 1", "the 1/1 square"],
-    ["width: 120px", "the 120px default box"],
+    ["width: var(--ring-size, 128px)", "the 3.9.0 enum-driven box (128px md default)"],
     ["transform: scale(1.07)", "the zoom"],
     [".sig-ring[data-expanded=\"true\"] .sig-ring__dial", "the expanded zoom state"],
     [".sig-ring__detail", "the detail strip"],
     ["grid-template-rows: 0fr", "the collapsed strip (the 0fr→1fr trick)"],
     ["grid-template-rows: 1fr", "the open strip"],
     ["font-variant-numeric: tabular-nums", "the strip's tabular digits"],
+    // 3.9.0 THE SIZE ENUM — the owner's defect #2: the enum is the law
+    // and the box can never stretch again.
+    [".sig-stat-ring", "the bare svg's size-contract class"],
   ];
   for (const [needle, label] of RING2_CSS) {
     if (!vizCss30.includes(needle)) {
       failures.push(`(ring2) css/viz.css must contain ${JSON.stringify(needle)} — ${label}`);
     }
   }
-  const dialSquare = /\.sig-ring__dial\s*\{[^}]*aspect-ratio: 1 \/ 1;[^}]*width: 120px;/s;
+  const dialSquare = /\.sig-ring__dial\s*\{[^}]*aspect-ratio: 1 \/ 1;[^}]*width: var\(--ring-size, 128px\);/s;
   if (!dialSquare.test(vizCss30)) {
     failures.push(
-      "(ring2) .sig-ring__dial must be the aspect-ratio 1/1 square with the 120px default",
+      "(ring2) .sig-ring__dial must be the aspect-ratio 1/1 square driven by --ring-size (the 3.9.0 enum)",
+    );
+  }
+  const ringBox = /\.sig-stat-ring\s*\{[^}]*aspect-ratio: 1 \/ 1;[^}]*flex-shrink: 0;/s;
+  if (!ringBox.test(vizCss30)) {
+    failures.push(
+      "(ring2) .sig-stat-ring must pin width/height off --ring-size with aspect-ratio 1/1 + flex-shrink: 0 — the ring can never balloon in a flex row (the owner's defect #2)",
     );
   }
   const reducedRing = /@media \(prefers-reduced-motion: reduce\)\s*\{[^@]*\.sig-ring__dial,\s*\n\s*\.sig-ring__detail\s*\{[^}]*transition: none;/s;

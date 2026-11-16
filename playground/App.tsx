@@ -1586,6 +1586,7 @@ function BentoCore({
             label="Attendance ratio"
             total={SEAT_CAPACITY}
             unit="Seats"
+            size="md"
           />
         </div>
         <div className="hub__metric" data-testid="metric-budget-spent">

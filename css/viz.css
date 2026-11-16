@@ -183,9 +183,11 @@
 
 .sig-ring__dial {
   aspect-ratio: 1 / 1;
-  /* 120px default — the component overrides inline via the size prop. */
-  width: 120px;
-  height: 120px;
+  /* 3.9.0 — the size enum feeds --ring-size inline (88 / 128 / 168);
+     the 128px default below is the "md" fallback for container-less
+     legacy markup. The box is EXACT — never a stretched % width. */
+  width: var(--ring-size, 128px);
+  height: var(--ring-size, 128px);
   cursor: pointer;
   transition: var(--transition-transform);
 }
@@ -197,6 +199,27 @@
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* ==========================================================================
+   3.9.0 THE RING SIZE CONTRACT — `.sig-stat-ring` is the bare svg's
+   class (the 3.9.0 size-enum work gave the previously class-less ring
+   an anchor). The component feeds `--ring-size` inline (88 / 128 /
+   168 px — the StatRingSize enum, default "md" = 128); css pins the
+   box EXACTLY: fixed width/height from the var, aspect-ratio 1/1, and
+   `flex-shrink: 0` so a wide flex row (the Motion Lab telemetry row
+   ballooned the ring to ~700px — the owner's defect #2) can never
+   stretch or squeeze the dial. The svg is a block: no baseline gap,
+   no implicit inline sizing.
+   ========================================================================== */
+.sig-stat-ring {
+  display: block;
+  width: var(--ring-size, 128px);
+  height: var(--ring-size, 128px);
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  max-width: none; /* the enum is the law — no ancestor cap may shrink it */
+  max-height: none;
 }
 
 /* THE DETAIL STRIP — slides open under the ring (0fr → 1fr: the row

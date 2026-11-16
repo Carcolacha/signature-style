@@ -40,6 +40,14 @@
  * gate-testable). Hover reveals are CLASS-driven (css/viz.css answers
  * :hover with opacity, never inline styles).
  *
+ * 3.9.0 THE SIZE ENUM — StatRing's `size` prop is RETYPED number →
+ * "sm" | "md" | "lg" (88 / 128 / 168 px, default "md"). BREAKING (the
+ * owner's defect #2: `width: 100%` + no cap let the ring balloon to
+ * ~700px in Motion Lab's wide flex row). The enum resolves to a
+ * `--ring-size` custom property; css/viz.css answers with an exact
+ * square (`aspect-ratio: 1/1; flex-shrink: 0`) the flex layout can
+ * never stretch. Legacy numbers warn + fall back to "md".
+ *
  * Pruning Protocol: ProgressBar renders EXACTLY two elements plus the
  * optional caption (no wrappers around the track); StatRing renders
  * ONE svg with EXACTLY three circles (track + progress + boundary
@@ -50,7 +58,7 @@
  */
 
 import type { SigTokenName } from "./primitives.js";
-import { memo, useId, useState } from "react";
+import { memo, useId, useState, type CSSProperties } from "react";
 
 /**
  * `<ProgressBar>` — the chromatic-colored budget bar.
@@ -162,13 +170,38 @@ export function ProgressBar({ value, colorToken, label, limitText }: ProgressBar
  * <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />
  * ```
  */
+/**
+ * 3.9.0 — THE SIZE ENUM. The old `size?: number` prop (default 120) is
+ * RETIRED: a bare number inside a flex row let `width: 100%` balloons
+ * happen (the Motion Lab ring rendered ~700px wide in a wide container —
+ * the owner's defect #2). The enum gives the ring three FIXED, 8px-grid
+ * diameters — sm 88 / md 128 / lg 168 — resolved to a `--ring-size`
+ * custom property that css/viz.css turns into an exact, non-stretching
+ * box (`aspect-ratio: 1/1; flex-shrink: 0`). BREAKING for number
+ * passers: TS consumers get a compile error; JS consumers get a
+ * one-time console.warn and the "md" dial.
+ */
+export type StatRingSize = "sm" | "md" | "lg";
+
+/** The enum's exact px diameters — 8px-grid multiples, frozen values. */
+export const STAT_RING_SIZES: Record<StatRingSize, number> = {
+  sm: 88,
+  md: 128,
+  lg: 168,
+};
+
 export interface StatRingProps {
   /** The filled percentage — clamped to 0–100 before rendering. */
   value: number;
   /** A `--sig-*` content token — the ONLY tokens allowed here. */
   colorToken: SigTokenName;
-  /** Outer diameter in px. Default 120 — the 3.0.0 zoom default. */
-  size?: number;
+  /**
+   * 3.9.0 — the size ENUM ("sm" 88 / "md" 128 / "lg" 168), default
+   * "md". BREAKING: was `number` (default 120). The px value lands as
+   * `--ring-size` on the svg (css/viz.css answers with an exact square
+   * that never stretches).
+   */
+  size?: StatRingSize;
   /** Track/fill weight in px — grid-perfect: 4 (half unit) or 8 (one unit). Default 8. */
   strokeWidth?: 4 | 8;
   /** 2.2.0: centered ring readout inside the SVG. Default true. */
@@ -191,7 +224,7 @@ export interface StatRingProps {
 export function StatRing({
   value,
   colorToken,
-  size = 120,
+  size = "md",
   strokeWidth = 8,
   showValue = true,
   label,
@@ -204,6 +237,17 @@ export function StatRing({
     );
     return null;
   }
+  // 3.9.0 — the enum resolution. A legacy number (the pre-3.9.0
+  // contract) warns once and falls back to "md" — JS consumers get a
+  // loud migration signal instead of a silently ballooning dial.
+  let sizeName: StatRingSize = size;
+  if (typeof sizeName === "number") {
+    console.warn(
+      `[signature-style] StatRing size={${sizeName}} is retired (3.9.0) — use the enum "sm" | "md" | "lg" (88 / 128 / 168). Rendering "md".`,
+    );
+    sizeName = "md";
+  }
+  const px = STAT_RING_SIZES[sizeName];
   // 3.0.0 — the internal EXPAND state (the zoom): a click toggles
   // data-expanded on the wrapper (css/viz.css answers scale(1.07)) and
   // slides the detail strip open (the 0fr → 1fr grid trick).
@@ -212,7 +256,7 @@ export function StatRing({
   const radius = 44;
   const circumference = 2 * Math.PI * radius;
   // px → viewBox units: identical visual weight at every size.
-  const strokeUnits = (strokeWidth / size) * 100;
+  const strokeUnits = (strokeWidth / px) * 100;
   const hasDetail = total !== undefined && total > 0;
   const numerator = hasDetail
     ? Math.round((clamped / 100) * (total as number))
@@ -224,7 +268,9 @@ export function StatRing({
       aria-valuemax={100}
       aria-valuenow={clamped}
       aria-label={label}
+      className="sig-stat-ring"
       viewBox="0 0 100 100"
+      style={{ "--ring-size": `${px}px` } as CSSProperties}
     >
       <circle
         cx="50"
@@ -282,7 +328,7 @@ export function StatRing({
     <div className="sig-ring" data-expanded={detail || undefined}>
       <div
         className="sig-ring__dial"
-        style={{ width: size, height: size }}
+        style={{ "--ring-size": `${px}px` } as CSSProperties}
         onClick={() => setDetail((current) => !current)}
       >
         {ring}

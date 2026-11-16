@@ -396,7 +396,7 @@ const [pw, setPw] = useState("");
     componentName: "StatRing",
     jsx: `import { StatRing } from "@edwyn/signature-style/react";
 
-<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />`,
+<StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" size="md" />`,
   },
   StatCard: {
     set: "04",

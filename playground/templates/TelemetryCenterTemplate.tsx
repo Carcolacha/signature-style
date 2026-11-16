@@ -309,6 +309,7 @@ function GaugeRow(): ReactNode {
           label="Cluster capacity used"
           total={100}
           unit="% capacity"
+          size="md"
         />
       </div>
       <div className="span-3" data-testid="tpl-tele-gauge-2">
@@ -318,6 +319,7 @@ function GaugeRow(): ReactNode {
           label="Storage pool used"
           total={100}
           unit="% storage"
+          size="md"
         />
       </div>
     </>

@@ -504,7 +504,7 @@ export function MotionLabView() {
                 value={ratio}
                 colorToken="--sig-cyan"
                 label="Fill ratio"
-                size={96}
+                size="md"
                 strokeWidth={8}
               />
             </div>

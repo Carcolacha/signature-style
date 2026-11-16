@@ -1509,6 +1509,49 @@ for (const rel of ["css/motion.css", "css/viz.css", "css/tokens.css"]) {
   }
 }
 
+// ---- (ring2) THE STATRING SIZE ENUM GATE (3.9.0) ---------------------------
+// The owner's defect #2 tombstone: the ring's size is an ENUM, the box is
+// exact, and no flex row can balloon it again. Asserts:
+//   · react/viz.tsx declares the StatRingSize union with all three names;
+//   · STAT_RING_SIZES carries the exact frozen px values (88/128/168);
+//   · the default is "md" and the legacy-number warn survives;
+//   · the svg carries the .sig-stat-ring class + the --ring-size var;
+//   · css/viz.css pins the box: width/height off --ring-size,
+//     aspect-ratio 1/1, flex-shrink 0 (the never-stretches contract).
+try {
+  const vizSrc = readFileSync(resolve(root, "react/viz.tsx"), "utf8");
+  const vizCss = readFileSync(resolve(root, "css/viz.css"), "utf8");
+  const RING2_VIZ_NEEDLES = [
+    ['export type StatRingSize = "sm" | "md" | "lg"', "the size enum union"],
+    ["sm: 88,", "the sm diameter (88px)"],
+    ["md: 128,", "the md diameter (128px)"],
+    ["lg: 168,", "the lg diameter (168px)"],
+    ['size = "md"', 'the "md" default'],
+    ["is retired (3.9.0)", "the legacy-number migration warn"],
+    ['className="sig-stat-ring"', "the svg's anchor class"],
+    ['"--ring-size"', "the inline --ring-size custom property"],
+  ];
+  for (const [needle, label] of RING2_VIZ_NEEDLES) {
+    if (!vizSrc.includes(needle)) {
+      failures.push(`(ring2) react/viz.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const ringRule = vizCss.slice(vizCss.indexOf(".sig-stat-ring {"));
+  const RING2_CSS_NEEDLES = [
+    ["width: var(--ring-size, 128px)", "the exact width off the enum var"],
+    ["height: var(--ring-size, 128px)", "the exact height off the enum var"],
+    ["aspect-ratio: 1 / 1", "the square aspect lock"],
+    ["flex-shrink: 0", "the never-squeeze contract (the defect #2 fix)"],
+  ];
+  for (const [needle, label] of RING2_CSS_NEEDLES) {
+    if (!ringRule.includes(needle)) {
+      failures.push(`(ring2) css/viz.css .sig-stat-ring must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+} catch (error) {
+  failures.push(`(ring2) could not read the StatRing sources — ${(error instanceof Error ? error.message : String(error))}`);
+}
+
 // ---- (pure) THE STANDALONE PURITY GATE (3.1.0, the release gate) ------------
 // The owner-mandated centerpiece: the working tree carries ZERO banned
 // domain vocabulary. verify-standalone.mjs owns the scan (the

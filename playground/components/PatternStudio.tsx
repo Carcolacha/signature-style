@@ -434,7 +434,7 @@ function ProgressBarPreview() {
 }
 
 function StatRingPreview() {
-  return <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" />;
+  return <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" size="md" />;
 }
 
 function StatCardPreview() {
