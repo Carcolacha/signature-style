@@ -1371,19 +1371,30 @@ function DashboardView({
 
 /**
  * BENTOCORE — the 12-column bento (2.5.0, defect #5). THE ASSEMBLY,
- * explicit spans (grid-column: span N):
+ * explicit spans (grid-column: span N) — 3.9.0 REBALANCED (defect #3):
  *
  *   span 12  the v2.5.0 announcement banner
  *   span 4   StatCard ×3 — Total Budget / Confirmed Seats (LIVE) /
  *            Active Game Rooms
  *   span 5   Workspace Member & Resource Allocation (the live-validation form)
  *   span 4   The Chronology, ROW-SPAN 2 (timeline + modal, unchanged)
- *   span 3   Budget & Attendance Telemetry (ring + bars, LIVE)
+ *   span 3   Budget & Attendance Telemetry, ROW-SPAN 2 (3.9.0: promoted
+ *            to fill the slot column the palette vacated — the ring and
+ *            bars gain the height, the row math stays hole-free)
  *   span 5   Interactive Deck & Rules (FlipCard / AccordionCard /
  *            ActionTile row)
- *   span 3   The Chromatic Palette (unchanged badges)
  *   span 7   Member & Budget Ledger (DataTable, LIVE from state)
  *   span 5   1v1 Game Matchup & Editorial (MatchupCard + ProseBlock)
+ *   span 12  THE CHROMATIC PALETTE (3.9.0 defect #3): the WIDE BOTTOM
+ *            COMPARTMENT. The old span-3 slot (264px) stacked all 26
+ *            swatches into ONE column and stretched the page to 4609px;
+ *            full-width the auto-fill minmax(120px, 1fr) grid packs the
+ *            swatches horizontally (9 columns at 1440).
+ *
+ * ROW MATH (why this is hole-free): r3 = Allocation(5) + Chronology(4,
+ * rowspan 2 → r3-r4 cols 6-9) + Telemetry(3, rowspan 2 → r3-r4 cols
+ * 10-12); r4 = Deck(5) over cols 1-5 beside the two spans; r5 =
+ * Ledger(7) + Matchup(5); r6 = Palette(12). Zero empty cells.
  *
  * DERIVED (useMemo over members): confirmedCount, potTotal (sum of
  * CONFIRMED contributions), ringValue = confirmed/200 %, spentPct =
@@ -1546,13 +1557,16 @@ function BentoCore({
         </SimSlot>
       </SurfaceCard>
 
-      {/* span 3 — Budget & Attendance Telemetry (LIVE) */}
+      {/* span 3, ROW-SPAN 2 — Budget & Attendance Telemetry (LIVE).
+          3.9.0: promoted to rowspan-2 to fill the slot column the
+          palette vacated (the row math stays hole-free — see the
+          BentoCore doc-comment); the ring and bars gain the height. */}
       <SurfaceCard
         eyebrow="Telemetry"
         meta="components/viz.tsx"
         title="Budget & Attendance Telemetry"
         interactive
-        className="sig-span-3 sig-cell"
+        className="sig-span-3 sig-row-2 sig-cell"
       >
         <SimSlot id="telemetry" loading={simLoading} height={simLocked.telemetry} bindRef={bindSlotRef}>
           {simLoading ? (
@@ -1666,51 +1680,6 @@ function BentoCore({
         </SimSlot>
       </SurfaceCard>
 
-      {/* span 3 — The Chromatic Palette (ALL 26 — click-to-copy swatches) */}
-      <SurfaceCard
-        eyebrow="Palette"
-        meta="components/primitives.tsx"
-        title="The Chromatic Palette"
-        interactive
-        className="sig-span-3 sig-cell"
-      >
-        <SimSlot id="palette" loading={simLoading} height={simLocked.palette} bindRef={bindSlotRef}>
-          {simLoading ? (
-            <SkeletonCard />
-          ) : (
-            <>
-        <p className="hub__sim-note">
-          26 tokens · click a swatch to copy its var name — ink badges are
-          body-text-safe; fill chips are series accents (bars, rings,
-          wells).
-        </p>
-        <div className="hub__palette-grid">
-          {PALETTE.map(({ token, label, role, isNew }) => (
-            <button
-              key={token}
-              type="button"
-              className="hub__palette-swatch"
-              title={`Copy ${token}`}
-              onClick={() => {
-                navigator.clipboard
-                  .writeText(token)
-                  .then(() => toast("success", `Copied ${token}`))
-                  .catch(() => toast("error", "Clipboard unavailable"));
-              }}
-            >
-              <SigBadge colorToken={token} label={label} />
-              <span className="hub__palette-swatch-meta">
-                <span className="hub__palette-role">{role}</span>
-                {isNew === true && <span className="hub__palette-new">new 3.0</span>}
-              </span>
-            </button>
-          ))}
-        </div>
-            </>
-          )}
-        </SimSlot>
-      </SurfaceCard>
-
       {/* span 7 — Member & Budget Ledger (LIVE) */}
       <SurfaceCard
         eyebrow="Data"
@@ -1777,6 +1746,54 @@ function BentoCore({
           </blockquote>
           <cite>Signature Style Field Notes, vol. 3 — the benchmark chapters</cite>
         </ProseBlock>
+            </>
+          )}
+        </SimSlot>
+      </SurfaceCard>
+
+      {/* span 12 — THE CHROMATIC PALETTE (3.9.0 defect #3): the WIDE
+          BOTTOM COMPARTMENT. The old span-3 slot stacked all 26 swatches
+          into one 264px column and stretched the page; full-width, the
+          auto-fill minmax(120px, 1fr) grid packs them horizontally. */}
+      <SurfaceCard
+        eyebrow="Palette"
+        meta="components/primitives.tsx"
+        title="The Chromatic Palette"
+        interactive
+        className="sig-span-12 sig-cell"
+      >
+        <SimSlot id="palette" loading={simLoading} height={simLocked.palette} bindRef={bindSlotRef}>
+          {simLoading ? (
+            <SkeletonCard />
+          ) : (
+            <>
+        <p className="hub__sim-note">
+          26 tokens · click a swatch to copy its var name — ink badges are
+          body-text-safe; fill chips are series accents (bars, rings,
+          wells).
+        </p>
+        <div className="hub__palette-grid" data-testid="palette-grid">
+          {PALETTE.map(({ token, label, role, isNew }) => (
+            <button
+              key={token}
+              type="button"
+              className="hub__palette-swatch"
+              title={`Copy ${token}`}
+              onClick={() => {
+                navigator.clipboard
+                  .writeText(token)
+                  .then(() => toast("success", `Copied ${token}`))
+                  .catch(() => toast("error", "Clipboard unavailable"));
+              }}
+            >
+              <SigBadge colorToken={token} label={label} />
+              <span className="hub__palette-swatch-meta">
+                <span className="hub__palette-role">{role}</span>
+                {isNew === true && <span className="hub__palette-new">new 3.0</span>}
+              </span>
+            </button>
+          ))}
+        </div>
             </>
           )}
         </SimSlot>

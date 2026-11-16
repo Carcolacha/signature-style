@@ -1510,12 +1510,17 @@
   outline-offset: 1px;
 }
 
-/* ---- 3.0.0 THE PALETTE SWATCH GRID (the bento Chromatic Palette card) ---------
-   The 26-token family as a compact grid: each swatch is the SigBadge
-   plus its ink/fill role tag; the chromatic sixteen wear the "new" badge. */
+/* ---- 3.0.0 THE PALETTE SWATCH GRID (the bento Chromatic Palette card)
+   3.9.0 DEFECT #3 FIX: the card lives in the WIDE BOTTOM COMPARTMENT
+   (sig-span-12) and the swatch grid packs HORIZONTALLY — auto-fill
+   minmax(120px, 1fr) tiles with the tight gutter. The v3.8.0 span-3
+   slot resolved this same declaration to ONE 264px column (26 stacked
+   swatches, a 4609px page); the compartment, not the track math, was
+   the defect. Each swatch is the SigBadge plus its ink/fill role tag;
+   the chromatic sixteen wear the "new" badge. */
 .hub__palette-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: var(--space-tight);
 }
 
