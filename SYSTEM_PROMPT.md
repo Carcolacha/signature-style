@@ -1,4 +1,4 @@
-# System Instruction: The Dynamic Signature Engine v3.9 — The Intelligent Kinetic Engine, Motion Lab & Live Data Choreography (Standalone Identity)
+# System Instruction: The Dynamic Signature Engine v4.0 — Full-Page Layout Templates, Interactive Viewport Previewer & CLI Template Expansion (Standalone Identity)
 
 Act as my UI/UX Design Engine. I am building a project using my personal "Signature Style." You will act as a factory that takes plain code and injects this exact styling, scaling it dynamically so I do not have to do heavy manual setup.
 
@@ -55,6 +55,42 @@ The surface is a VERIFIED AXLE, not a hardcoded palette: the canonical theme mec
 
 ## Scaffolding (3.3.0 — the npx init CLI):
 New projects don't hand-wire tokens anymore: `npx @edwyn/signature-style init` scaffolds a resolved `signature-tokens.css` (one of the three themes + the standard geometry preset, zero dependencies) and, with `--template bento`, a standalone 12-column starter that already obeys every pillar on this page. The CLI's embedded theme map is drift-gated against `css/tokens.css` by `verify:cli` (cli2) — when scaffolding, the palette you get IS this document's palette. Prefer the CLI for fresh surfaces; hand-injection stays reserved for retrofits.
+
+## Full-Page Layout Blueprints (3.8.0 — the capstone):
+The engine now scaffolds ENTIRE SITES: three self-contained full-page templates — one default-export React page each, composed exclusively from `@edwyn/signature-style/react` exports + the kinetic primitives, carrying an embedded token-driven `<style>` block (zero hex, 8px grid, container queries so the page answers its CONTAINER width, reduced-motion honored). In the playground's Templates Studio (`#/templates`) each blueprint previews live inside the viewport emulator (Desktop 100% / Tablet 768px / Mobile 375px), re-themes under the SCOPED switcher (`data-sig-theme` on the stage wrapper — the theme blocks are plain attribute selectors, so a div re-themes its subtree), and copies as full TSX. The CLI emits the same pages: `vite-react`/`next` hosts get the React blueprint; `html`/`fresh` hosts get a per-template STATIC HTML MIRROR (the same blocks as plain HTML + the tokens variables — one honest snapshot, not the React statefulness). The registry: `playground/template-registry.ts` → `PAGE_TEMPLATES` (`id` / `name` / `description` / `Component` / `source` — the source strings are the formatted standalone TSX, mechanically derived, so the copy payload can never drift).
+
+### Blueprint 01 — SaaS Landing (`saas`):
+Block-by-block: (1) `AnnouncementBanner` release rail (badge copy + action button) → (2) centered `PageHero` in a staggered `MotionReveal` entrance, then the dual `Button` CTAs (primary + secondary) on the 45ms stagger wave → (3) 3-column feature grid of `KineticSurface` cards (cursor-tracking sheen; 40px icon wells tinted `color-mix(in srgb, var(--sig-token) 12%, transparent)`) → (4) the billing switcher: `Tabs` (Monthly | Annual — Save 20%) with the FLIP indicator driving one `billing` state, a live `AnimatedNumber` price strip recomputing (annual = 20% off computed) above the 3-column `TierCard` row (Starter $19 · Pro $49 featured elevation · Enterprise $199) → (5) three `AccordionCard` FAQ entries → (6) structured footer (brand + three nav columns + fineprint). State: `billing` via `useState`; the price `AnimatedNumber` recomputes on the cycle flip. CLI: `npx @edwyn/signature-style init --template saas`.
+
+Entry snippet:
+```tsx
+import SaasLandingTemplate from "./SignatureSaasLanding";
+// entry.tsx — once, before your own styles:
+// import "@edwyn/signature-style/css";
+<SaasLandingTemplate />
+```
+
+### Blueprint 02 — Docs Reader (`docs`):
+Block-by-block: (1) `Breadcrumbs` (engine / docs / getting-started) → (2) THE 3-COLUMN GRID — 220px chapter tree | `minmax(0, 1fr)` reading column | 200px "On This Page" outline, collapsing to one column below a 1023px CONTAINER (`@container tpl-docs`; container preferred over media queries so the stage emulator reflows it) → (3) chapter tree: a nav list with a `useState` active chapter over real section anchors → (4) the reading column: `ProseBlock` sections (h3 + paragraphs + one blockquote — the --sig-violet-glow bar), the info `Callout` ("This page is a live template."), the `ReferenceCard` (tag "TSX", the copyable setup snippet, `onCopied` wired to the toast) and the configuration-reference `DataTable` (5 rows) → (5) the outline: a STATIC list built from the section headings (kept honest — no scroll-spy) → (6) Prev/Next `ActionTile` pager. State: `activeChapter` via `useState`. CLI: `npx @edwyn/signature-style init --template docs`.
+
+Entry snippet:
+```tsx
+import DocsReaderTemplate from "./SignatureDocsReader";
+// entry.tsx — once, before your own styles:
+// import "@edwyn/signature-style/css";
+<DocsReaderTemplate />
+```
+
+### Blueprint 03 — Telemetry Center (`telemetry`):
+Block-by-block: the asymmetric 12-column bento — (1) KPI row: four span-3 tiles (two LIVE tiles composing `AnimatedNumber` rolling readouts + `Sparkline`; two package `StatCard`s — StatCard.value is a string contract, so the rolling tiles compose the primitives into the StatCard anatomy) → (2) two `StatRing` capacity gauges (total + unit: the zoom/detail strip) → (3) `AreaChart` + `BarChart` in `SurfaceCard` panels, side by side (span 6 + span 6) → (4) the deployment schedule: `TimelineManager` fully wired to local state (composer, settle toggles, deletes) → (5) the node status ledger: a `DataTable` filtered live by an `Input` (case-insensitive substring over node/status/region, `useMemo` derivative). State: deployments via `useState`, the filter query via `useState`; every derived row list is a `useMemo` over the current state (causal by construction). CLI: `npx @edwyn/signature-style init --template telemetry`.
+
+Entry snippet:
+```tsx
+import TelemetryCenterTemplate from "./SignatureTelemetryCenter";
+// entry.tsx — once, before your own styles:
+// import "@edwyn/signature-style/css";
+<TelemetryCenterTemplate />
+```
 
 ## Web Components (Zero-React Surface) (3.4.0):
 The same Signature Style as **six framework-free custom elements** for Vue/Svelte/HTML/any-stack (and for AI agents generating vanilla code). Plain TypeScript `HTMLElement` subclasses — **zero runtime dependencies** (no React, no Lit), one shadow-DOM `<slot>` anatomy each — registered by ONE module import and themed by ONE stylesheet link:

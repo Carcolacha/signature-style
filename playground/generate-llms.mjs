@@ -31,6 +31,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SNIPPETS, SET_NAMES, SET_BLURBS } from "./snippets.ts";
 import { MOTION_SNIPPETS } from "./motion-snippets.ts";
+import { TEMPLATE_META, TEMPLATE_SOURCES } from "./template-sources.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -279,6 +280,37 @@ for (const [key, entry] of Object.entries(MOTION_SNIPPETS)) {
   lines.push("");
 }
 
+/* ---- 3.8.0 FULL-PAGE LAYOUT BLUEPRINTS ----------------------------------
+   The generator reads the registry's DATA layer (playground/
+   template-sources.ts) — pure strings, Node-importable. It cannot import
+   template-registry.ts itself: that module pulls the React .tsx components,
+   which Node does not parse. The (tpl1) gate pins the parity between the
+   data layer and the registry, so the payloads cannot drift. */
+lines.push("## Full-Page Layout Blueprints (3.8.0)");
+lines.push("");
+lines.push("Three self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @edwyn/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.");
+lines.push("");
+lines.push("The registry: playground/template-registry.ts — PAGE_TEMPLATES: Array<{ id, name, description, Component, source }>.");
+lines.push("");
+for (const [id, meta] of Object.entries(TEMPLATE_META)) {
+  lines.push(`### Blueprint ${id} — ${meta.name}`);
+  lines.push("");
+  lines.push(meta.description);
+  lines.push("");
+  lines.push("CLI one-liner:");
+  lines.push("");
+  lines.push("```bash");
+  lines.push(`npx @edwyn/signature-style init --template ${id}`);
+  lines.push("```");
+  lines.push("");
+  lines.push("The full standalone TSX source (mechanically derived from the shipped component — never hand-edit this payload, change the .tsx and regenerate):");
+  lines.push("");
+  lines.push("```tsx");
+  lines.push(TEMPLATE_SOURCES[id]);
+  lines.push("```");
+  lines.push("");
+}
+
 lines.push("## The Universal AI Replication Contract (source of truth)");
 lines.push("");
 lines.push("The recipes above are ported from SYSTEM_PROMPT.md's Universal AI Replication Contract — read that section of SYSTEM_PROMPT.md for the narrative contracts. Any AI consuming `@edwyn/signature-style` reproduces the signature verbatim: read the snippet, copy the snippet.");
@@ -296,6 +328,9 @@ const setIndex = SET_ORDER.map((setId) => {
 });
 setIndex.push(
   `- [Set 08 — ${SET_NAMES["08"]}](llms-full.txt): ${Object.keys(MOTION_SNIPPETS).join(", ")} (live demos + copy-paste in the playground's Motion Lab)`,
+);
+const blueprintIndex = Object.entries(TEMPLATE_META).map(
+  ([id, meta]) => `- [Blueprint ${id} — ${meta.name}](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template ${id})`,
 );
 
 const llms = `# @edwyn/signature-style — The Signature Style
@@ -321,6 +356,10 @@ The official machine-readable index for AI agents. Full self-contained version: 
 The 6-Set Taxonomy — ${Object.keys(SNIPPETS).length} documented exports, one copy-paste snippet each:
 
 ${setIndex.join("\n")}
+
+## Full-Page Layout Blueprints (3.8.0)
+
+${blueprintIndex.join("\n")}
 
 ## Recipes
 

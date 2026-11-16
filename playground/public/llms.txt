@@ -29,6 +29,12 @@ The 6-Set Taxonomy — 56 documented exports, one copy-paste snippet each:
 - [Set 07 — Web Components (zero-react)](llms-full.txt): SigWcSurfaceCard, SigWcBadge, SigWcProgressBar, SigWcStatRing, SigWcCallout, SigWcCarousel (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 08 — Motion & Kinetics](llms-full.txt): KineticTokens, AnimatedNumber, MotionReveal, KineticSurface, MotionLabTimeDilation, FallbackFirstData (live demos + copy-paste in the playground's Motion Lab)
 
+## Full-Page Layout Blueprints (3.8.0)
+
+- [Blueprint saas — SaaS Landing](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template saas)
+- [Blueprint docs — Docs Reader](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template docs)
+- [Blueprint telemetry — Telemetry Center](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template telemetry)
+
 ## Recipes
 
 - [llms-full.txt — copy-paste snippets](llms-full.txt): every component's JSX recipe (+ HTML variants where documented), each with its prop surface extracted from react/*.d.ts

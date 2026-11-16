@@ -25,7 +25,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v3.9** system prompt so AI agents can extend the
+**Dynamic Signature Engine v4.0** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -291,6 +291,88 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 3.8.0 — Full-Page Layout Templates, Interactive Viewport Previewer & CLI Template Expansion
+
+The engine now scaffolds **entire sites**: three self-contained full-page
+templates, a studio that previews them at any width and any theme, and a CLI
+that emits them into any project — with the same discipline (token VALUES
+byte-frozen, the whitelist stays 60, css/ react/ wc/ demo/ tools/ byte-frozen,
+e1 treaty, reduced-motion on everything new).
+
+#### The three full-page blueprints (`playground/templates/`, NEW)
+
+One default-export React page each, built **exclusively** from
+`@edwyn/signature-style` exports + the v3.7.0 kinetic primitives, each with an
+embedded token-driven `<style>` block (zero hex, 8px grid, container queries,
+reduced-motion honored) and its own `ToastProvider` where toasts are wired —
+scaffold it and it renders complete:
+
+| id | name | blocks (top to bottom) |
+|---|---|---|
+| `saas` | **SaaS Landing** | AnnouncementBanner → staggered MotionReveal PageHero + dual CTAs → 3-col KineticSurface feature grid (tinted icon wells) → Tabs billing switcher (FLIP indicator) wired to the AnimatedNumber price strip over the 3-col TierCard row (annual = 20% off computed) → 3 AccordionCard FAQ → structured footer |
+| `docs` | **Docs Reader** | Breadcrumbs → the 220px / reading / 200px-outline grid (`@container` collapse below 1023px) → ProseBlock chapters with the violet-glow quote bar → info Callout → ReferenceCard (copyable TSX snippet) → 5-row config DataTable → static On This Page outline → Prev/Next ActionTiles |
+| `telemetry` | **Telemetry Center** | 12-col asymmetric bento: 4 KPI tiles (2 rolling AnimatedNumber+Sparkline tiles + 2 StatCards) → 2 StatRing capacity gauges → AreaChart + BarChart panels → the state-wired TimelineManager deployment schedule → the filterable node-status DataTable |
+
+The registry is `playground/template-registry.ts` — `PAGE_TEMPLATES:
+Array<{ id, name, description, Component, source }>` — where `source` is the
+formatted standalone TSX, **mechanically derived** from the shipped component
+file (`playground/template-sources.ts`), so the copy payload can never drift
+from the live page (gate (tpl1) byte-checks the parity).
+
+#### The Templates Studio (`#/templates`)
+
+The 9-view model grows one REAL view: a sticky glass control bar over one
+stage:
+
+- **Viewport Width Emulator** — Desktop (100%) | Tablet (768px) | Mobile
+  (375px). The stage's width transitions over `var(--dur-glide)
+  var(--ease-glide)`; the templates reflow via their own container queries,
+  which answer the stage, not the window. Reduced motion strips the
+  transition.
+- **Live Theme Switcher (SCOPED)** — Mocha | OLED | Daylight sets
+  `data-sig-theme` on the STAGE WRAPPER only. The tokens.css theme blocks are
+  plain attribute selectors (`[data-sig-theme="oled"]`), so a div re-themes
+  exactly its subtree: the preview swaps surface triads while the rest of the
+  app keeps the user's theme (probe-proven: wrap `--bg-base` #000000, root
+  #1E1E2E).
+- **Preview | Full TSX Code** — the live page inside the stage, or the
+  registry source as `<pre><code>`.
+- **Copy Full Page** — the registry source on your clipboard, confirmed by
+  the mint-accented aria-live chip (`--sig-mint`) + the standard toast.
+
+FLIP-numbered template tabs (01 · 02 · 03), palette jumps per template,
+breadcrumbs `engine / templates / saas-landing`, and the templates' live state
+(billing math, chapter nav, ledger filter, deployment manager) is fully
+interactive in Preview.
+
+#### CLI template expansion
+
+`--template` grows `saas | docs | telemetry` (alongside `minimal | bento`):
+
+| detection | output |
+|---|---|
+| `next` / `vite-react` | `SignatureSaasLanding.tsx` / `SignatureDocsReader.tsx` / `SignatureTelemetryCenter.tsx` — the React blueprint, importing `@edwyn/signature-style/react`, with the install + tokens-css note in the summary and README |
+| `html` / `fresh` | `signature-starter.html` — the per-template **static HTML mirror**: the same blocks as plain HTML + the tokens variables, one honest snapshot (not the React statefulness), zero JS, zero hex, reduced-motion guard |
+
+The embedded template map ships as `bin/templates.mjs` (pure data, zero
+imports — the `bin/themes.mjs` pattern); the drift-lite needle (gate tpl3)
+pins registry-id parity 3 = 3. `verify:cli` grows scenarios E/F/G (99 checks
+green) and the tarball grows 67 → **68** files.
+
+#### Certification
+
+`verify:mcp` adds the Templates navigation probe (s2d: the studio, control
+bar, stage and the live SaaS landing measure alive rects) + the 4-viewport
+capture matrix ON the Templates view (s2e); `verify:a11y` and
+`verify:visual-diff` grow to the 9-view census (focus halos EMPTY exception
+table); `probe-v380-templates.mjs` is the release-blocker proof (emulator
+widths measured, container-query reflow, scoped theming, copy, live billing
+math, filter, 4-viewport zero-overflow sweep). Goldens re-certified with
+intent (the studio + templates are new visuals). SYSTEM_PROMPT rises to
+**v4.0** — the Full-Page Layout Blueprints section is the capstone chapter;
+`llms-full.txt` now carries the three full-page sources (the generator reads
+the registry's data layer).
 
 ### 3.7.0 — The Intelligent Kinetic Engine, Motion Lab & Live Data Choreography
 
