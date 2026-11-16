@@ -14,8 +14,9 @@
  *      secondary Button) follows on the 45ms stagger wave.
  *   3. Feature grid        — 3 columns of KineticSurface cards
  *      (cursor-tracking sheen), each with a tinted icon well
- *      (color-mix 12% of a --sig token) + h3 + copy. Collapses to one
- *      column in a ≤ 880px container.
+ *      (color-mix 12% of a --sig token) + h3 + copy. Three container
+ *      tiers under the SHARED `template-stage` name (3.9.0): >1024px
+ *      3 columns, 640–1024px 2 columns, <640px one column.
  *   4. Billing switcher    — package Tabs (Monthly | Annual — Save
  *      20%) with the FLIP gliding indicator driving ONE billing
  *      state; a live AnimatedNumber price strip recomputes (annual =
@@ -61,7 +62,7 @@ import {
 const SAAS_TEMPLATE_CSS = `
 .sig-tpl-saas {
   container-type: inline-size;
-  container-name: tpl-saas;
+  container-name: template-stage;
   max-width: 1160px;
   margin-inline: auto;
   display: flex;
@@ -190,13 +191,21 @@ const SAAS_TEMPLATE_CSS = `
   font-size: 0.75rem;
   color: var(--text-muted-soft);
 }
-@container tpl-saas (max-width: 880px) {
+/* 3.9.0 — THE THREE TIERS under the SHARED container name
+   template-stage (the studio stage declares it too): >1024px keeps
+   the 3-col marketing grids; 640–1024px is the 2-col mid tier;
+   <640px collapses to a single column. The rules target DESCENDANT
+   elements (features/tiers/footer-grid), which container queries may
+   legally restyle. */
+@container template-stage (max-width: 1024px) {
   .sig-tpl-saas__features,
-  .sig-tpl-saas__tiers { grid-template-columns: 1fr; }
+  .sig-tpl-saas__tiers,
   .sig-tpl-saas__footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@container tpl-saas (max-width: 480px) {
-  .sig-tpl-saas__footer-grid { grid-template-columns: 1fr; }
+@container template-stage (max-width: 639px) {
+  .sig-tpl-saas__features,
+  .sig-tpl-saas__tiers,
+  .sig-tpl-saas__footer-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
   .sig-tpl-saas * { transition-duration: 1ms !important; animation-duration: 1ms !important; }

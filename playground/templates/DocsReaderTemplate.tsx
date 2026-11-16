@@ -10,12 +10,13 @@
  *      getting-started.
  *   2. THE 3-COLUMN GRID    — 220px chapter tree | minmax(0,1fr)
  *      reading column | 200px "On This Page" outline. The collapse is
- *      CONTAINER-QUERY driven (@container max-width 1023px → one
- *      column): the studio's viewport emulator reflows the page
- *      WITHOUT touching the window viewport. (Container preferred per
- *      spec — a media query would only answer the real viewport; the
- *      wrapper here is the template root itself, container-type:
- *      inline-size.)
+ *      CONTAINER-QUERY driven (@container template-stage max-width
+ *      1023px → one column): the studio's viewport emulator reflows
+ *      the page WITHOUT touching the window viewport. (Container
+ *      preferred per spec — a media query would only answer the real
+ *      viewport; 3.9.0: the wrapper is the template root itself,
+ *      container-type: inline-size, wearing the SHARED container name
+ *      `template-stage` the studio stage also declares.)
  *   3. Chapter tree (nav)   — the chapter list with a simple
  *      state-driven active chapter (useState; the links are real
  *      anchors to the reading column's section ids).
@@ -56,7 +57,7 @@ import type { DataTableColumn } from "@edwyn/signature-style/react";
 const DOCS_TEMPLATE_CSS = `
 .sig-tpl-docs {
   container-type: inline-size;
-  container-name: tpl-docs;
+  container-name: template-stage;
   max-width: 1240px;
   margin-inline: auto;
   display: flex;
@@ -146,8 +147,8 @@ const DOCS_TEMPLATE_CSS = `
   font-size: 0.75rem;
   color: var(--text-muted-soft);
 }
-@container tpl-docs (max-width: 1023px) {
-  .sig-tpl-docs__grid { grid-template-columns: 1fr; }
+@container template-stage (max-width: 1023px) {
+  .sig-tpl-docs__grid { grid-template-columns: minmax(0, 1fr); }
   .sig-tpl-docs__rail { position: static; }
   .sig-tpl-docs__pager { grid-template-columns: 1fr; }
 }

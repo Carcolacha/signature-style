@@ -2155,13 +2155,22 @@
   padding: var(--space-standard);
 }
 
-/* THE STAGE — the viewport emulator's subject. Templates declare
-   container-type on their roots, so every container query inside
-   answers THIS width, not the window. */
+/* THE STAGE — the viewport emulator's subject. 3.9.0: the stage ITSELF
+   is the shared container (`container-name: template-stage`) — the
+   ONE name every template's @container queries answer. The template
+   roots ALSO declare container-type + the same name (standalone
+   purity: a scaffolded template still reflows without the studio), so
+   template descendants resolve against the NEAREST container — the
+   template root — while template-root-level rules answer the stage.
+   Either way the answer is the stage's width in the studio: the
+   emulator controls the reflow, the window viewport never enters the
+   equation. */
 .tpl-studio__stage {
   margin-inline: auto;
   min-height: 320px;
   transition: width var(--dur-glide) var(--ease-glide);
+  container-type: inline-size;
+  container-name: template-stage;
 }
 
 .tpl-studio__code {

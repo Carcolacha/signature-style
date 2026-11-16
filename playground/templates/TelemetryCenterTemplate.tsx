@@ -25,10 +25,16 @@
  *      node + status).
  *
  * STANDALONE PURITY: embedded token-driven <style> (zero hex, 8px
- * grid, 12-col grid collapses via container queries so the studio's
- * viewport emulator reflows it), reduced-motion guard, zero external
- * dependencies, no ToastProvider needed (no toasts — the widgets own
- * their feedback).
+ * grid, the 12-col grid collapses via container queries so the
+ * studio's viewport emulator reflows it: >1024px container = the full
+ * 12-col bento; 640–1024px = the 2-col tier (6-col grid, spans
+ * doubled); <640px = single column. 3.9.0: the container name is the
+ * SHARED `template-stage` (the studio stage declares it too), and the
+ * grid lives on an INNER wrapper — a container query can never restyle
+ * its own container, so the root-level rewrites of v3.8.0 were dead
+ * CSS and the 375px stage never collapsed), reduced-motion guard,
+ * zero external dependencies, no ToastProvider needed (no toasts —
+ * the widgets own their feedback).
  */
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
@@ -53,23 +59,33 @@ import type { DataTableColumn, TimelineItem } from "@edwyn/signature-style/react
 const TELEMETRY_TEMPLATE_CSS = `
 .sig-tpl-telemetry {
   container-type: inline-size;
-  container-name: tpl-telemetry;
+  container-name: template-stage;
   max-width: 1240px;
   margin-inline: auto;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--space-section);
   padding-bottom: var(--space-section);
   font-family: var(--font-sans);
 }
-.sig-tpl-telemetry > .span-3 { grid-column: span 3; }
-.sig-tpl-telemetry > .span-4 { grid-column: span 4; }
-.sig-tpl-telemetry > .span-5 { grid-column: span 5; }
-.sig-tpl-telemetry > .span-6 { grid-column: span 6; }
-.sig-tpl-telemetry > .span-7 { grid-column: span 7; }
-.sig-tpl-telemetry > .span-12 { grid-column: span 12; }
-.sig-tpl-telemetry > .sig-tpl-telemetry__kpi { grid-column: span 3; }
+/* 3.9.0 — THE INNER GRID. v3.8.0 carried the 12-column grid ON the
+   container root itself, and a container query CANNOT restyle its own
+   container — the breakpoint rewrites below were dead CSS, so the
+   375px stage kept a 12-column grid (9px tracks, overlapping KPI
+   tiles). The grid now lives on this wrapper — a DESCENDANT of the
+   container — so every breakpoint legally lands. minmax(0, 1fr)
+   tracks: no child can force the grid wider than its container. */
+.sig-tpl-telemetry__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-section);
+}
+.sig-tpl-telemetry__grid > .span-3 { grid-column: span 3; }
+.sig-tpl-telemetry__grid > .span-4 { grid-column: span 4; }
+.sig-tpl-telemetry__grid > .span-5 { grid-column: span 5; }
+.sig-tpl-telemetry__grid > .span-6 { grid-column: span 6; }
+.sig-tpl-telemetry__grid > .span-7 { grid-column: span 7; }
+.sig-tpl-telemetry__grid > .span-12 { grid-column: span 12; }
+.sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi { grid-column: span 3; }
 .sig-tpl-telemetry__kpi {
+  min-width: 0; /* the minmax(0,1fr) track guard — no tile forces the track wider */
   background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--text-muted) 18%, transparent);
   border-radius: var(--radius-card);
@@ -115,24 +131,29 @@ const TELEMETRY_TEMPLATE_CSS = `
   outline-offset: 2px;
   border-radius: var(--radius-ui);
 }
-@container tpl-telemetry (max-width: 1023px) {
-  .sig-tpl-telemetry { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .sig-tpl-telemetry > .span-3 { grid-column: span 3; }
-  .sig-tpl-telemetry > .sig-tpl-telemetry__kpi { grid-column: span 3; }
-  .sig-tpl-telemetry > .span-4,
-  .sig-tpl-telemetry > .span-5,
-  .sig-tpl-telemetry > .span-6,
-  .sig-tpl-telemetry > .span-7 { grid-column: span 6; }
+@container template-stage (max-width: 1024px) {
+  /* 640–1024px container: the 2-col tier — the grid halves to 6
+     columns and every span doubles (3→6, 4→6, 5→6, 6→6, 7→6); the
+     span-3 KPI tiles pair up two-across. */
+  .sig-tpl-telemetry__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .sig-tpl-telemetry__grid > .span-3 { grid-column: span 3; }
+  .sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi { grid-column: span 3; }
+  .sig-tpl-telemetry__grid > .span-4,
+  .sig-tpl-telemetry__grid > .span-5,
+  .sig-tpl-telemetry__grid > .span-6,
+  .sig-tpl-telemetry__grid > .span-7 { grid-column: span 6; }
 }
-@container tpl-telemetry (max-width: 560px) {
-  .sig-tpl-telemetry { grid-template-columns: 1fr; }
-  .sig-tpl-telemetry > .span-3,
-  .sig-tpl-telemetry > .sig-tpl-telemetry__kpi,
-  .sig-tpl-telemetry > .span-4,
-  .sig-tpl-telemetry > .span-5,
-  .sig-tpl-telemetry > .span-6,
-  .sig-tpl-telemetry > .span-7,
-  .sig-tpl-telemetry > .span-12 { grid-column: auto; }
+@container template-stage (max-width: 639px) {
+  /* <640px container: the single-column tier — one minmax(0, 1fr)
+     track, every span reset. The KPI tiles stack full-width. */
+  .sig-tpl-telemetry__grid { grid-template-columns: minmax(0, 1fr); }
+  .sig-tpl-telemetry__grid > .span-3,
+  .sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi,
+  .sig-tpl-telemetry__grid > .span-4,
+  .sig-tpl-telemetry__grid > .span-5,
+  .sig-tpl-telemetry__grid > .span-6,
+  .sig-tpl-telemetry__grid > .span-7,
+  .sig-tpl-telemetry__grid > .span-12 { grid-column: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sig-tpl-telemetry * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
@@ -426,11 +447,16 @@ function TelemetryCenterPage(): ReactNode {
   return (
     <main className="sig-tpl-telemetry" data-testid="tpl-telemetry">
       <style>{TELEMETRY_TEMPLATE_CSS}</style>
-      <KpiRow />
-      <GaugeRow />
-      <ChartsRow />
-      <ScheduleSection />
-      <LedgerSection />
+      {/* 3.9.0 — the INNER grid wrapper: the container queries answer
+          the root's width and restyle THIS element (a container can
+          never restyle itself — the v3.8.0 dead-CSS lesson). */}
+      <div className="sig-tpl-telemetry__grid">
+        <KpiRow />
+        <GaugeRow />
+        <ChartsRow />
+        <ScheduleSection />
+        <LedgerSection />
+      </div>
     </main>
   );
 }

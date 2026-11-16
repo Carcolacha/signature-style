@@ -55,8 +55,9 @@ export const TEMPLATE_SOURCES: Record<TemplateId, string> = {
  *      secondary Button) follows on the 45ms stagger wave.
  *   3. Feature grid        — 3 columns of KineticSurface cards
  *      (cursor-tracking sheen), each with a tinted icon well
- *      (color-mix 12% of a --sig token) + h3 + copy. Collapses to one
- *      column in a ≤ 880px container.
+ *      (color-mix 12% of a --sig token) + h3 + copy. Three container
+ *      tiers under the SHARED \`template-stage\` name (3.9.0): >1024px
+ *      3 columns, 640–1024px 2 columns, <640px one column.
  *   4. Billing switcher    — package Tabs (Monthly | Annual — Save
  *      20%) with the FLIP gliding indicator driving ONE billing
  *      state; a live AnimatedNumber price strip recomputes (annual =
@@ -102,7 +103,7 @@ import {
 const SAAS_TEMPLATE_CSS = \`
 .sig-tpl-saas {
   container-type: inline-size;
-  container-name: tpl-saas;
+  container-name: template-stage;
   max-width: 1160px;
   margin-inline: auto;
   display: flex;
@@ -231,13 +232,21 @@ const SAAS_TEMPLATE_CSS = \`
   font-size: 0.75rem;
   color: var(--text-muted-soft);
 }
-@container tpl-saas (max-width: 880px) {
+/* 3.9.0 — THE THREE TIERS under the SHARED container name
+   template-stage (the studio stage declares it too): >1024px keeps
+   the 3-col marketing grids; 640–1024px is the 2-col mid tier;
+   <640px collapses to a single column. The rules target DESCENDANT
+   elements (features/tiers/footer-grid), which container queries may
+   legally restyle. */
+@container template-stage (max-width: 1024px) {
   .sig-tpl-saas__features,
-  .sig-tpl-saas__tiers { grid-template-columns: 1fr; }
+  .sig-tpl-saas__tiers,
   .sig-tpl-saas__footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@container tpl-saas (max-width: 480px) {
-  .sig-tpl-saas__footer-grid { grid-template-columns: 1fr; }
+@container template-stage (max-width: 639px) {
+  .sig-tpl-saas__features,
+  .sig-tpl-saas__tiers,
+  .sig-tpl-saas__footer-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
   .sig-tpl-saas * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
@@ -588,12 +597,13 @@ export default function SaasLandingTemplate() {
  *      getting-started.
  *   2. THE 3-COLUMN GRID    — 220px chapter tree | minmax(0,1fr)
  *      reading column | 200px "On This Page" outline. The collapse is
- *      CONTAINER-QUERY driven (@container max-width 1023px → one
- *      column): the studio's viewport emulator reflows the page
- *      WITHOUT touching the window viewport. (Container preferred per
- *      spec — a media query would only answer the real viewport; the
- *      wrapper here is the template root itself, container-type:
- *      inline-size.)
+ *      CONTAINER-QUERY driven (@container template-stage max-width
+ *      1023px → one column): the studio's viewport emulator reflows
+ *      the page WITHOUT touching the window viewport. (Container
+ *      preferred per spec — a media query would only answer the real
+ *      viewport; 3.9.0: the wrapper is the template root itself,
+ *      container-type: inline-size, wearing the SHARED container name
+ *      \`template-stage\` the studio stage also declares.)
  *   3. Chapter tree (nav)   — the chapter list with a simple
  *      state-driven active chapter (useState; the links are real
  *      anchors to the reading column's section ids).
@@ -634,7 +644,7 @@ import type { DataTableColumn } from "@edwyn/signature-style/react";
 const DOCS_TEMPLATE_CSS = \`
 .sig-tpl-docs {
   container-type: inline-size;
-  container-name: tpl-docs;
+  container-name: template-stage;
   max-width: 1240px;
   margin-inline: auto;
   display: flex;
@@ -724,8 +734,8 @@ const DOCS_TEMPLATE_CSS = \`
   font-size: 0.75rem;
   color: var(--text-muted-soft);
 }
-@container tpl-docs (max-width: 1023px) {
-  .sig-tpl-docs__grid { grid-template-columns: 1fr; }
+@container template-stage (max-width: 1023px) {
+  .sig-tpl-docs__grid { grid-template-columns: minmax(0, 1fr); }
   .sig-tpl-docs__rail { position: static; }
   .sig-tpl-docs__pager { grid-template-columns: 1fr; }
 }
@@ -1016,10 +1026,16 @@ export default function DocsReaderTemplate() {
  *      node + status).
  *
  * STANDALONE PURITY: embedded token-driven <style> (zero hex, 8px
- * grid, 12-col grid collapses via container queries so the studio's
- * viewport emulator reflows it), reduced-motion guard, zero external
- * dependencies, no ToastProvider needed (no toasts — the widgets own
- * their feedback).
+ * grid, the 12-col grid collapses via container queries so the
+ * studio's viewport emulator reflows it: >1024px container = the full
+ * 12-col bento; 640–1024px = the 2-col tier (6-col grid, spans
+ * doubled); <640px = single column. 3.9.0: the container name is the
+ * SHARED \`template-stage\` (the studio stage declares it too), and the
+ * grid lives on an INNER wrapper — a container query can never restyle
+ * its own container, so the root-level rewrites of v3.8.0 were dead
+ * CSS and the 375px stage never collapsed), reduced-motion guard,
+ * zero external dependencies, no ToastProvider needed (no toasts —
+ * the widgets own their feedback).
  */
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
@@ -1044,23 +1060,33 @@ import type { DataTableColumn, TimelineItem } from "@edwyn/signature-style/react
 const TELEMETRY_TEMPLATE_CSS = \`
 .sig-tpl-telemetry {
   container-type: inline-size;
-  container-name: tpl-telemetry;
+  container-name: template-stage;
   max-width: 1240px;
   margin-inline: auto;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: var(--space-section);
   padding-bottom: var(--space-section);
   font-family: var(--font-sans);
 }
-.sig-tpl-telemetry > .span-3 { grid-column: span 3; }
-.sig-tpl-telemetry > .span-4 { grid-column: span 4; }
-.sig-tpl-telemetry > .span-5 { grid-column: span 5; }
-.sig-tpl-telemetry > .span-6 { grid-column: span 6; }
-.sig-tpl-telemetry > .span-7 { grid-column: span 7; }
-.sig-tpl-telemetry > .span-12 { grid-column: span 12; }
-.sig-tpl-telemetry > .sig-tpl-telemetry__kpi { grid-column: span 3; }
+/* 3.9.0 — THE INNER GRID. v3.8.0 carried the 12-column grid ON the
+   container root itself, and a container query CANNOT restyle its own
+   container — the breakpoint rewrites below were dead CSS, so the
+   375px stage kept a 12-column grid (9px tracks, overlapping KPI
+   tiles). The grid now lives on this wrapper — a DESCENDANT of the
+   container — so every breakpoint legally lands. minmax(0, 1fr)
+   tracks: no child can force the grid wider than its container. */
+.sig-tpl-telemetry__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-section);
+}
+.sig-tpl-telemetry__grid > .span-3 { grid-column: span 3; }
+.sig-tpl-telemetry__grid > .span-4 { grid-column: span 4; }
+.sig-tpl-telemetry__grid > .span-5 { grid-column: span 5; }
+.sig-tpl-telemetry__grid > .span-6 { grid-column: span 6; }
+.sig-tpl-telemetry__grid > .span-7 { grid-column: span 7; }
+.sig-tpl-telemetry__grid > .span-12 { grid-column: span 12; }
+.sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi { grid-column: span 3; }
 .sig-tpl-telemetry__kpi {
+  min-width: 0; /* the minmax(0,1fr) track guard — no tile forces the track wider */
   background: var(--bg-surface);
   border: 1px solid color-mix(in srgb, var(--text-muted) 18%, transparent);
   border-radius: var(--radius-card);
@@ -1106,24 +1132,29 @@ const TELEMETRY_TEMPLATE_CSS = \`
   outline-offset: 2px;
   border-radius: var(--radius-ui);
 }
-@container tpl-telemetry (max-width: 1023px) {
-  .sig-tpl-telemetry { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .sig-tpl-telemetry > .span-3 { grid-column: span 3; }
-  .sig-tpl-telemetry > .sig-tpl-telemetry__kpi { grid-column: span 3; }
-  .sig-tpl-telemetry > .span-4,
-  .sig-tpl-telemetry > .span-5,
-  .sig-tpl-telemetry > .span-6,
-  .sig-tpl-telemetry > .span-7 { grid-column: span 6; }
+@container template-stage (max-width: 1024px) {
+  /* 640–1024px container: the 2-col tier — the grid halves to 6
+     columns and every span doubles (3→6, 4→6, 5→6, 6→6, 7→6); the
+     span-3 KPI tiles pair up two-across. */
+  .sig-tpl-telemetry__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .sig-tpl-telemetry__grid > .span-3 { grid-column: span 3; }
+  .sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi { grid-column: span 3; }
+  .sig-tpl-telemetry__grid > .span-4,
+  .sig-tpl-telemetry__grid > .span-5,
+  .sig-tpl-telemetry__grid > .span-6,
+  .sig-tpl-telemetry__grid > .span-7 { grid-column: span 6; }
 }
-@container tpl-telemetry (max-width: 560px) {
-  .sig-tpl-telemetry { grid-template-columns: 1fr; }
-  .sig-tpl-telemetry > .span-3,
-  .sig-tpl-telemetry > .sig-tpl-telemetry__kpi,
-  .sig-tpl-telemetry > .span-4,
-  .sig-tpl-telemetry > .span-5,
-  .sig-tpl-telemetry > .span-6,
-  .sig-tpl-telemetry > .span-7,
-  .sig-tpl-telemetry > .span-12 { grid-column: auto; }
+@container template-stage (max-width: 639px) {
+  /* <640px container: the single-column tier — one minmax(0, 1fr)
+     track, every span reset. The KPI tiles stack full-width. */
+  .sig-tpl-telemetry__grid { grid-template-columns: minmax(0, 1fr); }
+  .sig-tpl-telemetry__grid > .span-3,
+  .sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi,
+  .sig-tpl-telemetry__grid > .span-4,
+  .sig-tpl-telemetry__grid > .span-5,
+  .sig-tpl-telemetry__grid > .span-6,
+  .sig-tpl-telemetry__grid > .span-7,
+  .sig-tpl-telemetry__grid > .span-12 { grid-column: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .sig-tpl-telemetry * { transition-duration: 1ms !important; animation-duration: 1ms !important; }
@@ -1417,11 +1448,16 @@ function TelemetryCenterPage(): ReactNode {
   return (
     <main className="sig-tpl-telemetry" data-testid="tpl-telemetry">
       <style>{TELEMETRY_TEMPLATE_CSS}</style>
-      <KpiRow />
-      <GaugeRow />
-      <ChartsRow />
-      <ScheduleSection />
-      <LedgerSection />
+      {/* 3.9.0 — the INNER grid wrapper: the container queries answer
+          the root's width and restyle THIS element (a container can
+          never restyle itself — the v3.8.0 dead-CSS lesson). */}
+      <div className="sig-tpl-telemetry__grid">
+        <KpiRow />
+        <GaugeRow />
+        <ChartsRow />
+        <ScheduleSection />
+        <LedgerSection />
+      </div>
     </main>
   );
 }
