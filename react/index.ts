@@ -161,7 +161,12 @@ export {
   type GraphEdgeSelection,
   type GraphPosition,
   type GraphView,
+  type GraphNodeKind,
+  type GraphLayoutMode,
   layoutGraph,
+  layoutTree,
+  layoutRadial,
+  treeEdge,
   cubicBezierEdge,
   isTypingTarget,
 } from "./graph.js";

@@ -18,7 +18,7 @@ export { SurfaceCard, PageHero, } from "./surface.js";
 export { DataTable, Tabs, Callout, } from "./data.js";
 export { Carousel, CarouselItem, ProseBlock, AnnouncementBanner, } from "./editorial.js";
 export { ActionTile, FlipCard, AccordionCard, MatchupCard, ContentCard, ReferenceCard, TierCard, ProfileCard, ChronicleTimeline, } from "./cards.js";
-export { KnowledgeGraph, layoutGraph, cubicBezierEdge, isTypingTarget, } from "./graph.js";
+export { KnowledgeGraph, layoutGraph, layoutTree, layoutRadial, treeEdge, cubicBezierEdge, isTypingTarget, } from "./graph.js";
 export { CommandPalette, } from "./command.js";
 export { SkeletonLine, SkeletonCard, SkeletonTableRow, } from "./skeleton.js";
 export { AnimatedNumber, springProgress, MotionReveal, KineticSurface, } from "./motion.js";

@@ -86,10 +86,19 @@ export const PREFS_STORAGE_KEY = "sig.workspace.v3.prefs";
 export const THEME_STORAGE_KEY = "sig.workspace.v3.theme"; // legacy — migration read only
 export const RADIUS_STORAGE_KEY = "sig.workspace.v3.radius"; // legacy — migration read only
 
-/** The merged prefs shape (3.6.0) — the sig.workspace.v3.prefs payload. */
+/** 3.9.0 — the Graph Studio layout engine modes (the prefs field). */
+export type SigGraphLayout = "free" | "tree" | "radial";
+
+/** The merged prefs shape (3.6.0; 3.9.0 grows the optional graphLayout). */
 export interface SigPrefs {
   readonly theme: SigThemeName;
   readonly radius: SigRadiusName;
+  /**
+   * 3.9.0 — the Graph Studio's active layout mode. OPTIONAL: older
+   * stored prefs (and the absent-default first paint) mean "free", the
+   * pre-3.9.0 behavior. One key, one writer (useSigTheme) still holds.
+   */
+  readonly graphLayout?: SigGraphLayout;
 }
 
 /** The resolved token map per theme: :root → theme overrides. */

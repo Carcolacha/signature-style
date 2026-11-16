@@ -32,7 +32,7 @@ import {
   RADIUS_STORAGE_KEY,
   THEME_STORAGE_KEY,
 } from "./theme-utils.js";
-import type { SigPrefs, SigRadiusName, SigThemeName } from "./theme-utils.js";
+import type { SigPrefs, SigGraphLayout, SigRadiusName, SigThemeName } from "./theme-utils.js";
 import type { WorkspaceRepository } from "./workspace-repository.js";
 
 /** True when the key has a stored value (quota/private mode → absent). */
@@ -53,6 +53,7 @@ function legacyPrefsSeed(fallback: SigPrefs): { seed: SigPrefs; picked: boolean 
       seed: {
         theme: stored.theme ?? fallback.theme,
         radius: stored.radius ?? fallback.radius,
+        graphLayout: stored.graphLayout ?? fallback.graphLayout,
       },
       picked: true,
     };
@@ -66,6 +67,7 @@ function legacyPrefsSeed(fallback: SigPrefs): { seed: SigPrefs; picked: boolean 
     seed: {
       theme: legacyTheme ?? fallback.theme,
       radius: legacyRadius ?? fallback.radius,
+      graphLayout: fallback.graphLayout,
     },
     picked: true,
   };
@@ -74,8 +76,12 @@ function legacyPrefsSeed(fallback: SigPrefs): { seed: SigPrefs; picked: boolean 
 export interface UseSigTheme {
   readonly theme: SigThemeName;
   readonly radius: SigRadiusName;
+  /** 3.9.0 — the Graph Studio's active layout mode (prefs-persisted). */
+  readonly graphLayout: SigGraphLayout;
   setTheme(theme: SigThemeName): void;
   setRadius(radius: SigRadiusName): void;
+  /** 3.9.0 — the layout-mode commit (the prefs object's optional field). */
+  setGraphLayout(layout: SigGraphLayout): void;
   /** The 16 chromatic contrast badges for the ACTIVE theme. */
   readonly badges: ReturnType<typeof contrastBadges>;
   /** The Blob download of the ACTIVE theme's resolved :root block. */
@@ -103,6 +109,8 @@ export function useSigTheme(repo?: WorkspaceRepository): UseSigTheme {
   const initial = useRef(legacyPrefsSeed({ theme: "mocha", radius: "standard" }));
   const theme = prefs.theme;
   const radius = prefs.radius;
+  // 3.9.0 — the layout mode rides the SAME prefs object (absent = "free").
+  const graphLayout: SigGraphLayout = prefs.graphLayout ?? "free";
   const applied = useRef<boolean>(initial.current.picked);
   // ADOPT the legacy seed into the merged key on first mount (one
   // write; afterwards only the merged key exists).
@@ -127,23 +135,33 @@ export function useSigTheme(repo?: WorkspaceRepository): UseSigTheme {
       // update, so the effect would never re-fire — the pick must still
       // land in the DOM.
       document.documentElement.dataset.sigTheme = next;
-      const nextPrefs: SigPrefs = { theme: next, radius };
+      const nextPrefs: SigPrefs = { ...prefs, theme: next };
       setPrefs(nextPrefs);
       // The async leg (the FastAPI rehearsal) — the mirror write already
       // landed, so a rejection only costs the rehearsal toast.
       repo?.savePrefs(nextPrefs).catch(() => {});
     },
-    [setPrefs, repo, radius],
+    [setPrefs, repo, prefs],
   );
   const setRadius = useCallback(
     (next: SigRadiusName): void => {
       applied.current = true;
       document.documentElement.dataset.sigRadius = next;
-      const nextPrefs: SigPrefs = { theme, radius: next };
+      const nextPrefs: SigPrefs = { ...prefs, radius: next };
       setPrefs(nextPrefs);
       repo?.savePrefs(nextPrefs).catch(() => {});
     },
-    [setPrefs, repo, theme],
+    [setPrefs, repo, prefs],
+  );
+  // 3.9.0 — the layout-mode commit: the merged prefs object keeps ONE
+  // writer; the optional field joins the payload (older readers ignore it).
+  const setGraphLayout = useCallback(
+    (layout: SigGraphLayout): void => {
+      const nextPrefs: SigPrefs = { ...prefs, graphLayout: layout };
+      setPrefs(nextPrefs);
+      repo?.savePrefs(nextPrefs).catch(() => {});
+    },
+    [setPrefs, repo, prefs],
   );
 
   const badges = useMemo(() => contrastBadges(theme), [theme]);
@@ -188,8 +206,10 @@ export function useSigTheme(repo?: WorkspaceRepository): UseSigTheme {
   return {
     theme,
     radius,
+    graphLayout,
     setTheme,
     setRadius,
+    setGraphLayout,
     badges,
     downloadTokensCss,
     copyTokensCss,

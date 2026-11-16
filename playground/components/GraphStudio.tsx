@@ -1,56 +1,103 @@
 /**
- * GraphStudio — THE GRAPH STUDIO VIEW (3.6.0 "Graph Studio", the release's
- * centerpiece). Props-driven: the workspace STATE (graph/links/positions)
- * lives in App.tsx's useWorkspaceState (the persisted sig.workspace.v3.*
- * keys); this module is the STAGE — canvas, HUD, inspector.
+ * GraphStudio — THE GRAPH STUDIO VIEW (3.6.0 "Graph Studio"; 3.9.0
+ * "Full-Viewport Tree & Mind-Map Graph Studio"). Props-driven: the
+ * workspace STATE (graph/links/positions/layoutMode) lives in App.tsx
+ * (the persisted sig.workspace.v3.* keys); this module is the STAGE.
  *
- * ANATOMY (the `.graph-studio` grid: canvas minmax(0,1fr) + a 340px
- * inspector column, stacking below 960px):
+ * 3.9.0 THE FULL-VIEWPORT GEOMETRY (the owner's defect #4 fix, view
+ * half): the view BYPASSES .sig-shell — App mounts it full-bleed under
+ * the 56px nav (width 100%, height calc(100vh - 56px), position
+ * relative, overflow hidden), and the stage paints the 24px dot-matrix
+ * board edge to edge. The <KnowledgeGraph> svg fills the stage (its px
+ * height measured through a ResizeObserver); the canvas footer strip
+ * floats (absolute) instead of taking layout space.
  *
- *   CANVAS PANE — the dot-matrix board (24px radial-gradient matrix on
- *   --bg-inset, min-height 620px) hosting <KnowledgeGraph> with every
- *   interaction (drag rAF, right-click tether, dbl-click spawn, wheel
- *   pan/zoom) PLUS the 3.6.0 edge model: click an edge → crimson
- *   selection → Delete/Backspace unlinks.
+ * THE 3 FLOATING HUD CARDS (.graph-hud — each carries the package's
+ * .sig-surface-card elevation, position absolute, z-index var(--z-nav)
+ * = the 30 rung, the (bd1)-sanctioned backdrop blur):
  *
- *   FLOATING HUD — glass strip pinned over the canvas top: the Search
- *   Nodes input (dims non-matching nodes to 0.25 via data-dim), Auto-
- *   Arrange (clears persisted custom positions → the deterministic
- *   layout re-runs), Zoom − / live readout / Zoom + (the imperative
- *   KnowledgeGraphHandle), the `Nodes n · Edges e` tabular counter, and
- *   the "?" shortcuts ghost button.
+ *   1. TOP-LEFT TOOLBAR — the Search Nodes input (dims non-matches to
+ *      0.25 via data-dim), the Layout Mode segmented switcher (Free /
+ *      Tree / Radial — the 3.9.0 layout engine), Auto-Layout (clears
+ *      the persisted custom positions → the active mode's layout
+ *      re-runs), Zoom − / live tabular % / Zoom + (the imperative
+ *      KnowledgeGraphHandle), the Nodes·Edges counter, the latency sim
+ *      slot and the "?" shortcuts ghost button.
  *
- *   INSPECTOR (340px SurfaceCard) — with a NODE selected: live-edit
- *   Title / Color Token (the 26-token Select) / Tags (comma-separated →
- *   chips) / Notes, each debounced-committed to the persisted graph;
- *   the Connected Edges list (per-edge Unlink + Jump-to-target); and
- *   Spawn Linked Child. With an EDGE selected: the crimson edge card
- *   (endpoints + Unlink). With nothing selected: the muted empty state.
+ *   2. BOTTOM-CENTER ACTION DOCK — + Add Node (a child of the
+ *      selection, or the root), + Spawn Branch (a child of the
+ *      selection), AI Expand Node (the LOCAL heuristic generator —
+ *      playground/graph-expansion.ts, deterministic seeds, NO
+ *      network: expands the selection into 3-4 context-derived
+ *      sub-nodes with distinct --sig-* accents), Reset Canvas (back to
+ *      the seed graph), Export JSON (the graph+links+positions
+ *      snapshot download).
+ *
+ *   3. RIGHT INSPECTOR (320px, floats over the right edge while a node
+ *      or edge is selected; the ✕ button collapses it) — live-edit
+ *      Title / Node Kind (the 3.9.0 nodeKind select) / the 16-swatch
+ *      --sig-* fill picker (click sets categoryToken — the chromatic
+ *      sixteen, fill/series accents per the Rule of Engagement) / Tags
+ *      (comma chips) / Notes — every field debounced-committed to the
+ *      persisted graph — plus the Connected Edges list (per-edge
+ *      Unlink + Jump-to-target).
+ *
+ * Edge selection/unlink is PRESERVED from 3.6.0: click an edge →
+ * crimson → Delete/Backspace unlinks (the consumer resolves parent:*
+ * vs explicit links); the counter reports Nodes n · Edges e.
  */
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import {
   Button,
   Icon,
   Input,
   Select,
   SkeletonCard,
-  SurfaceCard,
   TextArea,
   useToast,
 } from "@edwyn/signature-style/react";
 import type {
   GraphEdge,
   GraphEdgeSelection,
+  GraphLayoutMode,
   GraphNode,
+  GraphNodeKind,
   GraphView,
   KnowledgeGraphHandle,
 } from "@edwyn/signature-style/react";
 import { KnowledgeGraph } from "@edwyn/signature-style/react";
 import { PALETTE } from "../palette.js";
+import { expandNodeIdeas } from "../graph-expansion.js";
 
 /** The inspector's edit patch — the fields the HUD can commit. */
-export type NodePatch = Partial<Pick<GraphNode, "label" | "categoryToken" | "note" | "tags">>;
+export type NodePatch = Partial<
+  Pick<GraphNode, "label" | "categoryToken" | "note" | "tags" | "nodeKind">
+>;
+
+/** The 3.9.0 layout modes in display order (the segmented switcher). */
+const LAYOUT_MODES: Array<{ id: GraphLayoutMode; label: string }> = [
+  { id: "free", label: "Free" },
+  { id: "tree", label: "Tree" },
+  { id: "radial", label: "Radial" },
+];
+
+/** The node kinds the inspector's select offers. */
+const NODE_KINDS: Array<{ id: GraphNodeKind; label: string }> = [
+  { id: "root", label: "Root" },
+  { id: "branch", label: "Branch" },
+  { id: "leaf", label: "Leaf" },
+  { id: "note", label: "Note" },
+];
+
+/** The 16-swatch picker roster — THE CHROMATIC SIXTEEN (the 3.0.0
+    fill/series family: the fifteen `role: "fill"` accents + cobalt,
+    which the palette roster files under "ink" but the 3.0.0 expansion
+    counts as its sixteenth member). The Rule of Engagement reserves
+    these for CONTENT ink, and a node ring IS content ink. */
+const PICKER_SWATCHES = PALETTE.filter(
+  (entry) => entry.role === "fill" || entry.token === "--sig-cobalt",
+);
 
 export interface GraphStudioViewProps {
   readonly graph: GraphNode[];
@@ -59,14 +106,26 @@ export interface GraphStudioViewProps {
   readonly positions?: Record<string, { x: number; y: number }>;
   /** Shows a SkeletonCard in the inspector while a save is in flight (3.6.0 repo). */
   readonly saving?: boolean;
+  /** The ACTIVE layout mode (lifted — persisted in sig.workspace.v3.prefs). */
+  readonly layoutMode: GraphLayoutMode;
+  /** The layout switcher commit. */
+  readonly onLayoutModeChange: (mode: GraphLayoutMode) => void;
   /** Commits one node's inspector patch (debounced upstream by the caller). */
   readonly onUpdateNode: (id: string, patch: NodePatch) => void;
   /** Removes one edge by id (parent:* clears the child's parentId). */
   readonly onUnlinkEdge: (edgeId: string) => void;
-  /** Adds a child node connected to `parentId`. */
+  /** Adds ONE plain node (the dock's + Add Node: child of `parentId`, or a root). */
+  readonly onAddNode: (parentId?: string) => void;
+  /** Adds a spawned branch — a child of the selection (the dock's + Spawn Branch). */
   readonly onSpawnLinkedChild: (parentId: string) => void;
-  /** Clears the persisted custom positions → the deterministic layout re-runs. */
+  /** THE AI EXPAND commit — the generated ideas ride one workspace op. */
+  readonly onExpandNode: (parentId: string, ideas: Array<{ label: string; token: string }>) => void;
+  /** Clears the persisted custom positions → the active layout re-runs. */
   readonly onAutoArrange: () => void;
+  /** Resets the canvas to the seed graph (graph + links + positions). */
+  readonly onResetCanvas: () => void;
+  /** Downloads the graph+links+positions JSON snapshot. */
+  readonly onExportGraph: () => void;
   /** HUD extras (the 3.6.0 latency toggle lives here). */
   readonly hudSlot?: ReactNode;
   /** Opens the keyboard-shortcut modal (the "?" ghost button). */
@@ -106,7 +165,7 @@ function connectedEdgesOf(node: GraphNode, links: readonly GraphEdge[]): Connect
   }
   for (const link of links) {
     if (link.fromId === node.id || link.toId === node.id) {
-      edges.push({ id: link.id, kind: "link", fromId: link.fromId, toId: link.toId });
+      edges.push({ id: link.id, kind: "link", fromId: link.fromId, toId: node.id === link.fromId ? link.toId : link.fromId });
     }
   }
   return edges;
@@ -164,10 +223,16 @@ export function GraphStudioView({
   links,
   positions,
   saving = false,
+  layoutMode,
+  onLayoutModeChange,
   onUpdateNode,
   onUnlinkEdge,
+  onAddNode,
   onSpawnLinkedChild,
+  onExpandNode,
   onAutoArrange,
+  onResetCanvas,
+  onExportGraph,
   hudSlot,
   onOpenShortcuts,
   onMoveNode,
@@ -180,6 +245,23 @@ export function GraphStudioView({
   const [selectedEdge, setSelectedEdge] = useState<GraphEdgeSelection | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [zoom, setZoom] = useState(1);
+  // The inspector collapse — the ✕ hides it until the next selection.
+  const [inspectorOpen, setInspectorOpen] = useState(true);
+  // THE FULL-VIEWPORT MEASURE — the svg fills the stage; the RO keeps
+  // the px height honest through viewport resizes.
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const [stageHeight, setStageHeight] = useState(620);
+  useLayoutEffect(() => {
+    const el = stageRef.current;
+    if (el === null || typeof ResizeObserver === "undefined") return undefined;
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setStageHeight(Math.max(320, Math.round(entry.contentRect.height)));
+      }
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const selectedNode = graph.find((node) => node.id === selectedNodeId) ?? null;
   const { draft, schedule } = useDebouncedNodeDraft(selectedNode, onUpdateNode);
@@ -197,6 +279,9 @@ export function GraphStudioView({
     [selectedNode, links],
   );
 
+  // THE AI EXPAND INPUT — every label on the canvas (the dedupe set).
+  const allLabels = useMemo(() => graph.map((node) => node.label), [graph]);
+
   const tagsDraftText = Array.isArray(draft.tags) ? draft.tags.join(", ") : "";
   const tagsPreview = tagsDraftText
     .split(",")
@@ -206,10 +291,12 @@ export function GraphStudioView({
   const handleSelectNode = (node: GraphNode): void => {
     setSelectedNodeId(node.id);
     setSelectedEdge(null);
+    setInspectorOpen(true);
   };
   const handleSelectEdge = (edge: GraphEdgeSelection): void => {
     setSelectedNodeId(null);
     setSelectedEdge(edge);
+    setInspectorOpen(true);
   };
   const handleViewChange = (view: GraphView): void => {
     setZoom(view.zoom);
@@ -221,6 +308,16 @@ export function GraphStudioView({
     onUnlinkEdge(edgeId);
     setSelectedEdge(null);
     // The toast lives in useWorkspaceState (one feedback voice).
+  };
+  const expandSelection = (): void => {
+    if (selectedNode === null) return;
+    onExpandNode(
+      selectedNode.id,
+      expandNodeIdeas(selectedNode, allLabels).map((idea) => ({
+        label: idea.label,
+        token: idea.token,
+      })),
+    );
   };
 
   const inspectorBody = (() => {
@@ -268,20 +365,42 @@ export function GraphStudioView({
           />
         </label>
         <label className="graph-studio__field">
-          <span className="graph-studio__field-label">Color Token</span>
+          <span className="graph-studio__field-label">Node Kind</span>
           <Select
-            aria-label="Color token"
-            data-testid="studio-token"
-            value={draft.categoryToken ?? selectedNode.categoryToken}
-            onChange={(event) => schedule({ categoryToken: event.target.value as GraphNode["categoryToken"] })}
+            aria-label="Node kind"
+            data-testid="studio-node-kind"
+            value={draft.nodeKind ?? selectedNode.nodeKind ?? "branch"}
+            onChange={(event) => schedule({ nodeKind: event.target.value as GraphNodeKind })}
           >
-            {PALETTE.map(({ token, label }) => (
-              <option key={token} value={token}>
-                {label} — {token}
+            {NODE_KINDS.map((kind) => (
+              <option key={kind.id} value={kind.id}>
+                {kind.label}
               </option>
             ))}
           </Select>
         </label>
+        <div className="graph-studio__field">
+          <span className="graph-studio__field-label">Color — the chromatic sixteen</span>
+          <div className="graph-studio__swatches" role="group" aria-label="Node color" data-testid="studio-swatches">
+            {PICKER_SWATCHES.map(({ token, label }) => (
+              <button
+                key={token}
+                type="button"
+                className={
+                  (draft.categoryToken ?? selectedNode.categoryToken) === token
+                    ? "graph-studio__swatch is-picked"
+                    : "graph-studio__swatch"
+                }
+                style={{ "--swatch": `var(${token})` } as CSSProperties}
+                title={`${label} — ${token}`}
+                aria-label={`Set color ${label} (${token})`}
+                aria-pressed={(draft.categoryToken ?? selectedNode.categoryToken) === token}
+                data-token={token}
+                onClick={() => schedule({ categoryToken: token as GraphNode["categoryToken"] })}
+              />
+            ))}
+          </div>
+        </div>
         <div className="graph-studio__field">
           <span className="graph-studio__field-label">Tags</span>
           <Input
@@ -365,96 +484,190 @@ export function GraphStudioView({
   })();
 
   return (
-    <main className="graph-studio" data-testid="graph-studio">
-      {/* THE CANVAS PANE — the dot-matrix board + the floating HUD. */}
-      <div className="graph-studio__canvas" data-testid="studio-canvas">
-        <div className="graph-studio__hud" role="toolbar" aria-label="Graph canvas tools">
-          <Input
-            value={searchQuery}
-            placeholder="Search nodes…"
-            aria-label="Search nodes"
-            data-testid="studio-search"
-            onChange={(event) => setSearchQuery(event.target.value)}
-          />
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon="LocateFixed"
-            data-testid="studio-auto-arrange"
-            onClick={() => {
-              graphRef.current?.autoArrange();
-              toast("success", "Auto-arranged — the deterministic layout is restored and persisted.");
-            }}
-          >
-            Auto-Arrange
-          </Button>
-          <div className="graph-studio__zoom" role="group" aria-label="Canvas zoom">
+    <main
+      className="graph-studio graph-studio--full"
+      data-testid="graph-studio"
+      data-layout-mode={layoutMode}
+    >
+      {/* THE FULL-VIEWPORT CANVAS — the dot-matrix board + the svg. */}
+      <div className="graph-studio__stage" ref={stageRef} data-testid="studio-canvas">
+        <KnowledgeGraph
+          ref={graphRef}
+          nodes={graph}
+          links={links}
+          searchQuery={searchQuery}
+          positions={positions}
+          layoutMode={layoutMode}
+          onMoveNode={onMoveNode}
+          onLinkNodes={onLinkNodes}
+          onAddNodeAt={onAddNodeAt}
+          onSelectNode={handleSelectNode}
+          onSelectEdge={handleSelectEdge}
+          onUnlinkEdge={onUnlinkEdge}
+          onViewChange={handleViewChange}
+          onAutoArrange={onAutoArrange}
+          height={stageHeight}
+          label="Graph Studio canvas"
+        />
+      </div>
+
+      {/* HUD 1 — THE TOP-LEFT TOOLBAR. */}
+      <div
+        className="graph-hud graph-hud--toolbar sig-surface-card"
+        role="toolbar"
+        aria-label="Graph canvas tools"
+        data-testid="studio-toolbar"
+      >
+        <Input
+          value={searchQuery}
+          placeholder="Search nodes…"
+          aria-label="Search nodes"
+          data-testid="studio-search"
+          onChange={(event) => setSearchQuery(event.target.value)}
+        />
+        <div className="graph-studio__seg" role="group" aria-label="Layout mode" data-testid="studio-layout-seg">
+          {LAYOUT_MODES.map((mode) => (
             <button
+              key={mode.id}
               type="button"
-              className="graph-studio__zoom-btn"
-              aria-label="Zoom out"
-              data-testid="studio-zoom-out"
-              onClick={() => graphRef.current?.zoomOut()}
+              className="graph-studio__seg-btn"
+              aria-pressed={layoutMode === mode.id}
+              data-testid={`studio-layout-${mode.id}`}
+              onClick={() => onLayoutModeChange(mode.id)}
             >
-              −
+              {mode.label}
             </button>
-            <span className="graph-studio__zoom-readout" aria-live="polite">
-              {Math.round(zoom * 100)}%
-            </span>
+          ))}
+        </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon="LocateFixed"
+          data-testid="studio-auto-arrange"
+          onClick={() => {
+            graphRef.current?.autoArrange();
+            toast("success", "Auto-layout — the active mode's deterministic layout is restored and persisted.");
+          }}
+        >
+          Auto-Layout
+        </Button>
+        <div className="graph-studio__zoom" role="group" aria-label="Canvas zoom">
+          <button
+            type="button"
+            className="graph-studio__zoom-btn"
+            aria-label="Zoom out"
+            data-testid="studio-zoom-out"
+            onClick={() => graphRef.current?.zoomOut()}
+          >
+            −
+          </button>
+          <span className="graph-studio__zoom-readout" aria-live="polite">
+            {Math.round(zoom * 100)}%
+          </span>
+          <button
+            type="button"
+            className="graph-studio__zoom-btn"
+            aria-label="Zoom in"
+            data-testid="studio-zoom-in"
+            onClick={() => graphRef.current?.zoomIn()}
+          >
+            +
+          </button>
+        </div>
+        <span className="graph-studio__count" data-testid="studio-count">
+          Nodes {graph.length} · Edges {edgeCount}
+        </span>
+        {hudSlot}
+        {onOpenShortcuts !== undefined && (
+          <button
+            type="button"
+            className="graph-studio__help"
+            aria-label="Open keyboard shortcuts"
+            data-testid="studio-help"
+            onClick={onOpenShortcuts}
+          >
+            ?
+          </button>
+        )}
+      </div>
+
+      {/* HUD 2 — THE BOTTOM-CENTER ACTION DOCK. */}
+      <div
+        className="graph-hud graph-hud--dock sig-surface-card"
+        role="toolbar"
+        aria-label="Graph actions"
+        data-testid="studio-dock"
+      >
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon="Plus"
+          data-testid="studio-add-node"
+          onClick={() => onAddNode(selectedNode?.id)}
+        >
+          + Add Node
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon="GitBranch"
+          data-testid="studio-spawn-branch"
+          disabled={selectedNode === null}
+          onClick={() => {
+            if (selectedNode !== null) onSpawnLinkedChild(selectedNode.id);
+          }}
+        >
+          + Spawn Branch
+        </Button>
+        <Button
+          variant="primary"
+          size="sm"
+          leftIcon="Sparkles"
+          data-testid="studio-ai-expand"
+          disabled={selectedNode === null}
+          onClick={expandSelection}
+        >
+          AI Expand Node
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon="RotateCcw"
+          data-testid="studio-reset-canvas"
+          onClick={onResetCanvas}
+        >
+          Reset Canvas
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          leftIcon="Download"
+          data-testid="studio-export-json"
+          onClick={onExportGraph}
+        >
+          Export JSON
+        </Button>
+      </div>
+
+      {/* HUD 3 — THE FLOATING RIGHT INSPECTOR (320px, over the right
+          edge while a selection lives; the ✕ collapses it). */}
+      {inspectorOpen && (selectedNode !== null || selectedEdge !== null || saving) && (
+        <div className="graph-hud graph-hud--inspector sig-surface-card" data-testid="studio-inspector">
+          <div className="graph-hud__inspector-head">
+            <span className="graph-hud__inspector-title">Node Inspector</span>
             <button
               type="button"
-              className="graph-studio__zoom-btn"
-              aria-label="Zoom in"
-              data-testid="studio-zoom-in"
-              onClick={() => graphRef.current?.zoomIn()}
+              className="graph-hud__close"
+              aria-label="Collapse inspector"
+              data-testid="studio-inspector-close"
+              onClick={() => setInspectorOpen(false)}
             >
-              +
+              ✕
             </button>
           </div>
-          <span className="graph-studio__count" data-testid="studio-count">
-            Nodes {graph.length} · Edges {edgeCount}
-          </span>
-          {hudSlot}
-          {onOpenShortcuts !== undefined && (
-            <button
-              type="button"
-              className="graph-studio__help"
-              aria-label="Open keyboard shortcuts"
-              data-testid="studio-help"
-              onClick={onOpenShortcuts}
-            >
-              ?
-            </button>
-          )}
+          <div className="graph-hud__inspector-body">{inspectorBody}</div>
         </div>
-        <div data-testid="knowledge-graph">
-          <KnowledgeGraph
-            ref={graphRef}
-            nodes={graph}
-            links={links}
-            searchQuery={searchQuery}
-            positions={positions}
-            onMoveNode={onMoveNode}
-            onLinkNodes={onLinkNodes}
-            onAddNodeAt={onAddNodeAt}
-            onSelectNode={handleSelectNode}
-            onSelectEdge={handleSelectEdge}
-            onUnlinkEdge={onUnlinkEdge}
-            onViewChange={handleViewChange}
-            onAutoArrange={onAutoArrange}
-            addOn
-            height={520}
-            label="Graph Studio canvas"
-          />
-        </div>
-      </div>
-      {/* THE INSPECTOR PANE — a 340px SurfaceCard, stacks below the
-          canvas under 960px (the .graph-studio grid). */}
-      <div className="graph-studio__inspector" data-testid="studio-inspector">
-        <SurfaceCard eyebrow="Inspector" meta="sig.workspace.v3.graph" title="Node Inspector" interactive>
-          {inspectorBody}
-        </SurfaceCard>
-      </div>
+      )}
     </main>
   );
 }

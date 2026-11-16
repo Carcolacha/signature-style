@@ -57,6 +57,24 @@
  * lets "Jump-to-target" buttons move the selection. Every view change
  * reports through `onViewChange` (the HUD's live zoom readout).
  *
+ * 3.9.0 THE LAYOUT ENGINE — `layoutMode?: "free" | "tree" | "radial"`
+ * (default "free" = the untouched pre-3.9.0 contract). TWO new pure,
+ * exported, gate-testable layout helpers join `layoutGraph`:
+ *   · `layoutRadial` — the historical ring engine under its mode name
+ *     (layoutGraph delegates to it; free layers drag positions over
+ *     the same base).
+ *   · `layoutTree` — the deterministic top-down tidy layout: hash-
+ *     sorted structure, iterative post-order leaf slots, parents
+ *     centered over children, one row per depth (root top-center).
+ *     Deterministic: same nodes = same coordinates, gate-asserted.
+ * `treeEdge` draws the mode's vertical cubic Beziers (control points
+ * at the row midpoint — smooth, tangle-free by row separation). In
+ * tree/radial modes dragging/nudging is DISABLED (the layout is the
+ * law; the persisted positions cannot override it) — pan/zoom, tether,
+ * dbl-click spawn and edge unlink all stay live. Nodes stamp
+ * data-kind (see GraphNode.nodeKind); the svg stamps
+ * data-layout-mode for probes.
+ *
  * @example
  * ```tsx
  * const graphRef = useRef<KnowledgeGraphHandle>(null);
@@ -93,7 +111,20 @@ export interface GraphNode {
      * enumerated string[] with per-item non-emptiness, nothing stricter.
      */
     tags?: string[];
+    /**
+     * 3.9.0 — the node's SEMANTIC KIND: "root" (a tree origin), "branch"
+     * (a connector with children), "leaf" (a terminal), "note"
+     * (an annotation — dashed ring via css/graph.css). Optional metadata:
+     * the layouts and interactions never required it; the studio
+     * inspector edits it, the canvas stamps data-kind for probes, and
+     * older snapshots without it render as before.
+     */
+    nodeKind?: GraphNodeKind;
 }
+/** 3.9.0 — the node's semantic kind (see GraphNode.nodeKind). */
+export type GraphNodeKind = "root" | "branch" | "leaf" | "note";
+/** 3.9.0 — the layout engine modes (see KnowledgeGraphProps.layoutMode). */
+export type GraphLayoutMode = "free" | "tree" | "radial";
 /** One laid-out node: final viewBox coordinates plus its ring/angle math. */
 export interface GraphPosition {
     x: number;
@@ -109,6 +140,41 @@ export interface GraphPosition {
  * and still deterministic.
  */
 export declare function layoutGraph(nodes: readonly GraphNode[]): Record<string, GraphPosition>;
+/**
+ * The PURE radial layout — nodes in, coordinates out, deterministically.
+ * THE RING ENGINE: roots at the viewBox center, every BFS depth level on
+ * a ring (90 + depth·110 units), children fanned across an angular span
+ * around their parent. 3.9.0: this IS the historical layoutGraph body,
+ * named for the mode that runs it (the free mode layers persisted drag
+ * positions OVER this base).
+ */
+export declare function layoutRadial(nodes: readonly GraphNode[]): Record<string, GraphPosition>;
+/**
+ * The PURE tree layout (3.9.0) — a deterministic top-down tidy layout.
+ * THE ALGORITHM: the same hash-sorted, BFS-depthed structure walk as the
+ * radial engine; then a classic tidy pass — an iterative post-order DFS
+ * assigns every LEAF a sequential horizontal slot (children in sibling
+ * hash order), each internal node centers over its children, and every
+ * depth level rides its own row (root top-center, deepest row pinned
+ * above the bottom pad). Same nodes in, same coordinates out, EVERY
+ * time — input order cannot move a node (the id-hash sort), and the
+ * gate asserts exact coordinates. Orphans (parentId pointing at a
+ * missing id) are treated as roots — defensive and still deterministic.
+ */
+export declare function layoutTree(nodes: readonly GraphNode[]): Record<string, GraphPosition>;
+/**
+ * The PURE tree-edge helper (3.9.0) — one vertical cubic-Bezier path
+ * whose control points sit at the row midpoint, so every edge leaves its
+ * parent downward and enters its child from above: smooth, and tangle-
+ * free by construction (tree rows are strictly depth-separated).
+ */
+export declare function treeEdge(parent: {
+    x: number;
+    y: number;
+}, child: {
+    x: number;
+    y: number;
+}): string;
 /**
  * The PURE edge helper — one cubic-Bezier path string whose control
  * points sit 60% along the parent→child radial (from both ends), so
@@ -242,6 +308,15 @@ export interface KnowledgeGraphProps {
      * whitespace = no search dimming.
      */
     searchQuery?: string;
+    /**
+     * 3.9.0 — THE LAYOUT ENGINE mode (default "free"): "free" keeps the
+     * current behavior (the deterministic radial base + persisted drag
+     * positions winning); "tree" runs the pure top-down tidy layout
+     * (drag/nudge disabled — the layout is the law; pan/zoom/tether/add
+     * still work); "radial" runs the ring engine with no drag overlay.
+     * data-layout-mode rides the svg for probes.
+     */
+    layoutMode?: GraphLayoutMode;
     /** The svg's rendered height in px. Default 320. */
     height?: number;
     /** The accessible name for the graph application. Default "Knowledge graph". */

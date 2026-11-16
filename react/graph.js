@@ -58,6 +58,24 @@ import { jsx as _jsx, jsxs as _jsxs, Fragment as _Fragment } from "react/jsx-run
  * lets "Jump-to-target" buttons move the selection. Every view change
  * reports through `onViewChange` (the HUD's live zoom readout).
  *
+ * 3.9.0 THE LAYOUT ENGINE — `layoutMode?: "free" | "tree" | "radial"`
+ * (default "free" = the untouched pre-3.9.0 contract). TWO new pure,
+ * exported, gate-testable layout helpers join `layoutGraph`:
+ *   · `layoutRadial` — the historical ring engine under its mode name
+ *     (layoutGraph delegates to it; free layers drag positions over
+ *     the same base).
+ *   · `layoutTree` — the deterministic top-down tidy layout: hash-
+ *     sorted structure, iterative post-order leaf slots, parents
+ *     centered over children, one row per depth (root top-center).
+ *     Deterministic: same nodes = same coordinates, gate-asserted.
+ * `treeEdge` draws the mode's vertical cubic Beziers (control points
+ * at the row midpoint — smooth, tangle-free by row separation). In
+ * tree/radial modes dragging/nudging is DISABLED (the layout is the
+ * law; the persisted positions cannot override it) — pan/zoom, tether,
+ * dbl-click spawn and edge unlink all stay live. Nodes stamp
+ * data-kind (see GraphNode.nodeKind); the svg stamps
+ * data-layout-mode for probes.
+ *
  * @example
  * ```tsx
  * const graphRef = useRef<KnowledgeGraphHandle>(null);
@@ -199,6 +217,196 @@ function childAngle(parentAngle, index, count, parentDepth) {
     return parentAngle - span / 2 + index * step;
 }
 /**
+ * The PURE radial layout — nodes in, coordinates out, deterministically.
+ * THE RING ENGINE: roots at the viewBox center, every BFS depth level on
+ * a ring (90 + depth·110 units), children fanned across an angular span
+ * around their parent. 3.9.0: this IS the historical layoutGraph body,
+ * named for the mode that runs it (the free mode layers persisted drag
+ * positions OVER this base).
+ */
+export function layoutRadial(nodes) {
+    return layoutGraph(nodes);
+}
+/**
+ * The PURE tree layout (3.9.0) — a deterministic top-down tidy layout.
+ * THE ALGORITHM: the same hash-sorted, BFS-depthed structure walk as the
+ * radial engine; then a classic tidy pass — an iterative post-order DFS
+ * assigns every LEAF a sequential horizontal slot (children in sibling
+ * hash order), each internal node centers over its children, and every
+ * depth level rides its own row (root top-center, deepest row pinned
+ * above the bottom pad). Same nodes in, same coordinates out, EVERY
+ * time — input order cannot move a node (the id-hash sort), and the
+ * gate asserts exact coordinates. Orphans (parentId pointing at a
+ * missing id) are treated as roots — defensive and still deterministic.
+ */
+export function layoutTree(nodes) {
+    const sorted = [...nodes].sort((a, b) => idHash(a.id) - idHash(b.id) || (a.id < b.id ? -1 : 1));
+    const knownIds = new Set(sorted.map((node) => node.id));
+    const childrenOf = new Map();
+    const roots = [];
+    for (const node of sorted) {
+        const isRoot = node.parentId === undefined || !knownIds.has(node.parentId);
+        if (isRoot) {
+            roots.push(node);
+            continue;
+        }
+        const siblings = childrenOf.get(node.parentId);
+        if (siblings === undefined)
+            childrenOf.set(node.parentId, [node]);
+        else
+            siblings.push(node);
+    }
+    // BFS depth assignment (shared contract with the radial engine).
+    const depthOf = new Map();
+    const queue = [...roots];
+    for (const root of roots)
+        depthOf.set(root.id, 0);
+    let head = 0;
+    while (head < queue.length) {
+        const current = queue[head];
+        if (current === undefined)
+            break;
+        head += 1;
+        const depth = depthOf.get(current.id) ?? 0;
+        for (const child of childrenOf.get(current.id) ?? []) {
+            if (!depthOf.has(child.id)) {
+                depthOf.set(child.id, depth + 1);
+                queue.push(child);
+            }
+        }
+    }
+    let maxDepth = 0;
+    for (const node of sorted) {
+        maxDepth = Math.max(maxDepth, depthOf.get(node.id) ?? 0);
+    }
+    // THE ROWS: root top-center, deepest row pinned above the bottom pad.
+    const rowTop = 72;
+    const rowBottom = VIEW_HEIGHT - 72;
+    const rowY = (depth) => maxDepth === 0
+        ? (rowTop + rowBottom) / 2
+        : rowTop + (depth / maxDepth) * (rowBottom - rowTop);
+    // THE SLOTS: iterative post-order DFS (robust at any depth). Leaves
+    // take sequential slots left→right; parents center over their
+    // children; roots with no children take one slot themselves.
+    const positions = {};
+    let leafSlot = 0;
+    let leafCount = 0;
+    for (const root of roots) {
+        const stack = [
+            { node: root, phase: "enter" },
+        ];
+        while (stack.length > 0) {
+            const frame = stack.pop();
+            if (frame === undefined)
+                break;
+            const kids = childrenOf.get(frame.node.id) ?? [];
+            if (frame.phase === "enter") {
+                stack.push({ node: frame.node, phase: "exit" });
+                for (let i = kids.length - 1; i >= 0; i -= 1) {
+                    stack.push({ node: kids[i], phase: "enter" });
+                }
+                continue;
+            }
+            const depth = depthOf.get(frame.node.id) ?? 0;
+            if (kids.length === 0) {
+                leafCount += 1;
+                const x = NODE_PAD + (leafSlot + 0.5) * slotWidthOf(1);
+                positions[frame.node.id] = {
+                    x: clampX(x),
+                    y: round2(rowY(depth)),
+                    depth,
+                    angle: 0,
+                };
+                leafSlot += 1;
+                continue;
+            }
+            let sum = 0;
+            for (const kid of kids)
+                sum += positions[kid.id]?.x ?? CENTER_X;
+            const x = sum / kids.length;
+            positions[frame.node.id] = {
+                x: clampX(x),
+                y: round2(rowY(depth)),
+                depth,
+                angle: 0,
+            };
+        }
+    }
+    // SECOND PASS — the slot width needs the leaf total; leaf positions
+    // were provisionally spaced at one-slot width, so re-project them
+    // across the FULL span now that leafCount is known.
+    if (leafCount > 0) {
+        const width = slotWidthOf(leafCount);
+        let index = 0;
+        for (const root of roots) {
+            const stack = [root];
+            while (stack.length > 0) {
+                const node = stack.pop();
+                if (node === undefined || node === null)
+                    continue;
+                const kids = childrenOf.get(node.id) ?? [];
+                if (kids.length === 0) {
+                    const depth = depthOf.get(node.id) ?? 0;
+                    const position = positions[node.id];
+                    if (position !== undefined) {
+                        positions[node.id] = {
+                            ...position,
+                            x: clampX(NODE_PAD + (index + 0.5) * width),
+                        };
+                    }
+                    index += 1;
+                    continue;
+                }
+                for (let i = kids.length - 1; i >= 0; i -= 1) {
+                    stack.push(kids[i]);
+                }
+            }
+        }
+        // THE CENTERING PASS — parents re-center over their (now final)
+        // children, bottom-up (deepest first, the BFS reverse order).
+        for (let depth = maxDepth - 1; depth >= 0; depth -= 1) {
+            for (const node of sorted) {
+                if ((depthOf.get(node.id) ?? -1) !== depth)
+                    continue;
+                const kids = childrenOf.get(node.id) ?? [];
+                if (kids.length === 0)
+                    continue;
+                let sum = 0;
+                for (const kid of kids)
+                    sum += positions[kid.id]?.x ?? CENTER_X;
+                const position = positions[node.id];
+                if (position !== undefined) {
+                    positions[node.id] = { ...position, x: clampX(sum / kids.length) };
+                }
+            }
+        }
+    }
+    return positions;
+}
+/** One tidy-slot width: the usable span divided by the leaf count. */
+function slotWidthOf(leafCount) {
+    return (VIEW_WIDTH - 2 * NODE_PAD) / Math.max(leafCount, 1);
+}
+/** Clamp a tree x into the viewBox (inside NODE_PAD), rounded to 2dp. */
+function clampX(x) {
+    const clamped = Math.min(VIEW_WIDTH - NODE_PAD, Math.max(NODE_PAD, x));
+    return Math.round(clamped * 100) / 100;
+}
+/** Round to 2 decimal places (the shared coordinate contract). */
+function round2(value) {
+    return Math.round(value * 100) / 100;
+}
+/**
+ * The PURE tree-edge helper (3.9.0) — one vertical cubic-Bezier path
+ * whose control points sit at the row midpoint, so every edge leaves its
+ * parent downward and enters its child from above: smooth, and tangle-
+ * free by construction (tree rows are strictly depth-separated).
+ */
+export function treeEdge(parent, child) {
+    const midY = round2((parent.y + child.y) / 2);
+    return `M ${parent.x} ${parent.y} C ${parent.x} ${midY} ${child.x} ${midY} ${child.x} ${child.y}`;
+}
+/**
  * The PURE edge helper — one cubic-Bezier path string whose control
  * points sit 60% along the parent→child radial (from both ends), so
  * the curve sags toward the line between the rings.
@@ -258,17 +466,23 @@ function clientToGraph(svg, clientX, clientY, view) {
  * KnowledgeGraphHandle. Everything below the fold is the 3.0.0
  * interaction model with the 3.6.0 edge model grafted in.
  */
-export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onSelectEdge, onMoveNode, onLinkNodes, onUnlinkEdge, onAutoArrange, onViewChange, positions: draggedPositions, links = [], searchQuery = "", height = 320, label, addOn = false, }, ref) {
+export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, onAddNode, onAddNodeAt, onSelectNode, onSelectEdge, onMoveNode, onLinkNodes, onUnlinkEdge, onAutoArrange, onViewChange, positions: draggedPositions, links = [], searchQuery = "", layoutMode = "free", height = 320, label, addOn = false, }, ref) {
     const [selectedId, setSelectedId] = useState(null);
     const [selectedEdgeId, setSelectedEdgeId] = useState(null);
     const [draftLabel, setDraftLabel] = useState("");
     const [view, setView] = useState({ x: 0, y: 0, zoom: 1 });
     // The live tether — source id + current cursor point (graph space).
     const [tether, setTether] = useState(null);
-    const layout = useMemo(() => layoutGraph(nodes), [nodes]);
-    // User-dragged positions WIN over the deterministic layout (the
-    // persistence round-trip: onMoveNode → parent state → this prop).
-    const positions = useMemo(() => ({ ...layout, ...draggedPositions }), [layout, draggedPositions]);
+    // 3.9.0 — THE LAYOUT ENGINE: tree → the pure tidy layout; radial →
+    // the ring engine; free → the radial base with persisted drag
+    // positions winning (the pre-3.9.0 contract, unchanged).
+    const layout = useMemo(() => (layoutMode === "tree" ? layoutTree(nodes) : layoutGraph(nodes)), [nodes, layoutMode]);
+    // User-dragged positions WIN over the deterministic layout — in
+    // "free" ONLY (the tidy/radial layouts are deterministic by
+    // definition; dragging there is disabled, see handleNodePointerDown).
+    const positions = useMemo(() => layoutMode === "free"
+        ? { ...layout, ...draggedPositions }
+        : layout, [layout, draggedPositions, layoutMode]);
     const selected = nodes.find((node) => node.id === selectedId) ?? null;
     const rootId = nodes.find((node) => node.parentId === undefined)?.id;
     const svgRef = useRef(null);
@@ -281,7 +495,11 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
     const viewRef = useRef(view);
     viewRef.current = view;
     const [interacting, setInteracting] = useState(false);
-    /* -- THE EDGE MODEL (3.6.0): derived parent edges + explicit links -- */
+    /* -- THE EDGE MODEL (3.6.0): derived parent edges + explicit links;
+       3.9.0 — the path fn follows the layout mode: tree edges are the
+       VERTICAL beziers (smooth, tangle-free by row separation), free
+       and radial keep the radial sag beziers. -- */
+    const edgeFor = layoutMode === "tree" ? treeEdge : cubicBezierEdge;
     const edgeRows = useMemo(() => {
         const parentEdges = [];
         for (const node of nodes) {
@@ -294,7 +512,7 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
                 kind: "parent",
                 fromId: node.parentId,
                 toId: node.id,
-                d: cubicBezierEdge(parentPos, childPos),
+                d: edgeFor(parentPos, childPos),
             });
         }
         const linkEdges = [];
@@ -308,11 +526,11 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
                 kind: "link",
                 fromId: link.fromId,
                 toId: link.toId,
-                d: cubicBezierEdge(fromPos, toPos),
+                d: edgeFor(fromPos, toPos),
             });
         }
         return [...parentEdges, ...linkEdges];
-    }, [nodes, links, positions]);
+    }, [nodes, links, positions, edgeFor]);
     const edgeRowsRef = useRef(edgeRows);
     edgeRowsRef.current = edgeRows;
     const selectedEdge = edgeRows.find((edge) => edge.id === selectedEdgeId) ?? null;
@@ -469,9 +687,15 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
             zoom,
         });
     }, []);
-    /* -- DRAG (60fps): capture → rAF mutate the g transform → commit once -- */
+    /* -- DRAG (60fps): capture → rAF mutate the g transform → commit once.
+       3.9.0 — free mode ONLY: tree/radial are deterministic layouts, the
+       positions prop cannot override them, so a drag there would snap
+       back on the next commit. The canvas tells the truth: nodes keep
+       the pointer cursor ONLY in free mode (css/graph.css). -- */
     const handleNodePointerDown = (node, event) => {
         if (event.button !== 0 || onMoveNode === undefined)
+            return;
+        if (layoutMode !== "free")
             return;
         const position = positions[node.id];
         if (position === undefined)
@@ -576,13 +800,21 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
             onLinkNodes(sourceId, targetId);
         }
     };
-    /* -- PAN (empty canvas) + ZOOM (wheel) — viewBox math, rAF-throttled -- */
+    /* -- PAN (empty canvas) + ZOOM (wheel) — viewBox math, rAF-throttled.
+       3.9.0 FIX: the pan capture must NOT swallow edge clicks. Capturing
+       on an edge hit path retargets the follow-up click to the svg (the
+       capture target), so the path's onClick never fired — edge
+       selection was dead to real pointer clicks since 3.6.0 (the gates
+       only ever dispatched synthetic events). Edge hit paths now opt
+       OUT of the pan capture; panning still owns empty canvas. -- */
     const handleCanvasPointerDown = (event) => {
         if (event.button !== 0)
             return;
         const target = event.target;
         if (target.closest("g.sig-graph__node") !== null)
             return; // nodes drag, not pan
+        if (target.closest("path.sig-graph__edge-hit") !== null)
+            return; // edges select, not pan
         const svg = svgRef.current;
         if (svg === null)
             return;
@@ -707,6 +939,8 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
         const delta = deltas[event.key];
         if (delta === undefined || onMoveNode === undefined)
             return;
+        if (layoutMode !== "free")
+            return; // the tidy/radial layout is the law
         event.preventDefault();
         event.stopPropagation();
         const position = positions[node.id];
@@ -724,7 +958,7 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
                         : "sig-graph sig-graph--focused"
                     : tether !== null
                         ? "sig-graph sig-graph--tethering"
-                        : "sig-graph", viewBox: `${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`, style: { height, touchAction: "none" }, onPointerDown: handleCanvasPointerDown, onPointerMove: handleCanvasPointerMove, onPointerUp: handleCanvasPointerUp, onDoubleClick: handleDoubleClick, children: [edgeRows.map((edge) => {
+                        : "sig-graph", "data-layout-mode": layoutMode, viewBox: `${view.x} ${view.y} ${VIEW_WIDTH / view.zoom} ${VIEW_HEIGHT / view.zoom}`, style: { height, touchAction: "none" }, onPointerDown: handleCanvasPointerDown, onPointerMove: handleCanvasPointerMove, onPointerUp: handleCanvasPointerUp, onDoubleClick: handleDoubleClick, children: [edgeRows.map((edge) => {
                         const dim = isDim(edge.id);
                         const isSelected = edge.id === selectedEdgeId;
                         return (_jsxs("g", { className: "sig-graph__edge-group", children: [_jsx("path", { className: "sig-graph__edge-hit", "data-edge-id": edge.id, d: edge.d, onClick: () => handleEdgeSelect(edge) }), _jsx("path", { className: "sig-graph__edge", "data-parent": edge.fromId, "data-child": edge.toId, "data-link": edge.kind === "link" || undefined, "data-selected": isSelected || undefined, "data-dim": dim || undefined, d: edge.d })] }, edge.id));
@@ -739,7 +973,7 @@ export const KnowledgeGraph = memo(forwardRef(function KnowledgeGraph({ nodes, o
                                     nodeRefs.current.delete(node.id);
                                 else
                                     nodeRefs.current.set(node.id, el);
-                            }, className: "sig-graph__node", "data-id": node.id, "data-dim": dim || undefined, transform: `translate(${position.x} ${position.y})`, onClick: () => handleSelect(node), onPointerDown: (event) => handleNodePointerDown(node, event), onPointerMove: handleNodePointerMove, onPointerUp: (event) => handleNodePointerUp(node, event), onContextMenu: (event) => handleNodeContextMenu(node, event), onKeyDown: (event) => handleNodeKeyDown(node, event), tabIndex: 0, role: "button", "aria-label": `${canvasLabel(node.label)} — ${node.label}`, children: [_jsx("title", { children: node.label }), _jsx("circle", { r: NODE_RADIUS, fill: "var(--bg-surface)", stroke: isSelected ? "var(--color-cake-primary)" : strokeFor(node), strokeWidth: isSelected ? 3 : 2 }), _jsx("text", { textAnchor: "middle", y: 4, fontSize: 13, fill: "var(--text-main)", style: { fontVariantNumeric: "tabular-nums" }, children: canvasLabel(node.label) })] }, node.id));
+                            }, className: "sig-graph__node", "data-id": node.id, "data-kind": node.nodeKind, "data-dim": dim || undefined, transform: `translate(${position.x} ${position.y})`, onClick: () => handleSelect(node), onPointerDown: (event) => handleNodePointerDown(node, event), onPointerMove: handleNodePointerMove, onPointerUp: (event) => handleNodePointerUp(node, event), onContextMenu: (event) => handleNodeContextMenu(node, event), onKeyDown: (event) => handleNodeKeyDown(node, event), tabIndex: 0, role: "button", "aria-label": `${canvasLabel(node.label)} — ${node.label}`, children: [_jsx("title", { children: node.label }), _jsx("circle", { r: NODE_RADIUS, fill: "var(--bg-surface)", stroke: isSelected ? "var(--color-cake-primary)" : strokeFor(node), strokeWidth: isSelected ? 3 : 2 }), _jsx("text", { textAnchor: "middle", y: 4, fontSize: 13, fill: "var(--text-main)", style: { fontVariantNumeric: "tabular-nums" }, children: canvasLabel(node.label) })] }, node.id));
                     })] }), _jsx("div", { className: "sig-graph__footer", children: selectedEdge !== null
                     ? `Edge selected — ${selectedEdge.kind === "parent" ? "parent" : "linked"}: ${selectedEdge.fromId} → ${selectedEdge.toId}. Delete/Backspace unlinks.`
                     : selected === null

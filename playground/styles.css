@@ -1163,62 +1163,224 @@
   color: var(--text-muted);
 }
 
-/* ---- 3.6.0 THE GRAPH STUDIO — the dedicated view's anatomy ---------------
-   `.graph-studio`: canvas pane (minmax(0, 1fr)) + a 340px inspector
-   column, stacking below 960px. The canvas is the dot-matrix board:
-   --bg-inset ground + a 24px radial-gradient matrix layered UNDER the
-   svg, min-height 620px. The HUD floats over the canvas top — glass
-   (bg-surface 80% + backdrop blur, hairline, radius, --z-sticky: the
-   (bd1) backdrop audit sanctions the HUD as the ONE new blur surface;
-   modal/nav stay blur-free). Token-driven, flat (e1), 8px grid. */
-.graph-studio {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: var(--space-standard);
-  align-items: start;
-}
-
-@media (max-width: 960px) {
-  .graph-studio {
-    grid-template-columns: 1fr;
-  }
-}
-
-.graph-studio__canvas {
+/* ---- 3.9.0 THE FULL-VIEWPORT GRAPH STUDIO — the dedicated view's
+   anatomy (the 3.6.0 grid retired). The view BYPASSES .sig-shell (App
+   mounts it outside the shell), so the studio IS the stage:
+   width 100%, height calc(100vh - 56px) under the 56px nav, position
+   relative, overflow hidden, and the 24px dot-matrix board painting
+   edge to edge. The svg fills the stage (its px height measured by a
+   ResizeObserver); the 3.6.0 footer strip floats instead of taking
+   layout space.
+   THE 3 FLOATING HUD CARDS (.graph-hud): each carries the package's
+   .sig-surface-card elevation (surface bg + the glass hairline), is
+   position absolute, rides the z-ladder's 30 rung (var(--z-nav)), and
+   keeps the (bd1)-sanctioned backdrop blur. Token-driven, flat (e1:
+   hairlines, never shadows), 8px grid. */
+.graph-studio--full {
   position: relative;
-  min-height: 620px;
+  width: 100%;
+  height: calc(100vh - 56px);
+  overflow: hidden;
   background-color: var(--bg-inset);
   background-image: radial-gradient(
     color-mix(in srgb, var(--text-muted) 25%, transparent) 1px,
     transparent 1px
   );
   background-size: 24px 24px;
-  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
-  border-radius: var(--radius-ui);
-  padding: var(--space-section) var(--space-standard) var(--space-standard);
 }
 
-.graph-studio__hud {
+.graph-studio__stage {
   position: absolute;
-  top: var(--space-standard);
-  left: var(--space-standard);
-  right: var(--space-standard);
+  inset: 0;
+  padding: var(--space-standard);
+  min-width: 0;
+}
+
+/* The svg fills the stage; its height prop tracks the measured box. */
+.graph-studio__stage svg.sig-graph {
+  height: 100%;
+  border-radius: var(--radius-card);
+}
+
+/* The 3.6.0 inspect strip — floats over the canvas bottom-left (it
+   used to take layout space under the canvas; the full-viewport stage
+   has no room below). */
+.graph-studio__stage .sig-graph__footer {
+  position: absolute;
+  left: calc(var(--space-standard) + var(--space-tight));
+  bottom: calc(var(--space-standard) + 56px);
+  max-width: 34ch;
+  background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  backdrop-filter: blur(8px);
+}
+
+/* THE HUD CARD BASE — floating glass chrome over the canvas. */
+.graph-hud {
+  position: absolute;
+  z-index: var(--z-nav); /* the 30 rung — HUD chrome over the stage */
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-tight);
   padding: var(--space-tight);
   background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
-  border-radius: var(--radius-ui);
-  z-index: var(--z-sticky);
+  border-radius: var(--radius-card);
 }
 
-.graph-studio__hud .sig-input {
+.graph-hud--toolbar {
+  top: var(--space-standard);
+  left: var(--space-standard);
+  max-width: min(880px, calc(100% - 2 * var(--space-standard)));
+}
+
+.graph-hud--dock {
+  bottom: var(--space-standard);
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(720px, calc(100% - 2 * var(--space-standard)));
+}
+
+.graph-hud--inspector {
+  top: var(--space-standard);
+  right: var(--space-standard);
+  bottom: var(--space-standard);
+  width: 320px;
+  flex-direction: column;
+  align-items: stretch;
+  overflow: auto;
+}
+
+.graph-hud__inspector-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-tight);
+}
+
+.graph-hud__inspector-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.graph-hud__close {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.graph-hud__close:hover {
+  color: var(--text-main);
+  border-color: var(--color-cake-secondary);
+}
+
+.graph-hud__close:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.graph-hud__inspector-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
+}
+
+/* The toolbar's search rides one flexible slot. */
+.graph-hud--toolbar .sig-input {
   flex: 1 1 12rem;
   width: auto;
+  min-width: 10rem;
+}
+
+/* The layout-mode segmented switcher (Free | Tree | Radial). */
+.graph-studio__seg {
+  display: inline-flex;
+  padding: 2px;
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+  border-radius: var(--radius-ui);
+}
+
+.graph-studio__seg-btn {
+  appearance: none;
+  font: inherit;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-ui);
+  padding: 0.25rem var(--space-tight);
+  cursor: pointer;
+}
+
+.graph-studio__seg-btn:hover {
+  color: var(--text-main);
+}
+
+.graph-studio__seg-btn[aria-pressed="true"] {
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--color-cake-primary) 14%, var(--bg-surface));
+  font-weight: 600;
+}
+
+.graph-studio__seg-btn:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+/* THE 16-SWATCH PICKER — the chromatic sixteen as a compact grid. */
+.graph-studio__swatches {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: var(--space-tight);
+}
+
+.graph-studio__swatch {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-ui);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 25%, transparent);
+  background: var(--swatch, var(--bg-surface));
+  cursor: pointer;
+  padding: 0;
+}
+
+.graph-studio__swatch:hover {
+  border-color: var(--color-cake-secondary);
+}
+
+.graph-studio__swatch.is-picked {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 1px;
+}
+
+.graph-studio__swatch:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 960px) {
+  /* Narrow viewports: the inspector docks under the toolbar. */
+  .graph-hud--inspector {
+    top: auto;
+    left: var(--space-standard);
+    width: min(320px, calc(100% - 2 * var(--space-standard)));
+    max-height: 55%;
+  }
 }
 
 .graph-studio__zoom {

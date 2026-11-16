@@ -1106,11 +1106,54 @@ function Shell() {
   return (
     <>
       <GlobalNav items={NAV_ITEMS} as={navLink} activeHref={VIEW_HREFS[view]} />
-      {/* 2.5.0 — THE SHELL: every view's content lives inside this
-          column (hero + dashboard + index + placeholders + ALL tab
-          modules). GlobalNav stays outside — it is its own bar. This
-          wrapper is defect #1's tombstone. */}
-      <div className="sig-shell">
+      {/* 3.9.0 — THE FULL-VIEWPORT BYPASS: the Graph Studio is NOT a
+          shell view. It renders OUTSIDE .sig-shell, full-bleed under
+          the 56px nav (the studio paints its own stage geometry:
+          calc(100vh - 56px), the 24px dot matrix, the floating HUD) —
+          no topbar, no page hero, no shell padding. Every other view
+          keeps the shell. */}
+      {view === "graph" ? (
+        <GraphStudioView
+          graph={workspace.graph}
+          links={workspace.links}
+          positions={workspace.positions}
+          saving={workspace.saving.graph === true}
+          layoutMode={sig.graphLayout}
+          onLayoutModeChange={sig.setGraphLayout}
+          onUpdateNode={workspace.updateNode}
+          onUnlinkEdge={workspace.unlinkEdge}
+          onAddNode={workspace.addChild}
+          onSpawnLinkedChild={workspace.spawnLinkedChild}
+          onExpandNode={workspace.expandNode}
+          onAutoArrange={workspace.autoArrange}
+          onResetCanvas={workspace.resetCanvas}
+          onExportGraph={workspace.exportGraph}
+          onMoveNode={workspace.moveNode}
+          onLinkNodes={workspace.linkNodes}
+          onAddNodeAt={workspace.addNodeAt}
+          onOpenShortcuts={() => setShortcutsOpen(true)}
+          hudSlot={
+            <button
+              type="button"
+              className="graph-studio__latency"
+              aria-pressed={latencySim}
+              data-testid="studio-latency"
+              onClick={() => {
+                setLatencySim((current) => !current);
+                toast(
+                  "success",
+                  latencySim
+                    ? "Latency simulation off — workspace saves are instant again."
+                    : "Latency simulation on — workspace saves now take 600ms (watch the skeletons).",
+                );
+              }}
+            >
+              Simulate 600ms latency
+            </button>
+          }
+        />
+      ) : (
+        <div className="sig-shell">
         {/* 2.9.0 — THE TOPBAR: breadcrumbs + the ⌘K trigger. */}
         <div className="hub__topbar">
           <Breadcrumbs items={topbarCrumbs} label="You are here" />
@@ -1127,40 +1170,6 @@ function Shell() {
         <PageHero title={hero.title} subtitle={hero.sub} />
         {view === "dashboard" ? (
           <DashboardView registerSimRunner={registerSimRunner} triggerSim={triggerAsyncSim} />
-        ) : view === "graph" ? (
-          <GraphStudioView
-            graph={workspace.graph}
-            links={workspace.links}
-            positions={workspace.positions}
-            saving={workspace.saving.graph === true}
-            onUpdateNode={workspace.updateNode}
-            onUnlinkEdge={workspace.unlinkEdge}
-            onSpawnLinkedChild={workspace.spawnLinkedChild}
-            onAutoArrange={workspace.autoArrange}
-            onMoveNode={workspace.moveNode}
-            onLinkNodes={workspace.linkNodes}
-            onAddNodeAt={workspace.addNodeAt}
-            onOpenShortcuts={() => setShortcutsOpen(true)}
-            hudSlot={
-              <button
-                type="button"
-                className="graph-studio__latency"
-                aria-pressed={latencySim}
-                data-testid="studio-latency"
-                onClick={() => {
-                  setLatencySim((current) => !current);
-                  toast(
-                    "success",
-                    latencySim
-                      ? "Latency simulation off — workspace saves are instant again."
-                      : "Latency simulation on — workspace saves now take 600ms (watch the skeletons).",
-                  );
-                }}
-              >
-                Simulate 600ms latency
-              </button>
-            }
-          />
         ) : view === "planner" ? (
           <AnalyticsPlannerView workspace={workspace} />
         ) : view === "motion" ? (
@@ -1191,7 +1200,8 @@ function Shell() {
         ) : (
           <CodexView />
         )}
-      </div>
+        </div>
+      )}
       {/* 2.9.0 — THE COMMAND PALETTE (controlled: open lives HERE). */}
       <CommandPalette
         commands={commands}
@@ -3003,6 +3013,65 @@ function useWorkspaceState(repo?: WorkspaceRepository) {
     [positions, setGraph, setPositions, toast],
   );
 
+  // THE PLAIN ADD (3.9.0, the Action Dock's "+ Add Node") — a child of
+  // the selection, or a new ROOT when nothing is selected. No position
+  // is persisted: the active layout engine places it.
+  const addChild = useCallback(
+    (parentId?: string) => {
+      const id = `kg-${Date.now().toString(36)}`;
+      setGraph((current) => [
+        ...current,
+        { id, label: "New note", categoryToken: "--sig-lavender", parentId },
+      ]);
+      toast("success", parentId !== undefined ? "Node added under the selection." : "Root node added.");
+    },
+    [setGraph, toast],
+  );
+
+  // THE AI EXPAND (3.9.0) — the local generator's ideas ride ONE
+  // workspace op (graph + toast, one commit). Labels/tokens come from
+  // playground/graph-expansion.ts (deterministic, no network).
+  const expandNode = useCallback(
+    (parentId: string, ideas: Array<{ label: string; token: string }>) => {
+      setGraph((current) => [
+        ...current,
+        ...ideas.map((idea, index) => ({
+          id: `kg-${Date.now().toString(36)}-${index}`,
+          label: idea.label,
+          categoryToken: idea.token as GraphNode["categoryToken"],
+          parentId,
+          nodeKind: "leaf" as const,
+        })),
+      ]);
+      toast("success", `Expanded — ${ideas.length} sub-nodes grown from "${graph.find((node) => node.id === parentId)?.label ?? parentId}".`);
+    },
+    [setGraph, graph, toast],
+  );
+
+  // THE CANVAS RESET (3.9.0, the Action Dock) — graph + links +
+  // positions back to the seeds. The timeline stays (Reset All's
+  // destructive reach covers it; a canvas reset must not).
+  const resetCanvas = useCallback(() => {
+    resetGraph();
+    resetPositions();
+    resetLinks();
+    toast("error", "Canvas reset — the seed graph is back.");
+  }, [resetGraph, resetPositions, resetLinks, toast]);
+
+  // THE GRAPH EXPORT (3.9.0, the Action Dock) — the graph + links +
+  // positions snapshot (the timeline stays out; this is the canvas's
+  // JSON, not the whole workspace's).
+  const exportGraph = useCallback(() => {
+    const payload = {
+      version: "sig.workspace.v3",
+      graph,
+      links: normalizedLinks,
+      positions,
+    };
+    downloadJson(JSON.stringify(payload, null, 2), "signature-graph.json");
+    toast("success", "Graph exported — signature-graph.json.");
+  }, [graph, normalizedLinks, positions, toast]);
+
   const addMilestone = useCallback(
     (item: Omit<TimelineItem, "id">) => {
       setTimeline((current) => [
@@ -3162,6 +3231,10 @@ function useWorkspaceState(repo?: WorkspaceRepository) {
     autoArrange,
     addNodeAt,
     spawnLinkedChild,
+    addChild,
+    expandNode,
+    resetCanvas,
+    exportGraph,
     addMilestone,
     toggleSettled,
     deleteMilestone,

@@ -141,6 +141,29 @@
   transition: none;
 }
 
+/* ==========================================================================
+   3.9.0 THE LAYOUT ENGINE + NODE KINDS — graph.css paints what the
+   engine means:
+     · data-kind="note" — the annotation node wears a DASHED ring (a
+       4 3 dash on the circle's own stroke; pure SVG paint via css, no
+       geometry change, zero new elements).
+     · data-layout-mode="tree" | "radial" — the layout is the law:
+       nodes lose the grab cursors (drag is disabled there; the canvas
+       still grabs for panning).
+   ========================================================================== */
+
+.sig-graph__node[data-kind="note"] circle {
+  stroke-dasharray: 4 3;
+}
+.sig-graph[data-layout-mode="tree"] .sig-graph__node,
+.sig-graph[data-layout-mode="radial"] .sig-graph__node {
+  cursor: default;
+}
+.sig-graph[data-layout-mode="tree"] .sig-graph__node:active,
+.sig-graph[data-layout-mode="radial"] .sig-graph__node:active {
+  cursor: default;
+}
+
 /* Motion is a gift, not a requirement. */
 @media (prefers-reduced-motion: reduce) {
   .sig-graph__edge,
