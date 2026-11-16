@@ -51,6 +51,17 @@
  *     design — no exported tracking hook, the one consumer that needs
  *     raw tracking can read the same pointermove pattern.
  *
+ * 3.9.0 THE COLORFUL KINETIC SUITE — four primitives join:
+ *   <AuroraBorderCard> (the registered --sig-beam-angle conic border
+ *     beam — @property in css/motion.css, mask-composited 2px ring,
+ *     NEVER a box-shadow), <TiltSurface> (perspective(600px) pointer
+ *     tilt ±tilt° + the shared sheen), <StatusBeacon> (the ping ring —
+ *     transform/opacity only, static dot under reduced motion) and
+ *     <WaveformBars> (the per-bar-delay equalizer, deterministic
+ *     golden-angle heights). All four stand down under reduced motion
+ *     — belt and suspenders, both the media query and the subtree
+ *     override.
+ *
  * Pruning Protocol: AnimatedNumber renders exactly one element;
  * MotionReveal exactly one wrapper; KineticSurface one div + one
  * ::after (css-owned). Zero hex, zero shadows, tokens only.
@@ -170,6 +181,127 @@ export interface KineticSurfaceProps {
  * ```
  */
 export declare function KineticSurface({ accentToken, className, children, }: KineticSurfaceProps): import("react").JSX.Element;
+export interface AuroraBorderCardProps {
+    /**
+     * The beam's chromatic cycle — --sig-* tokens, in order (default
+     * cyan → orchid → mint → cobalt). Four reads best; any count ≥ 2
+     * works (the gradient repeats the first token to close the loop).
+     */
+    accentTokens?: string[];
+    /** When the beam spins: "hover" (default) or "always". */
+    trigger?: "hover" | "always";
+    /** Passthrough for composing on the card. */
+    className?: string;
+    /** The card's content — the beam is a 2px ring around it. */
+    children?: ReactNode;
+}
+/**
+ * `<AuroraBorderCard>` — the rotating conic border beam.
+ *
+ * ONE `<div class="sig-aurora-card">` whose ::before (css/motion.css)
+ * paints a conic-gradient cycling `accentTokens` around a registered
+ * `--sig-beam-angle`, masked to a 2px border ring. NO box-shadow is
+ * ever animated — the beam is a rotating ANGLE on a gradient, the e1
+ * treaty's registered-custom-property clause in its purest form.
+ *
+ * @example
+ * ```tsx
+ * <AuroraBorderCard trigger="always" accentTokens={["--sig-cyan", "--sig-magenta"]}>
+ *   <p>The beam never sleeps.</p>
+ * </AuroraBorderCard>
+ * ```
+ */
+export declare function AuroraBorderCard({ accentTokens, trigger, className, children, }: AuroraBorderCardProps): import("react").JSX.Element;
+export interface TiltSurfaceProps {
+    /** The max tilt in degrees (default 4 — ±4° reads, ±10° clowns). */
+    tilt?: number;
+    /** The sheen's tint — any --sig-* token (default "--sig-cyan"). */
+    accentToken?: string;
+    /** Passthrough for composing on the surface. */
+    className?: string;
+    /** The surface's content. */
+    children?: ReactNode;
+}
+/**
+ * `<TiltSurface>` — the 3D pointer tilt + the chromatic sheen.
+ *
+ * ONE `<div class="sig-tilt-surface sig-kinetic-surface">` — the
+ * KineticSurface class rides along so the sheen ::after and its
+ * --ptr-x/--ptr-y plumbing are shared verbatim. The tilt writes
+ * --tilt-x/--tilt-y (degrees, clamped to ±`tilt`) through the same
+ * rAF-throttled setter; css/motion.css transforms
+ * `perspective(600px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x))`.
+ * Reduced motion ([data-sig-motion="reduced"] ancestor or the OS
+ * setting): the tilt writes stop AND css pins transform: none — the
+ * sheen stays (opacity is its only animation).
+ *
+ * @example
+ * ```tsx
+ * <TiltSurface tilt={6} accentToken="--sig-rose-glow">
+ *   <p>Tilt with the cursor.</p>
+ * </TiltSurface>
+ * ```
+ */
+export declare function TiltSurface({ tilt, accentToken, className, children, }: TiltSurfaceProps): import("react").JSX.Element;
+export interface StatusBeaconProps {
+    /** The status word — data-status for probes/styling + the aria label stem. */
+    status: string;
+    /** The beacon's chromatic color — a --sig-* content token. */
+    colorToken: string;
+    /** The dot's diameter in px (default 8 — one grid unit). */
+    size?: number;
+    /** The accessible name (default `Status: ${status}`). */
+    label?: string;
+}
+/**
+ * `<StatusBeacon>` — the pulsing ring beacon.
+ *
+ * ONE `<span class="sig-beacon" role="status">` — the dot in
+ * `var(colorToken)`; the ::after ring (css/motion.css) scales 1 → 2.2
+ * and fades — the classic ping, transform/opacity only (the e1
+ * treaty). Reduced motion: the ping never renders — a static dot.
+ *
+ * @example
+ * ```tsx
+ * <StatusBeacon status="live" colorToken="--sig-green" />
+ * <StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
+ * ```
+ */
+export declare function StatusBeacon({ status, colorToken, size, label, }: StatusBeaconProps): import("react").JSX.Element;
+export interface WaveformBarsProps {
+    /**
+     * The bar heights, any positive scale (normalized to the tallest).
+     * Omit for the deterministic golden-angle curve — same count, same
+     * shape, every render (no Math.random: determinism is the contract).
+     */
+    data?: number[];
+    /** The bar count (default 12) — used when `data` is omitted. */
+    bars?: number;
+    /** When true (default) the bars dance; false freezes the heights. */
+    active?: boolean;
+    /** The bars' chromatic color (default "--sig-cyan"). */
+    colorToken?: string;
+    /** The accessible name (role="img"; default "Waveform"). */
+    label?: string;
+}
+/**
+ * `<WaveformBars>` — the spring-animated equalizer.
+ *
+ * ONE `<div class="sig-waveform" role="img">` holding EXACTLY `bars`
+ * `<span class="sig-waveform__bar">`s. Each bar carries --bar-h (the
+ * normalized height) and --bar-i (its index); css/motion.css bounces
+ * them on --ease-spring-snappy with a per-bar delay
+ * (calc(var(--bar-i) × 90ms)) when `active`. Deterministic heights:
+ * the omitted-data curve is `0.3 + 0.7·|sin(i·2.399 + 1.2)|` — the
+ * golden-angle spread, stable across renders.
+ *
+ * @example
+ * ```tsx
+ * <WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
+ * <WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />
+ * ```
+ */
+export declare function WaveformBars({ data, bars, active, colorToken, label, }: WaveformBarsProps): import("react").JSX.Element;
 /** The refs a consumer attaches: the positioned container + the indicator. */
 export interface FlipIndicatorRefs<L extends HTMLElement = HTMLElement> {
     /** Attach to the element that CONTAINS the active items (the tablist / the nav list). It must be the indicator's positioning context. */

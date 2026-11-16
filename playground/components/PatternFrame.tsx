@@ -51,6 +51,12 @@ interface PatternFrameProps {
   children: ReactNode;
   /** Optional HTML override when the entry itself documents none. */
   htmlFallback?: string;
+  /**
+   * 3.9.0 — the Motion Lab's plain-English line: WHAT the pattern does
+   * and WHEN to reach for it, one sentence, rendered under the header
+   * (muted, not a code comment). The studio frames stay note-less.
+   */
+  note?: string;
 }
 
 /**
@@ -114,6 +120,7 @@ export function PatternFrame({
   snippet,
   children,
   htmlFallback,
+  note,
 }: PatternFrameProps) {
   const [tab, setTab] = useState<FrameTab>("preview");
   const html = snippet.html ?? htmlFallback;
@@ -162,6 +169,10 @@ export function PatternFrame({
           <CopyCard text={copyText} componentName={componentName} />
         </div>
       </header>
+      {/* 3.9.0 — the plain-English explanation strip (Motion Lab). */}
+      {note !== undefined && (
+        <p className="pattern-frame__explain" data-testid="pf-explain">{note}</p>
+      )}
       <div className="pattern-frame__body">
         {/* 2.9.0: the preview stage is a .sig-cell container — every live
             preview answers its own stage width (container queries, not

@@ -52,6 +52,17 @@ import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
  *     design — no exported tracking hook, the one consumer that needs
  *     raw tracking can read the same pointermove pattern.
  *
+ * 3.9.0 THE COLORFUL KINETIC SUITE — four primitives join:
+ *   <AuroraBorderCard> (the registered --sig-beam-angle conic border
+ *     beam — @property in css/motion.css, mask-composited 2px ring,
+ *     NEVER a box-shadow), <TiltSurface> (perspective(600px) pointer
+ *     tilt ±tilt° + the shared sheen), <StatusBeacon> (the ping ring —
+ *     transform/opacity only, static dot under reduced motion) and
+ *     <WaveformBars> (the per-bar-delay equalizer, deterministic
+ *     golden-angle heights). All four stand down under reduced motion
+ *     — belt and suspenders, both the media query and the subtree
+ *     override.
+ *
  * Pruning Protocol: AnimatedNumber renders exactly one element;
  * MotionReveal exactly one wrapper; KineticSurface one div + one
  * ::after (css-owned). Zero hex, zero shadows, tokens only.
@@ -246,6 +257,213 @@ export function KineticSurface({ accentToken = "--sig-cyan", className, children
         };
     }, []);
     return (_jsx("div", { ref: hostRef, className: className !== undefined ? `sig-kinetic-surface ${className}` : "sig-kinetic-surface", style: { "--sig-kinetic-accent": `var(${accentToken})` }, onPointerMove: handlePointerMove, children: children }));
+}
+/* ==========================================================================
+   3.9.0 THE COLORFUL KINETIC SUITE — four primitives join the engine,
+   same treaty (ONLY transform/opacity/clip-path/registered custom
+   properties animate — never box-shadow; the aurora beam is a conic
+   ANGLE, not a shadow):
+
+   <AuroraBorderCard> — the rotating conic border beam. css/motion.css
+     REGISTERS --sig-beam-angle (CSS @property, syntax "<angle>") so
+     the keyframe rotation interpolates; the card's ::before is a
+     conic-gradient cycling the accent tokens, mask-composited to a 2px
+     border ring (the standard border-beam technique). trigger "hover"
+     (default) runs the spin on hover; "always" runs it constantly.
+     Fallback: engines without @property keep a static 4-color conic
+     border (unregistered angles cannot interpolate — the ring just
+     doesn't rotate). Reduced motion: static ring.
+
+   <TiltSurface> — the 3D pointer tilt. perspective(600px)
+     rotateX/rotateY (± tilt deg, default 4) tracking the pointer via
+     the SAME rAF-throttled --ptr-x/--ptr-y math as the KineticSurface
+     sheen, extended with --tilt-x/--tilt-y; the sheen rides along.
+     Reduced motion: the sheen stays (opacity-only), the tilt stands
+     down — the JS probe skips the tilt writes and css pins
+     transform: none.
+
+   <StatusBeacon> — the pulsing ring beacon. One span (the dot) whose
+     ::after ring scales 1 → 2.2 and fades in the status color —
+     the classic ping, transform/opacity only. Reduced motion: a
+     static dot (the ping ring never renders).
+
+   <WaveformBars> — the spring-animated equalizer. N bars (default 12)
+     with per-bar animation-delay (calc(--bar-i × 90ms)) riding
+     --ease-spring-snappy; heights come from the data array
+     (normalized) or a deterministic pseudo-random curve (golden-angle
+     sine — same input, same bars, no Math.random). Reduced motion:
+     static mid-height bars.
+
+   Pruning: AuroraBorderCard is one div + one ::before (css-owned);
+   TiltSurface one div + the shared sheen ::after; StatusBeacon one
+   span + one ::after; WaveformBars one wrapper div + exactly bars
+   spans. Zero hex, zero shadows, tokens only.
+   ========================================================================== */
+/** The aurora default — a four-token chromatic cycle (fill accents). */
+const AURORA_DEFAULT_TOKENS = [
+    "--sig-cyan",
+    "--sig-orchid",
+    "--sig-mint",
+    "--sig-cobalt",
+];
+/**
+ * `<AuroraBorderCard>` — the rotating conic border beam.
+ *
+ * ONE `<div class="sig-aurora-card">` whose ::before (css/motion.css)
+ * paints a conic-gradient cycling `accentTokens` around a registered
+ * `--sig-beam-angle`, masked to a 2px border ring. NO box-shadow is
+ * ever animated — the beam is a rotating ANGLE on a gradient, the e1
+ * treaty's registered-custom-property clause in its purest form.
+ *
+ * @example
+ * ```tsx
+ * <AuroraBorderCard trigger="always" accentTokens={["--sig-cyan", "--sig-magenta"]}>
+ *   <p>The beam never sleeps.</p>
+ * </AuroraBorderCard>
+ * ```
+ */
+export function AuroraBorderCard({ accentTokens = AURORA_DEFAULT_TOKENS, trigger = "hover", className, children, }) {
+    const tokens = accentTokens.length >= 2 ? accentTokens : AURORA_DEFAULT_TOKENS;
+    const vars = {
+        "--sig-aurora-1": `var(${tokens[0]})`,
+        "--sig-aurora-2": `var(${tokens[1]})`,
+        "--sig-aurora-3": `var(${tokens[Math.min(2, tokens.length - 1)]})`,
+        "--sig-aurora-4": `var(${tokens[Math.min(3, tokens.length - 1)]})`,
+    };
+    return (_jsx("div", { className: className !== undefined ? `sig-aurora-card ${className}` : "sig-aurora-card", "data-trigger": trigger, style: vars, children: children }));
+}
+/**
+ * `<TiltSurface>` — the 3D pointer tilt + the chromatic sheen.
+ *
+ * ONE `<div class="sig-tilt-surface sig-kinetic-surface">` — the
+ * KineticSurface class rides along so the sheen ::after and its
+ * --ptr-x/--ptr-y plumbing are shared verbatim. The tilt writes
+ * --tilt-x/--tilt-y (degrees, clamped to ±`tilt`) through the same
+ * rAF-throttled setter; css/motion.css transforms
+ * `perspective(600px) rotateX(var(--tilt-y)) rotateY(var(--tilt-x))`.
+ * Reduced motion ([data-sig-motion="reduced"] ancestor or the OS
+ * setting): the tilt writes stop AND css pins transform: none — the
+ * sheen stays (opacity is its only animation).
+ *
+ * @example
+ * ```tsx
+ * <TiltSurface tilt={6} accentToken="--sig-rose-glow">
+ *   <p>Tilt with the cursor.</p>
+ * </TiltSurface>
+ * ```
+ */
+export function TiltSurface({ tilt = 4, accentToken = "--sig-cyan", className, children, }) {
+    const hostRef = useRef(null);
+    const frameRef = useRef(null);
+    const pointRef = useRef(null);
+    // THE PAINT — one rAF callback: the sheen coordinates + the tilt
+    // angles, coalesced to one custom-property write set per frame.
+    const paint = useCallback(() => {
+        frameRef.current = null;
+        const el = hostRef.current;
+        const point = pointRef.current;
+        if (el === null || point === null)
+            return;
+        el.style.setProperty("--ptr-x", `${point.x}px`);
+        el.style.setProperty("--ptr-y", `${point.y}px`);
+        // THE STILLNESS PROBE runs at paint time: a reduced-motion flip
+        // mid-hover stands the tilt down without a re-render.
+        const still = prefersInstantMotion(el);
+        const maxDeg = still ? 0 : tilt;
+        const nx = point.x / Math.max(el.clientWidth, 1) - 0.5; // -0.5..0.5
+        const ny = point.y / Math.max(el.clientHeight, 1) - 0.5;
+        el.style.setProperty("--tilt-x", `${(nx * 2 * maxDeg).toFixed(2)}deg`);
+        el.style.setProperty("--tilt-y", `${(-ny * 2 * maxDeg).toFixed(2)}deg`);
+    }, [tilt]);
+    const handlePointerMove = useCallback((event) => {
+        const el = hostRef.current;
+        if (el === null)
+            return;
+        const rect = el.getBoundingClientRect();
+        pointRef.current = {
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top,
+        };
+        if (frameRef.current === null) {
+            frameRef.current = requestAnimationFrame(paint);
+        }
+    }, [paint]);
+    const handlePointerLeave = useCallback(() => {
+        const el = hostRef.current;
+        pointRef.current = null;
+        if (frameRef.current !== null) {
+            cancelAnimationFrame(frameRef.current);
+            frameRef.current = null;
+        }
+        if (el === null)
+            return;
+        el.style.setProperty("--tilt-x", "0deg");
+        el.style.setProperty("--tilt-y", "0deg");
+    }, []);
+    useEffect(() => {
+        return () => {
+            if (frameRef.current !== null)
+                cancelAnimationFrame(frameRef.current);
+            frameRef.current = null;
+        };
+    }, []);
+    return (_jsx("div", { ref: hostRef, className: className !== undefined
+            ? `sig-tilt-surface sig-kinetic-surface ${className}`
+            : "sig-tilt-surface sig-kinetic-surface", style: { "--sig-kinetic-accent": `var(${accentToken})` }, onPointerMove: handlePointerMove, onPointerLeave: handlePointerLeave, children: children }));
+}
+/**
+ * `<StatusBeacon>` — the pulsing ring beacon.
+ *
+ * ONE `<span class="sig-beacon" role="status">` — the dot in
+ * `var(colorToken)`; the ::after ring (css/motion.css) scales 1 → 2.2
+ * and fades — the classic ping, transform/opacity only (the e1
+ * treaty). Reduced motion: the ping never renders — a static dot.
+ *
+ * @example
+ * ```tsx
+ * <StatusBeacon status="live" colorToken="--sig-green" />
+ * <StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
+ * ```
+ */
+export function StatusBeacon({ status, colorToken, size = 8, label, }) {
+    return (_jsx("span", { className: "sig-beacon", role: "status", "data-status": status, "aria-label": label ?? `Status: ${status}`, style: {
+            "--sig-beacon-color": `var(${colorToken})`,
+            "--sig-beacon-size": `${size}px`,
+        } }));
+}
+/**
+ * `<WaveformBars>` — the spring-animated equalizer.
+ *
+ * ONE `<div class="sig-waveform" role="img">` holding EXACTLY `bars`
+ * `<span class="sig-waveform__bar">`s. Each bar carries --bar-h (the
+ * normalized height) and --bar-i (its index); css/motion.css bounces
+ * them on --ease-spring-snappy with a per-bar delay
+ * (calc(var(--bar-i) × 90ms)) when `active`. Deterministic heights:
+ * the omitted-data curve is `0.3 + 0.7·|sin(i·2.399 + 1.2)|` — the
+ * golden-angle spread, stable across renders.
+ *
+ * @example
+ * ```tsx
+ * <WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
+ * <WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />
+ * ```
+ */
+export function WaveformBars({ data, bars = 12, active = true, colorToken = "--sig-cyan", label = "Waveform", }) {
+    const heights = waveHeights(data, bars);
+    return (_jsx("div", { className: active ? "sig-waveform is-active" : "sig-waveform", role: "img", "aria-label": label, style: { "--sig-wave-color": `var(${colorToken})` }, children: heights.map((height, index) => (_jsx("span", { className: "sig-waveform__bar", style: { "--bar-h": height.toFixed(2), "--bar-i": String(index) } }, index))) }));
+}
+/** The deterministic heights — data normalized, or the golden-angle curve. */
+function waveHeights(data, bars) {
+    if (data !== undefined && data.length > 0) {
+        const max = Math.max(...data, 0.0001);
+        return data.map((value) => Math.min(1, Math.max(0.08, value / max)));
+    }
+    const count = Math.max(1, bars);
+    const heights = [];
+    for (let i = 0; i < count; i += 1) {
+        heights.push(0.3 + 0.7 * Math.abs(Math.sin(i * 2.399 + 1.2)));
+    }
+    return heights;
 }
 /**
  * `useFlipIndicator(activeSelector)` — the FLIP gliding-underline hook.

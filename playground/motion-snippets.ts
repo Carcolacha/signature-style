@@ -142,4 +142,63 @@ useEffect(() => {
 /* Failure is quiet on the auto-mount run (the sample IS the state) and
    loud on manual refetches (a toast names the failure). */`,
   },
+
+  AuroraBorderCard: {
+    set: "08",
+    componentName: "AuroraBorderCard",
+    jsx: `import { AuroraBorderCard } from "@edwyn/signature-style/react";
+
+<AuroraBorderCard accentTokens={["--sig-cyan", "--sig-orchid", "--sig-mint", "--sig-cobalt"]} trigger="hover">
+  <p>The beam spins on hover.</p>
+</AuroraBorderCard>
+<AuroraBorderCard trigger="always">
+  <p>The beam never sleeps.</p>
+</AuroraBorderCard>
+
+/* css/motion.css REGISTERS the angle (CSS @property, syntax "<angle>"),
+   so the keyframe rotation interpolates per frame; the ::before is a
+   conic-gradient cycling the accent tokens, mask-composited to a 2px
+   ring (the border-beam technique). NO box-shadow is animated — the
+   e1 treaty's registered-custom-property clause. Engines without
+   @property keep a static 4-color ring; reduced motion holds it. */`,
+  },
+  TiltSurface: {
+    set: "08",
+    componentName: "TiltSurface",
+    jsx: `import { TiltSurface } from "@edwyn/signature-style/react";
+
+<TiltSurface tilt={6} accentToken="--sig-rose-glow">
+  <p>Tilt with the cursor — the sheen rides along.</p>
+</TiltSurface>
+
+/* perspective(600px) rotateX/rotateY tracking the pointer, rAF-throttled
+   (the KineticSurface --ptr-x/--ptr-y math extended with --tilt-x/
+   --tilt-y). Reduced motion: the tilt pins flat, the opacity-only
+   sheen stays. */`,
+  },
+  StatusBeacon: {
+    set: "08",
+    componentName: "StatusBeacon",
+    jsx: `import { StatusBeacon } from "@edwyn/signature-style/react";
+
+<StatusBeacon status="live" colorToken="--sig-green" />
+<StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
+
+/* One span (the dot); ::after scales 1 → 2.2 and fades — the classic
+   ping, transform/opacity only (the e1 treaty). role="status" carries
+   the accessible name. Reduced motion: a static dot. */`,
+  },
+  WaveformBars: {
+    set: "08",
+    componentName: "WaveformBars",
+    jsx: `import { WaveformBars } from "@edwyn/signature-style/react";
+
+<WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
+<WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />
+
+/* N bars, per-bar animation-delay (calc(--bar-i × 90ms)) on the snappy
+   spring — the diagonal dance. Heights from your data (normalized) or
+   the deterministic golden-angle curve (0.3 + 0.7·|sin(i·2.399 + 1.2)| —
+   same input, same bars, NO Math.random). Reduced motion: static bars. */`,
+  },
 };

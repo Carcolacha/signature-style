@@ -21,4 +21,4 @@ export { ActionTile, type ActionTileProps, FlipCard, type FlipCardProps, Accordi
 export { KnowledgeGraph, type KnowledgeGraphProps, type KnowledgeGraphHandle, type GraphNode, type GraphEdge, type GraphEdgeSelection, type GraphPosition, type GraphView, type GraphNodeKind, type GraphLayoutMode, layoutGraph, layoutTree, layoutRadial, treeEdge, cubicBezierEdge, isTypingTarget, } from "./graph.js";
 export { CommandPalette, type CommandEntry, type CommandPaletteProps, } from "./command.js";
 export { SkeletonLine, type SkeletonLineProps, SkeletonCard, SkeletonTableRow, type SkeletonTableRowProps, } from "./skeleton.js";
-export { AnimatedNumber, springProgress, type AnimatedNumberProps, MotionReveal, type MotionRevealProps, type MotionRevealVariant, KineticSurface, type KineticSurfaceProps, } from "./motion.js";
+export { AnimatedNumber, springProgress, type AnimatedNumberProps, MotionReveal, type MotionRevealProps, type MotionRevealVariant, KineticSurface, type KineticSurfaceProps, AuroraBorderCard, type AuroraBorderCardProps, TiltSurface, type TiltSurfaceProps, StatusBeacon, type StatusBeaconProps, WaveformBars, type WaveformBarsProps, } from "./motion.js";

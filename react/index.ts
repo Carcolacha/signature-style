@@ -191,4 +191,12 @@ export {
   type MotionRevealVariant,
   KineticSurface,
   type KineticSurfaceProps,
+  AuroraBorderCard,
+  type AuroraBorderCardProps,
+  TiltSurface,
+  type TiltSurfaceProps,
+  StatusBeacon,
+  type StatusBeaconProps,
+  WaveformBars,
+  type WaveformBarsProps,
 } from "./motion.js";

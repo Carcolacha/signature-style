@@ -694,6 +694,19 @@
   font-size: 0.875rem;
 }
 
+/* 3.9.0 — the Motion Lab's plain-English explanation strip: one
+   sentence under the frame header (WHAT it does, WHEN to use it). */
+.pattern-frame__explain {
+  margin: 0;
+  padding: var(--space-tight) var(--space-standard) 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+.pattern-frame__explain::before {
+  content: "◇ ";
+  color: var(--color-cake-secondary);
+}
+
 /* The live preview strip — the inset ground gives interactive demos a
    stage without owning any shadows. 2.9.0: overflow-x containment —
    a stage is a pan, never a page-break (the 375×812 sweep caught a
@@ -1989,10 +2002,102 @@
 }
 
 .motion-lab__tile-chip {
-  width: 8px;
-  height: 8px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
   border-radius: var(--radius-ui);
+  font-size: 0.75rem;
   flex: 0 0 auto;
+}
+
+/* 3.9.0 — the per-frame Play strip (the (b) contract: one Play Effect
+   button per frame, above the demo stage). */
+.motion-lab__frame-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-tight);
+}
+
+/* 3.9.0 frame 02 — the aurora/tilt/sheen quad grid. */
+.motion-lab__aurora-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-standard);
+}
+
+.motion-lab__aurora-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  padding: var(--space-tight);
+}
+
+.motion-lab__aurora-inner h4,
+.motion-lab__tilt h4,
+.motion-lab__sheen-card h4 {
+  margin: 0;
+  color: var(--text-bright);
+  font-size: 1rem;
+}
+
+.motion-lab__aurora-inner p,
+.motion-lab__tilt p,
+.motion-lab__sheen-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.motion-lab__tilt p {
+  color: var(--text-main);
+}
+
+/* 3.9.0 frame 04 — the elastic drawer (ONE scaleY on the gentle spring). */
+.motion-lab__drawer-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  margin-top: var(--space-standard);
+}
+
+.motion-lab__drawer {
+  width: 100%;
+  transform: scaleY(0);
+  transform-origin: top;
+  opacity: 0;
+  transition:
+    transform var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1)),
+    opacity var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1));
+  pointer-events: none;
+}
+
+.motion-lab__drawer.is-open {
+  transform: scaleY(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.motion-lab__drawer p {
+  margin: 0;
+  padding: var(--space-standard);
+  border: 1px dashed color-mix(in srgb, var(--color-cake-secondary) 45%, transparent);
+  border-radius: var(--radius-ui);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-lab__drawer {
+    transition: none;
+  }
+}
+[data-sig-motion="reduced"] .motion-lab__drawer {
+  transition: none;
 }
 
 /* 02 — the spring detents (LAB-ONLY transition overrides, see header) */

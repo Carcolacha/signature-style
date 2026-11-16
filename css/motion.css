@@ -141,4 +141,195 @@
   [data-sig-motion="reduced"] .sig-kinetic-surface::after {
     transition: none;
   }
+
+  /* ==========================================================================
+     3.9.0 THE COLORFUL KINETIC SUITE — the aurora beam, the 3D tilt,
+     the status beacon, the waveform bars. SAME TREATY: only transform,
+     opacity, clip-path and REGISTERED custom properties animate — the
+     aurora beam is a rotating conic ANGLE, never a box-shadow. Every
+     primitive carries its reduced-motion stand-down, both belts (the
+     media query AND the [data-sig-motion="reduced"] subtree override).
+     ========================================================================== */
+
+  /* -- THE REGISTERED BEAM ANGLE --------------------------------------------
+     CSS @property: without the registration, custom properties cannot
+     interpolate and the keyframe would flip discretely. Registered with
+     syntax "<angle>", the rotation is a true per-frame animation of one
+     custom property — no JS, no layout, no shadows. Engines without
+     @property: the gradient stays a static 4-color conic ring (the
+     documented fallback), everything else keeps working. */
+  @property --sig-beam-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  /* -- the aurora border card --------------------------------------------------
+     ONE div + ONE ::before. The ::before is the beam: a conic-gradient
+     cycling the four accent tokens (inline --sig-aurora-1..4), masked to
+     a 2px ring by the content-box exclude composite (the standard
+     border-beam technique — zero hex: the masks paint currentColor,
+     opaque by definition). The card carries its own padding + the
+     surface treatment so content never touches the beam ring. */
+  .sig-aurora-card {
+    position: relative;
+    border-radius: var(--radius-card);
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    padding: var(--space-standard);
+    overflow: hidden;
+  }
+  .sig-aurora-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 2px; /* the beam's ring thickness */
+    background: conic-gradient(
+      from var(--sig-beam-angle, 0deg),
+      var(--sig-aurora-1, var(--sig-cyan)),
+      var(--sig-aurora-2, var(--sig-orchid)),
+      var(--sig-aurora-3, var(--sig-mint)),
+      var(--sig-aurora-4, var(--sig-cobalt)),
+      var(--sig-aurora-1, var(--sig-cyan))
+    );
+    -webkit-mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .sig-aurora-card[data-trigger="always"]::before,
+  .sig-aurora-card:hover::before {
+    animation: sig-aurora-spin 3s linear infinite;
+  }
+  @keyframes sig-aurora-spin {
+    to {
+      --sig-beam-angle: 360deg;
+    }
+  }
+  /* Reduced motion: the ring holds still (a static 4-color beam). */
+  @media (prefers-reduced-motion: reduce) {
+    .sig-aurora-card::before {
+      animation: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-aurora-card::before {
+    animation: none;
+  }
+
+  /* -- the tilt surface ---------------------------------------------------------
+     The 3D transform rides two custom properties the component writes
+     per frame (--tilt-x/--tilt-y, degrees). The 120ms transform
+     transition smooths the per-frame writes WITHOUT fighting them (the
+     writes land per-frame; the short ease just rounds the arrival).
+     perspective(600px) is the documented depth. Reduced motion: pinned
+     flat — the sheen (shared .sig-kinetic-surface ::after) stays. */
+  .sig-tilt-surface {
+    border-radius: var(--radius-card);
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 15%, transparent);
+    padding: var(--space-standard);
+    transform: perspective(600px) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+    transition: transform 120ms ease-out;
+    will-change: transform;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-tilt-surface {
+      transform: none;
+      transition: none;
+      will-change: auto;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-tilt-surface {
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  /* -- the status beacon ---------------------------------------------------------
+     The span IS the dot (size via --sig-beacon-size); ::after is the
+     ping ring — scale 1 → 2.2 while fading out, 1.6s, infinite. ONLY
+     transform + opacity (the e1 treaty). Reduced motion: the ring never
+     renders — a static dot. */
+  .sig-beacon {
+    position: relative;
+    display: inline-block;
+    width: var(--sig-beacon-size, 8px);
+    height: var(--sig-beacon-size, 8px);
+    border-radius: 999px;
+    background: var(--sig-beacon-color, var(--sig-green));
+    vertical-align: middle;
+    flex: none;
+  }
+  .sig-beacon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--sig-beacon-color, var(--sig-green));
+    animation: sig-beacon-ping 1.6s var(--ease-kinetic-out, cubic-bezier(0.16, 1, 0.3, 1)) infinite;
+  }
+  @keyframes sig-beacon-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-beacon::after {
+      display: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-beacon::after {
+    display: none;
+  }
+
+  /* -- the waveform bars -----------------------------------------------------------
+     The wrapper is a flex row of `bars` spans; each span carries
+     --bar-h (0..1, inline from the component) and --bar-i (its index).
+     Height = the normalized value; when .is-active, each bar bounces on
+     the snappy spring with a per-bar delay (calc(--bar-i × 90ms)) — the
+     diagonal wave, the MotionReveal stagger's cousin. ONLY transform
+     (scaleY) + opacity animate. Reduced motion: static mid-height bars
+     (the heights hold, the dance stops). */
+  .sig-waveform {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 48px;
+    min-width: 0;
+  }
+  .sig-waveform__bar {
+    flex: 1 1 0;
+    min-width: 2px;
+    height: calc(var(--bar-h, 0.5) * 100%);
+    background: var(--sig-wave-color, var(--sig-cyan));
+    border-radius: 1px;
+    transform-origin: bottom;
+  }
+  .sig-waveform.is-active .sig-waveform__bar {
+    animation: sig-wave-bounce 900ms var(--ease-spring-snappy, cubic-bezier(0.34, 1.56, 0.64, 1)) calc(var(--bar-i, 0) * 90ms) infinite alternate;
+  }
+  @keyframes sig-wave-bounce {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0.35);
+      opacity: 0.7;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-waveform.is-active .sig-waveform__bar {
+      animation: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-waveform.is-active .sig-waveform__bar {
+    animation: none;
+  }
 }
