@@ -79,3 +79,10 @@ export const PAGE_TEMPLATE_BY_ID: Record<TemplateId, PageTemplate> =
     TemplateId,
     PageTemplate
   >;
+
+/** id → the breadcrumb slug ("engine / templates / saas-landing"). */
+export const TEMPLATE_SLUGS: Record<TemplateId, string> = {
+  saas: "saas-landing",
+  docs: "docs-reader",
+  telemetry: "telemetry-center",
+};

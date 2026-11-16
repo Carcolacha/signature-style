@@ -2029,3 +2029,170 @@
     transition: none;
   }
 }
+
+/* ---- 3.8.0 THE TEMPLATES STUDIO ------------------------------------------
+   The full-page blueprints' proving ground (#/templates): the sticky
+   glass control bar (viewport emulator · scoped theme switcher ·
+   Preview ↔ Code · Copy Full Page) over ONE stage that renders the
+   active template live. FLAT per the e1 treaty — hairlines + fills
+   only, ZERO box-shadow, ZERO hex (b4 holds). The templates carry
+   their own embedded <style> blocks; this section is the STUDIO chrome
+   only.
+
+   THE EMULATOR'S MOTION CONTRACT: the stage's width transition rides
+   var(--dur-glide) var(--ease-glide) — a width transition causes
+   layout, and that is the POINT of a preview resize (the templates
+   reflow through their own container queries). Reduced motion is
+   covered twice: the --dur-glide token collapses to 1ms under
+   prefers-reduced-motion / [data-sig-motion="reduced"] (the tokens.css
+   mercy), and the explicit guard below removes the transition outright. */
+.tpl-studio {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-section);
+}
+
+.tpl-studio__bar {
+  position: sticky;
+  top: 56px; /* the navbar's rung + one hairline (the motion-lab bar's slot) */
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-tight) var(--space-standard);
+  padding: var(--space-tight) var(--space-standard);
+  background: color-mix(in srgb, var(--bg-surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-card);
+  backdrop-filter: blur(8px); /* the glass */
+}
+
+.tpl-studio__seg {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
+.tpl-studio__seg-label {
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.tpl-studio__seg-btn {
+  appearance: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  padding: var(--space-tight) var(--space-standard);
+  cursor: pointer;
+  transition: var(--transition-standard), var(--transition-transform);
+}
+
+.tpl-studio__seg-btn:hover {
+  color: var(--text-main);
+  border-color: var(--color-cake-secondary);
+}
+
+.tpl-studio__seg-btn:active {
+  transform: scale(0.97);
+}
+
+.tpl-studio__seg-btn[aria-pressed="true"] {
+  color: var(--text-main);
+  border-color: var(--color-cake-primary);
+  background: color-mix(in srgb, var(--color-cake-primary) 10%, var(--bg-surface));
+}
+
+.tpl-studio__seg-btn:focus-visible {
+  outline: 2px solid var(--color-cake-primary);
+  outline-offset: 2px;
+}
+
+/* THE MINT CONFIRMATION CHIP — the Copy Full Page accent. The package
+   Toast paints success/error strips only (its palette is frozen css),
+   so the mint confirmation lives in this aria-live chip: --sig-mint
+   border + ink (the owner note — mint-glow is a light token, use the
+   mint token). Occupies one reserved line so the bar never reflows
+   when the message lands. */
+.tpl-studio__copied {
+  min-height: 1.25em;
+  min-width: 24ch;
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: right;
+  transition: var(--transition-standard);
+}
+
+.tpl-studio__copied[data-visible="true"] {
+  color: var(--sig-mint);
+  border: 1px solid color-mix(in srgb, var(--sig-mint) 45%, transparent);
+  border-radius: var(--radius-ui);
+  padding: 2px var(--space-tight);
+}
+
+.tpl-studio__note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  max-width: 88ch;
+}
+
+/* THE STAGE WRAP — carries data-sig-theme for the SCOPED preview (the
+   tokens.css theme blocks are plain attribute selectors — a div
+   re-themes exactly its subtree; the rest of the app keeps the user's
+   theme). */
+.tpl-studio__stage-wrap {
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-card);
+  background: var(--bg-base);
+  padding: var(--space-standard);
+}
+
+/* THE STAGE — the viewport emulator's subject. Templates declare
+   container-type on their roots, so every container query inside
+   answers THIS width, not the window. */
+.tpl-studio__stage {
+  margin-inline: auto;
+  min-height: 320px;
+  transition: width var(--dur-glide) var(--ease-glide);
+}
+
+.tpl-studio__code {
+  margin: 0;
+  max-height: 720px;
+  overflow: auto;
+  background: var(--bg-inset);
+  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+  border-radius: var(--radius-ui);
+  padding: var(--space-standard);
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* The emulator's own chrome snaps under reduced motion (the width
+   transition included — a resize preview is motion too). */
+@media (prefers-reduced-motion: reduce) {
+  .tpl-studio__seg-btn,
+  .tpl-studio__stage {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .tpl-studio__copied {
+    margin-left: 0;
+    min-width: 0;
+    text-align: left;
+  }
+}

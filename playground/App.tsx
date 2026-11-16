@@ -2,6 +2,18 @@
  * App — THE ENGINE + THE MASTER INDEX (2.6.0 "Universal Developer Card
  * Suite, Chromatic Elevation & The Master Index Overhaul").
  *
+ * 3.8.0 — THE TEMPLATES STUDIO. The map grows one REAL view: Templates
+ * (#/templates, the 9-view model) stages the three full-page
+ * blueprints (playground/templates/, the PAGE_TEMPLATES registry) in a
+ * sticky-glass control bar — the viewport width emulator (Desktop /
+ * 768 / 375; the templates reflow via their own container queries),
+ * the SCOPED live theme switcher (data-sig-theme on the stage wrapper:
+ * the tokens.css theme blocks are plain attribute selectors, so a div
+ * re-themes its subtree), the Preview ↔ Full TSX Code toggle and Copy
+ * Full Page. The active template id is LIFTED here (breadcrumbs
+ * engine / templates / saas-landing + the palette's per-template
+ * jumps). See components/TemplatesStudio.tsx for the full contract.
+ *
  * 2.9.1 — ZERO CONTRAST DEBT & THE LIVE SKELETON TRIGGER. Two moves:
  *
  *   1. (css/tokens.css — not here) the two sub-3.0 chromatic tokens are
@@ -251,6 +263,9 @@ import { CodexView } from "./components/CodexView.js";
 import { GraphStudioView } from "./components/GraphStudio.js";
 import type { NodePatch } from "./components/GraphStudio.js";
 import { MotionLabView } from "./components/MotionLab.js";
+import { TemplatesStudioView } from "./components/TemplatesStudio.js";
+import { PAGE_TEMPLATES, TEMPLATE_SLUGS } from "./template-registry.js";
+import type { TemplateId } from "./template-sources.js";
 
 /** Every view the switcher knows. Default is "dashboard" (cortex contract).
  *  3.6.0 — THE 6-VIEW NAV MAP: the Workbench (the 12-column bento — the
@@ -268,6 +283,7 @@ type View =
   | "planner"
   | "motion"
   | "studio"
+  | "templates"
   | "index"
   | "chronicle"
   | "codex";
@@ -294,6 +310,7 @@ const VIEW_HREFS: Record<View, string> = {
   planner: "#/planner",
   motion: "#/motion",
   studio: "#/studio",
+  templates: "#/templates",
   index: "#/index",
   chronicle: "#/chronicle",
   codex: "#/codex",
@@ -306,6 +323,7 @@ const HREF_TO_VIEW: Record<string, View> = {
   "#/planner": "planner",
   "#/motion": "motion",
   "#/studio": "studio",
+  "#/templates": "templates",
   "#/index": "index",
   "#/chronicle": "chronicle",
   "#/codex": "codex",
@@ -322,6 +340,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: VIEW_HREFS.planner, label: "Analytics & Planner" },
   { href: VIEW_HREFS.motion, label: "Motion Lab" },
   { href: VIEW_HREFS.studio, label: "Pattern Studio" },
+  { href: VIEW_HREFS.templates, label: "Templates" },
   { href: VIEW_HREFS.index, label: "Index" },
   { href: VIEW_HREFS.codex, label: "AI Codex" },
 ];
@@ -352,6 +371,10 @@ const HERO_COPY: Record<View, { title: string; sub: string }> = {
   studio: {
     title: "THE PATTERN STUDIO",
     sub: "seven sets · fifty-six patterns · one-click copy",
+  },
+  templates: {
+    title: "THE TEMPLATES STUDIO",
+    sub: "three full-page blueprints · preview, theme & copy · one CLI command each",
   },
   index: {
     title: "THE MASTER INDEX",
@@ -830,6 +853,10 @@ function Shell() {
   // The studio's set filter, LIFTED — the command palette jumps into a
   // set directly (the studio renders controlled).
   const [studioSet, setStudioSet] = useState<SetId | "all">("all");
+  // 3.8.0 — THE ACTIVE TEMPLATE, lifted for the same reason: the
+  // breadcrumbs (engine / templates / saas-landing) and the palette's
+  // per-template jumps share it with the studio (controlled).
+  const [activeTemplate, setActiveTemplate] = useState<TemplateId>("saas");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   // 3.6.0 — THE "?" KEY: the keyboard map opens from anywhere (the
@@ -878,11 +905,14 @@ function Shell() {
     if (view === "graph") return [engine, { label: "graph-studio" }];
     if (view === "planner") return [engine, { label: "analytics-planner" }];
     if (view === "motion") return [engine, { label: "motion-lab" }];
+    if (view === "templates") {
+      return [engine, { label: "templates", href: VIEW_HREFS.templates }, { label: TEMPLATE_SLUGS[activeTemplate] }];
+    }
     if (view === "index") return [engine, { label: "master-index" }];
     if (view === "chronicle") return [engine, { label: "chronicle" }];
     if (view === "codex") return [engine, { label: "ai-codex" }];
     return [engine, { label: "workbench" }];
-  }, [view, studioSet]);
+  }, [view, studioSet, activeTemplate]);
 
   // The reduced-motion PREVIEW override — data-motion="reduced" on
   // documentElement (styles.css collapses every transition/animation to
@@ -935,6 +965,18 @@ function Shell() {
     { id: "view-planner", label: "Go to Analytics & Planner", keywords: "view analytics planner charts milestones timeline", icon: "ChartColumn", hint: "view", run: () => navigate(VIEW_HREFS.planner) },
     { id: "view-motion", label: "Go to Motion Lab", keywords: "view motion lab kinetics springs animation slow-mo reveal choreography", icon: "Activity", hint: "view", run: () => navigate(VIEW_HREFS.motion) },
     { id: "view-studio", label: "Go to Pattern Studio", keywords: "view catalog patterns sets copy", icon: "Shapes", hint: "view", run: () => navigate(VIEW_HREFS.studio) },
+    { id: "view-templates", label: "Go to Templates", keywords: "view templates studio blueprints full-page saas docs telemetry preview emulator", icon: "LayoutTemplate", hint: "view", run: () => navigate(VIEW_HREFS.templates) },
+    ...PAGE_TEMPLATES.map((template) => ({
+      id: `template-${template.id}`,
+      label: `Templates: ${template.name}`,
+      keywords: `template blueprint full page ${template.id} ${template.name.toLowerCase()} jump studio`,
+      icon: "LayoutTemplate" as const,
+      hint: "blueprint",
+      run: () => {
+        setActiveTemplate(template.id);
+        navigate(VIEW_HREFS.templates);
+      },
+    })),
     { id: "view-index", label: "Go to Master Index", keywords: "view catalog archetypes doors", icon: "LayoutGrid", hint: "view", run: () => navigate(VIEW_HREFS.index) },
     { id: "view-chronicle", label: "Go to Chronicle", keywords: "view versions memorial night releases", icon: "Map", hint: "view", run: () => navigate(VIEW_HREFS.chronicle) },
     { id: "view-codex", label: "Go to AI Codex", keywords: "view tokens rules recipes agents", icon: "Terminal", hint: "view", run: () => navigate(VIEW_HREFS.codex) },
@@ -1059,7 +1101,7 @@ function Shell() {
       icon: "Copy",
       run: copyThemeCss,
     },
-  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim, sig, downloadThemeCss, copyThemeCss, latencySim]);
+  ], [navigate, toast, toggleReducedMotionPreview, copyLlmsUrl, triggerAsyncSim, sig, downloadThemeCss, copyThemeCss, latencySim, setActiveTemplate]);
 
   return (
     <>
@@ -1123,6 +1165,8 @@ function Shell() {
           <AnalyticsPlannerView workspace={workspace} />
         ) : view === "motion" ? (
           <MotionLabView />
+        ) : view === "templates" ? (
+          <TemplatesStudioView activeId={activeTemplate} onActiveChange={setActiveTemplate} />
         ) : view === "index" ? (
           <IndexView onNavigate={navigate} />
         ) : view === "studio" ? (
