@@ -26,6 +26,8 @@ npx @edwyn/signature-style init
 
 A knowledge-graph canvas that bypasses the page shell and runs edge-to-edge: **60fps pointer-events drag** (rAF-batched, measured), **right-click tethers** to link nodes, and three deterministic layout modes — **Tree** (tidy top-down), **Radial** (ring engine), and **Free** (drag anywhere). The **AI branch expansion** button grows four idea-nodes from any selection using a local, deterministic heuristic — no network, no API keys, same selection always yields the same branches. A floating HUD carries search (dims non-matches), zoom, and a live nodes/edges counter; the right-side inspector edits title, kind, a 16-swatch chromatic picker, tags, and notes. Everything persists to workspace storage.
 
+**New in 4.1.0 — Graph Motion Layer:** the canvas now choreographs its own changes. New nodes **pop in on a spring** (scale 0.68 → 1, staggered 70ms per batch — an AI expansion arrives as a wave, each child landing as its parent wire **draws itself** across the canvas), and Delete Node / Reset Canvas **collapse out** through an exit spring instead of vanishing. Two engines, one rule: animejs draws the edges (`strokeDashoffset` only), motion/react springs the cards (`scale`/`opacity` only) — one engine per file, never a shadow/width/height keyframe anywhere, fully disabled under reduced motion.
+
 Graphs export to a single portable workspace JSON — one click from the HUD, one command from the palette — and re-import intact: positions, tethers, tags, notes, and the active layout mode all ride along.
 
 ### 16-Color Harmonic Palette & 3 Themes

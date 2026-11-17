@@ -1,6 +1,6 @@
 {
   "name": "@edwyn/signature-style",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "Your personal Signature Style UI theme in one command: Token Cascade, Override Protocol, zero-dependency CSS core. Three verified surface themes (Mocha dark default, OLED true-black, Daylight high-contrast) with the signature Flamingo/Teal accents, plus the data-sig-radius geometry presets. Standalone universal design engine (3.8.0 Full-Page Layout Templates, Interactive Viewport Previewer & CLI Template Expansion: three self-contained full-page templates — SaaS Landing, Docs Reader, Telemetry Center — staged in the Templates Studio (#/templates) behind the viewport width emulator (100% / 768px / 375px, the container-query reflow answering the stage), the SCOPED data-sig-theme stage preview (the theme blocks are plain attribute selectors — a div re-themes its subtree), Preview ↔ Full TSX Code and Copy Full Page (the mint-accented aria-live chip), the PAGE_TEMPLATES registry with mechanically-derived copy sources, and the CLI --template telemetry|microlab emitting the React blueprints (SignatureTelemetryCenter.tsx / SignatureMicroLab.tsx) or the per-template static HTML mirrors — 3.7.0 The Intelligent Kinetic Engine, Motion Lab & Live Data Choreography: four native linear() spring easing tokens + scale-derived durations behind the --sig-motion-scale time-dilation dial (cubic-bezier @supports fallback), the kinetic primitives AnimatedNumber (spring-interpolated rAF number roll) / MotionReveal (IntersectionObserver once-entrance with 45ms stagger waves) / KineticSurface (rAF-throttled cursor-tracking sheen), the FLIP gliding indicators on Tabs + GlobalNav, the directional carousel page glide, the pathLength SVG line sweeps + the spring-arc StatRing, the Motion Lab view (#/motion — Slow-Mo time dilation, replay choreography, the reduced-motion preview, six showcases including the zero-key Open-Meteo fallback-first live choreography), and the e1-motion gate: box-shadow is NEVER animated; 3.5.0 The Visual Cortex as a Product: packages/signature-mcp — the standalone 4-tool MCP server inspect_layout · audit_contrast · audit_e1_shadows · capture_viewport_matrix, attach configs in packages/signature-mcp/README.md; 3.4.0 Zero-React Native Web Components: SIX framework-free custom elements — sig-surface-card, sig-badge, sig-progress-bar, sig-stat-ring, sig-callout, sig-carousel — driven entirely by the --sig-* tokens via import \"@edwyn/signature-style/wc\"; 3.3.0 Zero-Dependency npx CLI Scaffolder: `npx @edwyn/signature-style init`).",
   "type": "module",
   "license": "MIT",
@@ -84,9 +84,9 @@
     "playground:build": "vite build --config playground/vite.config.ts"
   },
   "peerDependencies": {
-    "lucide-react": ">=0.400.0",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "lucide-react": ">=0.400.0"
   },
   "peerDependenciesMeta": {
     "lucide-react": {

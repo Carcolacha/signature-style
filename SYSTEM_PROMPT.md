@@ -200,6 +200,18 @@ const toast = useToast();
 
 The engine's own surfaces obey the norm: the Graph Studio's Delete Node (inspector button AND the Delete/Backspace key), Reset Canvas, and the Analytics & Planner Reset Workspace all open ConfirmDialogs before committing.
 
+### Graph Studio Choreography (4.1.0)
+
+Graph motion follows a THREE-STRATA contract — every moving part has exactly ONE owner, machine-enforced by the one-engine-per-file gate:
+
+1. **Outer wrapper** — the canvas's rAF drag `<g>`: `translate(x, y)` ONLY. It never animates anything else, and nothing else moves it.
+2. **Inner card** — a `motion.div` (motion/react) animating ONLY `scale` + `opacity` on a spring (`stiffness: 440, damping: 28`): spawn enters at `0.68`, exits collapse to `0.72`, staggered `spawnIndex · 0.07s` per batch.
+3. **SVG edges** — animejs v4 animating ONLY `strokeDashoffset` (the draw-on sweep, 420ms, `outCubic`), its `delayMs = spawnIndex · 70` so each child pops in as its wire lands.
+
+**The One-Owner rule:** one engine per file, forever. A file that imports `animejs` must never import `motion/react`, and vice versa — the gate scans every source file and negative-tests itself with a both-engines fixture. NEVER animate box-shadow, width, height, top/left in any stratum.
+
+**The cleanup contract:** transients are overlays, not owners. The static canvas element under a running animation is masked (an opacity-0 rule keyed by its own data attributes); when the animation settles, the overlay element and the mask leave in the same commit and the static element takes over invisibly. animejs animations revert on unmount, timers clear, ghosts prune on exit-complete, and `useReducedMotion` is THE single source: when true, edges render fully drawn, nodes render their final state, and no choreography mounts at all.
+
 ### The sig-shell layout (2.5.0)
 
 Every view's content renders inside ONE centered column — max-width 1400px, centered, breathing side padding (≥20px of viewport margin at every width). GlobalNav stays OUTSIDE the shell (it is its own bar). Never render tab modules or card grids edge-to-edge:
