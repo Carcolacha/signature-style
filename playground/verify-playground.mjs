@@ -759,6 +759,36 @@
  *         .github/workflows/ci.yml exists and wires the suites;
  *         scripts/goldens/ carries the 5 committed golden masters.
  *
+ * 4.1.0 gates ("GRAPH MOTION LAYER" — the playground-only release):
+ *   (own1) THE ONE-OWNER RULE, machine-enforced — a playground source
+ *          file that imports BOTH animejs AND motion(/react) fails.
+ *          One engine per file: GraphEdgeDraw.tsx (animejs), 
+ *          GraphNodeSpring.tsx (motion/react), GraphMotionLayer.tsx
+ *          (motion/react orchestrator). NEGATIVE-TESTED: the gate
+ *          writes a both-engines fixture, runs the SAME scanner on it,
+ *          demands the flagged failure, and deletes the fixture.
+ *   (gm1)  the layer contract: svg.createDrawable prep + strokeDashoffset
+ *          [1000→0] 420ms outCubic (animejs v4.5.0, verified against the
+ *          installed dist), the motion spring 440/28 with the 0.68 enter
+ *          / 0.72 exit scales and the spawnIndex·0.07s stagger.
+ *   (gm2)  AnimatePresence wraps the exiting node list with exit props
+ *          (Delete Node / post-ConfirmDialog Reset Canvas leave through
+ *          a spring); the studio mounts the layer with the whole view;
+ *          styles.css carries the overlay stratum.
+ *   (gm3)  reduced motion: useReducedMotion is THE source and BOTH
+ *          engines honor the hand-off (edges fully drawn, nodes final
+ *          state).
+ *   (gm4)  dependency placement: motion + animejs ride root
+ *          devDependencies ONLY (never "dependencies", never shipped);
+ *          the packages are really installed; (b3) pack stays EXACTLY
+ *          71 by construction.
+ *   (b7)/(n-hub4)  REBASED to the v4.0.1 baseline — the enumerated
+ *          4.1.0 authorization is playground-only: SYSTEM_PROMPT.md
+ *          (the Graph Studio Choreography doctrine subsection) +
+ *          tokens.json (meta.version → 4.1.0, guarded; the COLOR
+ *          VALUES byte-frozen). css/ react/ demo/ scripts/ tools/ bin/
+ *          stay byte-identical to the tag — zero diff.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -1318,23 +1348,22 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v4.0.0 are owner-authorized ----------
-// 4.0.1 REBASE (the floor moves v3.9.0 → v4.0.0): THE PRODUCT PAGE — a
-// DOCS-ONLY release. The owner-authorized 4.0.1 deltas, and NOTHING else:
-//   scripts/verify-standalone.mjs — the purity-gate retarget: README.md
-//                              leaves the allowlist (ZERO sanctioned
-//                              matches — the product page must be fully
-//                              clean); docs/MIGRATION.md becomes the
-//                              sanctioned home of the rename tables
-//                              (pinned EXACTLY 9)
-//   docs/MIGRATION.md         — NEW (outside the watched surface): the
-//                              breaking-changes/migration content that
-//                              left the README
-// README.md (rebuilt as the product page), package.json/lock (4.0.1),
-// tokens.json meta (guarded below), and playground/public/llms* are
-// release plumbing, not core. css/, react/, SYSTEM_PROMPT.md, demo/,
-// tools/, bin/ stay byte-identical to v4.0.0 (0-line diff). The 4.0.0
-// code deltas below are now BASELINE — frozen at the tag.
+// ---- (b7) SAFETY PROOF: core deltas vs v4.0.1 are owner-authorized ----------
+// 4.1.0 REBASE (the floor moves v4.0.0 → v4.0.1): GRAPH MOTION LAYER — a
+// PLAYGROUND-ONLY release. The owner-authorized 4.1.0 deltas, and NOTHING
+// else:
+//   SYSTEM_PROMPT.md          — the "Graph Studio Choreography (4.1.0)"
+//                              doctrine subsection (the three strata + the
+//                              One-Owner rule + the cleanup contract)
+//   tokens.json               — meta.version → 4.1.0 ONLY (guarded below;
+//                              the COLOR VALUES stay byte-frozen)
+// README.md, package.json/lock are release plumbing, not core. css/,
+// react/, demo/, tools/, bin/, scripts/ stay byte-identical to v4.0.1
+// (0-line diff) — the entire animation layer lives in playground/ (the
+// composition layer, never packed).
+// 4.0.1 BASELINE (the previous floor v4.0.0 → v4.0.1): THE PRODUCT PAGE —
+// a DOCS-ONLY release: the purity-gate retarget (scripts/verify-standalone
+// .mjs; docs/MIGRATION.md the sanctioned home of the rename tables).
 // 4.0.0 BASELINE (the previous floor v3.8.0 → v3.9.0): MOTION LAB REBUILD,
 // FLIP/ACCORDION GEOMETRY FIX, DESTRUCTIVE CONFIRM NORM & HUMAN-CRAFTED
 // BLUEPRINTS. The owner-authorized 4.0.0 deltas, and NOTHING else:
@@ -1435,28 +1464,29 @@ if (oldTimeline !== null) {
 // composition layer); README/package.json/lock are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 const AUTHORIZED_330 = new Set([
-  // 4.0.1 — THE PRODUCT PAGE (docs-only; everything else is now baseline
-  // at the v4.0.0 tag, see the header):
-  "scripts/verify-standalone.mjs", // the purity retarget: README zero-allowlist, docs/MIGRATION.md sanctioned
+  // 4.1.0 — GRAPH MOTION LAYER (playground-only release; everything else
+  // is now baseline at the v4.0.1 tag, see the header):
+  "SYSTEM_PROMPT.md", // the Graph Studio Choreography doctrine subsection
+  "tokens.json", // meta.version → 4.1.0 ONLY (guarded below)
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v4.0.0", "--name-only", "--", ...B7_LOCKED_330],
+    ["diff", "v4.0.1", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v4.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v4.0.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v4.0.0 — outside the owner-authorized 4.0.1 set (the docs-only product-page release: the purity-gate retarget)`,
+      `(b7) SAFETY: ${file} changed since v4.0.1 — outside the owner-authorized 4.1.0 set (the playground-only Graph Motion Layer release: the doctrine subsection + the tokens meta bump)`,
     );
   }
 }
@@ -1492,8 +1522,8 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
 // kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "4.0.1") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.0.1", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "4.1.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.1.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
   const MOTION_NAMES_370 = [
     "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
@@ -1673,15 +1703,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 4.0.1 FROZEN PROOF — v4.0.0 baseline ----
-// Rebased 4.0.1 (the floor moves v3.9.0 → v4.0.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 4.0.1
-// docs-only list from (b7).
+// ---- (n-hub4) THE 4.1.0 FROZEN PROOF — v4.0.1 baseline ----
+// Rebased 4.1.0 (the floor moves v4.0.0 → v4.0.1 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 4.1.0
+// playground-only list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v4.0.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v4.0.1", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1689,11 +1719,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v4.0.0 beyond the 4.0.1 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
+      `(n-hub4) SAFETY: files changed since v4.0.1 beyond the 4.1.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v4.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v4.0.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
@@ -5828,10 +5858,182 @@ if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
   }
 }
 
+// ---- 4.1.0 GRAPH MOTION LAYER gates -------------------------------------------------
+// (own1) THE ONE-OWNER RULE — machine-enforced, ONE ENGINE PER FILE: a
+//        playground source file that imports BOTH animejs AND motion
+//        (or motion/react) FAILS. The outer canvas wrapper stays the
+//        package's translate-only rAF drag; the inner card is
+//        motion/react (scale + opacity ONLY); SVG edges are animejs
+//        (strokeDashoffset ONLY) — so each stratum has exactly one
+//        owner and no file ever blurs them. Negative-tested below: the
+//        gate writes a both-engines fixture, runs the SAME check on
+//        it, demands the failure, and deletes the fixture.
+// (gm1)  GraphMotionLayer exists and carries the contract needles: the
+//        animejs draw (svg.createDrawable — the verified v4 API — with
+//        strokeDashoffset as THE animated property), the motion spring
+//        440/28, and the spawnIndex stagger delay.
+// (gm2)  AnimatePresence wraps the exiting node list with exit props —
+//        Delete Node / Reset Canvas leave through a spring, not a vanishing.
+// (gm3)  Reduced motion: useReducedMotion is THE source (the layer), and
+//        BOTH engine halves honor the hand-off (the edge renders fully
+//        drawn; the node renders its final state).
+// (gm4)  The dependency placement: motion + animejs live in root
+//        devDependencies ONLY — never in "dependencies" (nothing
+//        ships), the installed packages are really on disk, and the
+//        pack count gate (b3) stays 71 by construction.
+{
+  // The playground source census — .ts/.tsx/.mjs, excluding the gates
+  // file itself (its needles MENTION both engines as strings).
+  const motionLayerDir = join(playground, "components");
+  const sourceFiles = [
+    ...readdirSync(playground).filter((name) => /\.(ts|tsx|mjs)$/.test(name) && name !== "verify-playground.mjs"),
+    ...readdirSync(motionLayerDir).filter((name) => /\.(ts|tsx)$/.test(name)).map((name) => join("components", name)),
+  ];
+  const ANIMEJS_IMPORT = /from\s*["']animejs["']/;
+  const MOTION_IMPORT = /from\s*["']motion(?:\/react)?["']/;
+  const ownsEngine = (source) => ({
+    animejs: ANIMEJS_IMPORT.test(source),
+    motion: MOTION_IMPORT.test(source),
+  });
+  const own1Scan = (path_, source) => {
+    const engines = ownsEngine(source);
+    if (engines.animejs && engines.motion) {
+      failures.push(`(own1) ${path_} imports BOTH animejs and motion(/react) — ONE ENGINE PER FILE (the One-Owner rule)`);
+    }
+  };
+  for (const name of sourceFiles) {
+    const path_ = name.split(/[/\\]/).slice(-2).join("/");
+    own1Scan(path_, readFileSync(join(playground, name), "utf8"));
+  }
+  // THE NEGATIVE TEST — the same scan must FAIL a both-engines file.
+  {
+    const fixturePath = join(playground, "components", ".own1-negative-fixture.tsx");
+    const fixtureSource = [
+      "import { animate } from \"animejs\";",
+      "import { motion } from \"motion/react\";",
+      "export const fixture = () => null;",
+      "",
+    ].join("\n");
+    writeFileSync(fixturePath, fixtureSource, "utf8");
+    const fixtureViolations = [];
+    const engines = ownsEngine(readFileSync(fixturePath, "utf8"));
+    if (engines.animejs && engines.motion) fixtureViolations.push("both engines");
+    unlinkSync(fixturePath);
+    if (fixtureViolations.length === 0) {
+      failures.push("(own1) NEGATIVE TEST FAILED — the scanner did not flag a file importing both engines (the gate is blind)");
+    }
+    if (existsSync(fixturePath)) {
+      failures.push("(own1) the negative-test fixture leaked — components/.own1-negative-fixture.tsx must be deleted");
+    }
+  }
+
+  const layerSrc = readFileSync(join(motionLayerDir, "GraphMotionLayer.tsx"), "utf8");
+  const edgeSrc = readFileSync(join(motionLayerDir, "GraphEdgeDraw.tsx"), "utf8");
+  const nodeSrc = readFileSync(join(motionLayerDir, "GraphNodeSpring.tsx"), "utf8");
+  const studioViewSrc = readFileSync(join(motionLayerDir, "GraphStudio.tsx"), "utf8");
+
+  // (gm1) the layer exists + the orchestrator needles.
+  const layerNeedles = [
+    ["import { AnimatePresence, useReducedMotion } from \"motion/react\"", "the orchestrator's one engine (motion/react)"],
+    ["AnimatedGraphEdge", "the animejs half is composed"],
+    ["AnimatedGraphNode", "the motion half is composed"],
+    ["strokeDashoffset", "the strata law: edges animate strokeDashoffset ONLY"],
+    ["spawnIndex", "the per-batch sequential choreography index"],
+    ["effectivePositions", "the exported pure position-merge helper"],
+  ];
+  for (const [needle, label] of layerNeedles) {
+    if (!layerSrc.includes(needle)) {
+      failures.push(`(gm1) GraphMotionLayer.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const edgeNeedles = [
+    ["createDrawable", "the animejs v4 drawable prep"],
+    ["strokeDashoffset: [DRAW_UNITS, 0]", "the ONE animated property, hidden → drawn"],
+    ["420", "the 420ms draw duration"],
+    ["outCubic", "the outCubic ease"],
+    ["reducedMotion", "the reduced-motion hand-off (fully drawn)"],
+  ];
+  for (const [needle, label] of edgeNeedles) {
+    if (!edgeSrc.includes(needle)) {
+      failures.push(`(gm1) GraphEdgeDraw.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  const nodeNeedles = [
+    ["stiffness: SPRING_STIFFNESS", "the named spring constant"],
+    ["SPRING_STIFFNESS = 440", "the 440 stiffness contract"],
+    ["SPRING_DAMPING = 28", "the 28 damping contract"],
+    ["scale: ENTER_SCALE", "the 0.68 enter scale (via the named constant)"],
+    ["ENTER_SCALE = 0.68", "the 0.68 enter scale contract"],
+    ["scale: EXIT_SCALE", "the exit collapse (via the named constant)"],
+    ["EXIT_SCALE = 0.72", "the 0.72 exit collapse contract"],
+    ["spawnIndex * SPAWN_STAGGER_S", "the spawnIndex·0.07s stagger"],
+    ["initial={{ opacity: 0, scale: ENTER_SCALE }}", "the spring enter state"],
+  ];
+  for (const [needle, label] of nodeNeedles) {
+    if (!nodeSrc.includes(needle)) {
+      failures.push(`(gm1) GraphNodeSpring.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  // The strata walls inside the engine files (no forbidden property ever
+  // rides an engine).
+  if (/box-shadow|boxShadow/.test(edgeSrc + nodeSrc)) {
+    failures.push("(gm1) the engine files must never animate box-shadow — the e1 treaty extends to the motion stratum");
+  }
+
+  // (gm2) AnimatePresence wraps the exiting node list + exit props.
+  if (!layerSrc.includes("<AnimatePresence onExitComplete=")) {
+    failures.push('(gm2) GraphMotionLayer.tsx must wrap the exiting node list in "<AnimatePresence onExitComplete=...>"');
+  }
+  if (!nodeSrc.includes("exit={{")) {
+    failures.push('(gm2) GraphNodeSpring.tsx must carry the "exit={{" props — deletes leave through a spring');
+  }
+
+  // (gm3) reduced motion honored in BOTH engines.
+  if (!/reducedMotion[^]*?fully drawn|reducedMotion[^]*?FULLY DRAWN/.test(edgeSrc)) {
+    failures.push("(gm3) GraphEdgeDraw.tsx must document + implement the reduced-motion branch (the edge renders fully drawn)");
+  }
+  const gm3NodeNeedles = [
+    ["data-motion-role=\"reduced\"", "the reduced variant renders the FINAL STATE"],
+    ["reducedMotion", "the reduced-motion hand-off"],
+  ];
+  for (const [needle, label] of gm3NodeNeedles) {
+    if (!nodeSrc.includes(needle)) {
+      failures.push(`(gm3) GraphNodeSpring.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+
+  // (gm4) the dependency placement — devDeps ONLY, really installed.
+  const pkgJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
+  for (const dep of ["motion", "animejs"]) {
+    if (pkgJson.dependencies?.[dep] !== undefined) {
+      failures.push(`(gm4) ${dep} must NEVER ride "dependencies" — it is playground-only and must not ship`);
+    }
+    if (typeof pkgJson.devDependencies?.[dep] !== "string") {
+      failures.push(`(gm4) ${dep} must ride root "devDependencies" (the playground-local dependency scope)`);
+    }
+    if (!existsSync(resolve(root, "node_modules", dep, "package.json"))) {
+      failures.push(`(gm4) ${dep} is not installed (node_modules/${dep} missing) — run npm install`);
+    }
+  }
+  // (gm2) wiring proof — the studio mounts the layer (the wiring commit).
+  const studioWiringNeedles = [
+    ["<GraphMotionLayer", "the studio mounts the motion layer"],
+    ["view={view}", "the whole pan/zoom view feeds the overlay's viewBox sync"],
+  ];
+  for (const [needle, label] of studioWiringNeedles) {
+    if (!studioViewSrc.includes(needle)) {
+      failures.push(`(gm2) GraphStudio.tsx must contain ${JSON.stringify(needle)} — ${label}`);
+    }
+  }
+  if (!stylesCss.includes(".graph-motion-layer {")) {
+    failures.push("(gm2) styles.css must carry the .graph-motion-layer rule (the overlay stratum styles)");
+  }
+}
+
 // ---- verdict ----------------------------------------------------------------------
 if (failures.length > 0) {
   console.error("FAIL");
   for (const failure of failures) console.error(`  - ${failure}`);
   process.exit(1);
 }
-console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions; ; 3.6.0 GRAPH STUDIO RELEASE: (b7)/(n-hub4) REBASED to v3.5.0 with the enumerated a11y/carousel/studio authorization (css cards/editorial/graph/timeline + the react package quartet + the gates + goldens; demo/ bin/ verify.mjs byte-untouched), the tokens guard evolved for the TWO-TIER policy (--text-muted value-only; sigPalette contrastTier metadata on the 11 ink tokens + the three display-tier description extensions; VALUES byte-equal), the six-view map (Workbench/Graph Studio/Analytics & Planner/Pattern Studio/Master Index/AI Codex — Chronicle off the nav, hash+palette reachable), the (gp1) Studio split needles (the component block + the workspace hook + the edge model GraphEdge), the (af3)/(car3) true page-deck needles, the (cmd1) ShortcutModal block, the (cus) merged prefs needles, meta.version → 3.6.0; 3.2.0 SURFACE ENGINE intact: (th3) the canonical theme blocks cross-checked against the manifest ink variants, (rad2) the radius presets (standard 8/12 — 8px-grid-pure; sharp 0), (cus) the live customizer (one useSigTheme owner, aria-pressed panel, 16 badges on the shared sig-contrast math, download/copy/snippet), verify:contrast green on ALL THREE themes under the TWO-TIER policy (ct8); 3.6.0 SHIP.");
+console.log("PASS — playground gates (b1)-(b7) + (h1)-(h3) + (e1)-(e2) + (m1)-(m3) + (g2)-(g3) + (n-hub1)-(n-hub4) + (sp1) + (ix1)-(ix2) + (s1)-(s2) + (v22) + (dd1)-(dd6) + ed1)-(ed4) + (icons) + (showcase) + (af1)-(af3) + (b12)/(sh1)/(ff1)/(pw1)/(bt1)/(cd1)/(al1) + 2.6.0 (acc1)/(elev)/(pt11)/(cc1)-(cc5)/(mi1) + 2.8.0 (nav5)/(ps-studio)/(ps-copy)/(ps-llms) + 2.9.0 (cq1)/(cmd1)/(sk1)/(bc1): scaffold, wiring, pack stays EXACTLY 58 (playground/tools files-array excluded), zero hex + 768px collapse, bento shape + hero + shed anatomy, icons probe, 3.1.0 PURE-RENAME RELEASE: (b7)/(n-hub4) rebased to v3.0.0 with the enumerated purge authorization, the (e2) baseline normalized through the rename map (a rename is not a deletion), the tokens.json guard proves sigPalette = the renamed 26 with VALUE identity per token (themes/doctrine/shared byte-equal), all copy needles ride the standalone vocabulary (Workspace Member & Resource Allocation, attendance, chromatic palette, benchmark matchups, the three gateways Bento Workbench / Interactive Graph & Planner / Pattern Studio), storage keys sig.workspace.v3.*, snapshot signature-workspace.json; 2.2.0-2.9.1 gates intact (surface anatomy, data/editorial css, bento, shell, FormField anatomy, PasswordInput, Button family, archetypes, ledger align, accent contract, elevation ladder, token sweep, master index, five REAL views, studio/copy/llms gates, container queries, CommandPalette, skeletons, Breadcrumbs, ct1/sk1); 3.0.0 intact: (chrom) the 26-token family (blue retired, cobalt carries #89b4fa), verify:contrast green at the 26-token table, (sch) shared/schema.ts (Attendee/attendance) + docs/SCHEMA_V3.md, (par) card parity, (car3) carousel modes, (ff2) symmetrical fields, (ring2) ring zoom, (ob1) obsidian graph, (pf1) memo/debounce/contain, (bd1) backdrop audit; purity (Task 4): the standalone gate greps the working tree for the banned domain words — zero matches, no allowlist needed outside this file's 4 pinned gate-machinery mentions; ; 3.6.0 GRAPH STUDIO RELEASE: (b7)/(n-hub4) REBASED to v3.5.0 with the enumerated a11y/carousel/studio authorization (css cards/editorial/graph/timeline + the react package quartet + the gates + goldens; demo/ bin/ verify.mjs byte-untouched), the tokens guard evolved for the TWO-TIER policy (--text-muted value-only; sigPalette contrastTier metadata on the 11 ink tokens + the three display-tier description extensions; VALUES byte-equal), the six-view map (Workbench/Graph Studio/Analytics & Planner/Pattern Studio/Master Index/AI Codex — Chronicle off the nav, hash+palette reachable), the (gp1) Studio split needles (the component block + the workspace hook + the edge model GraphEdge), the (af3)/(car3) true page-deck needles, the (cmd1) ShortcutModal block, the (cus) merged prefs needles, meta.version → 3.6.0; 3.2.0 SURFACE ENGINE intact: (th3) the canonical theme blocks cross-checked against the manifest ink variants, (rad2) the radius presets (standard 8/12 — 8px-grid-pure; sharp 0), (cus) the live customizer (one useSigTheme owner, aria-pressed panel, 16 badges on the shared sig-contrast math, download/copy/snippet), verify:contrast green on ALL THREE themes under the TWO-TIER POLICY (ct8); 3.6.0 SHIP. 4.1.0 GRAPH MOTION LAYER: (b7)/(n-hub4) REBASED to v4.0.1 with the playground-only authorization (SYSTEM_PROMPT.md choreography doctrine + tokens.json meta 4.1.0 — css/ react/ demo/ scripts/ tools/ bin/ byte-identical to the tag; the animation layer lives entirely in playground/ and never packs), tokens.json meta.version → 4.1.0 (guarded; the COLOR VALUES byte-frozen), (own1) THE ONE-OWNER RULE machine-enforced — one engine per playground file, animejs files never import motion/react and vice versa, negative-tested with a both-engines fixture the scanner MUST flag and delete, (gm1) the layer contract needles (createDrawable + strokeDashoffset [1000→0] + spring 440/28 + the 0.68/0.72 scales + spawnIndex·0.07s), (gm2) AnimatePresence exit presence + the studio wiring + the overlay styles, (gm3) useReducedMotion honored in BOTH engines (fully-drawn edges, final-state nodes), (gm4) motion@14 + animejs@4 ride root devDependencies ONLY — never dependencies, never shipped, (b3) pack stays EXACTLY 71 by construction; 4.1.0 SHIP.");

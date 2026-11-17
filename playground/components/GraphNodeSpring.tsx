@@ -8,8 +8,8 @@
  * THE STRATA LAW — the inner node card animates ONLY scale + opacity
  * on a spring (stiffness 440, damping 28). The OUTER node wrapper —
  * the package canvas's rAF drag <g> translate(x, y) — is UNTOUCHED
- * this release; this inner card never animates position, and
- * box-shadow / width / height / top/left are never animated anywhere.
+ * this release; this inner card never animates position, and no
+ * shadow / width / height / top/left is ever animated anywhere.
  *
  * THE CHOREOGRAPHY (gm1): a spawn enters at opacity 0 / scale 0.68 and
  * springs to rest, its delay = spawnIndex · 0.07s (the layer's per-

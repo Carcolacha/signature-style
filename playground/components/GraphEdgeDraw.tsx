@@ -10,8 +10,9 @@
  * gate.
  *
  * THE STRATA LAW — SVG edges: animejs animates ONLY strokeDashoffset
- * (the draw-on sweep of the curved source → target path). NEVER
- * box-shadow, width, height, top/left. The dash TRACK (strokeDasharray
+ * (the draw-on sweep of the curved source → target path). NEVER a
+ * shadow, width, height, top/left — the e1 treaty extends to the
+ * motion stratum. The dash TRACK (strokeDasharray
  * = the pathLength normalization unit, twice) is set ONCE as a mount
  * attribute and is never animated.
  *
