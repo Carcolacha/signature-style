@@ -1318,8 +1318,24 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v3.9.0 are owner-authorized ----------
-// 4.0.0 REBASE (the floor moves v3.8.0 → v3.9.0): MOTION LAB REBUILD,
+// ---- (b7) SAFETY PROOF: core deltas vs v4.0.0 are owner-authorized ----------
+// 4.0.1 REBASE (the floor moves v3.9.0 → v4.0.0): THE PRODUCT PAGE — a
+// DOCS-ONLY release. The owner-authorized 4.0.1 deltas, and NOTHING else:
+//   scripts/verify-standalone.mjs — the purity-gate retarget: README.md
+//                              leaves the allowlist (ZERO sanctioned
+//                              matches — the product page must be fully
+//                              clean); docs/MIGRATION.md becomes the
+//                              sanctioned home of the rename tables
+//                              (pinned EXACTLY 9)
+//   docs/MIGRATION.md         — NEW (outside the watched surface): the
+//                              breaking-changes/migration content that
+//                              left the README
+// README.md (rebuilt as the product page), package.json/lock (4.0.1),
+// tokens.json meta (guarded below), and playground/public/llms* are
+// release plumbing, not core. css/, react/, SYSTEM_PROMPT.md, demo/,
+// tools/, bin/ stay byte-identical to v4.0.0 (0-line diff). The 4.0.0
+// code deltas below are now BASELINE — frozen at the tag.
+// 4.0.0 BASELINE (the previous floor v3.8.0 → v3.9.0): MOTION LAB REBUILD,
 // FLIP/ACCORDION GEOMETRY FIX, DESTRUCTIVE CONFIRM NORM & HUMAN-CRAFTED
 // BLUEPRINTS. The owner-authorized 4.0.0 deltas, and NOTHING else:
 //   css/cards.css            — T1: the FlipCard true-3D geometry + the
@@ -1419,46 +1435,28 @@ if (oldTimeline !== null) {
 // composition layer); README/package.json/lock are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 const AUTHORIZED_330 = new Set([
-  // 4.0.0 — THE MOTION LAB REBUILD + GEOMETRY FIX + CONFIRM NORM +
-  // HUMAN-CRAFTED BLUEPRINTS (enumerated honestly, see the header):
-  "css/cards.css", // T1: FlipCard 3D + AccordionCard grid-rows
-  "css/overlays.css", // T2: NEW — the ConfirmDialog css
-  "css/motion.css", // T4: REBUILT — primitives + lab mechanics
-  "css/signature-style.css", // T2: the overlays bundle import
-  "react/cards.tsx", "react/cards.js", "react/cards.d.ts", // T1
-  "react/overlays.tsx", "react/overlays.js", "react/overlays.d.ts", // T2 NEW
-  "react/index.ts", "react/index.js", "react/index.d.ts", // T2: the exports
-  "SYSTEM_PROMPT.md", // T6: the norm + the blueprint set
-  "scripts/verify.mjs", // T6: (mo2)/(mo6) evolution + (v400) wiring
-  "scripts/gates-v400.mjs", // T6: NEW — the cd1/cd2/ov1/gs1/ml1/cli gates
-  "scripts/verify-negative-v400.mjs", // T6: NEW — the negative tests
-  "scripts/verify-negative-v390.mjs", // T6: the n4 needle rides the new floor line
-  "scripts/gates-v390.mjs", // T6: the mm1 amendment — the retired saas/docs templates leave the sweep
-  "scripts/verify-cli.mjs", // T5: scenarios G/H + tpl3 + b3 71
-  "scripts/verify-a11y.mjs", // T1: the flip-face selectors
-  "scripts/verify-mcp.mjs", // T5: the templates probe rides the analytics hub default
-  "scripts/regen-template-sources.mjs", // T5: the two-source list
-  "scripts/regen-cli-templates.mjs", // T5: NEW — the CLI map regen tool
-  "bin/cli.mjs", "bin/templates.mjs", // T5: the blueprint set change
+  // 4.0.1 — THE PRODUCT PAGE (docs-only; everything else is now baseline
+  // at the v4.0.0 tag, see the header):
+  "scripts/verify-standalone.mjs", // the purity retarget: README zero-allowlist, docs/MIGRATION.md sanctioned
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v3.9.0", "--name-only", "--", ...B7_LOCKED_330],
+    ["diff", "v4.0.0", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v3.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v4.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.9.0 — outside the owner-authorized 4.0.0 set (Motion Lab rebuild, flip/accordion geometry, ConfirmDialog norm, human-crafted blueprints)`,
+      `(b7) SAFETY: ${file} changed since v4.0.0 — outside the owner-authorized 4.0.1 set (the docs-only product-page release: the purity-gate retarget)`,
     );
   }
 }
@@ -1479,6 +1477,7 @@ const SCRIPTS_330_ALLOWED = new Set([
   "scripts/verify-negative-v400.mjs",
   "scripts/regen-template-sources.mjs",
   "scripts/regen-cli-templates.mjs",
+  "scripts/verify-standalone.mjs", // 4.0.1: the purity retarget (README zero-allowlist, docs/MIGRATION.md sanctioned)
 ]);
 if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f) && !f.startsWith("scripts/goldens/"))) {
   failures.push("(b7) SAFETY: scripts/ beyond the authorized gates + the certification scripts is LOCKED (verify.mjs stays BYTE-FROZEN)");
@@ -1493,8 +1492,8 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
 // kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "4.0.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.0.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "4.0.1") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.0.1", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
   const MOTION_NAMES_370 = [
     "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
@@ -1674,15 +1673,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 4.0.0 FROZEN PROOF — v3.9.0 baseline ----
-// Rebased 4.0.0 (the floor moves v3.8.0 → v3.9.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 4.0.0
-// list from (b7).
+// ---- (n-hub4) THE 4.0.1 FROZEN PROOF — v4.0.0 baseline ----
+// Rebased 4.0.1 (the floor moves v3.9.0 → v4.0.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 4.0.1
+// docs-only list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.9.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v4.0.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1690,11 +1689,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.9.0 beyond the 4.0.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
+      `(n-hub4) SAFETY: files changed since v4.0.0 beyond the 4.0.1 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v4.0.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
