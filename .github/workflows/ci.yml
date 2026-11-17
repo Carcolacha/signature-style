@@ -81,6 +81,12 @@ jobs:
       - name: Build WC bundle
         run: npm run build:wc
 
+      # The playground gate's (m1) check asserts the MCP server bundle
+      # exists on disk (verify:mcp builds it itself, but verify:playground
+      # only inspects it) — build it once here, before the gates run.
+      - name: Build signature-mcp server bundle
+        run: npm --prefix packages/signature-mcp run build
+
       - name: WC gate (verify:wc)
         run: npm run verify:wc
 
