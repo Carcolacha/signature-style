@@ -363,10 +363,17 @@
   gap: 2rem;
 }
 
+/* 4.0.0 — align-items: start on the row that CONTAINS the AccordionCard
+   (the profile row): the grid-rows expansion geometry means a CLOSED
+   accordion hugs its summary — the row must not stretch it (or its
+   neighbors) over dead space. Equal-height rows are a stretch
+   decision; hugging is the honest default for mixed-height archetypes
+   (ProfileCard / FlipCard / AccordionCard / MatchupCard). */
 .hub__row--4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2rem;
+  align-items: start;
 }
 
 @media (max-width: 768px) {

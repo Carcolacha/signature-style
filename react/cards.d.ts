@@ -3,6 +3,19 @@
  * Card Archetypes, and the 12-Column Bento"; 2.6.0 "Universal Developer
  * Card Suite" grows the five UNIVERSAL archetypes).
  *
+ * 4.0.0 — THE GEOMETRY DEFECT FIXES ("Motion Lab Rebuild, Flip/Accordion
+ * Geometry Fix…"): <FlipCard> is TRUE full-card 3D — the button is a
+ * `display: grid` perspective stage (1000px), `.sig-flip-inner` owns
+ * the rotateY(180deg) (never rotateX — the back face can never render
+ * upside-down), the faces share grid-area 1/1 with both
+ * backface-visibility spellings; rich faces (eyebrow/title/body +
+ * the flip hint) layer over the plain children slots.
+ * <AccordionCard> gains TRUE height expansion — the body is a
+ * `grid-template-rows: 0fr → 1fr` transition (320ms ×
+ * --ease-spring-gentle) with an overflow-hidden inner, so a closed
+ * accordion hugs its header and grids that contain it use
+ * `align-items: start` to kill the dead stretch.
+ *
  * 2.5.0 — four composable card metaphors the composition layer kept
  * hand-rolling, now official, wired to css/cards.css:
  *
@@ -85,36 +98,71 @@ export declare function ActionTile({ title, subtitle, icon, kbdShortcut, onClick
  * default): the card owns its flipped boolean, `aria-pressed` carries
  * it to the DOM, `onFlip` (optional) reports each flip. A controlled
  * mode can be added later without breaking this surface.
+ *
+ * 4.0.0 RICH FACES — the plain `front`/`back` children stay (the
+ * string-slot contract the simple usages and the docs rely on), and
+ * the structured face fields layer ON TOP: `frontEyebrow` /
+ * `frontTitle` / `frontBody` (+ the back trio) render the balanced
+ * prompt/reveal anatomy — eyebrow badge, accent-underlined title,
+ * muted body — above the children slot. Both faces carry the mono
+ * flip hint. `accentToken` paints both titles' 2px underline.
  */
 export interface FlipCardProps {
     /** The face content (any nodes — text, prose, a SigBadge). */
     front: ReactNode;
     /** The hidden face revealed by the flip. */
     back: ReactNode;
+    /** The front face's eyebrow badge (mono chip above the title). */
+    frontEyebrow?: string;
+    /** The front face's title (accent-underlined). */
+    frontTitle?: string;
+    /** The front face's muted body description. */
+    frontBody?: string;
+    /** The back face's eyebrow badge (mono chip above the title). */
+    backEyebrow?: string;
+    /** The back face's title (accent-underlined). */
+    backTitle?: string;
+    /** The back face's muted body description. */
+    backBody?: string;
+    /** The chromatic accent: a 2px underline on BOTH face titles. */
+    accentToken?: AccentToken;
     /** Fired AFTER each flip with the NEW state (true = showing back). */
     onFlip?: (flipped: boolean) => void;
 }
 /**
- * `<FlipCard>` — the two-face reveal (2.5.0).
+ * `<FlipCard>` — the two-face reveal (2.5.0; 4.0.0 TRUE 3D GEOMETRY).
  *
- * ONE `<button class="sig-flip-card" aria-pressed>` — THE FLAT
- * STRUCTURE: button → `__inner` (the 3d stage: `transform-style:
- * preserve-3d`, the owner mechanical bezier on the rotateY) → two
- * `__face` spans (backface-visibility: hidden; the back pre-rotated
- * 180°). Faces are spans, not divs — a button may not contain divs.
- * `min-height: 9rem` on the button because absolutely-positioned faces
- * contribute no height. Click, Space and Enter all flip through the
- * button's native semantics — no keydown wiring, no tabindex. The
- * `FRONT`/`BACK` tags are mono muted letterspaced 0.625rem metadata.
- * Reduced motion: the rotation stands down — the faces swap via
- * opacity (css/cards.css).
+ * ONE `<button class="sig-flip-card" aria-pressed>` — THE 4.0.0
+ * FULL-CARD 3D ANATOMY: the button is a `display: grid` box with
+ * `perspective: 1000px` and the 220px parity floor; `.sig-flip-inner`
+ * (grid-area 1/1, `transform-style: preserve-3d`) carries THE
+ * ROTATION — `rotateY(180deg)` NEVER `rotateX`, so the back face can
+ * never render upside-down; the two faces `.sig-flip-front` /
+ * `.sig-flip-back` share `grid-area: 1/1; width/height: 100%` with
+ * both `backface-visibility` spellings hidden and the back
+ * pre-rotated 180°. Because the faces ride the grid (no absolute
+ * positioning), the card's height owns the box AND the faces' boxes
+ * are exact. Faces are spans, not divs — a button may not contain
+ * divs. Click, Space and Enter all flip through the button's native
+ * semantics — no keydown wiring, no tabindex.
+ *
+ * THE RICH FACE (4.0.0): optional eyebrow badge (mono chip) + title
+ * (2px accent underline via the inline --sig-accent contract) + muted
+ * body above the children slot, and the mono "Click to flip" hint
+ * pinned to each face's floor. Reduced motion: the rotation stands
+ * down — the faces crossfade via opacity (css/cards.css).
  *
  * @example
  * ```tsx
- * <FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />
+ * <FlipCard
+ *   frontEyebrow="Prompt" frontTitle="Dare: sing the chorus"
+ *   backEyebrow="Reveal" backTitle="…or forfeit 10 points"
+ *   front="Warm-up round" back="The forfeit is binding."
+ *   accentToken="--sig-cyan"
+ * />
  * ```
  */
-export declare function FlipCard({ front, back, onFlip }: FlipCardProps): import("react").JSX.Element;
+export declare function FlipCard({ front, back, frontEyebrow, frontTitle, frontBody, backEyebrow, backTitle, backBody, accentToken, onFlip, }: FlipCardProps): import("react").JSX.Element;
 /**
  * Props for `<AccordionCard>` — title + collapsible body. ZERO props
  * beyond the content: the open/close state is the DOM's own
@@ -128,15 +176,26 @@ export interface AccordionCardProps {
     children: ReactNode;
 }
 /**
- * `<AccordionCard>` — the zero-JS accordion (2.5.0).
+ * `<AccordionCard>` — the zero-JS accordion (2.5.0; 4.0.0 TRUE HEIGHT
+ * EXPANSION).
  *
  * `<details class="sig-accordion">` → `<summary
  * class="sig-accordion__summary">` (title + the token chevron) → the
- * `__body` div. No state, no handler, no aria wiring: `<details>`
- * carries disclosure semantics natively, the marker is stripped in css
- * (list-style: none + ::-webkit-details-marker), and
- * `details[open] .sig-accordion__chevron` rotates the chevron 180° —
- * an attribute selector answering an attribute the USER toggled.
+ * `__body` div → the `__body-inner` div. No state, no handler, no
+ * aria wiring: `<details>` carries disclosure semantics natively, the
+ * marker is stripped in css (list-style: none + ::-webkit-details-
+ * marker), and `details[open] .sig-accordion__chevron` rotates the
+ * chevron 180° — an attribute selector answering an attribute the
+ * USER toggled.
+ *
+ * THE 4.0.0 EXPANSION: the body animates through the modern
+ * grid-rows technique — `.sig-accordion__body` is `display: grid;
+ * grid-template-rows: 0fr` and `details[open]` expands it to `1fr`
+ * (the transition rides 320ms × --ease-spring-gentle), with
+ * `__body-inner` carrying `overflow: hidden` so the content clips
+ * during the glide. No max-height hack, no JS measurement — the
+ * native details/summary mechanism still IS the state machine, the
+ * animation is pure CSS answering `details[open]`.
  *
  * @example
  * ```tsx

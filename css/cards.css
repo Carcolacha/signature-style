@@ -10,15 +10,22 @@
       --bg-inset disc for the icon; the kbd chip is the standalone
       cousin of the prose kbd (editorial.css scopes its kbd under
       .sig-prose — cards own theirs here).
-    - .sig-flip-card (+ __inner / __face / __front / __back / __tag) —
-      the 3d reveal. ONE button[aria-pressed]; __inner is the stage
-      (preserve-3d, the owner mechanical bezier on the rotateY); faces
-      are absolutely positioned (the button's min-height owns the box)
-      and backface-hidden; the back pre-rotates 180°.
-    - .sig-accordion (+ __summary / __chevron / __body) — ZERO
-      JavaScript: details/summary. The marker is stripped both ways
+    - .sig-flip-card (+ .sig-flip-inner / .sig-flip-front /
+      .sig-flip-back / the sig-flip-face__* rich-face parts) — the 3d
+      reveal. ONE button[aria-pressed]; 4.0.0 TRUE GEOMETRY: the button
+      is a display: grid perspective stage (1000px), .sig-flip-inner is
+      the preserve-3d stage carrying the rotateY(180deg) (NEVER
+      rotateX), and both faces dock at grid-area 1/1 (width/height
+      100%, both backface-visibility spellings hidden, the back
+      pre-rotated 180°); the rich face renders eyebrow badge +
+      accent-underlined title + body + the mono flip hint.
+    - .sig-accordion (+ __summary / __chevron / __body / __body-inner) —
+      ZERO JavaScript: details/summary. The marker is stripped both ways
       (list-style + ::-webkit-details-marker); details[open] rotates
-      the chevron — the attribute IS the state.
+      the chevron — the attribute IS the state. 4.0.0 TRUE HEIGHT
+      EXPANSION: __body is the grid-rows technique (0fr closed → 1fr
+      open, 320ms × --ease-spring-gentle) with the overflow-hidden
+      __body-inner clipping the glide.
     - .sig-matchup (+ __title / __side / __vs / __stakes) — the 1v1
       grid: 1fr auto 1fr, centered sides, mono VS pill, stakes footer
       spanning the grid.
@@ -186,6 +193,7 @@
      button owns the box; the faces ride INSIDE it (absolute, inset). */
   .sig-flip-card {
     position: relative;
+    display: grid; /* the 4.0.0 anatomy: the stage docks at grid-area 1/1 */
     width: 100%;
     min-height: 220px; /* the parity floor — never a collapsed sliver */
     background: var(--bg-surface);
@@ -195,43 +203,109 @@
     cursor: pointer;
     text-align: left;
     font-family: inherit;
-    perspective: 800px;
+    perspective: 1000px; /* the 4.0.0 depth for the full-card rotation */
   }
   .sig-flip-card:focus-visible {
     outline: 2px solid var(--color-cake-primary);
     outline-offset: 2px;
   }
-  .sig-flip-card__inner {
-    display: block;
-    position: relative;
+  /* 4.0.0 TRUE 3D GEOMETRY: .sig-flip-inner is the preserve-3d stage
+     docked at grid-area 1/1; THE ROTATION lives here — rotateY(180deg),
+     NEVER rotateX, so the back face can never render upside-down. The
+     faces (.sig-flip-front / .sig-flip-back) share grid-area 1/1 with
+     width/height 100% and both backface-visibility spellings hidden —
+     the card's height IS the faces' height, exactly, at every content
+     size (the old absolute faces contributed no height). The transition
+     rides --dur-glide × --ease-glide, so the Motion Lab's Slow-Mo dial
+     dilates the flip with everything else. */
+  .sig-flip-inner {
+    grid-area: 1 / 1;
+    display: grid;
     width: 100%;
     height: 100%;
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     transform-style: preserve-3d;
+    transition: transform var(--dur-glide, 280ms) var(--ease-glide, cubic-bezier(0.2, 0.8, 0.2, 1));
   }
-  .sig-flip-card[aria-pressed="true"] .sig-flip-card__inner {
+  .sig-flip-card[aria-pressed="true"] .sig-flip-inner {
     transform: rotateY(180deg);
   }
-  .sig-flip-card__face {
-    position: absolute;
-    inset: 0;
+  .sig-flip-front,
+  .sig-flip-back {
+    grid-area: 1 / 1;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: var(--space-tight);
-    padding: var(--space-standard);
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 20px; /* the glyph-grid face padding (4.0.0) */
     background: var(--bg-inset);
     border: none;
     border-radius: var(--radius-card); /* follows the card's own radius */
     backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     overflow: hidden;
   }
-  .sig-flip-card__back {
+  .sig-flip-back {
     transform: rotateY(180deg);
   }
-  .sig-flip-card__tag {
+  /* THE RICH FACE (4.0.0) — eyebrow badge (mono chip), accent-underlined
+     title, muted body, the children slot, and the mono flip hint pinned
+     to the face's floor (margin-top: auto). The accent arrives through
+     --sig-accent (the card root carries data-accent + the inline var
+     when accentToken is set); bare consumers fall back to the
+     structural Teal — the same contract as the ActionTile well tint. */
+  .sig-flip-face__eyebrow {
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--bg-surface);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: 999px;
+    padding: 0.125rem 0.5rem;
+    flex: none;
+  }
+  [data-accent] .sig-flip-face__eyebrow {
+    color: var(--sig-accent);
+    border-color: color-mix(in srgb, var(--sig-accent) 35%, transparent);
+  }
+  .sig-flip-face__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.4;
+    padding-bottom: var(--space-tight);
+    border-bottom: 1px solid color-mix(in srgb, var(--text-muted) 10%, transparent);
+  }
+  [data-accent] .sig-flip-face__title {
+    border-bottom: 2px solid var(--sig-accent);
+  }
+  .sig-flip-face__body {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+  .sig-flip-face__content {
+    width: 100%;
+    font-size: 0.875rem;
+    color: var(--text-main);
+  }
+  .sig-flip-face__content > :first-child {
+    margin-top: 0;
+  }
+  .sig-flip-face__content > :last-child {
+    margin-bottom: 0;
+  }
+  .sig-flip-face__hint {
+    margin-top: auto;
     font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
     font-size: 0.625rem;
     letter-spacing: 0.2em;
+    text-transform: uppercase;
     color: var(--text-muted);
     flex: none;
   }
@@ -272,15 +346,33 @@
   .sig-accordion[open] .sig-accordion__chevron {
     transform: rotate(180deg);
   }
+  /* 4.0.0 TRUE HEIGHT EXPANSION: the body is the grid-rows technique —
+     0fr closed, 1fr open, 320ms × --ease-spring-gentle — with the inner
+     carrying overflow: hidden (the content clips during the glide; no
+     max-height hack). A CLOSED accordion hugs its summary; grids that
+     contain the card use align-items: start (the playground's
+     hub__row--4 et al) so the row never stretches a collapsed accordion
+     over dead space. The native details/summary mechanism still IS the
+     state machine — the animation is pure CSS answering details[open]. */
   .sig-accordion__body {
-    padding: var(--space-tight) var(--space-standard) var(--space-standard);
+    display: grid;
+    grid-template-rows: 0fr; /* closed — the row collapses to nothing */
+    transition: grid-template-rows 320ms var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1));
+  }
+  .sig-accordion[open] .sig-accordion__body {
+    grid-template-rows: 1fr; /* open — the row takes the content's height */
+  }
+  .sig-accordion__body-inner {
+    overflow: hidden; /* the clipping leg of the 0fr/1fr technique */
+    min-height: 0;
+    padding: 0 var(--space-standard) var(--space-standard);
     font-size: 0.875rem;
     color: var(--text-main);
   }
-  .sig-accordion__body > :first-child {
-    margin-top: 0;
+  .sig-accordion__body-inner > :first-child {
+    margin-top: var(--space-tight);
   }
-  .sig-accordion__body > :last-child {
+  .sig-accordion__body-inner > :last-child {
     margin-bottom: 0;
   }
 
@@ -786,31 +878,62 @@
   }
 
   /* Motion is a gift, not a requirement. The flip stands down to an
-     opacity swap (no transform): back hidden → both visible-stacked is
-     avoided by keeping the faces absolute and swapping opacity. */
+     opacity CROSSFADE (no transform): the inner never rotates, both
+     faces stay unbackface-hidden, and the visible face swaps via
+     opacity (4.0.0 — the fallback rides the new grid geometry; the
+     accordion's grid-rows glide also stands down). */
   @media (prefers-reduced-motion: reduce) {
     .sig-action-tile,
-    .sig-flip-card__inner,
+    .sig-flip-inner,
+    .sig-accordion__body,
     .sig-accordion__chevron,
     .sig-reference-card__link,
     .sig-reference-card__anchor {
       transition: none;
     }
-    .sig-flip-card__inner {
+    .sig-flip-inner {
       transform: none;
     }
-    .sig-flip-card__face {
+    .sig-flip-front,
+    .sig-flip-back {
       backface-visibility: visible;
+      -webkit-backface-visibility: visible;
+      transition: opacity 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    .sig-flip-card__back {
+    .sig-flip-back {
       transform: none;
       opacity: 0;
     }
-    .sig-flip-card[aria-pressed="true"] .sig-flip-card__back {
+    .sig-flip-card[aria-pressed="true"] .sig-flip-back {
       opacity: 1;
     }
-    .sig-flip-card[aria-pressed="true"] .sig-flip-card__front {
+    .sig-flip-card[aria-pressed="true"] .sig-flip-front {
       opacity: 0;
     }
+  }
+  /* The subtree mercy (the [data-sig-motion="reduced"] Motion Lab
+     preview): same stand-down, both belts — mirrors css/motion.css. */
+  [data-sig-motion="reduced"] .sig-flip-inner {
+    transition: none;
+    transform: none;
+  }
+  [data-sig-motion="reduced"] .sig-flip-front,
+  [data-sig-motion="reduced"] .sig-flip-back {
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+    transition: opacity 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  [data-sig-motion="reduced"] .sig-flip-back {
+    transform: none;
+    opacity: 0;
+  }
+  [data-sig-motion="reduced"] .sig-flip-card[aria-pressed="true"] .sig-flip-back {
+    opacity: 1;
+  }
+  [data-sig-motion="reduced"] .sig-flip-card[aria-pressed="true"] .sig-flip-front {
+    opacity: 0;
+  }
+  [data-sig-motion="reduced"] .sig-accordion__body {
+    transition: none;
   }
 }

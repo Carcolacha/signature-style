@@ -426,8 +426,8 @@ try {
     const inertCensus = await page.evaluate(() => {
       const probe = document.querySelector('[data-testid="cq-probe"]');
       const flip = document.querySelector(".sig-flip-card");
-      const flipBack = flip?.querySelector(".sig-flip-card__back") ?? null;
-      const flipFront = flip?.querySelector(".sig-flip-card__front") ?? null;
+      const flipBack = flip?.querySelector(".sig-flip-back") ?? null;
+      const flipFront = flip?.querySelector(".sig-flip-front") ?? null;
       const accordion = document.querySelector("details.sig-accordion");
       // Flip the card open — the read happens AFTER a settle tick (the
       // click commits through React state → effect, so the probe must
@@ -450,8 +450,8 @@ try {
       afterFlip = await page.evaluate(() => {
         const flip = document.querySelector(".sig-flip-card");
         const read = {
-          front: flip?.querySelector(".sig-flip-card__front")?.inert ?? null,
-          back: flip?.querySelector(".sig-flip-card__back")?.inert ?? null,
+          front: flip?.querySelector(".sig-flip-front")?.inert ?? null,
+          back: flip?.querySelector(".sig-flip-back")?.inert ?? null,
         };
         flip?.click(); // restore
         return read;
