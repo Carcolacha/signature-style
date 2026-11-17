@@ -3102,3 +3102,4 @@ npm pack --dry-run # inspect the publishable tarball (expect 52 files)
 ## License
 
 [MIT](./LICENSE) © 2026 edwyn
+# signature-style
