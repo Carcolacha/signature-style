@@ -45,16 +45,27 @@
  * Edge selection/unlink is PRESERVED from 3.6.0: click an edge →
  * crimson → Delete/Backspace unlinks (the consumer resolves parent:*
  * vs explicit links); the counter reports Nodes n · Edges e.
+ *
+ * 4.0.0 — THE DESTRUCTIVE CONFIRM NORM: every destructive action on
+ * this stage routes through <ConfirmDialog> — the inspector's Delete
+ * Node button AND the Delete/Backspace key (a node selected, focus
+ * outside inputs — the isTypingTarget guard) open the same "Delete
+ * Node?" dialog (children promote to roots on confirm), and the dock's
+ * Reset Canvas opens "Reset Graph Canvas?". The commits fire only from
+ * the dialogs' onConfirm; focus lands on "No" and returns to the
+ * trigger on close.
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import {
   Button,
+  ConfirmDialog,
   Icon,
   Input,
   Select,
   SkeletonCard,
   TextArea,
+  isTypingTarget,
   useToast,
 } from "@edwyn/signature-style/react";
 import type {
@@ -120,6 +131,14 @@ export interface GraphStudioViewProps {
   readonly onSpawnLinkedChild: (parentId: string) => void;
   /** THE AI EXPAND commit — the generated ideas ride one workspace op. */
   readonly onExpandNode: (parentId: string, ideas: Array<{ label: string; token: string }>) => void;
+  /**
+   * THE NODE DELETE (4.0.0 — the destructive-confirm norm): removes the
+   * node + every edge touching it; its direct children promote to
+   * roots (parentId cleared — one generation wide, descendants keep
+   * their parents). The commit fires ONLY from the ConfirmDialog's
+   * onConfirm — never directly.
+   */
+  readonly onDeleteNode: (id: string) => void;
   /** Clears the persisted custom positions → the active layout re-runs. */
   readonly onAutoArrange: () => void;
   /** Resets the canvas to the seed graph (graph + links + positions). */
@@ -230,6 +249,7 @@ export function GraphStudioView({
   onAddNode,
   onSpawnLinkedChild,
   onExpandNode,
+  onDeleteNode,
   onAutoArrange,
   onResetCanvas,
   onExportGraph,
@@ -245,8 +265,14 @@ export function GraphStudioView({
   const [selectedEdge, setSelectedEdge] = useState<GraphEdgeSelection | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [zoom, setZoom] = useState(1);
-  // The inspector collapse — the ✕ hides it until the next selection.
+  // THE INSPECTOR COLLAPSE — the ✕ hides it until the next selection.
   const [inspectorOpen, setInspectorOpen] = useState(true);
+  // THE 4.0.0 DESTRUCTIVE NORM — the two pending-confirm slots: the
+  // node delete (the inspector button OR the Delete/Backspace key on a
+  // selected node) and the canvas reset (the dock button). The commits
+  // fire ONLY from the dialogs' onConfirm.
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   // THE FULL-VIEWPORT MEASURE — the svg fills the stage; the RO keeps
   // the px height honest through viewport resizes.
   const stageRef = useRef<HTMLDivElement | null>(null);
@@ -265,6 +291,26 @@ export function GraphStudioView({
 
   const selectedNode = graph.find((node) => node.id === selectedNodeId) ?? null;
   const { draft, schedule } = useDebouncedNodeDraft(selectedNode, onUpdateNode);
+
+  // THE DELETE/BACKSPACE ROUTE (4.0.0 — the destructive norm): a node
+  // selected + focus outside inputs (the isTypingTarget guard, the
+  // 3.6.0 edge-unlink precedent) opens the SAME ConfirmDialog as the
+  // inspector's Delete Node button — the key never deletes directly.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== "Delete" && event.key !== "Backspace") return;
+      if (isTypingTarget(event.target)) return;
+      if (selectedNodeId === null || deleteTargetId !== null || resetConfirmOpen) return;
+      event.preventDefault();
+      setDeleteTargetId(selectedNodeId);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedNodeId, deleteTargetId, resetConfirmOpen]);
+
+  const deleteTarget = deleteTargetId !== null
+    ? graph.find((node) => node.id === deleteTargetId) ?? null
+    : null;
 
   // THE EDGES COUNTER — parent-derived + explicit (the HUD readout).
   const edgeCount = useMemo(
@@ -479,6 +525,18 @@ export function GraphStudioView({
         >
           Spawn linked child
         </Button>
+        {/* 4.0.0 — THE DESTRUCTIVE NORM, inspector leg: the danger
+            button only OPENS the ConfirmDialog; the commit rides
+            onConfirm. */}
+        <Button
+          variant="danger"
+          size="sm"
+          leftIcon="Trash"
+          data-testid="studio-delete-node"
+          onClick={() => setDeleteTargetId(selectedNode.id)}
+        >
+          Delete Node
+        </Button>
       </>
     );
   })();
@@ -629,12 +687,15 @@ export function GraphStudioView({
         >
           AI Expand Node
         </Button>
+        {/* 4.0.0 — THE DESTRUCTIVE NORM, dock leg: Reset Canvas is a
+            danger button that opens the ConfirmDialog (never a direct
+            reset). */}
         <Button
-          variant="secondary"
+          variant="danger"
           size="sm"
           leftIcon="RotateCcw"
           data-testid="studio-reset-canvas"
-          onClick={onResetCanvas}
+          onClick={() => setResetConfirmOpen(true)}
         >
           Reset Canvas
         </Button>
@@ -668,6 +729,39 @@ export function GraphStudioView({
           <div className="graph-hud__inspector-body">{inspectorBody}</div>
         </div>
       )}
+
+      {/* THE 4.0.0 DESTRUCTIVE NORM — the two confirmation dialogs.
+          Escape / scrim / "No" all cancel; only the explicit confirm
+          commits. Focus lands on "No" on open and returns to the
+          trigger (the button or the canvas node) on close. */}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Delete Node?"
+        description={`This removes "${deleteTarget?.label ?? ""}" and all edges attached to it. Nodes connected through it are kept.`}
+        cancelLabel="No"
+        confirmLabel="Yes, Delete"
+        onCancel={() => setDeleteTargetId(null)}
+        onConfirm={() => {
+          if (deleteTargetId !== null) onDeleteNode(deleteTargetId);
+          setDeleteTargetId(null);
+          setSelectedNodeId(null);
+          setSelectedEdge(null);
+        }}
+      />
+      <ConfirmDialog
+        open={resetConfirmOpen}
+        title="Reset Graph Canvas?"
+        description="This will permanently clear your current nodes and connections and restore the default tree."
+        cancelLabel="No"
+        confirmLabel="Yes, Reset"
+        onCancel={() => setResetConfirmOpen(false)}
+        onConfirm={() => {
+          setResetConfirmOpen(false);
+          setSelectedNodeId(null);
+          setSelectedEdge(null);
+          onResetCanvas();
+        }}
+      />
     </main>
   );
 }

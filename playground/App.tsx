@@ -229,6 +229,7 @@ import {
   TimelineManager,
   CommandPalette,
   Breadcrumbs,
+  ConfirmDialog,
   Icon,
   isTypingTarget,
   SkeletonLine,
@@ -1125,6 +1126,7 @@ function Shell() {
           onAddNode={workspace.addChild}
           onSpawnLinkedChild={workspace.spawnLinkedChild}
           onExpandNode={workspace.expandNode}
+          onDeleteNode={workspace.deleteNode}
           onAutoArrange={workspace.autoArrange}
           onResetCanvas={workspace.resetCanvas}
           onExportGraph={workspace.exportGraph}
@@ -3050,13 +3052,53 @@ function useWorkspaceState(repo?: WorkspaceRepository) {
 
   // THE CANVAS RESET (3.9.0, the Action Dock) — graph + links +
   // positions back to the seeds. The timeline stays (Reset All's
-  // destructive reach covers it; a canvas reset must not).
+  // destructive reach covers it; a canvas reset must not). 4.0.0: the
+  // DOCK button opens a ConfirmDialog first (the destructive norm) —
+  // the commit itself stays here.
   const resetCanvas = useCallback(() => {
     resetGraph();
     resetPositions();
     resetLinks();
     toast("error", "Canvas reset — the seed graph is back.");
   }, [resetGraph, resetPositions, resetLinks, toast]);
+
+  // THE NODE DELETE (4.0.0 — the destructive-confirm norm): removes ONE
+  // node and every edge attached to it. THE SEMANTICS (documented in
+  // the ConfirmDialog's description): the node's DIRECT children
+  // (parentId === removed) promote to ROOTS — their parentId is
+  // cleared, they keep every descendant below them; explicit links
+  // touching the removed node are dropped from the persisted array;
+  // the node's persisted drag position dies with it. Deeper
+  // descendants keep their own parents — the promotion is exactly one
+  // generation wide.
+  const deleteNode = useCallback(
+    (id: string) => {
+      let removedLabel = id;
+      setGraph((current) => {
+        removedLabel = current.find((node) => node.id === id)?.label ?? id;
+        return current
+          .filter((node) => node.id !== id)
+          .map((node) =>
+            node.parentId === id ? { ...node, parentId: undefined } : node,
+          );
+      });
+      setLinks((current) =>
+        current
+          .map(normalizeEdge)
+          .filter(
+            (edge): edge is GraphEdge =>
+              edge !== null && edge.fromId !== id && edge.toId !== id,
+          ),
+      );
+      setPositions((current) => {
+        const next = { ...current };
+        delete next[id];
+        return next;
+      });
+      toast("error", `Deleted "${removedLabel}" — its edges are gone; its children are roots now.`);
+    },
+    [setGraph, setLinks, setPositions, toast],
+  );
 
   // THE GRAPH EXPORT (3.9.0, the Action Dock) — the graph + links +
   // positions snapshot (the timeline stays out; this is the canvas's
@@ -3233,6 +3275,7 @@ function useWorkspaceState(repo?: WorkspaceRepository) {
     spawnLinkedChild,
     addChild,
     expandNode,
+    deleteNode,
     resetCanvas,
     exportGraph,
     addMilestone,
@@ -3259,6 +3302,10 @@ type WorkspaceState = ReturnType<typeof useWorkspaceState>;
 function AnalyticsPlannerView({ workspace }: { workspace: WorkspaceState }) {
   const modal = useModal<TimelineItem>();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // 4.0.0 — THE DESTRUCTIVE NORM: the workspace reset opens the
+  // ConfirmDialog first; the commit (workspace.resetAll) fires only
+  // from the dialog's onConfirm.
+  const [resetOpen, setResetOpen] = useState(false);
 
   return (
     <>
@@ -3330,9 +3377,9 @@ function AnalyticsPlannerView({ workspace }: { workspace: WorkspaceState }) {
             size="sm"
             variant="danger"
             data-testid="snapshot-reset"
-            onClick={workspace.resetAll}
+            onClick={() => setResetOpen(true)}
           >
-            Reset
+            Reset Workspace
           </Button>
           <span className="hub__sim-note">
             the workspace snapshot carries graph + timeline + links under sig.workspace.v3
@@ -3369,6 +3416,19 @@ function AnalyticsPlannerView({ workspace }: { workspace: WorkspaceState }) {
             onClose={modal.close}
           />
         )}
+        {/* 4.0.0 — THE DESTRUCTIVE NORM, workspace leg. */}
+        <ConfirmDialog
+          open={resetOpen}
+          title="Reset Workspace?"
+          description="This will permanently clear your current graph, milestones and connections and restore the seeds."
+          cancelLabel="No"
+          confirmLabel="Yes, Reset"
+          onCancel={() => setResetOpen(false)}
+          onConfirm={() => {
+            setResetOpen(false);
+            workspace.resetAll();
+          }}
+        />
       </SurfaceCard>
     </>
   );
