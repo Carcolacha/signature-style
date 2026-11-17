@@ -16,8 +16,9 @@
 #                 gate — tighten this after the first CI run regenerates
 #                 goldens on the runner class.
 #
-# publish.yml stays the release path (tag push → gates → npm publish);
-# this file adds the per-push/per-PR gate matrix and publishes nothing.
+# publish.yml stays the release path (a published GitHub Release → gates →
+# npm publish); this file adds the per-push/per-PR gate matrix and publishes
+# nothing.
 
 name: CI
 
@@ -31,11 +32,16 @@ jobs:
   gates:
     runs-on: ubuntu-latest
     steps:
+      # Full history + tags: the verify battery's structural-freeze gate
+      # runs `git diff v0.3.0 -- css/cascade.css css/overrides.css` and
+      # needs the v0.3.0 tag locally (a depth-1 checkout cannot diff it).
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install root dependencies
         run: npm ci
@@ -107,7 +113,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install root dependencies
         run: npm ci

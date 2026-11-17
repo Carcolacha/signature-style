@@ -1,31 +1,59 @@
 name: Publish
 
-# Release flow: pushing a vX.Y.Z tag runs the gates and publishes to npm.
+# Release flow: PUBLISHING A GITHUB RELEASE (not a tag push) runs the gates
+# and publishes to npm. Publishing is the deliberate act of cutting a
+# Release (`gh release create vX.Y.Z ...`); the v* tag-push trigger is gone,
+# so pushing 42 tags fires zero publish runs. A release event resolves this
+# workflow from main, so main's guarded copy is what runs.
 # See docs/PUBLISHING.md for the full runbook.
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [published]
 
 jobs:
+  # Secrets are not directly readable in job-level `if:` — surface the
+  # token's EXISTENCE through a step output (the standard intermediate-step
+  # + outputs pattern) so the publish job can gate on it cleanly.
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      has-token: ${{ steps.token.outputs.defined }}
+    steps:
+      - id: token
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            echo "defined=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "defined=false" >> "$GITHUB_OUTPUT"
+          fi
+
   typecheck:
+    needs: guard
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
       - run: npm ci
       - run: npx tsc --noEmit
 
   publish:
-    needs: typecheck
+    needs: [guard, typecheck]
+    if: needs.guard.outputs.has-token == 'true'
     runs-on: ubuntu-latest
     steps:
+      # Full history + tags: the parity gates' structural-freeze check runs
+      # `git diff v0.3.0 -- css/cascade.css css/overrides.css` and needs the
+      # v0.3.0 tag locally (a depth-1 checkout cannot diff it).
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: "https://registry.npmjs.org/"
       - run: npm ci
       - name: Parity gates (release blocker)
@@ -33,3 +61,14 @@ jobs:
       - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # A skipped job runs no steps, so it cannot explain itself — this companion
+  # job exists only to leave the annotation on the run when the token is
+  # missing (re-running the run after setting the secret re-evaluates guard).
+  skipped-notice:
+    needs: [guard]
+    if: always() && needs.guard.outputs.has-token != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain the skip
+        run: echo "::warning::NPM_TOKEN not set — publish skipped; set the secret, then re-create the release or re-run the job"
