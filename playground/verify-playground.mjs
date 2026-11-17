@@ -789,6 +789,19 @@
  *          VALUES byte-frozen). css/ react/ demo/ scripts/ tools/ bin/
  *          stay byte-identical to the tag — zero diff.
  *
+ * 4.2.0 gates ("SCOPE MIGRATION" — the identity release):
+ *   (b7)/(n-hub4)  REBASED to the v4.1.0 baseline — the enumerated
+ *          4.2.0 authorization is the scope rename (@edwyn →
+ *          @carcolacha, the npm account's real name; E404 fix):
+ *          css/signature-style.css (header comment), react/index.*
+ *          (umbrella header), SYSTEM_PROMPT.md + bin/cli.mjs +
+ *          bin/templates.mjs (the recipes teach the REAL install
+ *          command), scripts/verify.mjs + verify-cli.mjs +
+ *          regen-cli-templates.mjs (needles + generator header),
+ *          tokens.json (meta.version → 4.2.0, guarded; the COLOR
+ *          VALUES byte-frozen). ZERO value/geometry/class/visual
+ *          deltas — the one-owner and motion gates ride unchanged.
+ *
  * Prints PASS and exits 0; prints FAIL + reasons and exits 1.
  */
 
@@ -1348,8 +1361,26 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v4.0.1 are owner-authorized ----------
-// 4.1.0 REBASE (the floor moves v4.0.0 → v4.0.1): GRAPH MOTION LAYER — a
+// ---- (b7) SAFETY PROOF: core deltas vs v4.1.0 are owner-authorized ----------
+// 4.2.0 REBASE (the floor moves v4.0.1 → v4.1.0): SCOPE MIGRATION — the
+// package identity rides the real npm account (@edwyn → @carcolacha,
+// E404 "Scope not found" fix). A pure rename: zero token, geometry,
+// class-name, or visual deltas. The owner-authorized 4.2.0 deltas, and
+// NOTHING else:
+//   css/signature-style.css   — the header usage comment only
+//   react/index.ts/.js/.d.ts  — the umbrella header comment (+ tsc emit)
+//   SYSTEM_PROMPT.md          — the codex recipes teach the REAL install
+//                              command (@carcolacha everywhere)
+//   bin/cli.mjs + bin/templates.mjs — help/summary/generated-file headers
+//                              teach @carcolacha
+//   scripts/verify.mjs / verify-cli.mjs / regen-cli-templates.mjs — the
+//                              header comment + the @carcolacha needles +
+//                              the generator's CLI header half
+//   tokens.json               — meta.version → 4.2.0 ONLY (guarded below;
+//                              the COLOR VALUES stay byte-frozen)
+// README.md, STORYBOOK.md, docs/, wc/, dist/wc, packages/, playground/,
+// package.json/lock are outside the locked prefixes (or release plumbing).
+// 4.1.0 BASELINE (the previous floor v4.0.0 → v4.0.1): GRAPH MOTION LAYER — a
 // PLAYGROUND-ONLY release. The owner-authorized 4.1.0 deltas, and NOTHING
 // else:
 //   SYSTEM_PROMPT.md          — the "Graph Studio Choreography (4.1.0)"
@@ -1464,29 +1495,38 @@ if (oldTimeline !== null) {
 // composition layer); README/package.json/lock are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 const AUTHORIZED_330 = new Set([
-  // 4.1.0 — GRAPH MOTION LAYER (playground-only release; everything else
-  // is now baseline at the v4.0.1 tag, see the header):
-  "SYSTEM_PROMPT.md", // the Graph Studio Choreography doctrine subsection
-  "tokens.json", // meta.version → 4.1.0 ONLY (guarded below)
+  // 4.2.0 — SCOPE MIGRATION (the identity rename; everything else is now
+  // baseline at the v4.1.0 tag, see the header):
+  "SYSTEM_PROMPT.md", // the codex recipes teach the real install command
+  "tokens.json", // meta.version → 4.2.0 ONLY (guarded below)
+  "css/signature-style.css", // the header usage comment only
+  "react/index.ts", // the umbrella header comment
+  "react/index.js", // tsc emit of the same comment
+  "react/index.d.ts", // tsc emit of the same comment
+  "bin/cli.mjs", // help text + summary strings teach @carcolacha
+  "bin/templates.mjs", // the generated-file headers teach @carcolacha
+  "scripts/verify.mjs", // the header comment
+  "scripts/verify-cli.mjs", // the scenario needles assert @carcolacha
+  "scripts/regen-cli-templates.mjs", // the generator's CLI header half
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v4.0.1", "--name-only", "--", ...B7_LOCKED_330],
+    ["diff", "v4.1.0", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v4.0.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v4.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v4.0.1 — outside the owner-authorized 4.1.0 set (the playground-only Graph Motion Layer release: the doctrine subsection + the tokens meta bump)`,
+      `(b7) SAFETY: ${file} changed since v4.1.0 — outside the owner-authorized 4.2.0 set (the scope migration release: @edwyn → @carcolacha, zero value/visual deltas)`,
     );
   }
 }
@@ -1522,8 +1562,8 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
 // kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "4.1.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.1.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "4.2.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.2.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
   const MOTION_NAMES_370 = [
     "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
@@ -1703,15 +1743,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 4.1.0 FROZEN PROOF — v4.0.1 baseline ----
-// Rebased 4.1.0 (the floor moves v4.0.0 → v4.0.1 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 4.1.0
-// playground-only list from (b7).
+// ---- (n-hub4) THE 4.2.0 FROZEN PROOF — v4.1.0 baseline ----
+// Rebased 4.2.0 (the floor moves v4.0.1 → v4.1.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 4.2.0
+// scope-rename list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v4.0.1", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v4.1.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1719,11 +1759,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v4.0.1 beyond the 4.1.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
+      `(n-hub4) SAFETY: files changed since v4.1.0 beyond the 4.2.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v4.0.1 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v4.1.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------
