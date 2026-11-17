@@ -791,7 +791,7 @@
  *
  * 4.2.0 gates ("SCOPE MIGRATION" — the identity release):
  *   (b7)/(n-hub4)  REBASED to the v4.1.0 baseline — the enumerated
- *          4.2.0 authorization is the scope rename (@edwyn →
+ *          4.2.0 authorization is the scope rename (the retired scope →
  *          @carcolacha, the npm account's real name; E404 fix):
  *          css/signature-style.css (header comment), react/index.*
  *          (umbrella header), SYSTEM_PROMPT.md + bin/cli.mjs +
@@ -1363,7 +1363,7 @@ if (oldTimeline !== null) {
 
 // ---- (b7) SAFETY PROOF: core deltas vs v4.1.0 are owner-authorized ----------
 // 4.2.0 REBASE (the floor moves v4.0.1 → v4.1.0): SCOPE MIGRATION — the
-// package identity rides the real npm account (@edwyn → @carcolacha,
+// package identity rides the real npm account (the retired scope → @carcolacha,
 // E404 "Scope not found" fix). A pure rename: zero token, geometry,
 // class-name, or visual deltas. The owner-authorized 4.2.0 deltas, and
 // NOTHING else:
@@ -1526,7 +1526,7 @@ for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v4.1.0 — outside the owner-authorized 4.2.0 set (the scope migration release: @edwyn → @carcolacha, zero value/visual deltas)`,
+      `(b7) SAFETY: ${file} changed since v4.1.0 — outside the owner-authorized 4.2.0 set (the scope migration release: the retired scope → @carcolacha, zero value/visual deltas)`,
     );
   }
 }
