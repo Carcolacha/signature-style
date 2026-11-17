@@ -1,40 +1,40 @@
 /**
- * TelemetryCenterTemplate — FULL-PAGE TEMPLATE 03 of 3 (3.8.0
- * "Full-Page Layout Templates, Interactive Viewport Previewer & CLI
- * Template Expansion").
+ * TelemetryCenterTemplate — FULL-PAGE BLUEPRINT "Match & Telemetry
+ * Analytics Hub" (4.0.0 "Motion Lab Rebuild, Flip/Accordion Geometry
+ * Fix, Destructive Confirm Norm & Human-Crafted Blueprints"; replaces
+ * the 3.8.0 observability blueprint under the SAME registry id
+ * "telemetry" — the CLI's SignatureTelemetryCenter.tsx keeps its name
+ * and marker).
  *
- * THE TELEMETRY CENTER BLUEPRINT — one self-contained default-export
- * page on an asymmetric 12-column bento. Block by block, top to
- * bottom:
+ * THE HIGH-DENSITY COMPETITIVE ANALYTICS BLUEPRINT — one self-
+ * contained default-export page, ORIGINAL content throughout (the
+ * style is inspired by the competitive-stats genre; every player
+ * call sign, map, and number here is invented, deterministic mock
+ * data — zero copyrighted titles, zero real handles). Block by block,
+ * top to bottom:
  *
- *   1. KPI row              — 4 tiles (span 3 each): two LIVE tiles
- *      composed from AnimatedNumber (rolling readouts, tabular-nums)
- *      + Sparkline, and two package StatCards (string-value
- *      archetypes). THE STRING-CONTRACT NOTE: StatCard.value is typed
- *      `string`, so the rolling tiles compose the package's own
- *      AnimatedNumber + Sparkline primitives into the StatCard
- *      anatomy; the two string tiles keep the archetype on the row.
- *   2. Capacity gauges      — 2 StatRing tiles (span 3 each) with
- *      total + unit (the zoom/detail strip), flanking the charts row.
- *   3. Charts row           — AreaChart + BarChart in SurfaceCard
- *      panels, side by side (span 6 each).
- *   4. Deployment schedule  — the package TimelineManager fully
- *      wired to LOCAL state (composer, settle toggles, deletes).
- *   5. Node status ledger   — a filterable DataTable: the Input
- *      state filters the rows live (case-insensitive substring over
- *      node + status).
+ *   1. Player Summary header — the rank badge (SigBadge), the player
+ *      call sign, the live rating (AnimatedNumber, tabular-nums) and
+ *      the 128px win-rate StatRing (the "md" enum diameter — exactly
+ *      128×128 forever).
+ *   2. Role/Class Mastery — a BarChart breakdown per role (capacity
+ *      tracks + chromatic value bars) beside ProgressBar rows (the
+ *      same four roles as horizontal meters with limit captions).
+ *   3. Rating Momentum — an AreaChart of the last 12 sessions (the
+ *      sparkline-fed points; the mount sweep draws the line).
+ *   4. Match History Ledger — a DataTable: Match (map + mode), Score /
+ *      KDA (tabular-nums), Duration, and the Result column wearing
+ *      --sig-mint Win / --sig-crimson Loss badges.
  *
  * STANDALONE PURITY: embedded token-driven <style> (zero hex, 8px
  * grid, the 12-col grid collapses via container queries so the
  * studio's viewport emulator reflows it: >1024px container = the full
- * 12-col bento; 640–1024px = the 2-col tier (6-col grid, spans
- * doubled); <640px = single column. 3.9.0: the container name is the
- * SHARED `template-stage` (the studio stage declares it too), and the
- * grid lives on an INNER wrapper — a container query can never restyle
- * its own container, so the root-level rewrites of v3.8.0 were dead
- * CSS and the 375px stage never collapsed), reduced-motion guard,
- * zero external dependencies, no ToastProvider needed (no toasts —
- * the widgets own their feedback).
+ * 12-col bento; 640–1024px = the 2-col tier; <640px = single column).
+ * 3.9.0 lesson kept: the container name is the SHARED `template-stage`
+ * and the grid lives on an INNER wrapper — a container query can never
+ * restyle its own container. Reduced-motion guard, zero external
+ * dependencies, no ToastProvider needed (no toasts — the widgets own
+ * their feedback).
  */
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
@@ -45,13 +45,12 @@ import {
   DataTable,
   Icon,
   Input,
-  Sparkline,
-  StatCard,
+  ProgressBar,
+  SigBadge,
   StatRing,
   SurfaceCard,
-  TimelineManager,
 } from "@edwyn/signature-style/react";
-import type { DataTableColumn, TimelineItem } from "@edwyn/signature-style/react";
+import type { DataTableColumn } from "@edwyn/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */
@@ -65,13 +64,10 @@ const TELEMETRY_TEMPLATE_CSS = `
   padding-bottom: var(--space-section);
   font-family: var(--font-sans);
 }
-/* 3.9.0 — THE INNER GRID. v3.8.0 carried the 12-column grid ON the
-   container root itself, and a container query CANNOT restyle its own
-   container — the breakpoint rewrites below were dead CSS, so the
-   375px stage kept a 12-column grid (9px tracks, overlapping KPI
-   tiles). The grid now lives on this wrapper — a DESCENDANT of the
-   container — so every breakpoint legally lands. minmax(0, 1fr)
-   tracks: no child can force the grid wider than its container. */
+/* THE INNER GRID — a DESCENDANT of the container, so every container
+   breakpoint legally lands (a query cannot restyle its own container).
+   minmax(0, 1fr) tracks: no child can force the grid wider than its
+   container. */
 .sig-tpl-telemetry__grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -83,35 +79,65 @@ const TELEMETRY_TEMPLATE_CSS = `
 .sig-tpl-telemetry__grid > .span-6 { grid-column: span 6; }
 .sig-tpl-telemetry__grid > .span-7 { grid-column: span 7; }
 .sig-tpl-telemetry__grid > .span-12 { grid-column: span 12; }
-.sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi { grid-column: span 3; }
-.sig-tpl-telemetry__kpi {
-  min-width: 0; /* the minmax(0,1fr) track guard — no tile forces the track wider */
-  background: var(--bg-surface);
-  border: 1px solid color-mix(in srgb, var(--text-muted) 18%, transparent);
-  border-radius: var(--radius-card);
-  padding: var(--space-section);
+/* The hero strip: identity left, the 128px ring right. */
+.sig-tpl-telemetry__hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-section);
+  flex-wrap: wrap;
+}
+.sig-tpl-telemetry__id {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  min-width: 0;
+}
+.sig-tpl-telemetry__callsign {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-bright);
+  font-variant-numeric: tabular-nums;
+}
+.sig-tpl-telemetry__rating {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.sig-tpl-telemetry__rating strong { color: var(--text-main); font-weight: 600; }
+.sig-tpl-telemetry__ring-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: var(--space-tight);
 }
-.sig-tpl-telemetry__kpi-label {
+.sig-tpl-telemetry__ring-label {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-muted);
 }
-.sig-tpl-telemetry__kpi-value {
-  font-size: 1.5rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  color: var(--text-bright);
+/* Role meters under the bar chart. */
+.sig-tpl-telemetry__meters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-standard);
 }
-.sig-tpl-telemetry__kpi-delta {
+.sig-tpl-telemetry__meter-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-tight);
+  margin-bottom: var(--space-tight);
+}
+.sig-tpl-telemetry__meter-name {
   font-size: 0.8125rem;
-  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--text-main);
 }
-.sig-tpl-telemetry__kpi-delta[data-direction="up"] { color: var(--sig-green); }
-.sig-tpl-telemetry__kpi-delta[data-direction="flat"] { color: var(--text-muted); }
+/* The ledger filter row. */
 .sig-tpl-telemetry__filter {
   display: flex;
   align-items: center;
@@ -121,6 +147,10 @@ const TELEMETRY_TEMPLATE_CSS = `
 .sig-tpl-telemetry__filter-count {
   font-size: 0.75rem;
   color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+/* KDA cells render tabular so the digits never jitter between rows. */
+.sig-tpl-telemetry__num {
   font-variant-numeric: tabular-nums;
 }
 /* THE DOCTRINE FOCUS RING — every interactive element in the template
@@ -133,11 +163,9 @@ const TELEMETRY_TEMPLATE_CSS = `
 }
 @container template-stage (max-width: 1024px) {
   /* 640–1024px container: the 2-col tier — the grid halves to 6
-     columns and every span doubles (3→6, 4→6, 5→6, 6→6, 7→6); the
-     span-3 KPI tiles pair up two-across. */
+     columns and every span doubles; the hero + ring pair up. */
   .sig-tpl-telemetry__grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .sig-tpl-telemetry__grid > .span-3 { grid-column: span 3; }
-  .sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi { grid-column: span 3; }
   .sig-tpl-telemetry__grid > .span-4,
   .sig-tpl-telemetry__grid > .span-5,
   .sig-tpl-telemetry__grid > .span-6,
@@ -145,10 +173,9 @@ const TELEMETRY_TEMPLATE_CSS = `
 }
 @container template-stage (max-width: 639px) {
   /* <640px container: the single-column tier — one minmax(0, 1fr)
-     track, every span reset. The KPI tiles stack full-width. */
+     track, every span reset. */
   .sig-tpl-telemetry__grid { grid-template-columns: minmax(0, 1fr); }
   .sig-tpl-telemetry__grid > .span-3,
-  .sig-tpl-telemetry__grid > .sig-tpl-telemetry__kpi,
   .sig-tpl-telemetry__grid > .span-4,
   .sig-tpl-telemetry__grid > .span-5,
   .sig-tpl-telemetry__grid > .span-6,
@@ -161,282 +188,197 @@ const TELEMETRY_TEMPLATE_CSS = `
 `;
 
 /* ------------------------------------------------------------------ */
-/* Data — the deterministic sample telemetry (domain-neutral).         */
+/* Data — the deterministic mock roster (ORIGINAL call signs, maps     */
+/* and modes; invented numbers, stable across renders).                */
 /* ------------------------------------------------------------------ */
 
-const THROUGHPUT_SERIES: number[] = [42, 48, 45, 58, 61, 57, 72, 78, 74, 88, 92, 96];
-const LATENCY_SERIES: number[] = [180, 172, 176, 158, 149, 152, 141, 138, 133, 129, 124, 118];
+/** The player identity block (Block 1). */
+const PLAYER = {
+  callsign: "VEKTOR-9",
+  rank: "Diamond II",
+  rankToken: "--sig-azure",
+  rating: 2418,
+  ratingDelta: "+86 this week",
+  winRate: 58,
+};
 
-const AREA_POINTS = THROUGHPUT_SERIES.map((value, index) => ({
-  label: `T${String(index + 1).padStart(2, "0")}`,
+/** Block 2 — the per-role mastery bars + meters. */
+const ROLE_MASTERY = [
+  { label: "Vanguard", value: 820, max: 1000, meter: 82, colorToken: "--sig-tangerine" },
+  { label: "Skirmisher", value: 690, max: 1000, meter: 69, colorToken: "--sig-cyan" },
+  { label: "Sentinel", value: 540, max: 1000, meter: 54, colorToken: "--sig-mint" },
+  { label: "Medic", value: 310, max: 1000, meter: 31, colorToken: "--sig-lavender" },
+] as const;
+
+/** Block 3 — the rating momentum series (last 12 sessions). */
+const RATING_SERIES: number[] = [2240, 2268, 2255, 2302, 2320, 2296, 2341, 2360, 2348, 2387, 2402, 2418];
+const MOMENTUM_POINTS = RATING_SERIES.map((value, index) => ({
+  label: `S${String(index + 1).padStart(2, "0")}`,
   value,
 }));
 
-const BAR_DATA = [
-  { label: "Ingest", value: 640, max: 800, colorToken: "--sig-cobalt" },
-  { label: "Transform", value: 520, max: 800, colorToken: "--sig-cyan" },
-  { label: "Index", value: 380, max: 800, colorToken: "--sig-mint" },
-  { label: "Serve", value: 700, max: 800, colorToken: "--sig-tangerine" },
-] as const;
-
-interface NodeRow {
-  node: string;
-  status: "healthy" | "degraded" | "draining";
-  region: string;
-  load: string;
+/** Block 4 — the match history ledger. */
+interface MatchRow {
+  match: string;
+  map: string;
+  kda: string;
+  duration: string;
+  result: "Win" | "Loss";
 }
 
-const NODE_ROWS: NodeRow[] = [
-  { node: "ingest-01", status: "healthy", region: "zone-a", load: "38%" },
-  { node: "ingest-02", status: "healthy", region: "zone-a", load: "41%" },
-  { node: "transform-01", status: "degraded", region: "zone-b", load: "87%" },
-  { node: "transform-02", status: "healthy", region: "zone-b", load: "44%" },
-  { node: "index-01", status: "healthy", region: "zone-c", load: "52%" },
-  { node: "serve-01", status: "draining", region: "zone-c", load: "9%" },
-  { node: "serve-02", status: "healthy", region: "zone-d", load: "47%" },
+const MATCH_ROWS: MatchRow[] = [
+  { match: "Ranked · Skyline Circuit", map: "Skyline Circuit", kda: "24 / 8 / 16", duration: "34:12", result: "Win" },
+  { match: "Ranked · Delta Basin", map: "Delta Basin", kda: "11 / 9 / 21", duration: "41:03", result: "Win" },
+  { match: "Ranked · Foundry Row", map: "Foundry Row", kda: "9 / 14 / 7", duration: "22:48", result: "Loss" },
+  { match: "Ranked · Meridian Gardens", map: "Meridian Gardens", kda: "18 / 6 / 24", duration: "29:37", result: "Win" },
+  { match: "Ranked · Skyline Circuit", map: "Skyline Circuit", kda: "7 / 12 / 11", duration: "26:20", result: "Loss" },
+  { match: "Ranked · Ion Refinery", map: "Ion Refinery", kda: "21 / 7 / 13", duration: "31:55", result: "Win" },
+  { match: "Ranked · Delta Basin", map: "Delta Basin", kda: "15 / 10 / 18", duration: "36:44", result: "Win" },
+  { match: "Ranked · Foundry Row", map: "Foundry Row", kda: "12 / 11 / 9", duration: "24:02", result: "Loss" },
 ];
 
-const NODE_COLUMNS: DataTableColumn[] = [
-  { key: "node", header: "Node" },
-  { key: "status", header: "Status" },
-  { key: "region", header: "Region" },
-  { key: "load", header: "Load", numeric: true, align: "right" },
+const MATCH_COLUMNS: DataTableColumn[] = [
+  { key: "match", header: "Match" },
+  { key: "kda", header: "Score / KDA", numeric: true, align: "right" },
+  { key: "duration", header: "Duration", numeric: true, align: "right" },
+  { key: "result", header: "Result" },
 ];
 
-const DEPLOYMENTS: TimelineItem[] = [
-  {
-    id: "dp-001",
-    date: "November 2026",
-    title: "Canary rollout — stage B",
-    category: "--sig-cobalt",
-    categoryLabel: "Deploy",
-    time: "09:00",
-    settled: true,
-  },
-  {
-    id: "dp-002",
-    date: "November 2026",
-    title: "Index rebuild — zone C",
-    category: "--sig-cyan",
-    categoryLabel: "Maint",
-    time: "13:30",
-    settled: true,
-  },
-  {
-    id: "dp-003",
-    date: "December 2026",
-    title: "Serve fleet rotation",
-    category: "--sig-mint",
-    categoryLabel: "Deploy",
-    time: "10:00",
-  },
-  {
-    id: "dp-004",
-    date: "December 2026",
-    title: "Quarterly capacity review",
-    category: "--sig-tangerine",
-    categoryLabel: "Review",
-    time: "15:00",
-  },
-];
-
-/** The status → chromatic badge ink (content accents, per the RoE). */
-const STATUS_TOKENS: Record<NodeRow["status"], "--sig-green" | "--sig-yellow" | "--sig-mauve-soft"> = {
-  healthy: "--sig-green",
-  degraded: "--sig-yellow",
-  draining: "--sig-mauve-soft",
+/** The result → chromatic badge ink (content accents, per the RoE). */
+const RESULT_TOKENS: Record<MatchRow["result"], "--sig-mint" | "--sig-crimson"> = {
+  Win: "--sig-mint",
+  Loss: "--sig-crimson",
 };
 
 /* ------------------------------------------------------------------ */
 /* Blocks.                                                             */
 /* ------------------------------------------------------------------ */
 
-/** One LIVE KPI tile — the StatCard anatomy composed from the
- *  package primitives (AnimatedNumber + Sparkline). */
-function LiveKpiTile({
-  label,
-  value,
-  delta,
-  direction,
-  series,
-  token,
-}: {
-  label: string;
-  value: number;
-  delta: string;
-  direction: "up" | "flat";
-  series: number[];
-  token: "--sig-cobalt" | "--sig-tangerine";
-}): ReactNode {
+/** Block 1 — the Player Summary header: rank badge + call sign + the
+ *  live rating + the 128px win-rate ring (the "md" enum diameter). */
+function PlayerSummary(): ReactNode {
   return (
-    <div className="sig-tpl-telemetry__kpi" data-testid={`tpl-tele-kpi-${label.toLowerCase().replace(/\s+/g, "-")}`}>
-      <span className="sig-tpl-telemetry__kpi-label">{label}</span>
-      <span className="sig-tpl-telemetry__kpi-value">
-        <AnimatedNumber value={value} />
-      </span>
-      <span className="sig-tpl-telemetry__kpi-delta" data-direction={direction}>
-        {delta}
-      </span>
-      <Sparkline data={series} colorToken={token} label={`${label} trend`} width={160} height={32} />
+    <div className="span-12">
+      <SurfaceCard eyebrow="Player Summary" meta="competitive/analytics" title="Season standings" interactive>
+        <div className="sig-tpl-telemetry__hero">
+          <div className="sig-tpl-telemetry__id" data-testid="tpl-tele-player">
+            <SigBadge colorToken={PLAYER.rankToken} label={PLAYER.rank} />
+            <span className="sig-tpl-telemetry__callsign">{PLAYER.callsign}</span>
+            <span className="sig-tpl-telemetry__rating">
+              Rating <strong><AnimatedNumber value={PLAYER.rating} /></strong> · {PLAYER.ratingDelta}
+            </span>
+          </div>
+          <div className="sig-tpl-telemetry__ring-cell" data-testid="tpl-tele-winrate">
+            <StatRing
+              value={PLAYER.winRate}
+              colorToken="--sig-mint"
+              label="Win rate"
+              size="md"
+              strokeWidth={8}
+            />
+            <span className="sig-tpl-telemetry__ring-label">Win rate · 128px</span>
+          </div>
+        </div>
+      </SurfaceCard>
     </div>
   );
 }
 
-function KpiRow(): ReactNode {
+/** Block 2 — Role/Class Mastery: the BarChart breakdown beside the
+ *  ProgressBar meters (the same four roles, two readings). */
+function RoleMastery(): ReactNode {
   return (
     <>
-      <LiveKpiTile
-        label="Throughput"
-        value={THROUGHPUT_SERIES[THROUGHPUT_SERIES.length - 1] ?? 0}
-        delta="+14.3% vs last window"
-        direction="up"
-        series={THROUGHPUT_SERIES}
-        token="--sig-cobalt"
-      />
-      <LiveKpiTile
-        label="Latency p95"
-        value={LATENCY_SERIES[LATENCY_SERIES.length - 1] ?? 0}
-        delta="−34.4% vs last window"
-        direction="up"
-        series={LATENCY_SERIES}
-        token="--sig-tangerine"
-      />
-      <StatCard
-        label="Error budget"
-        value="99.98%"
-        delta="within SLO"
-        sparklineData={[99.91, 99.95, 99.97, 99.96, 99.98, 99.98]}
-        colorToken="--sig-green"
-      />
-      <StatCard
-        label="Active streams"
-        value="24"
-        delta="+2"
-        deltaDirection="up"
-        sparklineData={[16, 18, 18, 21, 22, 24]}
-        colorToken="--sig-mauve-soft"
-      />
-    </>
-  );
-}
-
-function GaugeRow(): ReactNode {
-  return (
-    <>
-      <div className="span-3" data-testid="tpl-tele-gauge-1">
-        <StatRing
-          value={68}
-          colorToken="--sig-cobalt"
-          label="Cluster capacity used"
-          total={100}
-          unit="% capacity"
-          size="md"
-        />
-      </div>
-      <div className="span-3" data-testid="tpl-tele-gauge-2">
-        <StatRing
-          value={42}
-          colorToken="--sig-mint"
-          label="Storage pool used"
-          total={100}
-          unit="% storage"
-          size="md"
-        />
-      </div>
-    </>
-  );
-}
-
-function ChartsRow(): ReactNode {
-  return (
-    <>
-      <div className="span-6">
-        <SurfaceCard eyebrow="Trends" meta="viz/area" title="Throughput, last 12 windows" interactive>
-          <AreaChart points={AREA_POINTS} colorToken="--sig-cobalt" label="Throughput trend" height={180} />
+      <div className="span-7">
+        <SurfaceCard eyebrow="Mastery" meta="charts/roles" title="Role performance" interactive>
+          <BarChart
+            data={ROLE_MASTERY.map((role) => ({
+              label: role.label,
+              value: role.value,
+              max: role.max,
+              colorToken: role.colorToken,
+            }))}
+            label="Mastery score by role"
+          />
         </SurfaceCard>
       </div>
-      <div className="span-6">
-        <SurfaceCard eyebrow="Capacity" meta="viz/bars" title="Pipeline stage load vs capacity" interactive>
-          <BarChart data={[...BAR_DATA]} label="Stage load vs capacity" />
+      <div className="span-5">
+        <SurfaceCard eyebrow="Meters" meta="charts/roles" title="Role fill" interactive>
+          <div className="sig-tpl-telemetry__meters" data-testid="tpl-tele-roles">
+            {ROLE_MASTERY.map((role) => (
+              <ProgressBar
+                key={role.label}
+                value={role.meter}
+                colorToken={role.colorToken}
+                label={`${role.label} mastery`}
+                limitText={`${role.value} / ${role.max}`}
+              />
+            ))}
+          </div>
         </SurfaceCard>
       </div>
     </>
   );
 }
 
-function ScheduleSection(): ReactNode {
-  const [deployments, setDeployments] = useState<TimelineItem[]>(DEPLOYMENTS);
-  const addDeployment = (item: Omit<TimelineItem, "id">): void => {
-    setDeployments((current) => [...current, { ...item, id: `dp-${String(current.length + 1).padStart(3, "0")}` }]);
-  };
-  const toggleSettled = (id: string): void => {
-    setDeployments((current) =>
-      current.map((item) => (item.id === id ? { ...item, settled: item.settled !== true } : item)),
-    );
-  };
-  const deleteDeployment = (id: string): void => {
-    setDeployments((current) => current.filter((item) => item.id !== id));
-  };
+/** Block 3 — Rating Momentum: the 12-session AreaChart. */
+function RatingMomentum(): ReactNode {
   return (
-    <div className="span-7">
-      <SurfaceCard eyebrow="Schedule" meta="planner/timeline" title="Deployment schedule" interactive>
-        <TimelineManager
-          items={deployments}
-          onAdd={addDeployment}
-          onToggleSettled={toggleSettled}
-          onDelete={deleteDeployment}
-          label="Deployment schedule"
+    <div className="span-12">
+      <SurfaceCard eyebrow="Momentum" meta="charts/rating" title="Rating — last 12 sessions" interactive>
+        <AreaChart
+          points={MOMENTUM_POINTS}
+          colorToken="--sig-azure"
+          label="Rating momentum"
+          height={180}
         />
       </SurfaceCard>
     </div>
   );
 }
 
-function LedgerSection(): ReactNode {
+/** Block 4 — the Match History Ledger: a filterable DataTable with
+ *  mint Win / crimson Loss result badges. */
+function MatchLedger(): ReactNode {
   const [query, setQuery] = useState("");
-  // THE ONE DERIVATION — case-insensitive substring over node + status.
   const filteredRows = useMemo(() => {
     const needle = query.trim().toLowerCase();
     const rows = needle === ""
-      ? NODE_ROWS
-      : NODE_ROWS.filter(
+      ? MATCH_ROWS
+      : MATCH_ROWS.filter(
           (row) =>
-            row.node.toLowerCase().includes(needle) ||
-            row.status.toLowerCase().includes(needle) ||
-            row.region.toLowerCase().includes(needle),
+            row.match.toLowerCase().includes(needle) ||
+            row.map.toLowerCase().includes(needle) ||
+            row.result.toLowerCase().includes(needle),
         );
     return rows.map((row) => ({
-      node: row.node,
-      status: (
-        <span style={{ color: `var(${STATUS_TOKENS[row.status]})`, fontWeight: 600 }}>
-          {row.status}
-        </span>
-      ),
-      region: row.region,
-      load: row.load,
+      match: row.match,
+      kda: <span className="sig-tpl-telemetry__num">{row.kda}</span>,
+      duration: <span className="sig-tpl-telemetry__num">{row.duration}</span>,
+      result: <SigBadge colorToken={RESULT_TOKENS[row.result]} label={row.result} />,
     }));
   }, [query]);
 
   return (
-    <div className="span-5">
-      <SurfaceCard eyebrow="Ledger" meta="data/table" title="Node status" interactive>
+    <div className="span-12">
+      <SurfaceCard eyebrow="Ledger" meta="data/matches" title="Match history" interactive>
         <div className="sig-tpl-telemetry__filter">
           <Input
             type="search"
-            placeholder="Filter nodes…"
-            aria-label="Filter node status ledger"
+            placeholder="Filter matches…"
+            aria-label="Filter match history"
             data-testid="tpl-tele-filter"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
           />
           <span className="sig-tpl-telemetry__filter-count" aria-live="polite">
-            <Icon name="ListTree" size={14} aria-hidden /> {filteredRows.length} / {NODE_ROWS.length} nodes
+            <Icon name="ListTree" size={14} aria-hidden /> {filteredRows.length} / {MATCH_ROWS.length} matches
           </span>
         </div>
         <DataTable
-          columns={NODE_COLUMNS}
+          columns={MATCH_COLUMNS}
           rows={filteredRows}
-          caption="Node status ledger · filtered live by the input above"
+          caption="Match history ledger · filtered live by the input above"
         />
       </SurfaceCard>
     </div>
@@ -447,27 +389,26 @@ function TelemetryCenterPage(): ReactNode {
   return (
     <main className="sig-tpl-telemetry" data-testid="tpl-telemetry">
       <style>{TELEMETRY_TEMPLATE_CSS}</style>
-      {/* 3.9.0 — the INNER grid wrapper: the container queries answer
-          the root's width and restyle THIS element (a container can
-          never restyle itself — the v3.8.0 dead-CSS lesson). */}
+      {/* The INNER grid wrapper: the container queries answer the
+          root's width and restyle THIS element (a container can never
+          restyle itself). */}
       <div className="sig-tpl-telemetry__grid">
-        <KpiRow />
-        <GaugeRow />
-        <ChartsRow />
-        <ScheduleSection />
-        <LedgerSection />
+        <PlayerSummary />
+        <RoleMastery />
+        <RatingMomentum />
+        <MatchLedger />
       </div>
     </main>
   );
 }
 
 /**
- * The Telemetry Center full-page template — the 12-column asymmetric
- * bento: four KPI tiles (rolling AnimatedNumber tiles + package
- * StatCards), two StatRing capacity gauges, the AreaChart/BarChart
- * panel pair, the state-wired TimelineManager deployment schedule and
- * the filterable node-status DataTable. See the file header for the
- * block-by-block outline.
+ * The Match & Telemetry Analytics Hub full-page template — the
+ * high-density competitive analytics blueprint: Player Summary (rank
+ * badge + call sign + live rating + the 128px win-rate ring), Role
+ * Mastery (BarChart + ProgressBar), Rating Momentum (AreaChart), and
+ * the filterable Match History DataTable with mint/crimson result
+ * badges. See the file header for the block-by-block outline.
  */
 export default function TelemetryCenterTemplate() {
   return <TelemetryCenterPage />;

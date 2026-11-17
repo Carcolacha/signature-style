@@ -286,9 +286,11 @@ for (const [key, entry] of Object.entries(MOTION_SNIPPETS)) {
    template-registry.ts itself: that module pulls the React .tsx components,
    which Node does not parse. The (tpl1) gate pins the parity between the
    data layer and the registry, so the payloads cannot drift. */
-lines.push("## Full-Page Layout Blueprints (3.8.0)");
+lines.push("## Full-Page Layout Blueprints (3.8.0; 4.0.0 the human-crafted set)");
 lines.push("");
-lines.push("Three self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @edwyn/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.");
+lines.push("Two self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @edwyn/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.");
+lines.push("");
+lines.push("4.0.0 — THE BLUEPRINT SET CHANGE (BREAKING): the generic SaaS Landing + Docs Reader templates RETIRE. The set is the two authentic, human-crafted blueprints: the Match & Telemetry Analytics Hub (id \"telemetry\", replacing the old observability center in place — the CLI file stays SignatureTelemetryCenter.tsx) and the Interactive Micro-Lab & Discovery Deck (id \"microlab\", new). All blueprint content is ORIGINAL (style-inspired, never copied): invented call signs, invented maps, deterministic mock numbers.");
 lines.push("");
 lines.push("The registry: playground/template-registry.ts — PAGE_TEMPLATES: Array<{ id, name, description, Component, source }>.");
 lines.push("");

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * bin/cli.mjs — @edwyn/signature-style · the zero-dependency scaffolder (3.3.0; 3.8.0 the page templates)
+ * bin/cli.mjs — @edwyn/signature-style · the zero-dependency scaffolder (3.3.0; 3.8.0 the page templates; 4.0.0 the blueprint set change)
  * ----------------------------------------------------------------------------
- *   npx @edwyn/signature-style init [--template minimal|bento|saas|docs|telemetry]
+ *   npx @edwyn/signature-style init [--template minimal|bento|telemetry|microlab]
  *                                   [--theme mocha|oled|daylight]
  *                                   [--dir <path>] [--force] [--yes]
  *
@@ -586,7 +586,7 @@ function renderReadme(ctx) {
     if (pageIsTsx) {
       files.push("`" + pageTemplate.tsxName + "` — the **" + pageTemplate.label + "** full-page template: one self-contained default-export page built from `@edwyn/signature-style/react` exports, carrying its own embedded token-driven `<style>` (container queries + reduced-motion honored)");
     } else {
-      files.push("`signature-starter.html` — the **" + pageTemplate.label + "** STATIC MIRROR: the same blueprint as plain HTML + the tokens variables. A mirror is NOT the React statefulness (no live billing math / filters / manager state) — one honest snapshot, zero JS");
+      files.push("`signature-starter.html` — the **" + pageTemplate.label + "** STATIC MIRROR: the same blueprint as plain HTML + the tokens variables. A mirror is NOT the React statefulness (no reaction state machine / live filter / waveform dance) — one honest snapshot, zero JS");
     }
   }
   files.push("`README-SIGNATURE.md` — this file");
@@ -744,7 +744,7 @@ USAGE
   npx ${PKG} init [flags]
 
 FLAGS
-  --template <minimal|bento|saas|docs|telemetry>
+  --template <minimal|bento|telemetry|microlab>
                                    starter template (default: minimal; the
                                    page templates emit a full-page blueprint
                                    per framework detection)
@@ -767,8 +767,8 @@ SAFE INJECTION
 EXAMPLES
   npx ${PKG} init --template bento --theme oled --yes
   npx ${PKG} init --dir ./client --template bento --force
-  npx ${PKG} init --template saas --yes        # the SaaS Landing full-page blueprint
-  npx ${PKG} init --template telemetry --theme oled --yes
+  npx ${PKG} init --template telemetry --yes   # the Match & Telemetry Analytics Hub blueprint
+  npx ${PKG} init --template microlab --theme oled --yes  # the Interactive Micro-Lab & Discovery Deck
 `);
 }
 
@@ -895,7 +895,7 @@ function hasDependency(targetDir, name) {
 /**
  * Build the file plan for the resolved options.
  *
- * 3.8.0 — the page templates (saas | docs | telemetry): tsx flavor →
+ * 3.8.0/4.0.0 — the page templates (telemetry | microlab): tsx flavor →
  * the full React blueprint (Signature<Name>.tsx, imports from
  * "@edwyn/signature-style/react", self-contained styles); html flavor
  * → the static signature-starter.html mirror. No companion css (the

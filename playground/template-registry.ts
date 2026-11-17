@@ -1,7 +1,7 @@
 /**
  * TEMPLATE-REGISTRY — the full-page templates' ONE registry (3.8.0
  * "Full-Page Layout Templates, Interactive Viewport Previewer & CLI
- * Template Expansion").
+ * Template Expansion"; 4.0.0 the blueprint set change).
  *
  * PAGE_TEMPLATES is to the Templates Studio what SNIPPETS is to the
  * Pattern Studio: one typed array, one entry per full-page blueprint —
@@ -12,6 +12,10 @@
  * copies source (Full TSX Code / Copy Full Page); the llms generator
  * reads the same strings into the blueprints section — the payloads
  * cannot drift.
+ *
+ * 4.0.0 — THE SET (BREAKING vs 3.9.0): saas + docs RETIRE; telemetry
+ * is REPLACED in place (same id, the Match & Telemetry Analytics Hub)
+ * and microlab joins (the Interactive Micro-Lab & Discovery Deck).
  *
  * Consumers:
  *   - playground/components/TemplatesStudio.tsx (the stage + controls)
@@ -24,15 +28,14 @@
 import type { ComponentType } from "react";
 import { TEMPLATE_META, TEMPLATE_SOURCES } from "./template-sources.js";
 import type { TemplateId } from "./template-sources.js";
-import SaasLandingTemplate from "./templates/SaasLandingTemplate.js";
-import DocsReaderTemplate from "./templates/DocsReaderTemplate.js";
-import TelemetryCenterTemplate from "./templates/TelemetryCenterTemplate.js";
+import { TelemetryCenterTemplate } from "./templates/index.js";
+import { MicroLabTemplate } from "./templates/index.js";
 
 /** One full-page blueprint: the live page + its copyable source. */
 export interface PageTemplate {
   /** The stable id — the studio Tabs, the palette jumps, the CLI. */
   id: TemplateId;
-  /** The display name ("SaaS Landing"). */
+  /** The display name ("Match & Telemetry Analytics Hub"). */
   name: string;
   /** The one-line description (registry + llms blueprints). */
   description: string;
@@ -42,7 +45,7 @@ export interface PageTemplate {
   source: string;
 }
 
-/** The display order — the studio Tabs number them 01 · 02 · 03. */
+/** The display order — the studio Tabs number them 01 · 02. */
 export const PAGE_TEMPLATES: Array<{
   id: TemplateId;
   name: string;
@@ -51,25 +54,18 @@ export const PAGE_TEMPLATES: Array<{
   source: string;
 }> = [
   {
-    id: "saas",
-    name: TEMPLATE_META.saas.name,
-    description: TEMPLATE_META.saas.description,
-    Component: SaasLandingTemplate,
-    source: TEMPLATE_SOURCES.saas,
-  },
-  {
-    id: "docs",
-    name: TEMPLATE_META.docs.name,
-    description: TEMPLATE_META.docs.description,
-    Component: DocsReaderTemplate,
-    source: TEMPLATE_SOURCES.docs,
-  },
-  {
     id: "telemetry",
     name: TEMPLATE_META.telemetry.name,
     description: TEMPLATE_META.telemetry.description,
     Component: TelemetryCenterTemplate,
     source: TEMPLATE_SOURCES.telemetry,
+  },
+  {
+    id: "microlab",
+    name: TEMPLATE_META.microlab.name,
+    description: TEMPLATE_META.microlab.description,
+    Component: MicroLabTemplate,
+    source: TEMPLATE_SOURCES.microlab,
   },
 ];
 
@@ -80,9 +76,8 @@ export const PAGE_TEMPLATE_BY_ID: Record<TemplateId, PageTemplate> =
     PageTemplate
   >;
 
-/** id → the breadcrumb slug ("engine / templates / saas-landing"). */
+/** id → the breadcrumb slug ("engine / templates / analytics-hub"). */
 export const TEMPLATE_SLUGS: Record<TemplateId, string> = {
-  saas: "saas-landing",
-  docs: "docs-reader",
-  telemetry: "telemetry-center",
+  telemetry: "analytics-hub",
+  microlab: "micro-lab",
 };

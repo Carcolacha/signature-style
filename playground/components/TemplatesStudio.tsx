@@ -1,7 +1,8 @@
 /**
  * TemplatesStudio — THE TEMPLATES STUDIO view (3.8.0 "Full-Page
  * Layout Templates, Interactive Viewport Previewer & CLI Template
- * Expansion").
+ * Expansion"; 4.0.0 stages the two human-crafted blueprints — the
+ * FLIP tabs read 01 · Analytics Hub | 02 · Micro-Lab).
  *
  * The full-page blueprints' proving ground: a sticky glass control
  * bar (the viewport emulator, the scoped theme switcher, the
@@ -200,7 +201,7 @@ export function TemplatesStudioView({ activeId, onActiveChange }: TemplatesStudi
         <Tabs
           label="Full-page templates"
           tabs={TEMPLATE_TABS}
-          activeId={active?.id ?? "saas"}
+          activeId={active?.id ?? "telemetry"}
           onChange={(id) => onActiveChange(id as TemplateId)}
         />
       </div>
@@ -218,7 +219,7 @@ export function TemplatesStudioView({ activeId, onActiveChange }: TemplatesStudi
       >
         <div className="tpl-studio__stage" style={{ width: STAGE_WIDTHS[viewport] }} data-testid="tpl-stage">
           {mode === "preview" ? (
-            <div key={active?.id ?? "saas"} data-testid="tpl-preview">
+            <div key={active?.id ?? "telemetry"} data-testid="tpl-preview">
               {active !== undefined ? <active.Component /> : null}
             </div>
           ) : (

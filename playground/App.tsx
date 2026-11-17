@@ -3,16 +3,19 @@
  * Suite, Chromatic Elevation & The Master Index Overhaul").
  *
  * 3.8.0 — THE TEMPLATES STUDIO. The map grows one REAL view: Templates
- * (#/templates, the 9-view model) stages the three full-page
- * blueprints (playground/templates/, the PAGE_TEMPLATES registry) in a
+ * (#/templates, the 9-view model) stages the full-page blueprints
+ * (playground/templates/, the PAGE_TEMPLATES registry) in a
  * sticky-glass control bar — the viewport width emulator (Desktop /
  * 768 / 375; the templates reflow via their own container queries),
  * the SCOPED live theme switcher (data-sig-theme on the stage wrapper:
  * the tokens.css theme blocks are plain attribute selectors, so a div
  * re-themes its subtree), the Preview ↔ Full TSX Code toggle and Copy
  * Full Page. The active template id is LIFTED here (breadcrumbs
- * engine / templates / saas-landing + the palette's per-template
- * jumps). See components/TemplatesStudio.tsx for the full contract.
+ * engine / templates / analytics-hub + the palette's per-template
+ * jumps). 4.0.0: the set is the two human-crafted blueprints — the
+ * Match & Telemetry Analytics Hub (telemetry) and the Interactive
+ * Micro-Lab & Discovery Deck (microlab); the generic saas/docs pair
+ * retires. See components/TemplatesStudio.tsx for the full contract.
  *
  * 2.9.1 — ZERO CONTRAST DEBT & THE LIVE SKELETON TRIGGER. Two moves:
  *
@@ -375,7 +378,7 @@ const HERO_COPY: Record<View, { title: string; sub: string }> = {
   },
   templates: {
     title: "THE TEMPLATES STUDIO",
-    sub: "three full-page blueprints · preview, theme & copy · one CLI command each",
+    sub: "two human-crafted blueprints · preview, theme & copy · one CLI command each",
   },
   index: {
     title: "THE MASTER INDEX",
@@ -857,7 +860,7 @@ function Shell() {
   // 3.8.0 — THE ACTIVE TEMPLATE, lifted for the same reason: the
   // breadcrumbs (engine / templates / saas-landing) and the palette's
   // per-template jumps share it with the studio (controlled).
-  const [activeTemplate, setActiveTemplate] = useState<TemplateId>("saas");
+  const [activeTemplate, setActiveTemplate] = useState<TemplateId>("telemetry");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   // 3.6.0 — THE "?" KEY: the keyboard map opens from anywhere (the
@@ -966,7 +969,7 @@ function Shell() {
     { id: "view-planner", label: "Go to Analytics & Planner", keywords: "view analytics planner charts milestones timeline", icon: "ChartColumn", hint: "view", run: () => navigate(VIEW_HREFS.planner) },
     { id: "view-motion", label: "Go to Motion Lab", keywords: "view motion lab kinetics springs animation slow-mo reveal choreography", icon: "Activity", hint: "view", run: () => navigate(VIEW_HREFS.motion) },
     { id: "view-studio", label: "Go to Pattern Studio", keywords: "view catalog patterns sets copy", icon: "Shapes", hint: "view", run: () => navigate(VIEW_HREFS.studio) },
-    { id: "view-templates", label: "Go to Templates", keywords: "view templates studio blueprints full-page saas docs telemetry preview emulator", icon: "LayoutTemplate", hint: "view", run: () => navigate(VIEW_HREFS.templates) },
+    { id: "view-templates", label: "Go to Templates", keywords: "view templates studio blueprints full-page telemetry microlab analytics micro-lab preview emulator", icon: "LayoutTemplate", hint: "view", run: () => navigate(VIEW_HREFS.templates) },
     ...PAGE_TEMPLATES.map((template) => ({
       id: `template-${template.id}`,
       label: `Templates: ${template.name}`,

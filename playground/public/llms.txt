@@ -18,22 +18,21 @@ The official machine-readable index for AI agents. Full self-contained version: 
 
 ## Component Sets
 
-The 6-Set Taxonomy — 56 documented exports, one copy-paste snippet each:
+The 6-Set Taxonomy — 57 documented exports, one copy-paste snippet each:
 
 - [Set 01 — Shell & Navigation](llms-full.txt): ThemeProvider, GlobalNav, Tabs, SigShell (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 02 — Surface & Card Archetypes](llms-full.txt): SurfaceCard, PageHero, Icon, Avatar, SigBadge, ContentCard, ReferenceCard, TierCard, ProfileCard, ActionTile, FlipCard, AccordionCard, MatchupCard (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 03 — Ergonomic Forms & Inputs](llms-full.txt): FormField, Input, TextArea, Select, Checkbox, RadioCardGroup, ToggleSwitch, PasswordInput, Button (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 04 — Analytical Telemetry & Graphs](llms-full.txt): ProgressBar, StatRing, StatCard, Sparkline, BarChart, AreaChart, KnowledgeGraph, smoothPath, layoutGraph, cubicBezierEdge (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 05 — Chronology & Planners](llms-full.txt): EventTimeline, useModal, EventModal, TimelineManager, ChronicleTimeline (live demos + copy-paste in the playground's Pattern Studio)
-- [Set 06 — Data, Editorial & Feedback](llms-full.txt): DataTable, Callout, Carousel, CarouselItem, ProseBlock, AnnouncementBanner, EmptyState, ToastProvider, useToast (live demos + copy-paste in the playground's Pattern Studio)
+- [Set 06 — Data, Editorial & Feedback](llms-full.txt): DataTable, Callout, Carousel, CarouselItem, ProseBlock, AnnouncementBanner, EmptyState, ToastProvider, useToast, ConfirmDialog (live demos + copy-paste in the playground's Pattern Studio)
 - [Set 07 — Web Components (zero-react)](llms-full.txt): SigWcSurfaceCard, SigWcBadge, SigWcProgressBar, SigWcStatRing, SigWcCallout, SigWcCarousel (live demos + copy-paste in the playground's Pattern Studio)
-- [Set 08 — Motion & Kinetics](llms-full.txt): KineticTokens, AnimatedNumber, MotionReveal, KineticSurface, MotionLabTimeDilation, FallbackFirstData, AuroraBorderCard, TiltSurface, StatusBeacon, WaveformBars (live demos + copy-paste in the playground's Motion Lab)
+- [Set 08 — Motion & Kinetics](llms-full.txt): KineticTokens, AnimatedNumber, MotionReveal, KineticSurface, MotionLabTimeDilation, FallbackFirstData, AuroraBorderCard, TiltSurface, StatusBeacon, WaveformBars, StaggerWave, SpringPucks, MorphDrawer, TelemetrySweep (live demos + copy-paste in the playground's Motion Lab)
 
 ## Full-Page Layout Blueprints (3.8.0)
 
-- [Blueprint saas — SaaS Landing](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template saas)
-- [Blueprint docs — Docs Reader](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template docs)
-- [Blueprint telemetry — Telemetry Center](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template telemetry)
+- [Blueprint telemetry — Match & Telemetry Analytics Hub](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template telemetry)
+- [Blueprint microlab — Interactive Micro-Lab & Discovery Deck](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template microlab)
 
 ## Recipes
 

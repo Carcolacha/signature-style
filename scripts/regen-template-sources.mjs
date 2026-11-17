@@ -30,9 +30,8 @@ function escapeTemplate(source) {
 }
 
 const TEMPLATES = [
-  ["saas", "SaasLandingTemplate.tsx"],
-  ["docs", "DocsReaderTemplate.tsx"],
   ["telemetry", "TelemetryCenterTemplate.tsx"],
+  ["microlab", "MicroLabTemplate.tsx"],
 ];
 
 const entries = TEMPLATES.map(([id, file]) => {

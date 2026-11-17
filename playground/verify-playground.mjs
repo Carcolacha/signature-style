@@ -837,7 +837,7 @@ const WC_EXPORT = {
   import: "./dist/wc/signature-wc.es.js",
   default: "./dist/wc/signature-wc.es.js",
 };
-const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx", "!react/command.tsx", "!react/skeleton.tsx", "!react/motion.tsx"];
+const FILES_NEGATIONS = ["!react/surface.tsx", "!react/data.tsx", "!react/editorial.tsx", "!react/cards.tsx", "!react/graph.tsx", "!react/timeline-manager.tsx", "!react/command.tsx", "!react/skeleton.tsx", "!react/motion.tsx", "!react/overlays.tsx"];
 let v140pkg = null;
 try {
   v140pkg = JSON.parse(execFileSync("git", ["show", "v1.4.0:package.json"], { cwd: root, encoding: "utf8" }));
@@ -872,7 +872,7 @@ if (v140pkg !== null) {
   const expectedFiles = ["bin", ...(v140pkg.files ?? []), "dist/wc", ...FILES_NEGATIONS];
   if (stableJson(pkg.files) !== stableJson(expectedFiles)) {
     failures.push(
-      "(b2) package.json files must be \"bin\" (3.3.0) + the v1.4.0 array + \"dist/wc\" (the 3.4.0 WC amendment) EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx + !react/motion.tsx (3.7.0) — the packing contract evolves documented steps",
+      "(b2) package.json files must be \"bin\" (3.3.0) + the v1.4.0 array + \"dist/wc\" (the 3.4.0 WC amendment) EXACTLY plus the negations !react/surface.tsx + !react/data.tsx + !react/editorial.tsx + !react/cards.tsx + !react/graph.tsx + !react/timeline-manager.tsx + !react/command.tsx + !react/skeleton.tsx + !react/motion.tsx (3.7.0) + !react/overlays.tsx (4.0.0) — the packing contract evolves documented steps",
     );
   }
 }
@@ -904,9 +904,9 @@ try {
 const totalFiles = packOutput.match(/total files:\s*(\d+)/);
 if (totalFiles === null) {
   if (packOutput !== "") failures.push("(b3) could not parse npm pack total files output");
-} else if (totalFiles[1] !== "68") {
+} else if (totalFiles[1] !== "71") {
   failures.push(
-    `(b3) npm pack must pack EXACTLY 68 files (3.8.0: 67 + bin/templates.mjs — the full-page template map), found ${totalFiles[1]}`,
+    `(b3) npm pack must pack EXACTLY 71 files (4.0.0: 68 + css/overlays.css + react/overlays.js + react/overlays.d.ts — the ConfirmDialog norm ships), found ${totalFiles[1]}`,
   );
 }
 
@@ -4481,7 +4481,7 @@ const PS_APP_REQUIREMENTS = [
   ['variant="danger"', "the Reset button's attention variant"],
   ["Export JSON", "the export label"],
   ["Import JSON", "the import label"],
-  ["Reset\n          </Button>", "the reset label"],
+  ["Reset Workspace\n          </Button>", "the reset label (4.0.0: the norm renamed + dialog-wired)"],
   ['accept=".json"', "the hidden file input's filter"],
   ["type=\"file\"", "the hidden import input"],
 ];
@@ -5478,12 +5478,14 @@ if (!existsSync(llmsFullPath)) {
 //      was never shipped there). Asserted scrim-only.
 //   2. css/timeline.css DOES blur — the 1.8.0 glass header, pinned by
 //      the (g2) gate (in-content sticky chrome, not a scrim). It stays.
-// The real contract: exactly TWO files may use backdrop-filter —
-// css/command.css (the z-50 palette) and css/timeline.css (the 1.8.0
-// glass header); nav (z-30) stays blur-free; no other css file picks
-// the property up.
+// The real contract: exactly THREE files may use backdrop-filter —
+// css/command.css (the z-50 palette), css/timeline.css (the 1.8.0
+// glass header), and css/overlays.css (4.0.0: the ConfirmDialog card
+// joins the sanctioned blur surfaces — the (bd1) amendment,
+// z-50 modal rung, enumerated in the release notes); nav (z-30) stays
+// blur-free; no other css file picks the property up.
 {
-  const BD1_ALLOWED = new Set(["css/command.css", "css/timeline.css"]);
+  const BD1_ALLOWED = new Set(["css/command.css", "css/timeline.css", "css/overlays.css"]);
   const found = new Set();
   for (const f of readdirSync(resolve(root, "css")).map((name) => join("css", name))) {
     const text = readFileSync(resolve(root, f), "utf8");
@@ -5492,7 +5494,7 @@ if (!existsSync(llmsFullPath)) {
   for (const file of found) {
     if (!BD1_ALLOWED.has(file)) {
       failures.push(
-        `(bd1) ${file} uses backdrop-filter — glass blur is sanctioned ONLY in css/command.css (the z-50 palette) and css/timeline.css (the 1.8.0 glass header, (g2)-pinned)`,
+        `(bd1) ${file} uses backdrop-filter — glass blur is sanctioned ONLY in css/command.css (the z-50 palette), css/timeline.css (the 1.8.0 glass header, (g2)-pinned) and css/overlays.css (the 4.0.0 ConfirmDialog card)`,
       );
     }
   }
@@ -5664,15 +5666,12 @@ if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
   const sourcesSrc = readFileSync(sourcesPath, "utf8");
   const TPL1_REGISTRY_NEEDLES = [
     ["PAGE_TEMPLATES: Array<{", "the typed PAGE_TEMPLATES array"],
-    ['id: "saas"', "entry: saas"],
-    ['id: "docs"', "entry: docs"],
     ['id: "telemetry"', "entry: telemetry"],
-    ["Component: SaasLandingTemplate", "saas carries the LIVE component"],
-    ["Component: DocsReaderTemplate", "docs carries the LIVE component"],
+    ['id: "microlab"', "entry: microlab"],
     ["Component: TelemetryCenterTemplate", "telemetry carries the LIVE component"],
-    ["source: TEMPLATE_SOURCES.saas", "saas carries its SNIPPET string"],
-    ["source: TEMPLATE_SOURCES.docs", "docs carries its SNIPPET string"],
+    ["Component: MicroLabTemplate", "microlab carries the LIVE component"],
     ["source: TEMPLATE_SOURCES.telemetry", "telemetry carries its SNIPPET string"],
+    ["source: TEMPLATE_SOURCES.microlab", "microlab carries its SNIPPET string"],
     ["TEMPLATE_SLUGS", "the breadcrumb slug map"],
   ];
   for (const [needle, label] of TPL1_REGISTRY_NEEDLES) {
@@ -5683,9 +5682,8 @@ if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
   // The three .tsx files: default export + package-only imports + embedded
   // style + reduced motion + zero hex.
   for (const [file, marker] of [
-    ["SaasLandingTemplate.tsx", "SaasLanding"],
-    ["DocsReaderTemplate.tsx", "DocsReader"],
     ["TelemetryCenterTemplate.tsx", "TelemetryCenter"],
+    ["MicroLabTemplate.tsx", "MicroLab"],
   ]) {
     const tplSrc = readFileSync(join(playground, "templates", file), "utf8");
     if (!tplSrc.includes(`export default function ${marker}Template`)) {
@@ -5711,8 +5709,8 @@ if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
       failures.push(`(tpl1) template-sources.ts must embed ${file}'s content verbatim (the SNIPPET strings are mechanically derived — drift between the live component and the copy payload is forbidden)`);
     }
   }
-  if (!/export type TemplateId = "saas" \| "docs" \| "telemetry"/.test(sourcesSrc)) {
-    failures.push('(tpl1) template-sources.ts must declare TemplateId = "saas" | "docs" | "telemetry"');
+  if (!/export type TemplateId = "telemetry" \| "microlab"/.test(sourcesSrc)) {
+    failures.push('(tpl1) template-sources.ts must declare TemplateId = "telemetry" | "microlab"');
   }
 }
 
@@ -5729,12 +5727,12 @@ if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
     ['{ href: VIEW_HREFS.templates, label: "Templates" }', "the nav item"],
     ["view === \"templates\" ? (", "the render branch"],
     ["<TemplatesStudioView activeId={activeTemplate} onActiveChange={setActiveTemplate} />", "the controlled studio mount"],
-    ["const [activeTemplate, setActiveTemplate] = useState<TemplateId>(\"saas\")", "the LIFTED active-template state"],
-    ["TEMPLATE_SLUGS[activeTemplate]", "the breadcrumbs read the slug (engine / templates / saas-landing)"],
+    ["const [activeTemplate, setActiveTemplate] = useState<TemplateId>(\"telemetry\")", "the LIFTED active-template state"],
+    ["TEMPLATE_SLUGS[activeTemplate]", "the breadcrumbs read the slug (engine / templates / analytics-hub)"],
     ['id: "view-templates"', "the palette view jump"],
     ["Templates: ${template.name}", "the palette per-template jumps"],
     ['title: "THE TEMPLATES STUDIO"', "the hero"],
-    ["three full-page blueprints · preview, theme & copy · one CLI command each", "the hero subtitle"],
+    ["two human-crafted blueprints · preview, theme & copy · one CLI command each", "the hero subtitle"],
   ];
   for (const [needle, label] of TPL2_APP_NEEDLES) {
     if (!appSrc.includes(needle)) {

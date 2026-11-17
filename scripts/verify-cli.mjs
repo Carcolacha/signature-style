@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * scripts/verify-cli.mjs — the verify:cli gate (3.3.0 "Zero-Dependency npx CLI Scaffolder").
+ * scripts/verify-cli.mjs — the verify:cli gate (3.3.0 "Zero-Dependency npx CLI Scaffolder";
+ * 4.0.0 the blueprint set change).
  * ----------------------------------------------------------------------------
  * Pure fs/process assertions — no browser, no external deps. Three layers:
  *
@@ -17,15 +18,18 @@
  *        sentinel survives ([skip]); with --force it is replaced by the
  *        mocha values ([overwrite]).
  *     D  detection labels — folded into A ("vite-react") and B ("html").
- *     E  (3.8.0) mock React project — saas: exit 0 ·
- *        SignatureSaasLanding.tsx carries the "SaasLanding" marker + the
- *        "@edwyn/signature-style/react" import + the embedded <style> +
- *        README names the template + the install note.
- *     F  (3.8.0) mock React project — docs: same shape (DocsReader).
- *     G  (3.8.0) BOTH flavors — telemetry: vite-react dir →
- *        SignatureTelemetryCenter.tsx (marker + import); html dir →
- *        signature-starter.html carries TelemetryCenter + the tokens link
- *        + the mirror contract note.
+ *     G  (4.0.0) BOTH flavors — telemetry (the Match & Telemetry Analytics
+ *        Hub): vite-react dir → SignatureTelemetryCenter.tsx (the
+ *        TelemetryCenter marker + the @edwyn import + the analytics
+ *        needles); html dir → signature-starter.html carries
+ *        TelemetryCenter + the tokens link + the mirror contract note.
+ *     H  (4.0.0) BOTH flavors — microlab (the Interactive Micro-Lab &
+ *        Discovery Deck): tsx → SignatureMicroLab.tsx (MicroLab marker +
+ *        the reaction test / deck / waveform needles); html → the mirror
+ *        (marker + tokens link + the STATIC note).
+ *        (RETIRED 4.0.0: scenarios E/F — the generic saas/docs templates
+ *        died with the blueprint set change; an unknown --template saas
+ *        now exits 1 — asserted in H.)
  *
  *   GATES:
  *     cli1  bin/cli.mjs exists · shebang first line · every import specifier
@@ -37,16 +41,16 @@
  *           tokens.css mocha values ever change, this gate FAILS and the
  *           CLI map must be regenerated.
  *     cli3  package.json wiring — bin entry, files += "bin", both scripts.
- *     tpl3  (3.8.0) THE CLI TEMPLATE PARITY — PAGE_TEMPLATES (bin) carries
- *           EXACTLY saas/docs/telemetry with markers + "@edwyn" imports in
- *           every tsxSource + the mirror contract note in every htmlSource,
- *           and the ids match playground/template-registry.ts 3 = 3 (the
- *           drift-lite needle: a registry id without a bin entry — or vice
- *           versa — fails).
- *     b3    `npm pack --dry-run` reports EXACTLY 68 files (the 67-file
- *           3.7.0 tarball + bin/templates.mjs — the CLI ships it: cli.mjs
- *           imports templates.mjs at npx runtime; playground files are
- *           excluded).
+ *     tpl3  (3.8.0; 4.0.0 updated) THE CLI TEMPLATE PARITY — PAGE_TEMPLATES
+ *           (bin) carries EXACTLY telemetry/microlab with markers +
+ *           "@edwyn" imports in every tsxSource + the mirror contract note
+ *           in every htmlSource, and the ids match
+ *           playground/template-registry.ts 2 = 2 (the drift-lite needle).
+ *     b3    `npm pack --dry-run` reports EXACTLY 71 files (the 68-file
+ *           3.9.0 tarball + css/overlays.css + react/overlays.js +
+ *           react/overlays.d.ts — the ConfirmDialog norm ships; playground
+ *           files are excluded; react/overlays.tsx is negated like every
+ *           other package source).
  *
  * Cleanup: every tmp dir dies in a finally. Exit 0 only when ALL green.
  */
@@ -201,70 +205,10 @@ function scenarioC() {
 }
 
 // ---------------------------------------------------------------------------
-// Scenario E — mock React (vite.config.ts + vite dep) · saas (3.8.0)
-// ---------------------------------------------------------------------------
-function scenarioE() {
-  process.stdout.write("\nscenario E — mock React (vite) \u00b7 saas \u00b7 oled\n");
-  const dir = mkdtempSync(join(tmpdir(), "sig-cli-e-"));
-  try {
-    writeFileSync(join(dir, "vite.config.ts"), "export default {};\n");
-    writeFileSync(join(dir, "package.json"), JSON.stringify({ dependencies: { vite: "^5.0.0" } }));
-
-    const res = runInit(dir, ["--template", "saas", "--theme", "oled", "--yes"]);
-    check(res.status === 0, "E \u00b7 exit 0", `status ${res.status}; stderr: ${res.stderr.slice(0, 300)}`);
-    check(res.stdout.includes("Next steps"), "E \u00b7 summary printout");
-
-    const tsx = read(join(dir, "SignatureSaasLanding.tsx"));
-    check(tsx.length > 0, "E \u00b7 SignatureSaasLanding.tsx written");
-    check(tsx.includes("SaasLanding"), "E \u00b7 the SaasLanding marker");
-    check(tsx.includes('from "@edwyn/signature-style/react"'), "E \u00b7 the @edwyn/signature-style/react import");
-    check(tsx.includes("<style>"), "E \u00b7 the embedded <style> (self-contained)");
-    check(tsx.includes("export default"), "E \u00b7 the default-export page");
-    check(!tsx.includes("signature-bento.css"), "E \u00b7 no companion css (styles are embedded)");
-    check(!existsSync(join(dir, "signature-bento.css")), "E \u00b7 no signature-bento.css companion written");
-    check(existsSync(join(dir, "signature-tokens.css")), "E \u00b7 signature-tokens.css written");
-    check(res.stdout.includes("npm i @edwyn/signature-style"), "E \u00b7 the install note rides the summary");
-
-    const readme = read(join(dir, "README-SIGNATURE.md"));
-    check(readme.includes("SaaS Landing"), "E \u00b7 README names the template");
-    check(readme.includes('import "@edwyn/signature-style/css"'), "E \u00b7 README carries the tokens-css import note");
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Scenario F — mock React (vite.config.ts + vite dep) · docs (3.8.0)
-// ---------------------------------------------------------------------------
-function scenarioF() {
-  process.stdout.write("\nscenario F — mock React (vite) \u00b7 docs \u00b7 mocha\n");
-  const dir = mkdtempSync(join(tmpdir(), "sig-cli-f-"));
-  try {
-    writeFileSync(join(dir, "vite.config.ts"), "export default {};\n");
-    writeFileSync(join(dir, "package.json"), JSON.stringify({ dependencies: { vite: "^5.0.0" } }));
-
-    const res = runInit(dir, ["--template", "docs", "--yes"]);
-    check(res.status === 0, "F \u00b7 exit 0", `status ${res.status}; stderr: ${res.stderr.slice(0, 300)}`);
-
-    const tsx = read(join(dir, "SignatureDocsReader.tsx"));
-    check(tsx.length > 0, "F \u00b7 SignatureDocsReader.tsx written");
-    check(tsx.includes("DocsReader"), "F \u00b7 the DocsReader marker");
-    check(tsx.includes('from "@edwyn/signature-style/react"'), "F \u00b7 the @edwyn/signature-style/react import");
-    check(tsx.includes("@container"), "F \u00b7 the container-query collapse (1023px) ships");
-    check(tsx.includes("prefers-reduced-motion"), "F \u00b7 the reduced-motion guard ships");
-
-    const invalid = runInit(dir, ["--template", "pricing", "--yes"]);
-    check(invalid.status === 1 && invalid.stderr.includes('invalid --template "pricing"'), "F \u00b7 an unknown --template is a clean exit-1 error");
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Scenario G — BOTH flavors · telemetry (3.8.0): vite-react tsx + html mirror
+// Scenario G — BOTH flavors · telemetry (4.0.0 analytics hub): vite-react tsx + html mirror
 // ---------------------------------------------------------------------------
 function scenarioG() {
-  process.stdout.write("\nscenario G — telemetry \u00b7 vite-react tsx + html static mirror\n");
+  process.stdout.write("\nscenario G — telemetry (Match & Telemetry Analytics Hub) · vite-react tsx + html static mirror\n");
   const dir = mkdtempSync(join(tmpdir(), "sig-cli-g-"));
   const htmlDir = mkdtempSync(join(tmpdir(), "sig-cli-g-html-"));
   try {
@@ -276,6 +220,9 @@ function scenarioG() {
     const tsx = read(join(dir, "SignatureTelemetryCenter.tsx"));
     check(tsx.includes("TelemetryCenter"), "G \u00b7 the TelemetryCenter marker (tsx)");
     check(tsx.includes('from "@edwyn/signature-style/react"'), "G \u00b7 the @edwyn/signature-style/react import (tsx)");
+    check(tsx.includes("StatRing"), "G \u00b7 the win-rate StatRing ships (the analytics hub)", "no StatRing in the payload");
+    check(tsx.includes("DataTable"), "G \u00b7 the Match History DataTable ships");
+    check(tsx.includes("--sig-mint") && tsx.includes("--sig-crimson"), "G \u00b7 the mint Win / crimson Loss badges ship");
     check(!existsSync(join(dir, "signature-starter.html")), "G \u00b7 tsx flavor does NOT emit the html mirror");
 
     // G2 — the html flavor: the STATIC mirror.
@@ -290,6 +237,55 @@ function scenarioG() {
     const mirrorHexes = mirror.match(/#[0-9a-f]{3,8}\b/gi);
     check(mirrorHexes === null, "G \u00b7 the mirror is token-driven, zero hex", (mirrorHexes ?? []).join(", "));
     check(resHtml.stdout.includes("STATIC mirror"), "G \u00b7 the summary names the static mirror");
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+    rmSync(htmlDir, { recursive: true, force: true });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Scenario H — BOTH flavors · microlab (4.0.0): vite-react tsx + html mirror
+// ---------------------------------------------------------------------------
+function scenarioH() {
+  process.stdout.write("\nscenario H — microlab (Interactive Micro-Lab & Discovery Deck) \u00b7 vite-react tsx + html static mirror\n");
+  const dir = mkdtempSync(join(tmpdir(), "sig-cli-h-"));
+  const htmlDir = mkdtempSync(join(tmpdir(), "sig-cli-h-html-"));
+  try {
+    // H1 — the vite-react flavor.
+    writeFileSync(join(dir, "vite.config.ts"), "export default {};\n");
+    writeFileSync(join(dir, "package.json"), JSON.stringify({ dependencies: { vite: "^5.0.0" } }));
+    const res = runInit(dir, ["--template", "microlab", "--yes"]);
+    check(res.status === 0, "H \u00b7 tsx flavor exit 0", `status ${res.status}; stderr: ${res.stderr.slice(0, 300)}`);
+    const tsx = read(join(dir, "SignatureMicroLab.tsx"));
+    check(tsx.includes("MicroLab"), "H \u00b7 the MicroLab marker (tsx)");
+    check(tsx.includes('from "@edwyn/signature-style/react"'), "H \u00b7 the @edwyn/signature-style/react import (tsx)");
+    check(tsx.includes("FlipCard"), "H \u00b7 the prompt-deck FlipCards ship");
+    check(tsx.includes("WaveformBars"), "H \u00b7 the waveform toy ships");
+    check(tsx.includes("--sig-neon-green"), "H \u00b7 the reaction surface's neon-green GO ground ships");
+
+    // H2 — the RETIRED templates are GONE: saas/docs are clean exit-1 errors
+    //      (exit-1 makes no writes, so the shared dir stays clean).
+    const retiredSaas = runInit(dir, ["--template", "saas", "--yes"]);
+    check(retiredSaas.status === 1 && retiredSaas.stderr.includes('invalid --template "saas"'), "H \u00b7 the RETIRED saas template is a clean exit-1 error");
+    const retiredDocs = runInit(dir, ["--template", "docs", "--yes"]);
+    check(retiredDocs.status === 1 && retiredDocs.stderr.includes('invalid --template "docs"'), "H \u00b7 the RETIRED docs template is a clean exit-1 error");
+    const invalid = runInit(dir, ["--template", "pricing", "--yes"]);
+    check(invalid.status === 1 && invalid.stderr.includes('invalid --template "pricing"'), "H \u00b7 an unknown --template is a clean exit-1 error");
+
+    // H3 — the html flavor: the STATIC mirror.
+    writeFileSync(join(htmlDir, "index.html"), "<!doctype html>\n<html></html>\n");
+    const resHtml = runInit(htmlDir, ["--template", "microlab", "--yes"]);
+    check(resHtml.status === 0, "H \u00b7 html flavor exit 0", `status ${resHtml.status}; stderr: ${resHtml.stderr.slice(0, 300)}`);
+    const mirror = read(join(htmlDir, "signature-starter.html"));
+    check(mirror.includes("MicroLab"), "H \u00b7 the MicroLab marker (html)");
+    check(mirror.includes('./signature-tokens.css'), "H \u00b7 the mirror links the tokens css");
+    check(mirror.includes("STATIC mirror") || mirror.includes("static mirror"), "H \u00b7 the mirror contract is documented in the file");
+    check(mirror.includes("prefers-reduced-motion"), "H \u00b7 the mirror carries the reduced-motion guard");
+    const mirrorHexes = mirror.match(/#[0-9a-f]{3,8}\b/gi);
+    check(mirrorHexes === null, "H \u00b7 the mirror is token-driven, zero hex", (mirrorHexes ?? []).join(", "));
+    check(resHtml.stdout.includes("STATIC mirror"), "H \u00b7 the summary names the static mirror");
+    const readme = read(join(dir, "README-SIGNATURE.md"));
+    check(readme.includes("Interactive Micro-Lab & Discovery Deck"), "H \u00b7 README names the template");
   } finally {
     rmSync(dir, { recursive: true, force: true });
     rmSync(htmlDir, { recursive: true, force: true });
@@ -492,8 +488,8 @@ async function gateTpl3() {
   const { PAGE_TEMPLATES, PAGE_TEMPLATE_NAMES } = await import(join(root, "bin", "templates.mjs"));
   const ids = Object.keys(PAGE_TEMPLATES);
   check(
-    JSON.stringify(PAGE_TEMPLATE_NAMES) === JSON.stringify(["saas", "docs", "telemetry"]),
-    "tpl3 \u00b7 PAGE_TEMPLATE_NAMES is exactly [saas, docs, telemetry]",
+    JSON.stringify(PAGE_TEMPLATE_NAMES) === JSON.stringify(["telemetry", "microlab"]),
+    "tpl3 \u00b7 PAGE_TEMPLATE_NAMES is exactly [telemetry, microlab]",
     JSON.stringify(PAGE_TEMPLATE_NAMES),
   );
   for (const id of ids) {
@@ -507,11 +503,11 @@ async function gateTpl3() {
   }
   // THE DRIFT-LITE NEEDLE — registry ids ↔ bin entries, 3 = 3.
   const registrySrc = read(join(root, "playground", "template-registry.ts"));
-  const registryIds = [...new Set([...registrySrc.matchAll(/id: "(saas|docs|telemetry)"/g)].map((m) => m[1]))].sort();
+  const registryIds = [...new Set([...registrySrc.matchAll(/id: "(telemetry|microlab)"/g)].map((m) => m[1]))].sort();
   const binIds = ids.slice().sort();
   check(
-    registryIds.length === 3 && JSON.stringify(registryIds) === JSON.stringify(binIds),
-    `tpl3 \u00b7 registry ids parity 3 = 3 (registry: ${registryIds.join(",")} · bin: ${binIds.join(",")})`,
+    registryIds.length === 2 && JSON.stringify(registryIds) === JSON.stringify(binIds),
+    `tpl3 \u00b7 registry ids parity 2 = 2 (registry: ${registryIds.join(",")} · bin: ${binIds.join(",")})`,
     `registry ${JSON.stringify(registryIds)} vs bin ${JSON.stringify(binIds)}`,
   );
   // The cli.mjs wiring: the page templates are real --template choices.
@@ -531,16 +527,18 @@ function gatePack() {
   const notice = `${res.stdout ?? ""}\n${res.stderr ?? ""}`;
   const match = notice.match(/total files:\s*(\d+)/);
   const total = match ? Number(match[1]) : -1;
-  // 67 (the 3.7.0 tarball) + bin/templates.mjs — the full-page template
-  // map the CLI imports at npx runtime (playground files excluded — the
-  // templates ride the EMBEDDED copies in bin/templates.mjs).
-  check(total === 68, "b3 \u00b7 pack reports EXACTLY 68 files (67 + bin/templates.mjs — the full-page template map)", `found ${total}`);
+  // 68 (the 3.9.0 tarball) + css/overlays.css + react/overlays.js +
+  // react/overlays.d.ts — the ConfirmDialog norm's three shipped files
+  // (the overlays.tsx SOURCE is negated in package.json's files array
+  // like every other package source; playground files are excluded —
+  // the templates ride the EMBEDDED copies in bin/templates.mjs).
+  check(total === 71, "b3 \u00b7 pack reports EXACTLY 71 files (68 + overlays.css/js/d.ts — the ConfirmDialog norm ships)", `found ${total}`);
 }
 
 // ---------------------------------------------------------------------------
 // run everything
 // ---------------------------------------------------------------------------
-for (const layer of [scenarioA, scenarioB, scenarioC, scenarioE, scenarioF, scenarioG, gateCli1, gateCli2, gateCli3, gateTpl3, gatePack]) {
+for (const layer of [scenarioA, scenarioB, scenarioC, scenarioG, scenarioH, gateCli1, gateCli2, gateCli3, gateTpl3, gatePack]) {
   await layer();
 }
 
@@ -549,5 +547,5 @@ if (failures.length > 0) {
   for (const failure of failures) process.stderr.write(`  \u2717 ${failure}\n`);
   process.exitCode = 1;
 } else {
-  process.stdout.write(`\nPASS — verify:cli: ${passed} checks green (scenarios A\u2013G + gates cli1/cli2/cli3/tpl3/b3; tmp dirs cleaned)\n`);
+  process.stdout.write(`\nPASS — verify:cli: ${passed} checks green (scenarios A\u2013C, G\u2013H + gates cli1/cli2/cli3/tpl3/b3; tmp dirs cleaned)\n`);
 }
