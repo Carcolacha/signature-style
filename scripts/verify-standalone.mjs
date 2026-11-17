@@ -29,6 +29,10 @@
  *     carry the literal ".ptp-" prefix to rename the v1.8.0 baseline
  *     before diffing — a rename is not a deletion) plus its two
  *     documenting comments.
+ *   - docs/MIGRATION.md: EXACTLY 9 matches — the migration guide's
+ *     rename tables name the old API surface so consumers can migrate
+ *     (the owner-sanctioned "formerly" case; README.md carries ZERO
+ *     sanctioned matches — the product page is fully clean).
  * If a future legitimate need arises (e.g. a doc says "formerly
  * PlanThenParty"), add a file + count pin here, documented.
  *
@@ -58,14 +62,16 @@ const SKIP_EXTS = new Set([
  * map with a DIFFERENT count fails; a file NOT in this map with ANY
  * match fails.
  *
- * README.md is pinned to 9: the BREAKING CHANGES table EXISTS to name
- * the old API surface so consumers can migrate (v3.0.0 → v3.1.0) —
- * the owner-sanctioned "formerly" case. Old names anywhere else are
- * residue.
+ * README.md is deliberately ABSENT — the product page must be FULLY
+ * clean: zero banned vocabulary, zero allowlisted matches. The
+ * owner-sanctioned "formerly" mentions (the old API surface, named so
+ * consumers can migrate) live in docs/MIGRATION.md, pinned to EXACTLY
+ * 9 — the rename tables are that document's whole reason to exist.
+ * Old names anywhere else are residue.
  */
 const ALLOWLIST = new Map([
   ["playground/verify-playground.mjs", 3],
-  ["README.md", 9],
+  ["docs/MIGRATION.md", 9],
 ]);
 /** This gate excludes itself (its source names the banned words). */
 const SELF = relative(root, resolve(here, "verify-standalone.mjs")).split(sep).join("/");
@@ -109,7 +115,7 @@ for (const [file, pinned] of ALLOWLIST) {
   const got = allowHits.get(file) ?? 0;
   if (got !== pinned) {
     failures.push(
-      `(allowlist) ${file} is pinned to EXACTLY ${pinned} sanctioned matches (the (e2) rename-map machinery), found ${got} — adjust the gate machinery or the pin, never the vocabulary`,
+      `(allowlist) ${file} is pinned to EXACTLY ${pinned} sanctioned matches, found ${got} — adjust the gate machinery or the pin, never the vocabulary`,
     );
   }
 }
