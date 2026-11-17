@@ -6,7 +6,7 @@
 Spec: [`docs/superpowers/specs/2026-11-12-signature-style-design.md`](../superpowers/specs/2026-11-12-signature-style-design.md)
 
 ## Task 0 — Scaffold
-`git init -b main`. `package.json` (`@edwyn/signature-style` 0.1.0, type module,
+`git init -b main`. `package.json` (`@carcolacha/signature-style` 0.1.0, type module,
 exports map for `.`, `./tokens.css`, `./cascade.css`, `./overrides.css`,
 `./tokens.json`, `./system-prompt.md`, `./react` with types/import/default;
 peerDeps react >=18; devDeps typescript + @types/react + @types/react-dom),

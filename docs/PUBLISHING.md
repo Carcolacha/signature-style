@@ -56,9 +56,9 @@ publishes to npm with `--access public`.
 
 | Path | Resolves to | Needs peers? |
 |---|---|---|
-| `@edwyn/signature-style` | `tokens.json` (AI tooling core) | never |
-| `@edwyn/signature-style/css` | `css/signature-style.css` (compiled bundle: tokens + base + cascade (timeline, modal) + overrides layers) | never |
-| `@edwyn/signature-style/react` | umbrella `react/index.js` + `.d.ts` | `react`, `react-dom`; `lucide-react` optional |
+| `@carcolacha/signature-style` | `tokens.json` (AI tooling core) | never |
+| `@carcolacha/signature-style/css` | `css/signature-style.css` (compiled bundle: tokens + base + cascade (timeline, modal) + overrides layers) | never |
+| `@carcolacha/signature-style/react` | umbrella `react/index.js` + `.d.ts` | `react`, `react-dom`; `lucide-react` optional |
 
 Peers are **strictly peers, never bundled**: `react >=18` and
 `react-dom >=18` are required peers; `lucide-react >=0.400.0` is an
@@ -69,5 +69,5 @@ The granular stylesheets (`tokens.css`, `cascade.css`, `overrides.css`,
 `timeline.css`, `modal.css`) and `SYSTEM_PROMPT.md` ship inside the
 tarball but have no export-map entries anymore — the bundle covers
 everything. Consumers who truly need a granular file import it via the
-node_modules path (`node_modules/@edwyn/signature-style/css/tokens.css`)
+node_modules path (`node_modules/@carcolacha/signature-style/css/tokens.css`)
 or a deep path, at their own risk.

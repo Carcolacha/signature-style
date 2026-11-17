@@ -47,7 +47,7 @@ export const MOTION_SNIPPETS: Record<string, SnippetEntry> = {
   AnimatedNumber: {
     set: "08",
     componentName: "AnimatedNumber",
-    jsx: `import { AnimatedNumber } from "@edwyn/signature-style/react";
+    jsx: `import { AnimatedNumber } from "@carcolacha/signature-style/react";
 
 <AnimatedNumber value={1740} prefix="$" />
 <AnimatedNumber value={63.4} suffix="%" decimals={1} />
@@ -61,7 +61,7 @@ export const MOTION_SNIPPETS: Record<string, SnippetEntry> = {
   MotionReveal: {
     set: "08",
     componentName: "MotionReveal",
-    jsx: `import { MotionReveal } from "@edwyn/signature-style/react";
+    jsx: `import { MotionReveal } from "@carcolacha/signature-style/react";
 
 {cards.map((card, index) => (
   <MotionReveal
@@ -80,7 +80,7 @@ export const MOTION_SNIPPETS: Record<string, SnippetEntry> = {
   KineticSurface: {
     set: "08",
     componentName: "KineticSurface",
-    jsx: `import { KineticSurface } from "@edwyn/signature-style/react";
+    jsx: `import { KineticSurface } from "@carcolacha/signature-style/react";
 
 <KineticSurface accentToken="--sig-cyan">
   <p>Move the cursor across me — the sheen tracks it.</p>
@@ -146,7 +146,7 @@ useEffect(() => {
   AuroraBorderCard: {
     set: "08",
     componentName: "AuroraBorderCard",
-    jsx: `import { AuroraBorderCard } from "@edwyn/signature-style/react";
+    jsx: `import { AuroraBorderCard } from "@carcolacha/signature-style/react";
 
 <AuroraBorderCard accentTokens={["--sig-cyan", "--sig-orchid", "--sig-mint", "--sig-cobalt"]} trigger="hover">
   <p>The beam spins on hover.</p>
@@ -165,7 +165,7 @@ useEffect(() => {
   TiltSurface: {
     set: "08",
     componentName: "TiltSurface",
-    jsx: `import { TiltSurface } from "@edwyn/signature-style/react";
+    jsx: `import { TiltSurface } from "@carcolacha/signature-style/react";
 
 <TiltSurface tilt={6} accentToken="--sig-rose-glow">
   <p>Tilt with the cursor — the sheen rides along.</p>
@@ -179,7 +179,7 @@ useEffect(() => {
   StatusBeacon: {
     set: "08",
     componentName: "StatusBeacon",
-    jsx: `import { StatusBeacon } from "@edwyn/signature-style/react";
+    jsx: `import { StatusBeacon } from "@carcolacha/signature-style/react";
 
 <StatusBeacon status="live" colorToken="--sig-green" />
 <StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
@@ -191,7 +191,7 @@ useEffect(() => {
   WaveformBars: {
     set: "08",
     componentName: "WaveformBars",
-    jsx: `import { WaveformBars } from "@edwyn/signature-style/react";
+    jsx: `import { WaveformBars } from "@carcolacha/signature-style/react";
 
 <WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
 <WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />
@@ -268,7 +268,7 @@ const [open, setOpen] = useState(false);
     set: "08",
     componentName: "The telemetry sweep (three instruments, one trigger)",
     jsx: `import { useState } from "react";
-import { AnimatedNumber, AreaChart, StatRing } from "@edwyn/signature-style/react";
+import { AnimatedNumber, AreaChart, StatRing } from "@carcolacha/signature-style/react";
 
 // 4.0.0 — ONE trigger, THREE instruments: the number ROLLS (rAF
 // spring), the ring's arc JUMPS (stroke-dashoffset transition), and

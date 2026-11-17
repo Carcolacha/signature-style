@@ -15,7 +15,7 @@
  */
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Icon } from "@edwyn/signature-style/react";
+import { Icon } from "@carcolacha/signature-style/react";
 
 export interface ShortcutModalProps {
   /** Closes the modal (Escape, the backdrop, or the close button). */

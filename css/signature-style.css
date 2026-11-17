@@ -26,7 +26,7 @@
    @import url:
      <link rel="stylesheet" href=".../css/signature-style.css" />
    or, with a bundler that understands CSS:
-     import "@edwyn/signature-style";
+     import "@carcolacha/signature-style";
 
    ORDER DOCTRINE (the first three lines of this file are load-bearing):
    1. The @layer statement is the static half of the VULN-2 patch —

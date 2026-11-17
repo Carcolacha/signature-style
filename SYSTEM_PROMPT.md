@@ -54,38 +54,38 @@ The surface is a VERIFIED AXLE, not a hardcoded palette: the canonical theme mec
 - **The live customizer:** the playground's Pattern Studio carries the Theme & Surface Customizer panel (also reachable via the ⌘K palette: "Theme: Mocha/OLED/Daylight", "Radius: Standard/Sharp", "Download tokens.css", "Copy CSS Variables"). Theme + radius persist as ONE merged object under `sig.workspace.v3.prefs` (`{ theme, radius }`; the v3.2.0 per-axis keys survive as a one-time migration read — an old pick is adopted on first load). "Copy Theme Snippet" puts the canonical `<html data-sig-theme="…" data-sig-radius="…">` line on the clipboard. Until the user picks (now or in a pre-3.6.0 session), BOTH attributes stay ABSENT (the mocha/6px legacy look). Contrast badges render the 16 chromatic tokens for the ACTIVE theme with the same WCAG math the gate uses.
 
 ## Scaffolding (3.3.0 — the npx init CLI):
-New projects don't hand-wire tokens anymore: `npx @edwyn/signature-style init` scaffolds a resolved `signature-tokens.css` (one of the three themes + the standard geometry preset, zero dependencies) and, with `--template bento`, a standalone 12-column starter that already obeys every pillar on this page. The CLI's embedded theme map is drift-gated against `css/tokens.css` by `verify:cli` (cli2) — when scaffolding, the palette you get IS this document's palette. Prefer the CLI for fresh surfaces; hand-injection stays reserved for retrofits.
+New projects don't hand-wire tokens anymore: `npx @carcolacha/signature-style init` scaffolds a resolved `signature-tokens.css` (one of the three themes + the standard geometry preset, zero dependencies) and, with `--template bento`, a standalone 12-column starter that already obeys every pillar on this page. The CLI's embedded theme map is drift-gated against `css/tokens.css` by `verify:cli` (cli2) — when scaffolding, the palette you get IS this document's palette. Prefer the CLI for fresh surfaces; hand-injection stays reserved for retrofits.
 
 ## Full-Page Layout Blueprints (3.8.0 — the capstone; 4.0.0 the human-crafted set):
-The engine scaffolds ENTIRE SITES: two self-contained full-page templates — one default-export React page each, composed exclusively from `@edwyn/signature-style/react` exports + the kinetic primitives, carrying an embedded token-driven `<style>` block (zero hex, 8px grid, container queries so the page answers its CONTAINER width, reduced-motion honored). 4.0.0 BREAKING: the generic SaaS Landing + Docs Reader pair RETIRES; the set is the two authentic, human-crafted blueprints below — ORIGINAL content throughout (style-inspired, never copied: invented call signs, invented maps, deterministic mock numbers). In the playground's Templates Studio (`#/templates`) each blueprint previews live inside the viewport emulator (Desktop 100% / Tablet 768px / Mobile 375px), re-themes under the SCOPED switcher (`data-sig-theme` on the stage wrapper — the theme blocks are plain attribute selectors, so a div re-themes its subtree), and copies as full TSX. The CLI emits the same pages: `vite-react`/`next` hosts get the React blueprint; `html`/`fresh` hosts get a per-template STATIC HTML MIRROR (the same blocks as plain HTML + the tokens variables — one honest snapshot, not the React statefulness). The registry: `playground/template-registry.ts` → `PAGE_TEMPLATES` (`id` / `name` / `description` / `Component` / `source` — the source strings are the formatted standalone TSX, mechanically derived, so the copy payload can never drift).
+The engine scaffolds ENTIRE SITES: two self-contained full-page templates — one default-export React page each, composed exclusively from `@carcolacha/signature-style/react` exports + the kinetic primitives, carrying an embedded token-driven `<style>` block (zero hex, 8px grid, container queries so the page answers its CONTAINER width, reduced-motion honored). 4.0.0 BREAKING: the generic SaaS Landing + Docs Reader pair RETIRES; the set is the two authentic, human-crafted blueprints below — ORIGINAL content throughout (style-inspired, never copied: invented call signs, invented maps, deterministic mock numbers). In the playground's Templates Studio (`#/templates`) each blueprint previews live inside the viewport emulator (Desktop 100% / Tablet 768px / Mobile 375px), re-themes under the SCOPED switcher (`data-sig-theme` on the stage wrapper — the theme blocks are plain attribute selectors, so a div re-themes its subtree), and copies as full TSX. The CLI emits the same pages: `vite-react`/`next` hosts get the React blueprint; `html`/`fresh` hosts get a per-template STATIC HTML MIRROR (the same blocks as plain HTML + the tokens variables — one honest snapshot, not the React statefulness). The registry: `playground/template-registry.ts` → `PAGE_TEMPLATES` (`id` / `name` / `description` / `Component` / `source` — the source strings are the formatted standalone TSX, mechanically derived, so the copy payload can never drift).
 
 ### Blueprint 01 — Match & Telemetry Analytics Hub (`telemetry`):
-Block-by-block: (1) Player Summary header — the rank `SigBadge` (e.g. "Diamond II"), the invented call sign (2rem tabular), the live rating (`AnimatedNumber`, tabular-nums) and the 128px win-rate `StatRing` (the `size="md"` enum diameter — exactly 128×128 forever) → (2) Role/Class Mastery — a `BarChart` per-role breakdown (capacity tracks + chromatic bars) beside `ProgressBar` rows for the same four roles (limit captions "820 / 1000") → (3) Rating Momentum — an `AreaChart` of the last 12 sessions (the mount sweep draws the line) → (4) Match History Ledger — a filterable `DataTable` (Match · Score/KDA tabular-nums · Duration · Result wearing `--sig-mint` Win / `--sig-crimson` Loss `SigBadge`s; the `Input` filters rows live via `useMemo`). ALL CONTENT IS ORIGINAL: invented call signs, invented maps, deterministic mock numbers — the competitive-stats STYLE is the inspiration, never anyone's data. CLI: `npx @edwyn/signature-style init --template telemetry`.
+Block-by-block: (1) Player Summary header — the rank `SigBadge` (e.g. "Diamond II"), the invented call sign (2rem tabular), the live rating (`AnimatedNumber`, tabular-nums) and the 128px win-rate `StatRing` (the `size="md"` enum diameter — exactly 128×128 forever) → (2) Role/Class Mastery — a `BarChart` per-role breakdown (capacity tracks + chromatic bars) beside `ProgressBar` rows for the same four roles (limit captions "820 / 1000") → (3) Rating Momentum — an `AreaChart` of the last 12 sessions (the mount sweep draws the line) → (4) Match History Ledger — a filterable `DataTable` (Match · Score/KDA tabular-nums · Duration · Result wearing `--sig-mint` Win / `--sig-crimson` Loss `SigBadge`s; the `Input` filters rows live via `useMemo`). ALL CONTENT IS ORIGINAL: invented call signs, invented maps, deterministic mock numbers — the competitive-stats STYLE is the inspiration, never anyone's data. CLI: `npx @carcolacha/signature-style init --template telemetry`.
 
 Entry snippet:
 ```tsx
 import TelemetryCenterTemplate from "./SignatureTelemetryCenter";
 // entry.tsx — once, before your own styles:
-// import "@edwyn/signature-style/css";
+// import "@carcolacha/signature-style/css";
 <TelemetryCenterTemplate />
 ```
 
 ### Blueprint 02 — Interactive Micro-Lab & Discovery Deck (`microlab`):
-Block-by-block: (1) Millisecond Reaction-Time Test — a full-width surface that turns `--sig-neon-green` after a random 1–3s hold; the click measures the exact elapsed ms in tabular-nums. THE STATE MACHINE: idle → waiting → green → result; a too-early click reads "Too soon!" and resets (the pending timer dies with the click); best-of-5 tracked (last / best / average, tabular) → (2) Deterministic Idea/Prompt Deck — a grid of rich `FlipCard`s (eyebrow + accent-underlined title + body + the flip hint, per the 4.0.0 rich-face anatomy) with a FIXED seeded deck: front prompts, back reveals, dealt in order — the same deal every visit → (3) Focus Rhythm & Waveform Toy — `WaveformBars` + `StatusBeacon` wired to a running `ToggleSwitch` and a three-stop tempo control (Calm / Focus / Peak set the band count and the chromatic voice). CLI: `npx @edwyn/signature-style init --template microlab`.
+Block-by-block: (1) Millisecond Reaction-Time Test — a full-width surface that turns `--sig-neon-green` after a random 1–3s hold; the click measures the exact elapsed ms in tabular-nums. THE STATE MACHINE: idle → waiting → green → result; a too-early click reads "Too soon!" and resets (the pending timer dies with the click); best-of-5 tracked (last / best / average, tabular) → (2) Deterministic Idea/Prompt Deck — a grid of rich `FlipCard`s (eyebrow + accent-underlined title + body + the flip hint, per the 4.0.0 rich-face anatomy) with a FIXED seeded deck: front prompts, back reveals, dealt in order — the same deal every visit → (3) Focus Rhythm & Waveform Toy — `WaveformBars` + `StatusBeacon` wired to a running `ToggleSwitch` and a three-stop tempo control (Calm / Focus / Peak set the band count and the chromatic voice). CLI: `npx @carcolacha/signature-style init --template microlab`.
 
 Entry snippet:
 ```tsx
 import MicroLabTemplate from "./SignatureMicroLab";
 // entry.tsx — once, before your own styles:
-// import "@edwyn/signature-style/css";
+// import "@carcolacha/signature-style/css";
 <MicroLabTemplate />
 ```
 
 ## Web Components (Zero-React Surface) (3.4.0):
 The same Signature Style as **six framework-free custom elements** for Vue/Svelte/HTML/any-stack (and for AI agents generating vanilla code). Plain TypeScript `HTMLElement` subclasses — **zero runtime dependencies** (no React, no Lit), one shadow-DOM `<slot>` anatomy each — registered by ONE module import and themed by ONE stylesheet link:
 
-- **Tokens prerequisite (read first):** the elements ship NO colors. Link `@edwyn/signature-style/css` (or the CLI's `signature-tokens.css`) ONCE — the `--sig-*` custom properties **inherit through shadow-DOM boundaries** (custom properties inherit; shadow roots don't block them), so the link themes all six elements, `<html data-sig-theme="daylight">` included.
-- **Registration:** `import "@edwyn/signature-style/wc";` — defines all six (guarded: already-registered names are skipped). Imperative classes + types ride the same module (`import { SigStatRing } from "@edwyn/signature-style/wc"`).
+- **Tokens prerequisite (read first):** the elements ship NO colors. Link `@carcolacha/signature-style/css` (or the CLI's `signature-tokens.css`) ONCE — the `--sig-*` custom properties **inherit through shadow-DOM boundaries** (custom properties inherit; shadow roots don't block them), so the link themes all six elements, `<html data-sig-theme="daylight">` included.
+- **Registration:** `import "@carcolacha/signature-style/wc";` — defines all six (guarded: already-registered names are skipped). Imperative classes + types ride the same module (`import { SigStatRing } from "@carcolacha/signature-style/wc"`).
 
 | Element | Attributes | Shadow-DOM shape | React twin |
 |---|---|---|---|
@@ -107,7 +107,7 @@ The same Signature Style as **six framework-free custom elements** for Vue/Svelt
 - **The RoE holds inside the shadows:** every shadow style string is 100% `var()`/`color-mix` (zero hex); `--sig-*` accents paint content only (badge variants, ring arcs, callout strips, card underlines) — never structural chrome. The e1 zero-shadow law is mirrored: the sanctioned ambient elevation shadows exist ONLY on the surface-card's inner `.card` element.
 
 ## The Visual Cortex as a Product (3.5.0):
-The engine now SHIPS ITS OWN EYES: `packages/signature-mcp` — a standalone MCP stdio server (private `@edwyn/signature-mcp`, `bin: signature-mcp`) that gives any AI session spatial awareness of the RENDERED app — the AI can measure what it styles. Build: `npm --prefix packages/signature-mcp run build`; prerequisite: `npx playwright install chromium` once + the dev server (`npm run playground`, default `http://localhost:5173` — every tool degrades into a graceful error naming that command). Playwright is pinned EXACTLY to the repo's installed version (no second browser download). The four tools:
+The engine now SHIPS ITS OWN EYES: `packages/signature-mcp` — a standalone MCP stdio server (private `@carcolacha/signature-mcp`, `bin: signature-mcp`) that gives any AI session spatial awareness of the RENDERED app — the AI can measure what it styles. Build: `npm --prefix packages/signature-mcp run build`; prerequisite: `npx playwright install chromium` once + the dev server (`npm run playground`, default `http://localhost:5173` — every tool degrades into a graceful error naming that command). Playwright is pinned EXACTLY to the repo's installed version (no second browser download). The four tools:
 
 | Tool | Params | Returns |
 |---|---|---|
@@ -164,11 +164,11 @@ Before you write a line of code, ask what line you can delete instead. The owner
 - **DOM Flattening:** Never use a wrapper `<div>` if CSS Flexbox/Grid on the parent can achieve the same layout. If an element looks visually identical without a wrapper, delete the wrapper.
 - **Minimalist Code:** Do not add "extra stuff" or decorative wrappers. If the UI looks clean and functions correctly with 3 lines of HTML instead of 10, use 3.
 
-When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<SigBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
+When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<SigBadge>` from `@carcolacha/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
 
 ## Universal AI Replication Contract:
 
-Any AI consuming `@edwyn/signature-style@2.7.0` can reproduce this signature verbatim — these snippets are the law. Every exported component, its exact props, one import, no invented props: read the snippet, copy the snippet.
+Any AI consuming `@carcolacha/signature-style@2.7.0` can reproduce this signature verbatim — these snippets are the law. Every exported component, its exact props, one import, no invented props: read the snippet, copy the snippet.
 
 ### The Destructive Action Norm (4.0.0)
 
@@ -176,7 +176,7 @@ Every destructive action across any site built with this engine MUST route throu
 
 ```tsx
 import { useState } from "react";
-import { Button, ConfirmDialog, useToast } from "@edwyn/signature-style/react";
+import { Button, ConfirmDialog, useToast } from "@carcolacha/signature-style/react";
 
 const [confirming, setConfirming] = useState(false);
 const toast = useToast();
@@ -244,7 +244,7 @@ And the dashboard grid itself is the 12-column bento — explicit spans, one-col
 Wrap the app once; `theme` takes only whitelisted token keys with plain CSS values (no `{`, `}`, `;`, `\`):
 
 ```tsx
-import { ThemeProvider } from "@edwyn/signature-style/react";
+import { ThemeProvider } from "@carcolacha/signature-style/react";
 
 <ThemeProvider theme={{ "--color-cake-primary": "#F2CDCD" }}>
   <App />
@@ -711,7 +711,7 @@ The release chronicle (2.6.0) — ONE `<ol class="sig-chronicle">`: a 2px hairli
 The interactive node-link graph (2.7.0) — ONE pure-SVG `<svg role="application">` (viewBox 0 0 640 320), ZERO charting packages. The layout is DETERMINISTIC (`layoutGraph`, an exported pure helper: roots centered, BFS depth rings at radius 90 + depth·110 projected into the box, children fanning around their parent's angle, ties broken by id hash — same node set, same coordinates, always). One cubic-Bezier edge per node-with-parent (`cubicBezierEdge`, control points 60% along the radial); clicking a node selects it — the ring flips to structural Flamingo at width 3 and everything NOT adjacent dims to opacity 0.25 (class-driven: `.sig-graph--focused` + `data-dim`); the footer strip inspects the selection's label + note; `addOn` renders the toolbar whose "Add & Link" parents a new lavender node to the SELECTION (else the root; with no nodes at all it becomes the root):
 
 ```tsx
-import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
+import { KnowledgeGraph, type GraphNode } from "@carcolacha/signature-style/react";
 
 const nodes: GraphNode[] = [
   { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", note: "Every branch is one layer." },
@@ -789,7 +789,7 @@ The gradient area (2.7.0) — pure SVG: a `useId`-keyed linearGradient (30% toke
 The CONTROLLED milestone manager (2.7.0) — `TimelineItem extends TimelineEvent { settled?: boolean }`; the component owns NO items. Composer (package Input + month Select + category Select + the primary sm "Settle Item" Button; empty titles warn and are ignored), filter pills (All/Pending/Settled, attribute-driven `aria-pressed`, the Flamingo active underline) + the tabular `{settled} / {total} Settled` counter, per-item rows (settle toggle with `aria-pressed` → sig-green Check · body button → `onInspect` (pass `modal.open` to compose `<EventModal>`) · delete button → `onDelete`), and the EmptyState edge when the CURRENT filter matches nothing. Icon note (live-map-probed): lucide 1.72.0 has NO "Trash2"/"Filter" keys — the manager renders "Trash"/"Funnel" (the AudioLines precedent):
 
 ```tsx
-import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react";
+import { TimelineManager, type TimelineItem } from "@carcolacha/signature-style/react";
 
 <TimelineManager
   items={items}
@@ -806,7 +806,7 @@ import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react
 The keyboard-first launcher (2.9.0) — CONTROLLED: the parent owns `open`; the palette owns nothing but the view state. The global Ctrl+K / Cmd+K listener is the launcher (it ignores keystrokes while the focus is in an input/textarea/select/contentEditable); while open the same listener drives ArrowUp/ArrowDown (aria-activedescendant), Enter (run + close), Escape (close + RESTORE focus to the pre-open trigger). Type-to-filter is a case-insensitive substring over `label` + `keywords`. The backdrop is the modal scrim + blur(8px); the panel is glass = scrim + border, never shadow:
 
 ```tsx
-import { CommandPalette, type CommandEntry } from "@edwyn/signature-style/react";
+import { CommandPalette, type CommandEntry } from "@carcolacha/signature-style/react";
 
 const [open, setOpen] = useState(false);
 const commands: CommandEntry[] = [
@@ -827,7 +827,7 @@ const commands: CommandEntry[] = [
 The loading placeholders (2.9.0) — heights locked to the 8px grid (lines 16px, card rows 8px), the shimmer is ONE background-position sweep, and under prefers-reduced-motion it stands down to a static surface block. Every shape is aria-hidden — the LOADING announcement is the consumer's job (aria-busy on the region, or a visually-hidden line); these are decorative pulse, never content:
 
 ```tsx
-import { SkeletonLine, SkeletonCard, SkeletonTableRow } from "@edwyn/signature-style/react";
+import { SkeletonLine, SkeletonCard, SkeletonTableRow } from "@carcolacha/signature-style/react";
 
 <section aria-busy="true">
   <SkeletonLine width="60%" />
@@ -843,7 +843,7 @@ import { SkeletonLine, SkeletonCard, SkeletonTableRow } from "@edwyn/signature-s
 The Shed-style mono path (2.9.0) — ONE `nav[aria-label]` > `ol` > `li`; crumbs with an `href` render `<a>`, the LAST crumb renders `<span aria-current="page">` (bold text-main); the "/" separators are explicit `aria-hidden` spans so screen readers hear the path, not the punctuation:
 
 ```tsx
-import { Breadcrumbs } from "@edwyn/signature-style/react";
+import { Breadcrumbs } from "@carcolacha/signature-style/react";
 
 <Breadcrumbs
   items={[
@@ -985,7 +985,7 @@ FALLBACK NOTE: `linear()` is Chrome 113+ / Safari 17.2 / Firefox 112+. `css/toke
 ### <AnimatedNumber> (3.7.0)
 
 ```tsx
-import { AnimatedNumber } from "@edwyn/signature-style/react";
+import { AnimatedNumber } from "@carcolacha/signature-style/react";
 
 <AnimatedNumber value={1740} prefix="$" />
 <AnimatedNumber value={63.4} suffix="%" decimals={1} />
@@ -996,7 +996,7 @@ ONE `<span class="sig-animated-number">` (tabular-nums). rAF roll from the previ
 ### <MotionReveal> (3.7.0)
 
 ```tsx
-import { MotionReveal } from "@edwyn/signature-style/react";
+import { MotionReveal } from "@carcolacha/signature-style/react";
 
 {cards.map((card, index) => (
   <MotionReveal key={card.id} variant="fade-up" staggerIndex={index}>
@@ -1010,7 +1010,7 @@ IntersectionObserver once-entrance (disconnects after revealing). `variant`: "fa
 ### <KineticSurface> (3.7.0)
 
 ```tsx
-import { KineticSurface } from "@edwyn/signature-style/react";
+import { KineticSurface } from "@carcolacha/signature-style/react";
 
 <KineticSurface accentToken="--sig-cyan">
   <p>Move the cursor across me.</p>
@@ -1022,7 +1022,7 @@ import { KineticSurface } from "@edwyn/signature-style/react";
 ### <AuroraBorderCard> (3.9.0)
 
 ```tsx
-import { AuroraBorderCard } from "@edwyn/signature-style/react";
+import { AuroraBorderCard } from "@carcolacha/signature-style/react";
 
 <AuroraBorderCard accentTokens={["--sig-cyan", "--sig-orchid", "--sig-mint", "--sig-cobalt"]} trigger="hover">
   <p>The beam spins on hover.</p>
@@ -1037,7 +1037,7 @@ A rotating conic border beam cycling the accent tokens. css/motion.css REGISTERS
 ### <TiltSurface> (3.9.0)
 
 ```tsx
-import { TiltSurface } from "@edwyn/signature-style/react";
+import { TiltSurface } from "@carcolacha/signature-style/react";
 
 <TiltSurface tilt={6} accentToken="--sig-rose-glow">
   <p>Tilt with the cursor — the sheen rides along.</p>
@@ -1049,7 +1049,7 @@ import { TiltSurface } from "@edwyn/signature-style/react";
 ### <StatusBeacon> (3.9.0)
 
 ```tsx
-import { StatusBeacon } from "@edwyn/signature-style/react";
+import { StatusBeacon } from "@carcolacha/signature-style/react";
 
 <StatusBeacon status="live" colorToken="--sig-green" />
 <StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
@@ -1060,7 +1060,7 @@ One `role="status"` span (the dot in `colorToken`); its `::after` ring scales 1 
 ### <WaveformBars> (3.9.0)
 
 ```tsx
-import { WaveformBars } from "@edwyn/signature-style/react";
+import { WaveformBars } from "@carcolacha/signature-style/react";
 
 <WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
 <WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />

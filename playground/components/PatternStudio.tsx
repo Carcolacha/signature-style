@@ -18,10 +18,10 @@ import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 // 3.4.0 — THE ZERO-REACT SURFACE: this side-effect import registers the
 // six sig-* custom elements through the package exports map
-// ("@edwyn/signature-style/wc" → the committed dist/wc bundle). The
+// ("@carcolacha/signature-style/wc" → the committed dist/wc bundle). The
 // frames below mount the REAL elements — the studio is the in-vite
 // proof that the wc build works inside the app too.
-import "@edwyn/signature-style/wc";
+import "@carcolacha/signature-style/wc";
 import {
   ThemeProvider,
   GlobalNav,
@@ -73,12 +73,12 @@ import {
   ToastProvider,
   useToast,
   ConfirmDialog,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import type {
   TimelineEvent,
   TimelineItem,
   GraphNode,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import { PatternFrame } from "./PatternFrame.js";
 import { SNIPPETS, SET_NAMES, SET_BLURBS } from "../snippets.js";
 import type { SetId } from "../snippets.js";
@@ -894,7 +894,7 @@ function ConfirmDialogPreview() {
 /* Set 07 previews — Web Components (zero-react)                       */
 /*                                                                    */
 /* The REAL custom elements mounted live (registered by the module-    */
-/* level `import "@edwyn/signature-style/wc"` above). Custom elements  */
+/* level `import "@carcolacha/signature-style/wc"` above). Custom elements  */
 /* are valid JSX: attributes only, no imports, no props. The ring      */
 /* preview is REACTIVE — a button drives setAttribute("value", …) so   */
 /* the stroke-dashoffset transition plays right in the studio.         */

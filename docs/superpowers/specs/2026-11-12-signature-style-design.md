@@ -14,7 +14,7 @@ production environments.
 
 ## Goals
 
-- **G1.** `npm i @edwyn/signature-style` + one CSS import installs the whole theme.
+- **G1.** `npm i @carcolacha/signature-style` + one CSS import installs the whole theme.
 - **G2.** Token Cascade: hover / active / disabled / focus-visible states are
   *derived* from the core tokens. The user never writes a state hex code.
 - **G3.** Override Protocol: scoped utility classes that break the rules

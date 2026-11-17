@@ -2,7 +2,7 @@
  * SNIPPETS — the Copy Studio registry (2.8.0 "The Signature Pattern
  * Website, 6-Set Taxonomy & One-Click Copy Studio").
  *
- * ONE typed map from EVERY value export of @edwyn/signature-style to its
+ * ONE typed map from EVERY value export of @carcolacha/signature-style to its
  * clean, formatted, copy-paste snippet. SOURCE OF TRUTH: the recipes of
  * SYSTEM_PROMPT.md v3.0's "Universal AI Replication Contract" — ported
  * verbatim-in-spirit and fact-checked against the shipped react/*.d.ts
@@ -77,7 +77,7 @@ export const SET_BLURBS: Record<SetId, string> = {
   "06":
     "The working set: ledgers that scroll instead of breaking, notes that persist, toasts that resolve, prose that reads, and the honest empty state. When an outcome lands it pushes a toast; when the context matters it stays in a callout.",
   "07":
-    "The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @edwyn/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @edwyn/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.",
+    "The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @carcolacha/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @carcolacha/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.",
   "08":
     "The kinetic engine's own set: the linear() spring tokens, the three motion primitives and the two release patterns (time dilation, fallback-first data). These frames mount in the MOTION LAB view (#/motion) — the lab stages the live choreography, the Copy Cards carry the recipes.",
 };
@@ -87,7 +87,7 @@ export const SNIPPETS: Record<string, SnippetEntry> = {
   ThemeProvider: {
     set: "01",
     componentName: "ThemeProvider",
-    jsx: `import { ThemeProvider } from "@edwyn/signature-style/react";
+    jsx: `import { ThemeProvider } from "@carcolacha/signature-style/react";
 
 <ThemeProvider theme={{ "--color-cake-primary": "#F2CDCD" }}>
   <App />
@@ -96,7 +96,7 @@ export const SNIPPETS: Record<string, SnippetEntry> = {
   GlobalNav: {
     set: "01",
     componentName: "GlobalNav",
-    jsx: `import { GlobalNav } from "@edwyn/signature-style/react";
+    jsx: `import { GlobalNav } from "@carcolacha/signature-style/react";
 
 const items = [{ href: "#/dashboard", label: "Dashboard" }];
 <GlobalNav items={items} activeHref="#/dashboard" />`,
@@ -104,7 +104,7 @@ const items = [{ href: "#/dashboard", label: "Dashboard" }];
   Tabs: {
     set: "01",
     componentName: "Tabs",
-    jsx: `import { Tabs } from "@edwyn/signature-style/react";
+    jsx: `import { Tabs } from "@carcolacha/signature-style/react";
 
 const [moduleId, setModuleId] = useState("core");
 <Tabs
@@ -134,7 +134,7 @@ const [moduleId, setModuleId] = useState("core");
   SurfaceCard: {
     set: "02",
     componentName: "SurfaceCard",
-    jsx: `import { SurfaceCard } from "@edwyn/signature-style/react";
+    jsx: `import { SurfaceCard } from "@carcolacha/signature-style/react";
 
 <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
   <Input placeholder="Member name" />
@@ -149,21 +149,21 @@ const [moduleId, setModuleId] = useState("core");
   PageHero: {
     set: "02",
     componentName: "PageHero",
-    jsx: `import { PageHero } from "@edwyn/signature-style/react";
+    jsx: `import { PageHero } from "@carcolacha/signature-style/react";
 
 <PageHero title="THE ENGINE" subtitle="every primitive, one dashboard · live showcase" />`,
   },
   Icon: {
     set: "02",
     componentName: "Icon",
-    jsx: `import { Icon } from "@edwyn/signature-style/react";
+    jsx: `import { Icon } from "@carcolacha/signature-style/react";
 
 <Icon name="Rocket" size={16} />`,
   },
   Avatar: {
     set: "02",
     componentName: "Avatar",
-    jsx: `import { Avatar } from "@edwyn/signature-style/react";
+    jsx: `import { Avatar } from "@carcolacha/signature-style/react";
 
 <Avatar name="Ana Souza" />
 <Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />`,
@@ -171,7 +171,7 @@ const [moduleId, setModuleId] = useState("core");
   SigBadge: {
     set: "02",
     componentName: "SigBadge",
-    jsx: `import { SigBadge } from "@edwyn/signature-style/react";
+    jsx: `import { SigBadge } from "@carcolacha/signature-style/react";
 
 <SigBadge colorToken="--sig-peach" label="Birthday" />`,
     html: `<span
@@ -185,7 +185,7 @@ const [moduleId, setModuleId] = useState("core");
   ContentCard: {
     set: "02",
     componentName: "ContentCard",
-    jsx: `import { ContentCard } from "@edwyn/signature-style/react";
+    jsx: `import { ContentCard } from "@carcolacha/signature-style/react";
 
 <ContentCard
   category="Catering" categoryToken="--sig-peach"
@@ -199,7 +199,7 @@ const [moduleId, setModuleId] = useState("core");
   ReferenceCard: {
     set: "02",
     componentName: "ReferenceCard",
-    jsx: `import { ReferenceCard } from "@edwyn/signature-style/react";
+    jsx: `import { ReferenceCard } from "@carcolacha/signature-style/react";
 
 <ReferenceCard
   tag="JSX" title="The Signature Surface" accentToken="--sig-sky"
@@ -211,7 +211,7 @@ const [moduleId, setModuleId] = useState("core");
   TierCard: {
     set: "02",
     componentName: "TierCard",
-    jsx: `import { TierCard } from "@edwyn/signature-style/react";
+    jsx: `import { TierCard } from "@carcolacha/signature-style/react";
 
 <TierCard
   name="Arena Pass" price="$49" featured accentToken="--sig-mauve-soft"
@@ -222,7 +222,7 @@ const [moduleId, setModuleId] = useState("core");
   ProfileCard: {
     set: "02",
     componentName: "ProfileCard",
-    jsx: `import { ProfileCard } from "@edwyn/signature-style/react";
+    jsx: `import { ProfileCard } from "@carcolacha/signature-style/react";
 
 <ProfileCard
   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
@@ -240,7 +240,7 @@ const [moduleId, setModuleId] = useState("core");
   ActionTile: {
     set: "02",
     componentName: "ActionTile",
-    jsx: `import { ActionTile } from "@edwyn/signature-style/react";
+    jsx: `import { ActionTile } from "@carcolacha/signature-style/react";
 
 <ActionTile
   title="Open Deck Editor"
@@ -253,14 +253,14 @@ const [moduleId, setModuleId] = useState("core");
   FlipCard: {
     set: "02",
     componentName: "FlipCard",
-    jsx: `import { FlipCard } from "@edwyn/signature-style/react";
+    jsx: `import { FlipCard } from "@carcolacha/signature-style/react";
 
 <FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />`,
   },
   AccordionCard: {
     set: "02",
     componentName: "AccordionCard",
-    jsx: `import { AccordionCard } from "@edwyn/signature-style/react";
+    jsx: `import { AccordionCard } from "@carcolacha/signature-style/react";
 
 <AccordionCard title="House Rules">
   <p>Ties resolve to rock-paper-scissors; the loser brings the ice.</p>
@@ -269,7 +269,7 @@ const [moduleId, setModuleId] = useState("core");
   MatchupCard: {
     set: "02",
     componentName: "MatchupCard",
-    jsx: `import { MatchupCard } from "@edwyn/signature-style/react";
+    jsx: `import { MatchupCard } from "@carcolacha/signature-style/react";
 
 <MatchupCard
   left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
@@ -282,7 +282,7 @@ const [moduleId, setModuleId] = useState("core");
   FormField: {
     set: "03",
     componentName: "FormField",
-    jsx: `import { FormField, Input } from "@edwyn/signature-style/react";
+    jsx: `import { FormField, Input } from "@carcolacha/signature-style/react";
 
 <FormField
   label="Postal Code"
@@ -300,7 +300,7 @@ const [moduleId, setModuleId] = useState("core");
   Input: {
     set: "03",
     componentName: "Input",
-    jsx: `import { Input } from "@edwyn/signature-style/react";
+    jsx: `import { Input } from "@carcolacha/signature-style/react";
 
 <Input
   value={name}
@@ -313,14 +313,14 @@ const [moduleId, setModuleId] = useState("core");
   TextArea: {
     set: "03",
     componentName: "TextArea",
-    jsx: `import { TextArea } from "@edwyn/signature-style/react";
+    jsx: `import { TextArea } from "@carcolacha/signature-style/react";
 
 <TextArea rows={4} value={bio} onChange={(e) => setBio(e.target.value)} />`,
   },
   Select: {
     set: "03",
     componentName: "Select",
-    jsx: `import { Select } from "@edwyn/signature-style/react";
+    jsx: `import { Select } from "@carcolacha/signature-style/react";
 
 <Select label="Dietary preference" value={diet} onChange={(e) => setDiet(e.target.value)}>
   <option value="none">No preference</option>
@@ -331,7 +331,7 @@ const [moduleId, setModuleId] = useState("core");
   Checkbox: {
     set: "03",
     componentName: "Checkbox",
-    jsx: `import { Checkbox } from "@edwyn/signature-style/react";
+    jsx: `import { Checkbox } from "@carcolacha/signature-style/react";
 
 const [agreed, setAgreed] = useState(false);
 <Checkbox checked={agreed} onToggle={setAgreed} label="Send me the invite" />`,
@@ -339,7 +339,7 @@ const [agreed, setAgreed] = useState(false);
   RadioCardGroup: {
     set: "03",
     componentName: "RadioCardGroup",
-    jsx: `import { RadioCardGroup } from "@edwyn/signature-style/react";
+    jsx: `import { RadioCardGroup } from "@carcolacha/signature-style/react";
 
 const [attendance, setAttendance] = useState("confirmed");
 <RadioCardGroup
@@ -356,7 +356,7 @@ const [attendance, setAttendance] = useState("confirmed");
   ToggleSwitch: {
     set: "03",
     componentName: "ToggleSwitch",
-    jsx: `import { ToggleSwitch } from "@edwyn/signature-style/react";
+    jsx: `import { ToggleSwitch } from "@carcolacha/signature-style/react";
 
 const [on, setOn] = useState(false);
 <ToggleSwitch checked={on} onToggle={setOn} label="Make event public" />`,
@@ -364,7 +364,7 @@ const [on, setOn] = useState(false);
   PasswordInput: {
     set: "03",
     componentName: "PasswordInput",
-    jsx: `import { PasswordInput } from "@edwyn/signature-style/react";
+    jsx: `import { PasswordInput } from "@carcolacha/signature-style/react";
 
 const [pw, setPw] = useState("");
 <PasswordInput label="Password" value={pw} onChange={setPw} />`,
@@ -372,7 +372,7 @@ const [pw, setPw] = useState("");
   Button: {
     set: "03",
     componentName: "Button",
-    jsx: `import { Button } from "@edwyn/signature-style/react";
+    jsx: `import { Button } from "@carcolacha/signature-style/react";
 
 <Button variant="primary" size="md" leftIcon="Check" loading={submitting} type="submit">
   Check In
@@ -387,21 +387,21 @@ const [pw, setPw] = useState("");
   ProgressBar: {
     set: "04",
     componentName: "ProgressBar",
-    jsx: `import { ProgressBar } from "@edwyn/signature-style/react";
+    jsx: `import { ProgressBar } from "@carcolacha/signature-style/react";
 
 <ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" limitText="$720 / $1,000" />`,
   },
   StatRing: {
     set: "04",
     componentName: "StatRing",
-    jsx: `import { StatRing } from "@edwyn/signature-style/react";
+    jsx: `import { StatRing } from "@carcolacha/signature-style/react";
 
 <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" size="md" />`,
   },
   StatCard: {
     set: "04",
     componentName: "StatCard",
-    jsx: `import { StatCard } from "@edwyn/signature-style/react";
+    jsx: `import { StatCard } from "@carcolacha/signature-style/react";
 
 <StatCard
   label="Confirmed Seats"
@@ -415,14 +415,14 @@ const [pw, setPw] = useState("");
   Sparkline: {
     set: "04",
     componentName: "Sparkline",
-    jsx: `import { Sparkline } from "@edwyn/signature-style/react";
+    jsx: `import { Sparkline } from "@carcolacha/signature-style/react";
 
 <Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--sig-mauve-soft" label="Rooms trend" />`,
   },
   BarChart: {
     set: "04",
     componentName: "BarChart",
-    jsx: `import { BarChart } from "@edwyn/signature-style/react";
+    jsx: `import { BarChart } from "@carcolacha/signature-style/react";
 
 <BarChart
   data={[
@@ -437,7 +437,7 @@ const [pw, setPw] = useState("");
   AreaChart: {
     set: "04",
     componentName: "AreaChart",
-    jsx: `import { AreaChart } from "@edwyn/signature-style/react";
+    jsx: `import { AreaChart } from "@carcolacha/signature-style/react";
 
 <AreaChart
   points={[
@@ -452,7 +452,7 @@ const [pw, setPw] = useState("");
   KnowledgeGraph: {
     set: "04",
     componentName: "KnowledgeGraph",
-    jsx: `import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
+    jsx: `import { KnowledgeGraph, type GraphNode } from "@carcolacha/signature-style/react";
 
 const nodes: GraphNode[] = [
   { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", note: "Every branch is one layer." },
@@ -471,7 +471,7 @@ const nodes: GraphNode[] = [
   smoothPath: {
     set: "04",
     componentName: "smoothPath()",
-    jsx: `import { smoothPath } from "@edwyn/signature-style/react";
+    jsx: `import { smoothPath } from "@carcolacha/signature-style/react";
 
 // Catmull-Rom → bezier path string for N points { x, y } — the same
 // smoothing AreaChart draws with, exported pure for your own SVGs.
@@ -483,7 +483,7 @@ const d = smoothPath([
   layoutGraph: {
     set: "04",
     componentName: "layoutGraph()",
-    jsx: `import { layoutGraph, type GraphNode } from "@edwyn/signature-style/react";
+    jsx: `import { layoutGraph, type GraphNode } from "@carcolacha/signature-style/react";
 
 // Deterministic radial layout: roots centered, BFS depth rings at
 // radius 90 + depth·110, children fanned around the parent's angle,
@@ -497,7 +497,7 @@ const positions: Record<string, GraphPosition> = layoutGraph(nodes);`,
   cubicBezierEdge: {
     set: "04",
     componentName: "cubicBezierEdge()",
-    jsx: `import { cubicBezierEdge } from "@edwyn/signature-style/react";
+    jsx: `import { cubicBezierEdge } from "@carcolacha/signature-style/react";
 
 // One cubic-Bezier edge path per node-with-parent — control points
 // 60% along the radial. Feed it the layoutGraph output.
@@ -512,7 +512,7 @@ const d = cubicBezierEdge(
   EventTimeline: {
     set: "05",
     componentName: "EventTimeline",
-    jsx: `import { EventTimeline } from "@edwyn/signature-style/react";
+    jsx: `import { EventTimeline } from "@carcolacha/signature-style/react";
 
 <EventTimeline
   events={[{
@@ -530,7 +530,7 @@ const d = cubicBezierEdge(
   useModal: {
     set: "05",
     componentName: "useModal()",
-    jsx: `import { useModal } from "@edwyn/signature-style/react";
+    jsx: `import { useModal } from "@carcolacha/signature-style/react";
 
 // The hook owns selection state; the component owns the overlay.
 const modal = useModal<TimelineEvent>();
@@ -540,7 +540,7 @@ modal.close();       // close + clear`,
   EventModal: {
     set: "05",
     componentName: "EventModal + useModal()",
-    jsx: `import { EventModal, useModal, type TimelineEvent } from "@edwyn/signature-style/react";
+    jsx: `import { EventModal, useModal, type TimelineEvent } from "@carcolacha/signature-style/react";
 
 const modal = useModal<TimelineEvent>();
 {modal.selectedEvent !== null && (
@@ -550,7 +550,7 @@ const modal = useModal<TimelineEvent>();
   TimelineManager: {
     set: "05",
     componentName: "TimelineManager",
-    jsx: `import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react";
+    jsx: `import { TimelineManager, type TimelineItem } from "@carcolacha/signature-style/react";
 
 <TimelineManager
   items={items}
@@ -564,7 +564,7 @@ const modal = useModal<TimelineEvent>();
   ChronicleTimeline: {
     set: "05",
     componentName: "ChronicleTimeline",
-    jsx: `import { ChronicleTimeline } from "@edwyn/signature-style/react";
+    jsx: `import { ChronicleTimeline } from "@carcolacha/signature-style/react";
 
 <ChronicleTimeline
   label="Version chronicle"
@@ -579,7 +579,7 @@ const modal = useModal<TimelineEvent>();
   DataTable: {
     set: "06",
     componentName: "DataTable",
-    jsx: `import { DataTable } from "@edwyn/signature-style/react";
+    jsx: `import { DataTable } from "@carcolacha/signature-style/react";
 
 <DataTable
   columns={[
@@ -596,7 +596,7 @@ const modal = useModal<TimelineEvent>();
   Callout: {
     set: "06",
     componentName: "Callout",
-    jsx: `import { Callout } from "@edwyn/signature-style/react";
+    jsx: `import { Callout } from "@carcolacha/signature-style/react";
 
 <Callout status="warning">3 pending reviews close Friday.</Callout>`,
     html: `<div class="sig-callout" role="note" style="--status: var(--sig-peach);">
@@ -606,7 +606,7 @@ const modal = useModal<TimelineEvent>();
   Carousel: {
     set: "06",
     componentName: "Carousel",
-    jsx: `import { Carousel } from "@edwyn/signature-style/react";
+    jsx: `import { Carousel } from "@carcolacha/signature-style/react";
 
 <Carousel label="Palette clippings">
   <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
@@ -616,7 +616,7 @@ const modal = useModal<TimelineEvent>();
   CarouselItem: {
     set: "06",
     componentName: "CarouselItem",
-    jsx: `import { CarouselItem } from "@edwyn/signature-style/react";
+    jsx: `import { CarouselItem } from "@carcolacha/signature-style/react";
 
 {/* Children of <Carousel> MUST be CarouselItem snap slots —
     one item per scroll-snap step, any content inside. */}
@@ -627,7 +627,7 @@ const modal = useModal<TimelineEvent>();
   ProseBlock: {
     set: "06",
     componentName: "ProseBlock",
-    jsx: `import { ProseBlock } from "@edwyn/signature-style/react";
+    jsx: `import { ProseBlock } from "@carcolacha/signature-style/react";
 
 <ProseBlock>
   <p>First paragraph…</p>
@@ -640,7 +640,7 @@ const modal = useModal<TimelineEvent>();
   AnnouncementBanner: {
     set: "06",
     componentName: "AnnouncementBanner",
-    jsx: `import { AnnouncementBanner } from "@edwyn/signature-style/react";
+    jsx: `import { AnnouncementBanner } from "@carcolacha/signature-style/react";
 
 <AnnouncementBanner
   variant="announcement"
@@ -658,7 +658,7 @@ const modal = useModal<TimelineEvent>();
   EmptyState: {
     set: "06",
     componentName: "EmptyState",
-    jsx: `import { EmptyState } from "@edwyn/signature-style/react";
+    jsx: `import { EmptyState } from "@carcolacha/signature-style/react";
 
 <EmptyState icon="PackageOpen" title="Nothing here" message="Add your first event." />`,
     html: `<div class="empty-state">
@@ -670,7 +670,7 @@ const modal = useModal<TimelineEvent>();
   ToastProvider: {
     set: "06",
     componentName: "ToastProvider",
-    jsx: `import { ToastProvider } from "@edwyn/signature-style/react";
+    jsx: `import { ToastProvider } from "@carcolacha/signature-style/react";
 
 <ToastProvider>
   <AttendanceForm />
@@ -679,7 +679,7 @@ const modal = useModal<TimelineEvent>();
   useToast: {
     set: "06",
     componentName: "useToast()",
-    jsx: `import { useToast } from "@edwyn/signature-style/react";
+    jsx: `import { useToast } from "@carcolacha/signature-style/react";
 
 // inside <AttendanceForm>, beneath the provider:
 const toast = useToast();
@@ -689,7 +689,7 @@ toast("success", "Attendance saved — see you there 🎉");`,
     set: "06",
     componentName: "ConfirmDialog",
     jsx: `import { useState } from "react";
-import { Button, ConfirmDialog, useToast } from "@edwyn/signature-style/react";
+import { Button, ConfirmDialog, useToast } from "@carcolacha/signature-style/react";
 
 // THE DESTRUCTIVE ACTION NORM (4.0.0): every delete/reset routes
 // through ConfirmDialog — Escape, scrim and "No" all cancel; only
@@ -723,7 +723,7 @@ const toast = useToast();
   SigWcSurfaceCard: {
     set: "07",
     componentName: "sig-surface-card",
-    jsx: `<!-- Prerequisite: import "@edwyn/signature-style/wc" + link the css once -->
+    jsx: `<!-- Prerequisite: import "@carcolacha/signature-style/wc" + link the css once -->
 <sig-surface-card
   eyebrow="Telemetry"
   meta="wc/elements.ts"

@@ -33,7 +33,7 @@
  * the HTTP adapter arrives, the mirror's flush is replaced by the
  * server round-trip and nothing else moves.
  */
-import type { GraphEdge, GraphNode, TimelineItem } from "@edwyn/signature-style/react";
+import type { GraphEdge, GraphNode, TimelineItem } from "@carcolacha/signature-style/react";
 import type { SigPrefs } from "./theme-utils.js";
 
 /** The versioned storage keys — the sig.workspace.v3 contract. */

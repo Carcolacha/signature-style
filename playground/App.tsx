@@ -251,7 +251,7 @@ import {
   type TimelineItem,
   type CommandEntry,
   type BreadcrumbItem,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import { usePersistentState } from "./persistence.js";
 import { buildStoredWorkspaceSnapshot } from "./snapshot.js";
 import { SET_NAMES } from "./snippets.js";

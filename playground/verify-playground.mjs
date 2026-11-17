@@ -11,7 +11,7 @@
  *   (b1)  playground/ exists with App.tsx + vite.config.ts (plus
  *         main.tsx, index.html, styles.css);
  *   (b2)  package.json carries the "playground" script, the file:
- *         consumer wiring (@edwyn/signature-style -> "file:."), and the
+ *         consumer wiring (@carcolacha/signature-style -> "file:."), and the
  *         exports/files/main/peerDependencies keys are deep-equal to
  *         v1.4.0 (the distribution surface is untouched);
  *   (b3)  `npm pack --dry-run` still packs EXACTLY 34 files —
@@ -21,7 +21,7 @@
  *         override are not hex and stay legal); the card hairline is the
  *         elevation border (15% token mix); the grid collapses at
  *         max-width: 768px;
- *   (b5)  App.tsx imports from "@edwyn/signature-style/react" and uses
+ *   (b5)  App.tsx imports from "@carcolacha/signature-style/react" and uses
  *         ThemeProvider > ToastProvider > GlobalNav + the announcing
  *         .hub__hero + main.hub with exactly 4 card sections;
  *   (b6)  EVERY lucide icon name used in App.tsx (icon:/iconName:) exists
@@ -69,7 +69,7 @@
  *         MCP server is built (npm --prefix packages/signature-mcp run
  *         build); 3.5.0 retarget: tools/mcp-viz is DELETED, its logic
  *         lives on in the standalone package;
- *         the package is the private @edwyn/visual-cortex-mcp, and root
+ *         the package is the private @carcolacha/visual-cortex-mcp, and root
  *         package.json carries the "verify:mcp" script that actually
  *         runs the smoke (raw JSON-RPC: exactly two tools, a
  *         .sig-timeline__node with real area, non-empty screenshot);
@@ -744,14 +744,14 @@
  *         run build);
  *   (m2)  SMOKE PROOF ARTIFACT wired — scripts/verify-mcp.mjs exists
  *         (the proven v2.7.0 JSON-RPC harness, ported), the package is
- *         the private @edwyn/signature-mcp, and root package.json
+ *         the private @carcolacha/signature-mcp, and root package.json
  *         carries the "verify:mcp" script that builds + runs the smoke;
  *   (dd6 AMENDMENT)  the cortex sweep needles retarget to
  *         packages/signature-mcp/src/server.ts (same selector sweep,
  *         verbatim port) and the server version string moves to 3.5.0;
  *   (v35) THE CERTIFICATION GATE — packages/signature-mcp exists with
  *         EXACTLY the 4-tool src/server.ts, private
- *         @edwyn/signature-mcp v1.0.0, playwright pinned EXACTLY
+ *         @carcolacha/signature-mcp v1.0.0, playwright pinned EXACTLY
  *         1.65.0 (the shared Chromium — no second download), zero deps
  *         beyond sdk+zod+playwright; scripts/verify-visual-diff.mjs +
  *         scripts/verify-a11y.mjs exist and are wired
@@ -817,14 +817,14 @@ for (const script of ["playground", "playground:build"]) {
   }
 }
 
-const pkgSelf = pkg.devDependencies?.["@edwyn/signature-style"];
-const pkgSelfDeps = pkg.dependencies?.["@edwyn/signature-style"];
+const pkgSelf = pkg.devDependencies?.["@carcolacha/signature-style"];
+const pkgSelfDeps = pkg.dependencies?.["@carcolacha/signature-style"];
 const selfWired =
   pkgSelf === "file:." || pkgSelfDeps === "file:." ||
   typeof pkgSelf === "string" || typeof pkgSelfDeps === "string";
 if (!selfWired) {
   failures.push(
-    '(b2) package.json has no @edwyn/signature-style file:/alias consumer wiring (devDependencies or dependencies)',
+    '(b2) package.json has no @carcolacha/signature-style file:/alias consumer wiring (devDependencies or dependencies)',
   );
 }
 
@@ -960,7 +960,7 @@ if (!stylesCss.includes("max-width: 768px")) {
 // needles pin the composition surface, not the DOM spelling.
 const appSrc = readFileSync(join(playground, "App.tsx"), "utf8");
 const APP_REQUIREMENTS = [
-  ['from "@edwyn/signature-style/react"', "App imports the package through the exports map"],
+  ['from "@carcolacha/signature-style/react"', "App imports the package through the exports map"],
   ["<ThemeProvider>", "the ThemeProvider wraps the tree"],
   ["<ToastProvider>", "the ToastProvider wraps the dashboard"],
   ["useToast()", "the toast hook drives the feedback card"],
@@ -1751,8 +1751,8 @@ if (!existsSync(mcpSmokePath)) {
 }
 try {
   const mcpPkg = JSON.parse(readFileSync(mcpPkgPath, "utf8"));
-  if (mcpPkg.name !== "@edwyn/signature-mcp" || mcpPkg.private !== true) {
-    failures.push('(m2) packages/signature-mcp/package.json must be private "@edwyn/signature-mcp"');
+  if (mcpPkg.name !== "@carcolacha/signature-mcp" || mcpPkg.private !== true) {
+    failures.push('(m2) packages/signature-mcp/package.json must be private "@carcolacha/signature-mcp"');
   }
   const mcpDeps = Object.keys(mcpPkg.dependencies ?? {});
   if (JSON.stringify(mcpDeps.sort()) !== JSON.stringify(["@modelcontextprotocol/sdk", "playwright", "zod"])) {
@@ -4853,7 +4853,7 @@ if (existsSync(framePath)) {
 
 // ---- (wc-studio) THE ZERO-REACT STUDIO INTEGRATION (3.4.0) -------------------------
 // The studio mounts the SIX REAL custom elements (Set 07): the module-level
-// import "@edwyn/signature-style/wc" registers them INSIDE the vite app (the
+// import "@carcolacha/signature-style/wc" registers them INSIDE the vite app (the
 // committed dist/wc bundle resolves through the exports map), and the frames
 // are live previews — the in-app proof that the wc build works. The (ps-studio)
 // coverage check above already forces every SNIPPETS key (the six SigWc* keys)
@@ -4861,7 +4861,7 @@ if (existsSync(framePath)) {
 {
   const studioWcSrc = readFileSync(resolve(root, "playground/components/PatternStudio.tsx"), "utf8");
   const WC_STUDIO_REQUIREMENTS = [
-    ['import "@edwyn/signature-style/wc";', "the registration import — the package exports map resolves dist/wc"],
+    ['import "@carcolacha/signature-style/wc";', "the registration import — the package exports map resolves dist/wc"],
     ['"07": [', "Set 07 declared in SET_FRAMES (the sidebar counts derive from it)"],
     ["SigWcStatRingPreview", "the reactive ring preview (setAttribute drives the arc)"],
     ["setAttribute(", "the ring preview touches the ATTRIBUTE API — no props, the wc contract"],
@@ -4907,7 +4907,7 @@ if (!existsSync(llmsPath)) {
   failures.push("(ps-llms) playground/public/llms.txt is missing — run `npm run llms`");
 } else {
   const llmsTxt = readFileSync(llmsPath, "utf8");
-  if (!llmsTxt.startsWith("# @edwyn/signature-style — The Signature Style")) {
+  if (!llmsTxt.startsWith("# @carcolacha/signature-style — The Signature Style")) {
     failures.push("(ps-llms) llms.txt must open with the H1");
   }
   if (!llmsTxt.includes("> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.")) {
@@ -5755,8 +5755,8 @@ if (!existsSync(registryPath) || !existsSync(sourcesPath)) {
     if (!tplSrc.includes(`export default function ${marker}Template`)) {
       failures.push(`(tpl1) playground/templates/${file} must default-export ${marker}Template`);
     }
-    if (!tplSrc.includes('from "@edwyn/signature-style/react"')) {
-      failures.push(`(tpl1) playground/templates/${file} must import from @edwyn/signature-style/react (standalone purity)`);
+    if (!tplSrc.includes('from "@carcolacha/signature-style/react"')) {
+      failures.push(`(tpl1) playground/templates/${file} must import from @carcolacha/signature-style/react (standalone purity)`);
     }
     if (!tplSrc.includes("<style>")) {
       failures.push(`(tpl1) playground/templates/${file} must carry its embedded <style> block (self-contained)`);

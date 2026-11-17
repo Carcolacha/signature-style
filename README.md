@@ -1,14 +1,14 @@
-# @edwyn/signature-style
+# @carcolacha/signature-style
 
 > One command installs **edwyn's Signature Style** into any project — a Catppuccin-harmonized design engine with three WCAG-verified surface themes, GPU-only motion, and 50+ production-ready components. Zero manual hex codes. Zero dependency bloat.
 
 ```bash
-npx @edwyn/signature-style init
+npx @carcolacha/signature-style init
 ```
 
 ---
 
-## Why @edwyn/signature-style Exists
+## Why @carcolacha/signature-style Exists
 
 - **Zero Dependency Bloat** — the CSS core, the web components, and the CLI run on nothing but the platform: no runtime deps, no CSS-in-JS engine, no polyfill carousel. The React library rides peer dependencies only; everything else is plain CSS custom properties and native browser APIs.
 
@@ -60,19 +60,19 @@ Fifty-plus React components across an 8-set pattern taxonomy — bento grids, su
 
 The same style ships four ways:
 
-- **React library** — `@edwyn/signature-style/react`, peer-dependency only, SSR-safe `ThemeProvider` with a compile-time token whitelist.
+- **React library** — `@carcolacha/signature-style/react`, peer-dependency only, SSR-safe `ThemeProvider` with a compile-time token whitelist.
 - **Zero-React web components** — `<sig-surface-card>`, `<sig-badge>`, `<sig-progress-bar>`, `<sig-stat-ring>`, `<sig-callout>`, `<sig-carousel>` for Vue, Svelte, plain HTML, and any-stack agents.
-- **Interactive CLI scaffolder** — `npx @edwyn/signature-style init` detects your framework (Next, Vite, plain HTML) and writes tokens + starters with safe injection (existing files are never clobbered without `--force`).
+- **Interactive CLI scaffolder** — `npx @carcolacha/signature-style init` detects your framework (Next, Vite, plain HTML) and writes tokens + starters with safe injection (existing files are never clobbered without `--force`).
 - **Standalone Playwright MCP visual auditor** — `packages/signature-mcp` serves four tools (`inspect_layout`, `audit_contrast`, `audit_e1_shadows`, `capture_viewport_matrix`) so AI sessions can see layout boxes, measure real WCAG ratios, and audit the motion treaty at runtime.
 
 Four import paths, one mental model:
 
 | Import | Resolves to | Peers needed |
 |---|---|---|
-| `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest | never |
-| `@edwyn/signature-style/css` | the compiled CSS bundle: tokens, base, cascade, overrides | never |
-| `@edwyn/signature-style/react` | the component library + `ThemeProvider` | `react` + `react-dom` (`lucide-react` optional) |
-| `@edwyn/signature-style/wc` | the six zero-React custom elements + their types | never (link the CSS once for tokens) |
+| `@carcolacha/signature-style` | `tokens.json` — the machine-readable manifest | never |
+| `@carcolacha/signature-style/css` | the compiled CSS bundle: tokens, base, cascade, overrides | never |
+| `@carcolacha/signature-style/react` | the component library + `ThemeProvider` | `react` + `react-dom` (`lucide-react` optional) |
+| `@carcolacha/signature-style/wc` | the six zero-React custom elements + their types | never (link the CSS once for tokens) |
 
 ---
 
@@ -81,7 +81,7 @@ Four import paths, one mental model:
 ### CLI Init
 
 ```bash
-npx @edwyn/signature-style init --template bento --theme oled --yes
+npx @carcolacha/signature-style init --template bento --theme oled --yes
 ```
 
 Writes `signature-tokens.css` (your resolved theme) plus a framework-adaptive starter — Next, Vite, or plain HTML. Re-run with `--theme daylight --force` to re-theme.
@@ -97,8 +97,8 @@ Writes `signature-tokens.css` (your resolved theme) plus a framework-adaptive st
 ### React Usage
 
 ```tsx
-import "@edwyn/signature-style/css";
-import { ThemeProvider, SigBadge } from "@edwyn/signature-style/react";
+import "@carcolacha/signature-style/css";
+import { ThemeProvider, SigBadge } from "@carcolacha/signature-style/react";
 
 export function Root() {
   return (
@@ -114,9 +114,9 @@ One import themes everything; the provider claims the CSS layer order before any
 ### Zero-React Web Component Usage
 
 ```html
-<link rel="stylesheet" href="node_modules/@edwyn/signature-style/css/signature-style.css" />
+<link rel="stylesheet" href="node_modules/@carcolacha/signature-style/css/signature-style.css" />
 <script type="module">
-  import "@edwyn/signature-style/wc";
+  import "@carcolacha/signature-style/wc";
 </script>
 
 <sig-stat-ring value="85" accent-token="--sig-cobalt" show-value="true"></sig-stat-ring>

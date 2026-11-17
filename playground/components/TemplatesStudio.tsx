@@ -45,7 +45,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Button, Tabs, useToast } from "@edwyn/signature-style/react";
+import { Button, Tabs, useToast } from "@carcolacha/signature-style/react";
 import { PAGE_TEMPLATES } from "../template-registry.js";
 import type { TemplateId } from "../template-sources.js";
 

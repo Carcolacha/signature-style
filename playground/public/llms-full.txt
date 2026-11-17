@@ -1,4 +1,4 @@
-# @edwyn/signature-style — The Signature Style (full)
+# @carcolacha/signature-style — The Signature Style (full)
 
 > Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.
 
@@ -207,38 +207,38 @@ The surface is a VERIFIED AXLE, not a hardcoded palette: the canonical theme mec
 - **The live customizer:** the playground's Pattern Studio carries the Theme & Surface Customizer panel (also reachable via the ⌘K palette: "Theme: Mocha/OLED/Daylight", "Radius: Standard/Sharp", "Download tokens.css", "Copy CSS Variables"). Theme + radius persist as ONE merged object under `sig.workspace.v3.prefs` (`{ theme, radius }`; the v3.2.0 per-axis keys survive as a one-time migration read — an old pick is adopted on first load). "Copy Theme Snippet" puts the canonical `<html data-sig-theme="…" data-sig-radius="…">` line on the clipboard. Until the user picks (now or in a pre-3.6.0 session), BOTH attributes stay ABSENT (the mocha/6px legacy look). Contrast badges render the 16 chromatic tokens for the ACTIVE theme with the same WCAG math the gate uses.
 
 ## Scaffolding (3.3.0 — the npx init CLI):
-New projects don't hand-wire tokens anymore: `npx @edwyn/signature-style init` scaffolds a resolved `signature-tokens.css` (one of the three themes + the standard geometry preset, zero dependencies) and, with `--template bento`, a standalone 12-column starter that already obeys every pillar on this page. The CLI's embedded theme map is drift-gated against `css/tokens.css` by `verify:cli` (cli2) — when scaffolding, the palette you get IS this document's palette. Prefer the CLI for fresh surfaces; hand-injection stays reserved for retrofits.
+New projects don't hand-wire tokens anymore: `npx @carcolacha/signature-style init` scaffolds a resolved `signature-tokens.css` (one of the three themes + the standard geometry preset, zero dependencies) and, with `--template bento`, a standalone 12-column starter that already obeys every pillar on this page. The CLI's embedded theme map is drift-gated against `css/tokens.css` by `verify:cli` (cli2) — when scaffolding, the palette you get IS this document's palette. Prefer the CLI for fresh surfaces; hand-injection stays reserved for retrofits.
 
 ## Full-Page Layout Blueprints (3.8.0 — the capstone; 4.0.0 the human-crafted set):
-The engine scaffolds ENTIRE SITES: two self-contained full-page templates — one default-export React page each, composed exclusively from `@edwyn/signature-style/react` exports + the kinetic primitives, carrying an embedded token-driven `<style>` block (zero hex, 8px grid, container queries so the page answers its CONTAINER width, reduced-motion honored). 4.0.0 BREAKING: the generic SaaS Landing + Docs Reader pair RETIRES; the set is the two authentic, human-crafted blueprints below — ORIGINAL content throughout (style-inspired, never copied: invented call signs, invented maps, deterministic mock numbers). In the playground's Templates Studio (`#/templates`) each blueprint previews live inside the viewport emulator (Desktop 100% / Tablet 768px / Mobile 375px), re-themes under the SCOPED switcher (`data-sig-theme` on the stage wrapper — the theme blocks are plain attribute selectors, so a div re-themes its subtree), and copies as full TSX. The CLI emits the same pages: `vite-react`/`next` hosts get the React blueprint; `html`/`fresh` hosts get a per-template STATIC HTML MIRROR (the same blocks as plain HTML + the tokens variables — one honest snapshot, not the React statefulness). The registry: `playground/template-registry.ts` → `PAGE_TEMPLATES` (`id` / `name` / `description` / `Component` / `source` — the source strings are the formatted standalone TSX, mechanically derived, so the copy payload can never drift).
+The engine scaffolds ENTIRE SITES: two self-contained full-page templates — one default-export React page each, composed exclusively from `@carcolacha/signature-style/react` exports + the kinetic primitives, carrying an embedded token-driven `<style>` block (zero hex, 8px grid, container queries so the page answers its CONTAINER width, reduced-motion honored). 4.0.0 BREAKING: the generic SaaS Landing + Docs Reader pair RETIRES; the set is the two authentic, human-crafted blueprints below — ORIGINAL content throughout (style-inspired, never copied: invented call signs, invented maps, deterministic mock numbers). In the playground's Templates Studio (`#/templates`) each blueprint previews live inside the viewport emulator (Desktop 100% / Tablet 768px / Mobile 375px), re-themes under the SCOPED switcher (`data-sig-theme` on the stage wrapper — the theme blocks are plain attribute selectors, so a div re-themes its subtree), and copies as full TSX. The CLI emits the same pages: `vite-react`/`next` hosts get the React blueprint; `html`/`fresh` hosts get a per-template STATIC HTML MIRROR (the same blocks as plain HTML + the tokens variables — one honest snapshot, not the React statefulness). The registry: `playground/template-registry.ts` → `PAGE_TEMPLATES` (`id` / `name` / `description` / `Component` / `source` — the source strings are the formatted standalone TSX, mechanically derived, so the copy payload can never drift).
 
 ### Blueprint 01 — Match & Telemetry Analytics Hub (`telemetry`):
-Block-by-block: (1) Player Summary header — the rank `SigBadge` (e.g. "Diamond II"), the invented call sign (2rem tabular), the live rating (`AnimatedNumber`, tabular-nums) and the 128px win-rate `StatRing` (the `size="md"` enum diameter — exactly 128×128 forever) → (2) Role/Class Mastery — a `BarChart` per-role breakdown (capacity tracks + chromatic bars) beside `ProgressBar` rows for the same four roles (limit captions "820 / 1000") → (3) Rating Momentum — an `AreaChart` of the last 12 sessions (the mount sweep draws the line) → (4) Match History Ledger — a filterable `DataTable` (Match · Score/KDA tabular-nums · Duration · Result wearing `--sig-mint` Win / `--sig-crimson` Loss `SigBadge`s; the `Input` filters rows live via `useMemo`). ALL CONTENT IS ORIGINAL: invented call signs, invented maps, deterministic mock numbers — the competitive-stats STYLE is the inspiration, never anyone's data. CLI: `npx @edwyn/signature-style init --template telemetry`.
+Block-by-block: (1) Player Summary header — the rank `SigBadge` (e.g. "Diamond II"), the invented call sign (2rem tabular), the live rating (`AnimatedNumber`, tabular-nums) and the 128px win-rate `StatRing` (the `size="md"` enum diameter — exactly 128×128 forever) → (2) Role/Class Mastery — a `BarChart` per-role breakdown (capacity tracks + chromatic bars) beside `ProgressBar` rows for the same four roles (limit captions "820 / 1000") → (3) Rating Momentum — an `AreaChart` of the last 12 sessions (the mount sweep draws the line) → (4) Match History Ledger — a filterable `DataTable` (Match · Score/KDA tabular-nums · Duration · Result wearing `--sig-mint` Win / `--sig-crimson` Loss `SigBadge`s; the `Input` filters rows live via `useMemo`). ALL CONTENT IS ORIGINAL: invented call signs, invented maps, deterministic mock numbers — the competitive-stats STYLE is the inspiration, never anyone's data. CLI: `npx @carcolacha/signature-style init --template telemetry`.
 
 Entry snippet:
 ```tsx
 import TelemetryCenterTemplate from "./SignatureTelemetryCenter";
 // entry.tsx — once, before your own styles:
-// import "@edwyn/signature-style/css";
+// import "@carcolacha/signature-style/css";
 <TelemetryCenterTemplate />
 ```
 
 ### Blueprint 02 — Interactive Micro-Lab & Discovery Deck (`microlab`):
-Block-by-block: (1) Millisecond Reaction-Time Test — a full-width surface that turns `--sig-neon-green` after a random 1–3s hold; the click measures the exact elapsed ms in tabular-nums. THE STATE MACHINE: idle → waiting → green → result; a too-early click reads "Too soon!" and resets (the pending timer dies with the click); best-of-5 tracked (last / best / average, tabular) → (2) Deterministic Idea/Prompt Deck — a grid of rich `FlipCard`s (eyebrow + accent-underlined title + body + the flip hint, per the 4.0.0 rich-face anatomy) with a FIXED seeded deck: front prompts, back reveals, dealt in order — the same deal every visit → (3) Focus Rhythm & Waveform Toy — `WaveformBars` + `StatusBeacon` wired to a running `ToggleSwitch` and a three-stop tempo control (Calm / Focus / Peak set the band count and the chromatic voice). CLI: `npx @edwyn/signature-style init --template microlab`.
+Block-by-block: (1) Millisecond Reaction-Time Test — a full-width surface that turns `--sig-neon-green` after a random 1–3s hold; the click measures the exact elapsed ms in tabular-nums. THE STATE MACHINE: idle → waiting → green → result; a too-early click reads "Too soon!" and resets (the pending timer dies with the click); best-of-5 tracked (last / best / average, tabular) → (2) Deterministic Idea/Prompt Deck — a grid of rich `FlipCard`s (eyebrow + accent-underlined title + body + the flip hint, per the 4.0.0 rich-face anatomy) with a FIXED seeded deck: front prompts, back reveals, dealt in order — the same deal every visit → (3) Focus Rhythm & Waveform Toy — `WaveformBars` + `StatusBeacon` wired to a running `ToggleSwitch` and a three-stop tempo control (Calm / Focus / Peak set the band count and the chromatic voice). CLI: `npx @carcolacha/signature-style init --template microlab`.
 
 Entry snippet:
 ```tsx
 import MicroLabTemplate from "./SignatureMicroLab";
 // entry.tsx — once, before your own styles:
-// import "@edwyn/signature-style/css";
+// import "@carcolacha/signature-style/css";
 <MicroLabTemplate />
 ```
 
 ## Web Components (Zero-React Surface) (3.4.0):
 The same Signature Style as **six framework-free custom elements** for Vue/Svelte/HTML/any-stack (and for AI agents generating vanilla code). Plain TypeScript `HTMLElement` subclasses — **zero runtime dependencies** (no React, no Lit), one shadow-DOM `<slot>` anatomy each — registered by ONE module import and themed by ONE stylesheet link:
 
-- **Tokens prerequisite (read first):** the elements ship NO colors. Link `@edwyn/signature-style/css` (or the CLI's `signature-tokens.css`) ONCE — the `--sig-*` custom properties **inherit through shadow-DOM boundaries** (custom properties inherit; shadow roots don't block them), so the link themes all six elements, `<html data-sig-theme="daylight">` included.
-- **Registration:** `import "@edwyn/signature-style/wc";` — defines all six (guarded: already-registered names are skipped). Imperative classes + types ride the same module (`import { SigStatRing } from "@edwyn/signature-style/wc"`).
+- **Tokens prerequisite (read first):** the elements ship NO colors. Link `@carcolacha/signature-style/css` (or the CLI's `signature-tokens.css`) ONCE — the `--sig-*` custom properties **inherit through shadow-DOM boundaries** (custom properties inherit; shadow roots don't block them), so the link themes all six elements, `<html data-sig-theme="daylight">` included.
+- **Registration:** `import "@carcolacha/signature-style/wc";` — defines all six (guarded: already-registered names are skipped). Imperative classes + types ride the same module (`import { SigStatRing } from "@carcolacha/signature-style/wc"`).
 
 | Element | Attributes | Shadow-DOM shape | React twin |
 |---|---|---|---|
@@ -260,7 +260,7 @@ The same Signature Style as **six framework-free custom elements** for Vue/Svelt
 - **The RoE holds inside the shadows:** every shadow style string is 100% `var()`/`color-mix` (zero hex); `--sig-*` accents paint content only (badge variants, ring arcs, callout strips, card underlines) — never structural chrome. The e1 zero-shadow law is mirrored: the sanctioned ambient elevation shadows exist ONLY on the surface-card's inner `.card` element.
 
 ## The Visual Cortex as a Product (3.5.0):
-The engine now SHIPS ITS OWN EYES: `packages/signature-mcp` — a standalone MCP stdio server (private `@edwyn/signature-mcp`, `bin: signature-mcp`) that gives any AI session spatial awareness of the RENDERED app — the AI can measure what it styles. Build: `npm --prefix packages/signature-mcp run build`; prerequisite: `npx playwright install chromium` once + the dev server (`npm run playground`, default `http://localhost:5173` — every tool degrades into a graceful error naming that command). Playwright is pinned EXACTLY to the repo's installed version (no second browser download). The four tools:
+The engine now SHIPS ITS OWN EYES: `packages/signature-mcp` — a standalone MCP stdio server (private `@carcolacha/signature-mcp`, `bin: signature-mcp`) that gives any AI session spatial awareness of the RENDERED app — the AI can measure what it styles. Build: `npm --prefix packages/signature-mcp run build`; prerequisite: `npx playwright install chromium` once + the dev server (`npm run playground`, default `http://localhost:5173` — every tool degrades into a graceful error naming that command). Playwright is pinned EXACTLY to the repo's installed version (no second browser download). The four tools:
 
 | Tool | Params | Returns |
 |---|---|---|
@@ -317,7 +317,7 @@ Before you write a line of code, ask what line you can delete instead. The owner
 - **DOM Flattening:** Never use a wrapper `<div>` if CSS Flexbox/Grid on the parent can achieve the same layout. If an element looks visually identical without a wrapper, delete the wrapper.
 - **Minimalist Code:** Do not add "extra stuff" or decorative wrappers. If the UI looks clean and functions correctly with 3 lines of HTML instead of 10, use 3.
 
-When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<SigBadge>` from `@edwyn/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
+When you ship React, prefer the official primitives in this package — `<Icon>`, `<EmptyState>`, and `<SigBadge>` from `@carcolacha/signature-style/react` — over hand-rolled equivalents. They already follow every pillar above; a hand-rolled copy is redundant code, and redundant code gets pruned.
 
 ## The 6-Set Taxonomy — every component, copy-paste
 
@@ -332,7 +332,7 @@ The frame every view hangs in: one centered column, one announcing hero, one sti
 Copy-paste JSX:
 
 ```tsx
-import { ThemeProvider } from "@edwyn/signature-style/react";
+import { ThemeProvider } from "@carcolacha/signature-style/react";
 
 <ThemeProvider theme={{ "--color-cake-primary": "#F2CDCD" }}>
   <App />
@@ -354,7 +354,7 @@ export interface ThemeProviderProps {
 Copy-paste JSX:
 
 ```tsx
-import { GlobalNav } from "@edwyn/signature-style/react";
+import { GlobalNav } from "@carcolacha/signature-style/react";
 
 const items = [{ href: "#/dashboard", label: "Dashboard" }];
 <GlobalNav items={items} activeHref="#/dashboard" />
@@ -384,7 +384,7 @@ export interface GlobalNavProps {
 Copy-paste JSX:
 
 ```tsx
-import { Tabs } from "@edwyn/signature-style/react";
+import { Tabs } from "@carcolacha/signature-style/react";
 
 const [moduleId, setModuleId] = useState("core");
 <Tabs
@@ -437,7 +437,7 @@ The surfaces people actually read: heroes, cards, badges and the five universal 
 Copy-paste JSX:
 
 ```tsx
-import { SurfaceCard } from "@edwyn/signature-style/react";
+import { SurfaceCard } from "@carcolacha/signature-style/react";
 
 <SurfaceCard eyebrow="Forms" meta="components/forms.tsx" title="Form Controls" interactive>
   <Input placeholder="Member name" />
@@ -488,7 +488,7 @@ export interface SurfaceCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { PageHero } from "@edwyn/signature-style/react";
+import { PageHero } from "@carcolacha/signature-style/react";
 
 <PageHero title="THE ENGINE" subtitle="every primitive, one dashboard · live showcase" />
 ```
@@ -511,7 +511,7 @@ export interface PageHeroProps {
 Copy-paste JSX:
 
 ```tsx
-import { Icon } from "@edwyn/signature-style/react";
+import { Icon } from "@carcolacha/signature-style/react";
 
 <Icon name="Rocket" size={16} />
 ```
@@ -530,7 +530,7 @@ export interface IconProps extends Omit<LucideProps, "ref"> {
 Copy-paste JSX:
 
 ```tsx
-import { Avatar } from "@edwyn/signature-style/react";
+import { Avatar } from "@carcolacha/signature-style/react";
 
 <Avatar name="Ana Souza" />
 <Avatar name="Priya Nair" size={40} ringToken="--sig-mauve-soft" />
@@ -561,7 +561,7 @@ export interface AvatarProps {
 Copy-paste JSX:
 
 ```tsx
-import { SigBadge } from "@edwyn/signature-style/react";
+import { SigBadge } from "@carcolacha/signature-style/react";
 
 <SigBadge colorToken="--sig-peach" label="Birthday" />
 ```
@@ -594,7 +594,7 @@ export interface SigBadgeProps {
 Copy-paste JSX:
 
 ```tsx
-import { ContentCard } from "@edwyn/signature-style/react";
+import { ContentCard } from "@carcolacha/signature-style/react";
 
 <ContentCard
   category="Catering" categoryToken="--sig-peach"
@@ -636,7 +636,7 @@ export interface ContentCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { ReferenceCard } from "@edwyn/signature-style/react";
+import { ReferenceCard } from "@carcolacha/signature-style/react";
 
 <ReferenceCard
   tag="JSX" title="The Signature Surface" accentToken="--sig-sky"
@@ -672,7 +672,7 @@ export interface ReferenceCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { TierCard } from "@edwyn/signature-style/react";
+import { TierCard } from "@carcolacha/signature-style/react";
 
 <TierCard
   name="Arena Pass" price="$49" featured accentToken="--sig-mauve-soft"
@@ -709,7 +709,7 @@ export interface TierCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { ProfileCard } from "@edwyn/signature-style/react";
+import { ProfileCard } from "@carcolacha/signature-style/react";
 
 <ProfileCard
   name="Ana Souza" role="Head of Catering" accentToken="--sig-peach"
@@ -751,7 +751,7 @@ export interface ProfileCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { ActionTile } from "@edwyn/signature-style/react";
+import { ActionTile } from "@carcolacha/signature-style/react";
 
 <ActionTile
   title="Open Deck Editor"
@@ -784,7 +784,7 @@ export interface ActionTileProps {
 Copy-paste JSX:
 
 ```tsx
-import { FlipCard } from "@edwyn/signature-style/react";
+import { FlipCard } from "@carcolacha/signature-style/react";
 
 <FlipCard front="Dare: sing the chorus" back="…or forfeit 10 points" />
 ```
@@ -821,7 +821,7 @@ export interface FlipCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { AccordionCard } from "@edwyn/signature-style/react";
+import { AccordionCard } from "@carcolacha/signature-style/react";
 
 <AccordionCard title="House Rules">
   <p>Ties resolve to rock-paper-scissors; the loser brings the ice.</p>
@@ -844,7 +844,7 @@ export interface AccordionCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { MatchupCard } from "@edwyn/signature-style/react";
+import { MatchupCard } from "@carcolacha/signature-style/react";
 
 <MatchupCard
   left={{ name: "Ana Souza", ringToken: "--sig-mauve-soft" }}
@@ -876,7 +876,7 @@ Format rules sit above the input so people read the constraint before typing —
 Copy-paste JSX:
 
 ```tsx
-import { FormField, Input } from "@edwyn/signature-style/react";
+import { FormField, Input } from "@carcolacha/signature-style/react";
 
 <FormField
   label="Postal Code"
@@ -986,7 +986,7 @@ export interface FormFieldProps {
 Copy-paste JSX:
 
 ```tsx
-import { Input } from "@edwyn/signature-style/react";
+import { Input } from "@carcolacha/signature-style/react";
 
 <Input
   value={name}
@@ -1022,7 +1022,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 Copy-paste JSX:
 
 ```tsx
-import { TextArea } from "@edwyn/signature-style/react";
+import { TextArea } from "@carcolacha/signature-style/react";
 
 <TextArea rows={4} value={bio} onChange={(e) => setBio(e.target.value)} />
 ```
@@ -1045,7 +1045,7 @@ export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 Copy-paste JSX:
 
 ```tsx
-import { Select } from "@edwyn/signature-style/react";
+import { Select } from "@carcolacha/signature-style/react";
 
 <Select label="Dietary preference" value={diet} onChange={(e) => setDiet(e.target.value)}>
   <option value="none">No preference</option>
@@ -1079,7 +1079,7 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 Copy-paste JSX:
 
 ```tsx
-import { Checkbox } from "@edwyn/signature-style/react";
+import { Checkbox } from "@carcolacha/signature-style/react";
 
 const [agreed, setAgreed] = useState(false);
 <Checkbox checked={agreed} onToggle={setAgreed} label="Send me the invite" />
@@ -1103,7 +1103,7 @@ export interface CheckboxProps {
 Copy-paste JSX:
 
 ```tsx
-import { RadioCardGroup } from "@edwyn/signature-style/react";
+import { RadioCardGroup } from "@carcolacha/signature-style/react";
 
 const [attendance, setAttendance] = useState("confirmed");
 <RadioCardGroup
@@ -1140,7 +1140,7 @@ export interface RadioCardGroupProps {
 Copy-paste JSX:
 
 ```tsx
-import { ToggleSwitch } from "@edwyn/signature-style/react";
+import { ToggleSwitch } from "@carcolacha/signature-style/react";
 
 const [on, setOn] = useState(false);
 <ToggleSwitch checked={on} onToggle={setOn} label="Make event public" />
@@ -1171,7 +1171,7 @@ export interface ToggleSwitchProps {
 Copy-paste JSX:
 
 ```tsx
-import { PasswordInput } from "@edwyn/signature-style/react";
+import { PasswordInput } from "@carcolacha/signature-style/react";
 
 const [pw, setPw] = useState("");
 <PasswordInput label="Password" value={pw} onChange={setPw} />
@@ -1195,7 +1195,7 @@ export interface PasswordInputProps {
 Copy-paste JSX:
 
 ```tsx
-import { Button } from "@edwyn/signature-style/react";
+import { Button } from "@carcolacha/signature-style/react";
 
 <Button variant="primary" size="md" leftIcon="Check" loading={submitting} type="submit">
   Check In
@@ -1256,7 +1256,7 @@ The dashboards' math made visible: bars that admit their limits, rings that read
 Copy-paste JSX:
 
 ```tsx
-import { ProgressBar } from "@edwyn/signature-style/react";
+import { ProgressBar } from "@carcolacha/signature-style/react";
 
 <ProgressBar value={72} colorToken="--sig-green" label="Budget remaining" limitText="$720 / $1,000" />
 ```
@@ -1281,7 +1281,7 @@ export interface ProgressBarProps {
 Copy-paste JSX:
 
 ```tsx
-import { StatRing } from "@edwyn/signature-style/react";
+import { StatRing } from "@carcolacha/signature-style/react";
 
 <StatRing value={85} colorToken="--sig-sky" label="Attendance ratio" size="md" />
 ```
@@ -1326,7 +1326,7 @@ export interface StatRingProps {
 Copy-paste JSX:
 
 ```tsx
-import { StatCard } from "@edwyn/signature-style/react";
+import { StatCard } from "@carcolacha/signature-style/react";
 
 <StatCard
   label="Confirmed Seats"
@@ -1362,7 +1362,7 @@ export interface StatCardProps {
 Copy-paste JSX:
 
 ```tsx
-import { Sparkline } from "@edwyn/signature-style/react";
+import { Sparkline } from "@carcolacha/signature-style/react";
 
 <Sparkline data={[2, 3, 3, 4, 4, 6]} colorToken="--sig-mauve-soft" label="Rooms trend" />
 ```
@@ -1389,7 +1389,7 @@ export interface SparklineProps {
 Copy-paste JSX:
 
 ```tsx
-import { BarChart } from "@edwyn/signature-style/react";
+import { BarChart } from "@carcolacha/signature-style/react";
 
 <BarChart
   data={[
@@ -1420,7 +1420,7 @@ export interface BarChartProps {
 Copy-paste JSX:
 
 ```tsx
-import { AreaChart } from "@edwyn/signature-style/react";
+import { AreaChart } from "@carcolacha/signature-style/react";
 
 <AreaChart
   points={[
@@ -1453,7 +1453,7 @@ export interface AreaChartProps {
 Copy-paste JSX:
 
 ```tsx
-import { KnowledgeGraph, type GraphNode } from "@edwyn/signature-style/react";
+import { KnowledgeGraph, type GraphNode } from "@carcolacha/signature-style/react";
 
 const nodes: GraphNode[] = [
   { id: "root", label: "Core Engine", categoryToken: "--sig-lavender", note: "Every branch is one layer." },
@@ -1567,7 +1567,7 @@ export interface KnowledgeGraphProps {
 Copy-paste JSX:
 
 ```tsx
-import { smoothPath } from "@edwyn/signature-style/react";
+import { smoothPath } from "@carcolacha/signature-style/react";
 
 // Catmull-Rom → bezier path string for N points { x, y } — the same
 // smoothing AreaChart draws with, exported pure for your own SVGs.
@@ -1582,7 +1582,7 @@ const d = smoothPath([
 Copy-paste JSX:
 
 ```tsx
-import { layoutGraph, type GraphNode } from "@edwyn/signature-style/react";
+import { layoutGraph, type GraphNode } from "@carcolacha/signature-style/react";
 
 // Deterministic radial layout: roots centered, BFS depth rings at
 // radius 90 + depth·110, children fanned around the parent's angle,
@@ -1599,7 +1599,7 @@ const positions: Record<string, GraphPosition> = layoutGraph(nodes);
 Copy-paste JSX:
 
 ```tsx
-import { cubicBezierEdge } from "@edwyn/signature-style/react";
+import { cubicBezierEdge } from "@carcolacha/signature-style/react";
 
 // One cubic-Bezier edge path per node-with-parent — control points
 // 60% along the radial. Feed it the layoutGraph output.
@@ -1619,7 +1619,7 @@ Time made visible: the alternating chronology for reading, the controlled manage
 Copy-paste JSX:
 
 ```tsx
-import { EventTimeline } from "@edwyn/signature-style/react";
+import { EventTimeline } from "@carcolacha/signature-style/react";
 
 <EventTimeline
   events={[{
@@ -1660,7 +1660,7 @@ export interface EventTimelineProps {
 Copy-paste JSX:
 
 ```tsx
-import { useModal } from "@edwyn/signature-style/react";
+import { useModal } from "@carcolacha/signature-style/react";
 
 // The hook owns selection state; the component owns the overlay.
 const modal = useModal<TimelineEvent>();
@@ -1673,7 +1673,7 @@ modal.close();       // close + clear
 Copy-paste JSX:
 
 ```tsx
-import { EventModal, useModal, type TimelineEvent } from "@edwyn/signature-style/react";
+import { EventModal, useModal, type TimelineEvent } from "@carcolacha/signature-style/react";
 
 const modal = useModal<TimelineEvent>();
 {modal.selectedEvent !== null && (
@@ -1699,7 +1699,7 @@ export interface EventModalProps {
 Copy-paste JSX:
 
 ```tsx
-import { TimelineManager, type TimelineItem } from "@edwyn/signature-style/react";
+import { TimelineManager, type TimelineItem } from "@carcolacha/signature-style/react";
 
 <TimelineManager
   items={items}
@@ -1735,7 +1735,7 @@ export interface TimelineManagerProps {
 Copy-paste JSX:
 
 ```tsx
-import { ChronicleTimeline } from "@edwyn/signature-style/react";
+import { ChronicleTimeline } from "@carcolacha/signature-style/react";
 
 <ChronicleTimeline
   label="Version chronicle"
@@ -1768,7 +1768,7 @@ The working set: ledgers that scroll instead of breaking, notes that persist, to
 Copy-paste JSX:
 
 ```tsx
-import { DataTable } from "@edwyn/signature-style/react";
+import { DataTable } from "@carcolacha/signature-style/react";
 
 <DataTable
   columns={[
@@ -1805,7 +1805,7 @@ export interface DataTableProps {
 Copy-paste JSX:
 
 ```tsx
-import { Callout } from "@edwyn/signature-style/react";
+import { Callout } from "@carcolacha/signature-style/react";
 
 <Callout status="warning">3 pending reviews close Friday.</Callout>
 ```
@@ -1834,7 +1834,7 @@ export interface CalloutProps {
 Copy-paste JSX:
 
 ```tsx
-import { Carousel } from "@edwyn/signature-style/react";
+import { Carousel } from "@carcolacha/signature-style/react";
 
 <Carousel label="Palette clippings">
   <CarouselItem><SigBadge colorToken="--sig-sky" label="Sky" /></CarouselItem>
@@ -1874,7 +1874,7 @@ export interface CarouselProps {
 Copy-paste JSX:
 
 ```tsx
-import { CarouselItem } from "@edwyn/signature-style/react";
+import { CarouselItem } from "@carcolacha/signature-style/react";
 
 {/* Children of <Carousel> MUST be CarouselItem snap slots —
     one item per scroll-snap step, any content inside. */}
@@ -1899,7 +1899,7 @@ export interface CarouselItemProps {
 Copy-paste JSX:
 
 ```tsx
-import { ProseBlock } from "@edwyn/signature-style/react";
+import { ProseBlock } from "@carcolacha/signature-style/react";
 
 <ProseBlock>
   <p>First paragraph…</p>
@@ -1926,7 +1926,7 @@ export interface ProseBlockProps {
 Copy-paste JSX:
 
 ```tsx
-import { AnnouncementBanner } from "@edwyn/signature-style/react";
+import { AnnouncementBanner } from "@carcolacha/signature-style/react";
 
 <AnnouncementBanner
   variant="announcement"
@@ -1987,7 +1987,7 @@ export interface AnnouncementBannerProps {
 Copy-paste JSX:
 
 ```tsx
-import { EmptyState } from "@edwyn/signature-style/react";
+import { EmptyState } from "@carcolacha/signature-style/react";
 
 <EmptyState icon="PackageOpen" title="Nothing here" message="Add your first event." />
 ```
@@ -2020,7 +2020,7 @@ export interface EmptyStateProps {
 Copy-paste JSX:
 
 ```tsx
-import { ToastProvider } from "@edwyn/signature-style/react";
+import { ToastProvider } from "@carcolacha/signature-style/react";
 
 <ToastProvider>
   <AttendanceForm />
@@ -2032,7 +2032,7 @@ import { ToastProvider } from "@edwyn/signature-style/react";
 Copy-paste JSX:
 
 ```tsx
-import { useToast } from "@edwyn/signature-style/react";
+import { useToast } from "@carcolacha/signature-style/react";
 
 // inside <AttendanceForm>, beneath the provider:
 const toast = useToast();
@@ -2090,7 +2090,7 @@ Copy-paste JSX:
 
 ```tsx
 import { useState } from "react";
-import { Button, ConfirmDialog, useToast } from "@edwyn/signature-style/react";
+import { Button, ConfirmDialog, useToast } from "@carcolacha/signature-style/react";
 
 // THE DESTRUCTIVE ACTION NORM (4.0.0): every delete/reset routes
 // through ConfirmDialog — Escape, scrim and "No" all cancel; only
@@ -2141,14 +2141,14 @@ export interface ConfirmDialogProps {
 
 ### Set 07 — Web Components (zero-react)
 
-The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @edwyn/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @edwyn/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.
+The same Signature Style as six framework-free custom elements — no React, no runtime deps, plain HTMLElement + shadow DOM. Prerequisite: link @carcolacha/signature-style/css once (the --sig-* custom properties INHERIT through shadow-DOM boundaries, so one stylesheet themes every element, data-sig-theme included). Import @carcolacha/signature-style/wc, then write the tags below in any stack — HTML, Vue, Svelte, or JSX.
 
 #### sig-surface-card (SigWcSurfaceCard)
 
 Copy-paste JSX:
 
 ```tsx
-<!-- Prerequisite: import "@edwyn/signature-style/wc" + link the css once -->
+<!-- Prerequisite: import "@carcolacha/signature-style/wc" + link the css once -->
 <sig-surface-card
   eyebrow="Telemetry"
   meta="wc/elements.ts"
@@ -2328,7 +2328,7 @@ Copy-paste JSX:
 Copy-paste JSX:
 
 ```tsx
-import { AnimatedNumber } from "@edwyn/signature-style/react";
+import { AnimatedNumber } from "@carcolacha/signature-style/react";
 
 <AnimatedNumber value={1740} prefix="$" />
 <AnimatedNumber value={63.4} suffix="%" decimals={1} />
@@ -2345,7 +2345,7 @@ import { AnimatedNumber } from "@edwyn/signature-style/react";
 Copy-paste JSX:
 
 ```tsx
-import { MotionReveal } from "@edwyn/signature-style/react";
+import { MotionReveal } from "@carcolacha/signature-style/react";
 
 {cards.map((card, index) => (
   <MotionReveal
@@ -2367,7 +2367,7 @@ import { MotionReveal } from "@edwyn/signature-style/react";
 Copy-paste JSX:
 
 ```tsx
-import { KineticSurface } from "@edwyn/signature-style/react";
+import { KineticSurface } from "@carcolacha/signature-style/react";
 
 <KineticSurface accentToken="--sig-cyan">
   <p>Move the cursor across me — the sheen tracks it.</p>
@@ -2441,7 +2441,7 @@ useEffect(() => {
 Copy-paste JSX:
 
 ```tsx
-import { AuroraBorderCard } from "@edwyn/signature-style/react";
+import { AuroraBorderCard } from "@carcolacha/signature-style/react";
 
 <AuroraBorderCard accentTokens={["--sig-cyan", "--sig-orchid", "--sig-mint", "--sig-cobalt"]} trigger="hover">
   <p>The beam spins on hover.</p>
@@ -2463,7 +2463,7 @@ import { AuroraBorderCard } from "@edwyn/signature-style/react";
 Copy-paste JSX:
 
 ```tsx
-import { TiltSurface } from "@edwyn/signature-style/react";
+import { TiltSurface } from "@carcolacha/signature-style/react";
 
 <TiltSurface tilt={6} accentToken="--sig-rose-glow">
   <p>Tilt with the cursor — the sheen rides along.</p>
@@ -2480,7 +2480,7 @@ import { TiltSurface } from "@edwyn/signature-style/react";
 Copy-paste JSX:
 
 ```tsx
-import { StatusBeacon } from "@edwyn/signature-style/react";
+import { StatusBeacon } from "@carcolacha/signature-style/react";
 
 <StatusBeacon status="live" colorToken="--sig-green" />
 <StatusBeacon status="syncing" colorToken="--sig-azure" size={12} label="Stream syncing" />
@@ -2495,7 +2495,7 @@ import { StatusBeacon } from "@edwyn/signature-style/react";
 Copy-paste JSX:
 
 ```tsx
-import { WaveformBars } from "@edwyn/signature-style/react";
+import { WaveformBars } from "@carcolacha/signature-style/react";
 
 <WaveformBars bars={16} colorToken="--sig-mint" label="Stream level" />
 <WaveformBars data={[0.2, 0.9, 0.4, 0.7]} active={false} />
@@ -2584,7 +2584,7 @@ Copy-paste JSX:
 
 ```tsx
 import { useState } from "react";
-import { AnimatedNumber, AreaChart, StatRing } from "@edwyn/signature-style/react";
+import { AnimatedNumber, AreaChart, StatRing } from "@carcolacha/signature-style/react";
 
 // 4.0.0 — ONE trigger, THREE instruments: the number ROLLS (rAF
 // spring), the ring's arc JUMPS (stroke-dashoffset transition), and
@@ -2607,7 +2607,7 @@ const [spike, setSpike] = useState(0);
 
 ## Full-Page Layout Blueprints (3.8.0; 4.0.0 the human-crafted set)
 
-Two self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @edwyn/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.
+Two self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @carcolacha/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.
 
 4.0.0 — THE BLUEPRINT SET CHANGE (BREAKING): the generic SaaS Landing + Docs Reader templates RETIRE. The set is the two authentic, human-crafted blueprints: the Match & Telemetry Analytics Hub (id "telemetry", replacing the old observability center in place — the CLI file stays SignatureTelemetryCenter.tsx) and the Interactive Micro-Lab & Discovery Deck (id "microlab", new). All blueprint content is ORIGINAL (style-inspired, never copied): invented call signs, invented maps, deterministic mock numbers.
 
@@ -2620,7 +2620,7 @@ The competitive analytics blueprint: Player Summary header (rank badge, call sig
 CLI one-liner:
 
 ```bash
-npx @edwyn/signature-style init --template telemetry
+npx @carcolacha/signature-style init --template telemetry
 ```
 
 The full standalone TSX source (mechanically derived from the shipped component — never hand-edit this payload, change the .tsx and regenerate):
@@ -2678,8 +2678,8 @@ import {
   SigBadge,
   StatRing,
   SurfaceCard,
-} from "@edwyn/signature-style/react";
-import type { DataTableColumn } from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
+import type { DataTableColumn } from "@carcolacha/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */
@@ -3051,7 +3051,7 @@ The fast tactile utility grid: the Millisecond Reaction-Time Test (idle → wait
 CLI one-liner:
 
 ```bash
-npx @edwyn/signature-style init --template microlab
+npx @carcolacha/signature-style init --template microlab
 ```
 
 The full standalone TSX source (mechanically derived from the shipped component — never hand-edit this payload, change the .tsx and regenerate):
@@ -3097,7 +3097,7 @@ import {
   StatusBeacon,
   ToggleSwitch,
   WaveformBars,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */
@@ -3583,5 +3583,5 @@ export default function MicroLabTemplate() {
 
 ## The Universal AI Replication Contract (source of truth)
 
-The recipes above are ported from SYSTEM_PROMPT.md's Universal AI Replication Contract — read that section of SYSTEM_PROMPT.md for the narrative contracts. Any AI consuming `@edwyn/signature-style` reproduces the signature verbatim: read the snippet, copy the snippet.
+The recipes above are ported from SYSTEM_PROMPT.md's Universal AI Replication Contract — read that section of SYSTEM_PROMPT.md for the narrative contracts. Any AI consuming `@carcolacha/signature-style` reproduces the signature verbatim: read the snippet, copy the snippet.
 

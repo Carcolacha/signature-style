@@ -1,5 +1,5 @@
 {
-  "name": "@edwyn/signature-mcp",
+  "name": "@carcolacha/signature-mcp",
   "version": "1.0.0",
   "private": true,
   "description": "The Visual Cortex as a product — a standalone MCP stdio server giving AI sessions spatial awareness of the rendered Signature Style app: inspect_layout (bounding-rect mapper), audit_contrast (runtime WCAG ratios), audit_e1_shadows (the e1 treaty operationalized), capture_viewport_matrix (4-viewport screenshot sweep). Playwright is pinned EXACTLY to the repo's installed version so the shared Chromium download is reused.",

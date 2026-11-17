@@ -1,18 +1,18 @@
-# @edwyn/signature-style — The Signature Style
+# @carcolacha/signature-style — The Signature Style
 
 > Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.
 
-The official machine-readable index for AI agents. Full self-contained version: [llms-full.txt](llms-full.txt) — every token, every rule, every copy-paste snippet + prop tables. Package source: [npm:@edwyn/signature-style](https://www.npmjs.com/package/@edwyn/signature-style).
+The official machine-readable index for AI agents. Full self-contained version: [llms-full.txt](llms-full.txt) — every token, every rule, every copy-paste snippet + prop tables. Package source: [npm:@carcolacha/signature-style](https://www.npmjs.com/package/@carcolacha/signature-style).
 
 ## Tokens
 
-- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 51-token whitelist, Mocha + Latte themes, the surface themes (Mocha / OLED true-black / Daylight) with the computed daylight ink variants, the geometry presets, shared tokens, the Chromatic Palette, the doctrine objects
+- [tokens.json](https://unpkg.com/@carcolacha/signature-style/tokens.json): the machine-readable token manifest — the 51-token whitelist, Mocha + Latte themes, the surface themes (Mocha / OLED true-black / Daylight) with the computed daylight ink variants, the geometry presets, shared tokens, the Chromatic Palette, the doctrine objects
 - [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json — plus the three verified surface themes and the daylight ink-variant ratio table
-- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — theme blocks, geometry presets, 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
+- [css/tokens.css](https://unpkg.com/@carcolacha/signature-style/css/tokens.css): the cascade source — theme blocks, geometry presets, 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
 
 ## Rules
 
-- [SYSTEM_PROMPT.md](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): The Dynamic Signature Engine v3.0 — the Token Cascade, the Override Protocol, the Structural Pillars, the Pruning Protocol, the Rule of Engagement, and the Universal AI Replication Contract
+- [SYSTEM_PROMPT.md](https://unpkg.com/@carcolacha/signature-style/SYSTEM_PROMPT.md): The Dynamic Signature Engine v3.0 — the Token Cascade, the Override Protocol, the Structural Pillars, the Pruning Protocol, the Rule of Engagement, and the Universal AI Replication Contract
 - [llms-full.txt — The Rules](llms-full.txt): the doctrines rendered verbatim-in-spirit
 - One-line doctrine: every state derives from the core tokens via color-mix()/transforms; --sig-* is content-only, Flamingo/Teal structural-only; separation is hairlines, never shadows (the ONE sanction: css/surface.css's elevation blocks).
 
@@ -31,11 +31,11 @@ The 6-Set Taxonomy — 57 documented exports, one copy-paste snippet each:
 
 ## Full-Page Layout Blueprints (3.8.0)
 
-- [Blueprint telemetry — Match & Telemetry Analytics Hub](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template telemetry)
-- [Blueprint microlab — Interactive Micro-Lab & Discovery Deck](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template microlab)
+- [Blueprint telemetry — Match & Telemetry Analytics Hub](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @carcolacha/signature-style init --template telemetry)
+- [Blueprint microlab — Interactive Micro-Lab & Discovery Deck](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @carcolacha/signature-style init --template microlab)
 
 ## Recipes
 
 - [llms-full.txt — copy-paste snippets](llms-full.txt): every component's JSX recipe (+ HTML variants where documented), each with its prop surface extracted from react/*.d.ts
-- [The Universal AI Replication Contract](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): "Any AI consuming @edwyn/signature-style can reproduce this signature verbatim — read the snippet, copy the snippet."
-- [STORYBOOK.md](https://unpkg.com/@edwyn/signature-style/STORYBOOK.md): the human-readable manual — philosophy, every color token, every component API
+- [The Universal AI Replication Contract](https://unpkg.com/@carcolacha/signature-style/SYSTEM_PROMPT.md): "Any AI consuming @carcolacha/signature-style can reproduce this signature verbatim — read the snippet, copy the snippet."
+- [STORYBOOK.md](https://unpkg.com/@carcolacha/signature-style/STORYBOOK.md): the human-readable manual — philosophy, every color token, every component API

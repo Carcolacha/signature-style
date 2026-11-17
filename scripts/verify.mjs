@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * verify.mjs — release gate for @edwyn/signature-style (since v1.0.0
+ * verify.mjs — release gate for @carcolacha/signature-style (since v1.0.0
  * "Publish Flow & Distribution"; gates accumulated through 0.7.0).
  *
  * Asserts:

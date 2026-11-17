@@ -10,7 +10,7 @@
  * newcomers carry isNew. The 3.6.0 contrastTier rides tokens.json —
  * this table is the UI roster, not the gate.
  */
-import type { TimelineEvent } from "@edwyn/signature-style/react";
+import type { TimelineEvent } from "@carcolacha/signature-style/react";
 
 export interface PaletteEntry {
   token: TimelineEvent["category"];

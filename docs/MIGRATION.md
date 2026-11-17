@@ -48,3 +48,18 @@ The blueprint registry and the CLI `--template` set are exactly
 Passing a retired id is a clean exit-1 CLI error; template consumers must
 re-aim. The React components' props surfaces only grow — `FlipCard` gained
 optional rich-face fields, `AccordionCard`'s surface is untouched.
+
+## The scope migration (v4.2.0)
+
+The npm scope now rides the real registry account: `@edwyn/*` →
+`@carcolacha/*` — the npm account is `carcolacha`, and the `@edwyn` scope
+was never registered, so every publish under it rejected with E404
+"Scope not found".
+
+| Old name | New name |
+|---|---|
+| `@edwyn/signature-style` | `@carcolacha/signature-style` — `npm i @carcolacha/signature-style`, `npx @carcolacha/signature-style init`, and every subpath import (`/css`, `/react`, `/wc`) re-aims the same way |
+| `@edwyn/signature-mcp` (private, unpublished) | `@carcolacha/signature-mcp` |
+
+Zero token, class-name, geometry, or visual deltas — pure identity. Swap
+the import specifier and you are migrated.

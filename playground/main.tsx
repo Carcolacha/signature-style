@@ -2,12 +2,12 @@
  * playground entry — mounts the Hub dashboard ("The Engine").
  *
  * The first import goes through the REAL package exports map
- * ("@edwyn/signature-style/css" → css/signature-style.css), proving the
+ * ("@carcolacha/signature-style/css" → css/signature-style.css), proving the
  * distribution contract serves consumers — not just this repo's internals.
  */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "@edwyn/signature-style/css";
+import "@carcolacha/signature-style/css";
 import "./styles.css";
 import App from "./App";
 

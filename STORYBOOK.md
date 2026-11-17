@@ -1,8 +1,8 @@
 # Signature Style · Cake Edition — The Official Manual
 
-> The human interface to **@edwyn/signature-style**: what it looks like, why it looks that way, and how to build with it — written for teammates, not for compilers.
+> The human interface to **@carcolacha/signature-style**: what it looks like, why it looks that way, and how to build with it — written for teammates, not for compilers.
 
-**Version:** `v1.1.0` — *"Storybook — The Human Interface"* · ships as documentation alongside the `@edwyn/signature-style@1.0.0+` export surface (`.`, `./css`, `./react`). No code changed in this release — and that is the point: the system below is stable enough to be read like a book.
+**Version:** `v1.1.0` — *"Storybook — The Human Interface"* · ships as documentation alongside the `@carcolacha/signature-style@1.0.0+` export surface (`.`, `./css`, `./react`). No code changed in this release — and that is the point: the system below is stable enough to be read like a book.
 
 ---
 
@@ -96,7 +96,7 @@ Opt in with `<html data-theme="latte">`. The light theme is 100% official Catppu
 
 ## 3. The Primitive Component API
 
-All components live under one import: `import { … } from "@edwyn/signature-style/react"`. Every one renders the flattest possible DOM — that's the Pruning Protocol at work (§4).
+All components live under one import: `import { … } from "@carcolacha/signature-style/react"`. Every one renders the flattest possible DOM — that's the Pruning Protocol at work (§4).
 
 ### `<Icon>` — the strictly typed icon
 
@@ -211,7 +211,7 @@ interface EventModalProps {
 The full composition, straight from the README:
 
 ```tsx
-import { EventTimeline, EventModal, useModal } from "@edwyn/signature-style/react";
+import { EventTimeline, EventModal, useModal } from "@carcolacha/signature-style/react";
 
 const modal = useModal<TimelineEvent>();
 
@@ -271,20 +271,20 @@ Three import paths, no more:
 
 | Import | You get | Peers needed |
 |---|---|---|
-| `@edwyn/signature-style` | `tokens.json` — the machine-readable manifest | never |
-| `@edwyn/signature-style/css` | the compiled bundle — tokens, base, cascade (timeline + modal included), overrides | never |
-| `@edwyn/signature-style/react` | `ThemeProvider`, `Icon`, `EmptyState`, `SigBadge`, `EventTimeline`, `EventModal`, `useModal` | `react` + `react-dom` (strict peers); `lucide-react` optional |
+| `@carcolacha/signature-style` | `tokens.json` — the machine-readable manifest | never |
+| `@carcolacha/signature-style/css` | the compiled bundle — tokens, base, cascade (timeline + modal included), overrides | never |
+| `@carcolacha/signature-style/react` | `ThemeProvider`, `Icon`, `EmptyState`, `SigBadge`, `EventTimeline`, `EventModal`, `useModal` | `react` + `react-dom` (strict peers); `lucide-react` optional |
 
 **CSS-only** — one line and the theme breathes:
 
 ```html
-<link rel="stylesheet" href="node_modules/@edwyn/signature-style/css/signature-style.css" />
+<link rel="stylesheet" href="node_modules/@carcolacha/signature-style/css/signature-style.css" />
 ```
 
 **React** — the full composition in nine lines:
 
 ```tsx
-import { ThemeProvider, EventTimeline, EventModal, useModal } from "@edwyn/signature-style/react";
+import { ThemeProvider, EventTimeline, EventModal, useModal } from "@carcolacha/signature-style/react";
 
 const modal = useModal<TimelineEvent>();
 

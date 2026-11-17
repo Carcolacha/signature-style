@@ -23,7 +23,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Button, SigBadge, Breadcrumbs, useToast } from "@edwyn/signature-style/react";
+import { Button, SigBadge, Breadcrumbs, useToast } from "@carcolacha/signature-style/react";
 import type { SnippetEntry, SetId } from "../snippets.js";
 
 /** The three body views. */

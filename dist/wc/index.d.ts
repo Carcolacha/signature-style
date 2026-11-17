@@ -7,12 +7,12 @@
  * classes + types for imperative use.
  *
  * Usage:
- *   import "@edwyn/signature-style/wc";          // registers all six
- *   // or tree-shaken: import { SigStatRing } from "@edwyn/signature-style/wc";
+ *   import "@carcolacha/signature-style/wc";          // registers all six
+ *   // or tree-shaken: import { SigStatRing } from "@carcolacha/signature-style/wc";
  *
  *   <sig-stat-ring value="85" accent-token="--sig-cobalt"></sig-stat-ring>
  *
- * TOKENS PREREQUISITE: link `@edwyn/signature-style/css` (or any
+ * TOKENS PREREQUISITE: link `@carcolacha/signature-style/css` (or any
  * stylesheet declaring the --sig-* custom properties) — custom
  * properties inherit through shadow-DOM boundaries, so one link themes
  * every element, `<html data-sig-theme>` included.

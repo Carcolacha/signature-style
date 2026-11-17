@@ -1,8 +1,8 @@
 /**
- * React entry point for @edwyn/signature-style.
+ * React entry point for @carcolacha/signature-style.
  *
  * ```ts
- * import { ThemeProvider } from "@edwyn/signature-style/react";
+ * import { ThemeProvider } from "@carcolacha/signature-style/react";
  * ```
  */
 export { default, ThemeProvider, type KnownToken, type ThemeProviderProps, type ThemeOverrides, } from "./ThemeProvider.js";

@@ -119,7 +119,7 @@ function propsSection(key) {
 
 /* ---- llms-full.txt — the complete self-contained manifest -------------- */
 const lines = [];
-lines.push("# @edwyn/signature-style — The Signature Style (full)");
+lines.push("# @carcolacha/signature-style — The Signature Style (full)");
 lines.push("");
 lines.push(
   "> Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.",
@@ -288,7 +288,7 @@ for (const [key, entry] of Object.entries(MOTION_SNIPPETS)) {
    data layer and the registry, so the payloads cannot drift. */
 lines.push("## Full-Page Layout Blueprints (3.8.0; 4.0.0 the human-crafted set)");
 lines.push("");
-lines.push("Two self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @edwyn/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.");
+lines.push("Two self-contained full-page templates — one default-export React page each (playground/templates/*.tsx), composed exclusively from @carcolacha/signature-style/react exports + the kinetic primitives, carrying an embedded token-driven <style> block (zero hex, 8px grid, container queries, reduced-motion honored). The CLI scaffolds them: vite-react/next hosts get the React blueprint (Signature<Name>.tsx), html/fresh hosts get the per-template static HTML mirror. In the playground's Templates Studio (#/templates) each blueprint previews live inside the viewport emulator (Desktop/Tablet/Mobile), re-themes under the scoped data-sig-theme stage wrapper, and copies as full TSX.");
 lines.push("");
 lines.push("4.0.0 — THE BLUEPRINT SET CHANGE (BREAKING): the generic SaaS Landing + Docs Reader templates RETIRE. The set is the two authentic, human-crafted blueprints: the Match & Telemetry Analytics Hub (id \"telemetry\", replacing the old observability center in place — the CLI file stays SignatureTelemetryCenter.tsx) and the Interactive Micro-Lab & Discovery Deck (id \"microlab\", new). All blueprint content is ORIGINAL (style-inspired, never copied): invented call signs, invented maps, deterministic mock numbers.");
 lines.push("");
@@ -302,7 +302,7 @@ for (const [id, meta] of Object.entries(TEMPLATE_META)) {
   lines.push("CLI one-liner:");
   lines.push("");
   lines.push("```bash");
-  lines.push(`npx @edwyn/signature-style init --template ${id}`);
+  lines.push(`npx @carcolacha/signature-style init --template ${id}`);
   lines.push("```");
   lines.push("");
   lines.push("The full standalone TSX source (mechanically derived from the shipped component — never hand-edit this payload, change the .tsx and regenerate):");
@@ -315,7 +315,7 @@ for (const [id, meta] of Object.entries(TEMPLATE_META)) {
 
 lines.push("## The Universal AI Replication Contract (source of truth)");
 lines.push("");
-lines.push("The recipes above are ported from SYSTEM_PROMPT.md's Universal AI Replication Contract — read that section of SYSTEM_PROMPT.md for the narrative contracts. Any AI consuming `@edwyn/signature-style` reproduces the signature verbatim: read the snippet, copy the snippet.");
+lines.push("The recipes above are ported from SYSTEM_PROMPT.md's Universal AI Replication Contract — read that section of SYSTEM_PROMPT.md for the narrative contracts. Any AI consuming `@carcolacha/signature-style` reproduces the signature verbatim: read the snippet, copy the snippet.");
 lines.push("");
 
 const llmsFull = `${lines.join("\n")}\n`;
@@ -332,24 +332,24 @@ setIndex.push(
   `- [Set 08 — ${SET_NAMES["08"]}](llms-full.txt): ${Object.keys(MOTION_SNIPPETS).join(", ")} (live demos + copy-paste in the playground's Motion Lab)`,
 );
 const blueprintIndex = Object.entries(TEMPLATE_META).map(
-  ([id, meta]) => `- [Blueprint ${id} — ${meta.name}](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @edwyn/signature-style init --template ${id})`,
+  ([id, meta]) => `- [Blueprint ${id} — ${meta.name}](llms-full.txt): the full standalone TSX source + the CLI one-liner (npx @carcolacha/signature-style init --template ${id})`,
 );
 
-const llms = `# @edwyn/signature-style — The Signature Style
+const llms = `# @carcolacha/signature-style — The Signature Style
 
 > Catppuccin Mocha-based design system: Token Cascade, Override Protocol, Chromatic Palette content colors, mechanical physics.
 
-The official machine-readable index for AI agents. Full self-contained version: [llms-full.txt](llms-full.txt) — every token, every rule, every copy-paste snippet + prop tables. Package source: [npm:@edwyn/signature-style](https://www.npmjs.com/package/@edwyn/signature-style).
+The official machine-readable index for AI agents. Full self-contained version: [llms-full.txt](llms-full.txt) — every token, every rule, every copy-paste snippet + prop tables. Package source: [npm:@carcolacha/signature-style](https://www.npmjs.com/package/@carcolacha/signature-style).
 
 ## Tokens
 
-- [tokens.json](https://unpkg.com/@edwyn/signature-style/tokens.json): the machine-readable token manifest — the 51-token whitelist, Mocha + Latte themes, the surface themes (Mocha / OLED true-black / Daylight) with the computed daylight ink variants, the geometry presets, shared tokens, the Chromatic Palette, the doctrine objects
+- [tokens.json](https://unpkg.com/@carcolacha/signature-style/tokens.json): the machine-readable token manifest — the 51-token whitelist, Mocha + Latte themes, the surface themes (Mocha / OLED true-black / Daylight) with the computed daylight ink variants, the geometry presets, shared tokens, the Chromatic Palette, the doctrine objects
 - [llms-full.txt — The 50-Token Whitelist](llms-full.txt): every token with value + description, rendered from tokens.json — plus the three verified surface themes and the daylight ink-variant ratio table
-- [css/tokens.css](https://unpkg.com/@edwyn/signature-style/css/tokens.css): the cascade source — theme blocks, geometry presets, 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
+- [css/tokens.css](https://unpkg.com/@carcolacha/signature-style/css/tokens.css): the cascade source — theme blocks, geometry presets, 37 colors + 13 spatial/z/type/motion tokens in @layer tokens
 
 ## Rules
 
-- [SYSTEM_PROMPT.md](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): The Dynamic Signature Engine v3.0 — the Token Cascade, the Override Protocol, the Structural Pillars, the Pruning Protocol, the Rule of Engagement, and the Universal AI Replication Contract
+- [SYSTEM_PROMPT.md](https://unpkg.com/@carcolacha/signature-style/SYSTEM_PROMPT.md): The Dynamic Signature Engine v3.0 — the Token Cascade, the Override Protocol, the Structural Pillars, the Pruning Protocol, the Rule of Engagement, and the Universal AI Replication Contract
 - [llms-full.txt — The Rules](llms-full.txt): the doctrines rendered verbatim-in-spirit
 - One-line doctrine: every state derives from the core tokens via color-mix()/transforms; --sig-* is content-only, Flamingo/Teal structural-only; separation is hairlines, never shadows (the ONE sanction: css/surface.css's elevation blocks).
 
@@ -366,8 +366,8 @@ ${blueprintIndex.join("\n")}
 ## Recipes
 
 - [llms-full.txt — copy-paste snippets](llms-full.txt): every component's JSX recipe (+ HTML variants where documented), each with its prop surface extracted from react/*.d.ts
-- [The Universal AI Replication Contract](https://unpkg.com/@edwyn/signature-style/SYSTEM_PROMPT.md): "Any AI consuming @edwyn/signature-style can reproduce this signature verbatim — read the snippet, copy the snippet."
-- [STORYBOOK.md](https://unpkg.com/@edwyn/signature-style/STORYBOOK.md): the human-readable manual — philosophy, every color token, every component API
+- [The Universal AI Replication Contract](https://unpkg.com/@carcolacha/signature-style/SYSTEM_PROMPT.md): "Any AI consuming @carcolacha/signature-style can reproduce this signature verbatim — read the snippet, copy the snippet."
+- [STORYBOOK.md](https://unpkg.com/@carcolacha/signature-style/STORYBOOK.md): the human-readable manual — philosophy, every color token, every component API
 `;
 
 writeFileSync(resolve(publicDir, "llms.txt"), llms);

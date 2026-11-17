@@ -19,8 +19,8 @@
  *      8px grid, physics, the e1 shadow treaty, as ProseBlocks.
  */
 import type { ReactNode } from "react";
-import { SurfaceCard, DataTable, ProseBlock, useToast } from "@edwyn/signature-style/react";
-import type { DataTableColumn } from "@edwyn/signature-style/react";
+import { SurfaceCard, DataTable, ProseBlock, useToast } from "@carcolacha/signature-style/react";
+import type { DataTableColumn } from "@carcolacha/signature-style/react";
 
 /** Every COLOR token (37): the 11 core/keeper + the 26 chromatic tokens.
     Values are the Mocha defaults (the dark default theme); Latte swaps

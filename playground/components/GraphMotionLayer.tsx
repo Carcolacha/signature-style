@@ -62,14 +62,14 @@ import {
   layoutGraph,
   layoutTree,
   treeEdge,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import type {
   GraphEdge,
   GraphLayoutMode,
   GraphNode,
   GraphPosition,
   GraphView,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import { AnimatedGraphEdge } from "./GraphEdgeDraw.js";
 import { AnimatedGraphNode } from "./GraphNodeSpring.js";
 

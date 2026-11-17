@@ -20,7 +20,7 @@
  * Styling: playground/styles.css `.studio__customizer*` — token-driven,
  * flat (the e1 treaty: hairlines, never shadows), on the 8px grid.
  */
-import { SurfaceCard, Icon, useToast } from "@edwyn/signature-style/react";
+import { SurfaceCard, Icon, useToast } from "@carcolacha/signature-style/react";
 import { THEMES, THEME_ORDER, RADIUS_ORDER, RADIUS_PRESETS } from "../theme-utils.js";
 import type { SigRadiusName, SigThemeName } from "../theme-utils.js";
 import type { ContrastBadge } from "../theme-utils.js";

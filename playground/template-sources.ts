@@ -5,7 +5,7 @@
  * module is the SNIPPET leg: every template'"'"'s formatted standalone
  * source, mechanically derived from its shipped component file by the
  * authoring transform (the .tsx file content verbatim — same imports
- * from "@edwyn/signature-style/react", the embedded <style> CSS, the
+ * from "@carcolacha/signature-style/react", the embedded <style> CSS, the
  * same default export). PURE STRINGS on purpose: the llms generator
  * (Node ≥ 23.6 strips .ts types but cannot import .tsx), the studio'"'"'s
  * Full TSX Code view and the Copy Full Page button all read from here,
@@ -88,8 +88,8 @@ import {
   SigBadge,
   StatRing,
   SurfaceCard,
-} from "@edwyn/signature-style/react";
-import type { DataTableColumn } from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
+import type { DataTableColumn } from "@carcolacha/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */
@@ -492,7 +492,7 @@ import {
   StatusBeacon,
   ToggleSwitch,
   WaveformBars,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */

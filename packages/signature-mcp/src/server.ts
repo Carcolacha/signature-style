@@ -1,5 +1,5 @@
 /**
- * server.ts — @edwyn/signature-mcp, THE VISUAL CORTEX AS A PRODUCT (3.5.0).
+ * server.ts — @carcolacha/signature-mcp, THE VISUAL CORTEX AS A PRODUCT (3.5.0).
  *
  * This is the standalone promotion of the proven tools/mcp-viz inspector
  * (v1.7.0 server, hardened across v2.2.0 → v3.4.0). The repo-local

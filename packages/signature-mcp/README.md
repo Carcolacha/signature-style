@@ -1,4 +1,4 @@
-# @edwyn/signature-mcp — The Visual Cortex as a Product (v1.0.0)
+# @carcolacha/signature-mcp — The Visual Cortex as a Product (v1.0.0)
 
 A **standalone MCP stdio server** that gives AI sessions spatial awareness of
 the rendered Signature Style app: the AI can *measure what it styles*. It

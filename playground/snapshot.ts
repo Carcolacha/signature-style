@@ -17,7 +17,7 @@
  * "sig.workspace.v3", graph, timeline }` — the storage-key contract's shape
  * prefix and the download filename ride with it.
  */
-import type { GraphNode, TimelineItem } from "@edwyn/signature-style/react";
+import type { GraphNode, TimelineItem } from "@carcolacha/signature-style/react";
 
 /** The payload's shape prefix — matches the sig.workspace.v3.* storage keys. */
 export const WORKSPACE_SNAPSHOT_VERSION = "sig.workspace.v3";

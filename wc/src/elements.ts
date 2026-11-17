@@ -12,7 +12,7 @@
  *
  * TOKENS PREREQUISITE: the --sig-* and structural custom properties are
  * NOT shipped by the elements — link the tokens stylesheet once
- * (`@edwyn/signature-style/css`) and the values inherit through every
+ * (`@carcolacha/signature-style/css`) and the values inherit through every
  * shadow boundary (custom properties inherit; shadows don't block them).
  *
  * Elements (attribute → React prop map):

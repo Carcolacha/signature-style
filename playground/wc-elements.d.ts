@@ -3,7 +3,7 @@
  * custom elements (3.4.0 "Zero-React Native Web Components").
  *
  * The Pattern Studio mounts the REAL elements (registered by the
- * module-level `import "@edwyn/signature-style/wc"` in
+ * module-level `import "@carcolacha/signature-style/wc"` in
  * PatternStudio.tsx). Custom elements are valid JSX — attributes only —
  * but React's JSX.IntrinsicElements doesn't know the tag names, so this
  * module augments the namespace: the studio stays type-honest, and the

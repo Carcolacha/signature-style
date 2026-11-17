@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * bin/cli.mjs — @edwyn/signature-style · the zero-dependency scaffolder (3.3.0; 3.8.0 the page templates; 4.0.0 the blueprint set change)
+ * bin/cli.mjs — @carcolacha/signature-style · the zero-dependency scaffolder (3.3.0; 3.8.0 the page templates; 4.0.0 the blueprint set change)
  * ----------------------------------------------------------------------------
- *   npx @edwyn/signature-style init [--template minimal|bento|telemetry|microlab]
+ *   npx @carcolacha/signature-style init [--template minimal|bento|telemetry|microlab]
  *                                   [--theme mocha|oled|daylight]
  *                                   [--dir <path>] [--force] [--yes]
  *
@@ -37,7 +37,7 @@ import { THEMES, THEME_NAMES, resolveThemeTokens } from "./themes.mjs";
 import { PAGE_TEMPLATES, PAGE_TEMPLATE_NAMES } from "./templates.mjs";
 
 const TEMPLATE_NAMES = ["minimal", "bento", ...PAGE_TEMPLATE_NAMES];
-const PKG = "@edwyn/signature-style";
+const PKG = "@carcolacha/signature-style";
 
 // Piped-output robustness: a consumer that closes the pipe early (e.g.
 // `cli --help | head`) raises EPIPE on the next write — exit quietly like
@@ -584,7 +584,7 @@ function renderReadme(ctx) {
   }
   if (pageTemplate !== null) {
     if (pageIsTsx) {
-      files.push("`" + pageTemplate.tsxName + "` — the **" + pageTemplate.label + "** full-page template: one self-contained default-export page built from `@edwyn/signature-style/react` exports, carrying its own embedded token-driven `<style>` (container queries + reduced-motion honored)");
+      files.push("`" + pageTemplate.tsxName + "` — the **" + pageTemplate.label + "** full-page template: one self-contained default-export page built from `@carcolacha/signature-style/react` exports, carrying its own embedded token-driven `<style>` (container queries + reduced-motion honored)");
     } else {
       files.push("`signature-starter.html` — the **" + pageTemplate.label + "** STATIC MIRROR: the same blueprint as plain HTML + the tokens variables. A mirror is NOT the React statefulness (no reaction state machine / live filter / waveform dance) — one honest snapshot, zero JS");
     }
@@ -592,7 +592,7 @@ function renderReadme(ctx) {
   files.push("`README-SIGNATURE.md` — this file");
 
   const wire = pageIsTsx
-    ? "```js\n// in your entry (e.g. src/main.tsx) — once, BEFORE your own styles\nimport \"@edwyn/signature-style/css\";\n```\n\nInstall the engine (the template imports its React exports):\n\n```bash\nnpm i " + PKG + "\n```\n\nThen render the template anywhere:\n\n```tsx\nimport " + pageTemplate.tsxName.replace(/\\.tsx$/, "") + " from \"./" + pageTemplate.tsxName.replace(/\\.tsx$/, "") + "\";\n\n<" + pageTemplate.tsxName.replace(/\\.tsx$/, "") + " />\n```"
+    ? "```js\n// in your entry (e.g. src/main.tsx) — once, BEFORE your own styles\nimport \"@carcolacha/signature-style/css\";\n```\n\nInstall the engine (the template imports its React exports):\n\n```bash\nnpm i " + PKG + "\n```\n\nThen render the template anywhere:\n\n```tsx\nimport " + pageTemplate.tsxName.replace(/\\.tsx$/, "") + " from \"./" + pageTemplate.tsxName.replace(/\\.tsx$/, "") + "\";\n\n<" + pageTemplate.tsxName.replace(/\\.tsx$/, "") + " />\n```"
     : pageTemplate !== null
       ? "```html\n<link rel=\"stylesheet\" href=\"./signature-tokens.css\" />\n```\n\nThen open `signature-starter.html` (or serve the folder) — it links the tokens itself. Want the LIVE React blueprint (real state: billing math, filters, the manager)? Scaffold the same template into a vite/next project."
       : isTsx
@@ -642,7 +642,7 @@ npm i ${PKG}
 ## The package
 
 [${PKG}](https://www.npmjs.com/package/${PKG}) — the full engine: the layered
-CSS bundle (\`@edwyn/signature-style/css\`), the hardened React provider
+CSS bundle (\`@carcolacha/signature-style/css\`), the hardened React provider
 (\`/react\`), the machine-readable token manifest (\`tokens.json\`), and
 \`SYSTEM_PROMPT.md\` so AI agents can extend the style faithfully. The three
 doctrines — Token Cascade, Override Protocol, Progressive Enhancement — and
@@ -738,7 +738,7 @@ function takeValue(args, index, flag) {
 
 /** Print the usage text. */
 function printUsage(out) {
-  out.write(`@edwyn/signature-style init — scaffold the Signature Style into any project
+  out.write(`@carcolacha/signature-style init — scaffold the Signature Style into any project
 
 USAGE
   npx ${PKG} init [flags]
@@ -897,7 +897,7 @@ function hasDependency(targetDir, name) {
  *
  * 3.8.0/4.0.0 — the page templates (telemetry | microlab): tsx flavor →
  * the full React blueprint (Signature<Name>.tsx, imports from
- * "@edwyn/signature-style/react", self-contained styles); html flavor
+ * "@carcolacha/signature-style/react", self-contained styles); html flavor
  * → the static signature-starter.html mirror. No companion css (the
  * templates carry their own embedded <style>); signature-tokens.css
  * always ships.
@@ -969,7 +969,7 @@ function printSummary(opts, detection, targetDir) {
     steps.push(`render <SignatureStarter /> anywhere in your app`);
   } else if (pageTsx && pageTemplate !== null) {
     steps.push(`npm i ${PKG} (the template imports its React exports)`);
-    steps.push(`import "@edwyn/signature-style/css" once in your entry (e.g. src/main.tsx) — before your styles`);
+    steps.push(`import "@carcolacha/signature-style/css" once in your entry (e.g. src/main.tsx) — before your styles`);
     steps.push(`render <${pageTemplate.tsxName.replace(/\.tsx$/, "")} /> anywhere in your app`);
   } else if (pageTemplate !== null) {
     steps.push(`open signature-starter.html — it links ./signature-tokens.css itself (the ${pageTemplate.label} STATIC mirror)`);

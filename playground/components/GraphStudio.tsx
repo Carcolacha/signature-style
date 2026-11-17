@@ -77,7 +77,7 @@ import {
   TextArea,
   isTypingTarget,
   useToast,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import type {
   GraphEdge,
   GraphEdgeSelection,
@@ -86,8 +86,8 @@ import type {
   GraphNodeKind,
   GraphView,
   KnowledgeGraphHandle,
-} from "@edwyn/signature-style/react";
-import { KnowledgeGraph } from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
+import { KnowledgeGraph } from "@carcolacha/signature-style/react";
 import { PALETTE } from "../palette.js";
 import { expandNodeIdeas } from "../graph-expansion.js";
 import { GraphMotionLayer } from "./GraphMotionLayer.js";

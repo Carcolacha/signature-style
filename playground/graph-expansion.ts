@@ -27,7 +27,7 @@
  *   · accents — each sub-node wears a DISTINCT --sig-* accentToken from
  *     the fixed four-token rotation, starting at the seed offset.
  */
-import type { GraphNode } from "@edwyn/signature-style/react";
+import type { GraphNode } from "@carcolacha/signature-style/react";
 
 /** One generated sub-node — label + its distinct chromatic accent. */
 export interface ExpandedIdea {

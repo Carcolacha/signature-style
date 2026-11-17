@@ -143,7 +143,7 @@ console.log("(g) Copy Full Page");
 await page.locator('[data-testid="tpl-copy-full"]').click();
 await page.waitForTimeout(400);
 const clipboard = await page.evaluate(() => navigator.clipboard.readText());
-assert(clipboard.includes("SaasLandingTemplate") && clipboard.includes("@edwyn/signature-style/react"), "the clipboard carries the full-page source");
+assert(clipboard.includes("SaasLandingTemplate") && clipboard.includes("@carcolacha/signature-style/react"), "the clipboard carries the full-page source");
 assert((await page.locator('[data-testid="tpl-copied-chip"]').getAttribute("data-visible")) === "true", "the mint confirmation chip lights up");
 
 console.log("(h) LIVE template state — billing + filter");

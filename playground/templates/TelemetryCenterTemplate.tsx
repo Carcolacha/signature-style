@@ -49,8 +49,8 @@ import {
   SigBadge,
   StatRing,
   SurfaceCard,
-} from "@edwyn/signature-style/react";
-import type { DataTableColumn } from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
+import type { DataTableColumn } from "@carcolacha/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */

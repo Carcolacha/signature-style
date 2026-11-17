@@ -37,7 +37,7 @@ import {
   StatusBeacon,
   ToggleSwitch,
   WaveformBars,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 
 /* ------------------------------------------------------------------ */
 /* The template's own stylesheet — embedded for standalone purity.     */

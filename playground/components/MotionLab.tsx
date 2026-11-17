@@ -54,12 +54,12 @@ import {
   StatusBeacon,
   WaveformBars,
   useToast,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import {
   AuroraBorderCard,
   KineticSurface,
   TiltSurface,
-} from "@edwyn/signature-style/react";
+} from "@carcolacha/signature-style/react";
 import { PatternFrame } from "./PatternFrame.js";
 import { MOTION_SNIPPETS } from "../motion-snippets.js";
 import { SET_NAMES } from "../snippets.js";
