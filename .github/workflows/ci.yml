@@ -39,6 +39,14 @@ jobs:
         with:
           fetch-depth: 0
 
+      # File-mode-blind diffs, matching the owner's authoring environment
+      # (DrvFs runs core.filemode=false): npm ci chmods +x the package.json
+      # "bin" entry (bin/cli.mjs, blob is 100644), and on ext4 with
+      # filemode=true that mode-only delta trips the (b7)/(n-hub4) SAFETY
+      # gates' `git diff v4.0.0 --name-only` even though no byte changed.
+      - name: Ignore file-mode deltas (npm ci chmods the bin entry)
+        run: git config core.fileMode false
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
