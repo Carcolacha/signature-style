@@ -1,9 +1,10 @@
 /* ==========================================================================
-   MOTION — THE KINETIC PRIMITIVES (3.7.0 "The Intelligent Kinetic Engine,
-   Motion Lab & Live Data Choreography"). Layered into `cascade` by
-   signature-style.css (imported after graph.css).
+   MOTION — THE KINETIC PRIMITIVES (3.7.0 "The Intelligent Kinetic
+   Engine, Motion Lab & Live Data Choreography") + THE 4.0.0 MOTION LAB
+   SHOWCASE MECHANICS. Layered into `cascade` by signature-style.css
+   (imported after graph.css).
 
-   THREE COMPONENT FAMILIES, ONE TREATY:
+   PART ONE — THE PACKAGE PRIMITIVES (component families, one treaty):
    - .sig-animated-number — <AnimatedNumber>'s span: tabular-nums so
      digits never jitter while the rAF rolls the value. The roll itself
      is JS (react/motion.tsx); css owns only the typography.
@@ -12,9 +13,9 @@
      transform/clip); data-in="true" is the revealed half. EVERY
      animated property is on the e1 treaty list: opacity, transform,
      clip-path. NEVER box-shadow, never layout geometry. The transition
-     rides the kinetic tokens (--dur-spring-gentle × --ease-spring-gentle)
-     and the stagger delay is calc(var(--stagger-index) × 45ms) — set
-     inline by the component.
+     rides the kinetic tokens (--dur-spring-gentle × --ease-spring-
+     gentle) and the stagger delay is calc(var(--stagger-index) × 45ms)
+     — set inline by the component.
    - .sig-kinetic-surface — <KineticSurface>: the cursor-tracked sheen.
      ::after is a radial-gradient anchored at --ptr-x / --ptr-y (pixel
      coords, written per-frame by the component's rAF-throttled
@@ -23,14 +24,43 @@
      animates. GPU note: the gradient repaint is localized to the
      pseudo-element (one composited layer inside the surface); no
      layout, no ancestors, no other ink is touched.
+   - .sig-aurora-card — <AuroraBorderCard>: the REGISTERED
+     --sig-beam-angle (@property, syntax "<angle>") conic border beam —
+     a rotating ANGLE on a masked gradient ring, never a box-shadow.
+   - .sig-tilt-surface — <TiltSurface>: the 3D pointer tilt riding two
+     per-frame custom properties, perspective(600px).
+   - .sig-beacon — <StatusBeacon>: the ping ring, scale + fade, looped.
+   - .sig-waveform — <WaveformBars>: the per-bar-delay equalizer.
+
+   PART TWO — THE 4.0.0 MOTION LAB SHOWCASE MECHANICS (the .sig-lab-*
+   classes the REBUILT Motion Lab view drives; demo-scoped, no package
+   component claims them):
+   - .sig-lab-wave — showcase 02's key-remounted cascade card: the
+     React key bump re-runs the sig-lab-wave-in keyframes from
+     opacity 0 / translate3d(0,24px,0) / scale(0.94) with a 60ms
+     per-card stagger (calc(--wave-i × 60ms), dilated by
+     --sig-motion-scale so Slow-Mo slows the wave).
+   - .sig-lab-track / __lane / .sig-lab-puck — showcase 03's spring
+     race: the track is a container (container-type: inline-size) so
+     the puck's finish line is calc(100cqw - 100%) — transform-only,
+     the e1 treaty; the puck's easing arrives inline (--puck-ease),
+     snappy vs gentle, same duration, the overshoot visible.
+   - .sig-lab-morph — showcase 04's morphing drawer: THE grid-rows
+     technique (0fr closed → 1fr open, 320ms × --ease-spring-gentle),
+     the same true-height expansion AccordionCard ships in 4.0.0; the
+     inner clips via overflow: hidden.
+   - .sig-lab-sonar — showcase 05's pulse rings: three rings scaling
+     0.35 → 1.6 while fading, in sequence (calc(--sonar-i × 600ms)),
+     one --sig-* ink per ring (--sonar-color inline); transform +
+     opacity only.
 
    REDUCED-MOTION MERCY (belt and suspenders): the kinetic duration
    tokens already collapse to 1ms under prefers-reduced-motion and the
    [data-sig-motion="reduced"] root override (css/tokens.css, the motion
    mercy block) — which makes every transition here effectively instant.
    This file ALSO hard-kills the transitions/animations and forces the
-   revealed/rest states, so the primitives stand down even if a consumer
-   overrides the duration tokens.
+   revealed/rest states, so the primitives AND the lab mechanics stand
+   down even if a consumer overrides the duration tokens.
 
    COLOR DOCTRINE: zero hex, zero box-shadow. The sheen mixes the
    inline --sig-kinetic-accent (a --sig-* content token chosen by the
@@ -143,7 +173,7 @@
   }
 
   /* ==========================================================================
-     3.9.0 THE COLORFUL KINETIC SUITE — the aurora beam, the 3D tilt,
+     THE COLORFUL KINETIC SUITE (3.9.0) — the aurora beam, the 3D tilt,
      the status beacon, the waveform bars. SAME TREATY: only transform,
      opacity, clip-path and REGISTERED custom properties animate — the
      aurora beam is a rotating conic ANGLE, never a box-shadow. Every
@@ -303,6 +333,7 @@
     gap: 2px;
     height: 48px;
     min-width: 0;
+    flex: 1;
   }
   .sig-waveform__bar {
     flex: 1 1 0;
@@ -331,5 +362,210 @@
   }
   [data-sig-motion="reduced"] .sig-waveform.is-active .sig-waveform__bar {
     animation: none;
+  }
+
+  /* ==========================================================================
+     4.0.0 THE MOTION LAB SHOWCASE MECHANICS — the .sig-lab-* classes
+     the rebuilt Motion Lab view drives. Same treaty as everything
+     above: transform / opacity / clip-path / registered custom
+     properties ONLY — never box-shadow, never layout geometry. Every
+     mechanic carries the double reduced-motion mercy (media query +
+     subtree override), and every duration/delay multiplies
+     --sig-motion-scale so the Slow-Mo dial dilates the whole lab.
+     ========================================================================== */
+
+  /* -- 02 · the staggered bento wave ---------------------------------------
+     The card is the animation target: opacity 0 + the buried transform
+     at rest, `sig-lab-wave-in` brings it home with a per-card 60ms
+     delay. The React key bump on the grid REMOUNTS the cards — a fresh
+     element runs the animation from the top (the owner-mandated
+     key-remount replay). The tint arrives inline (--wave-tint). */
+  .sig-lab-wave {
+    display: flex;
+    align-items: center;
+    gap: var(--space-tight);
+    padding: var(--space-standard);
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--wave-tint, var(--sig-cyan)) 45%, transparent);
+    border-radius: var(--radius-ui);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
+    opacity: 0;
+    animation: sig-lab-wave-in 560ms var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1)) calc(var(--wave-i, 0) * 60ms * var(--sig-motion-scale, 1)) forwards;
+  }
+  @keyframes sig-lab-wave-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0) scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-lab-wave {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-lab-wave {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  /* -- 03 · the spring puck race --------------------------------------------
+     The track is a CONTAINER (container-type: inline-size) so the
+     finish line is computable in transform space: calc(100cqw - 100%)
+     — 100cqw is the track's full inline size, 100% the puck's own
+     width; the puck glides exactly track-width minus puck-width and
+     stops flush with the rail's end. The easing arrives inline
+     (--puck-ease): --ease-spring-snappy vs --ease-spring-gentle, same
+     900ms — the overshoot difference is the showcase. `both` fill
+     holds the start state before the race (the remount reset). */
+  .sig-lab-track {
+    container-type: inline-size;
+    display: grid;
+    gap: var(--space-tight);
+    padding: var(--space-standard);
+    background: var(--bg-inset);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-card);
+  }
+  .sig-lab-track__lane {
+    position: relative;
+    height: 48px;
+  }
+  .sig-lab-track__lane::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: color-mix(in srgb, var(--text-muted) 20%, transparent);
+  }
+  .sig-lab-puck {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-tight) var(--space-standard);
+    background: color-mix(in srgb, var(--puck-ink, var(--sig-cyan)) 18%, var(--bg-surface));
+    border: 1px solid color-mix(in srgb, var(--puck-ink, var(--sig-cyan)) 45%, transparent);
+    border-radius: 999px;
+    font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-main);
+    will-change: transform;
+    animation: sig-lab-puck-run 900ms var(--puck-ease, var(--ease-spring-snappy, cubic-bezier(0.34, 1.56, 0.64, 1))) calc(var(--sig-motion-scale, 1) * 0ms) both;
+  }
+  @keyframes sig-lab-puck-run {
+    from {
+      transform: translate3d(0, -50%, 0);
+    }
+    to {
+      transform: translate3d(calc(100cqw - 100%), -50%, 0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-lab-puck {
+      animation: none;
+      transform: translate3d(calc(100cqw - 100%), -50%, 0);
+    }
+  }
+  [data-sig-motion="reduced"] .sig-lab-puck {
+    animation: none;
+    transform: translate3d(calc(100cqw - 100%), -50%, 0);
+  }
+
+  /* -- 04 · the morphing drawer ----------------------------------------------
+     The SAME grid-rows technique AccordionCard ships in 4.0.0, demo-
+     scoped: 0fr closed, 1fr open, 320ms × --ease-spring-gentle, the
+     inner clipping through overflow: hidden. No max-height hack. */
+  .sig-lab-morph {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 320ms var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1));
+  }
+  .sig-lab-morph.is-open {
+    grid-template-rows: 1fr;
+  }
+  .sig-lab-morph__inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+  .sig-lab-morph__inner p {
+    margin: 0;
+    padding: var(--space-standard);
+    border: 1px dashed color-mix(in srgb, var(--color-cake-secondary) 45%, transparent);
+    border-radius: var(--radius-ui);
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-lab-morph {
+      transition: none;
+    }
+  }
+  [data-sig-motion="reduced"] .sig-lab-morph {
+    transition: none;
+  }
+
+  /* -- 05 · the sonar pulse rings --------------------------------------------
+     Three rings around one core; each scales 0.35 → 1.6 while fading,
+     in sequence (calc(--sonar-i × 600ms), infinite) when .is-live. One
+     --sig-* ink per ring (--sonar-color inline — cyan, orchid, mint).
+     Stopped: the rings hide, the core stays (an honest off state).
+     Reduced motion: static mid-fade rings — visible, not moving. */
+  .sig-lab-sonar {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    flex: none;
+  }
+  .sig-lab-sonar__ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--sonar-color, var(--sig-cyan));
+    opacity: 0;
+  }
+  .sig-lab-sonar.is-live .sig-lab-sonar__ring {
+    animation: sig-lab-sonar 1.8s var(--ease-kinetic-out, cubic-bezier(0.16, 1, 0.3, 1)) calc(var(--sonar-i, 0) * 600ms * var(--sig-motion-scale, 1)) infinite;
+  }
+  @keyframes sig-lab-sonar {
+    0% {
+      transform: scale(0.35);
+      opacity: 0.8;
+    }
+    100% {
+      transform: scale(1.6);
+      opacity: 0;
+    }
+  }
+  .sig-lab-sonar__core {
+    position: absolute;
+    inset: calc(50% - 6px);
+    border-radius: 50%;
+    background: var(--sig-cyan);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sig-lab-sonar.is-live .sig-lab-sonar__ring {
+      animation: none;
+      opacity: 0.35;
+      transform: scale(1);
+    }
+  }
+  [data-sig-motion="reduced"] .sig-lab-sonar.is-live .sig-lab-sonar__ring {
+    animation: none;
+    opacity: 0.35;
+    transform: scale(1);
   }
 }

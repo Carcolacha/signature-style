@@ -1886,19 +1886,21 @@
   color: var(--sig-peach);
 }
 
-/* ---- 3.7.0 THE MOTION LAB ---------------------------------------------------
-   The kinetic engine's proving ground (#/motion). The sticky glass
-   control bar rides --z-sticky (below the navbar's --z-nav rung) and
-   the time dial: --sig-motion-scale is set INLINE on the .motion-lab
-   root by the view (1 or 0.25), so every kinetic duration token
-   (calc(scale × Nms)) inside dilates together. FLAT per the e1 treaty:
-   hairlines + fills only, ZERO box-shadow, ZERO hex (b4 holds).
+/* ---- 3.7.0 THE MOTION LAB — 4.0.0 REBUILT -----------------------------------
+    The kinetic engine's proving ground (#/motion). The sticky glass
+    control bar rides --z-sticky (below the navbar's --z-nav rung) and
+    the time dial: --sig-motion-scale is set INLINE on the .motion-lab
+    root by the view (1 or 0.25), so every kinetic duration token
+    (calc(scale × Nms)) inside dilates together. FLAT per the e1 treaty:
+    hairlines + fills only, ZERO box-shadow, ZERO hex (b4 holds).
 
-   LAB-ONLY SCOPED OVERRIDES (showcase 02): the Snappy/Gentle detent
-   panels retune the SAME Button / ToggleSwitch / RadioCardGroup
-   transform transitions to the two spring tokens so the detents are
-   A/B comparable on one stage. This is a comparison INSTRUMENT, not a
-   consumer pattern — production components keep --transition-*. */
+    THE 4.0.0 REBUILD: six showcases — Aurora Beam & 3D Tilt, the
+    Staggered Bento Wave, the Spring Puck race, the FLIP Gliding Pill +
+    Morphing Drawer, the Kinetic Equalizer & Pulse Beacons, and the
+    Telemetry Sweep. The animation MECHANICS live in css/motion.css
+    (.sig-lab-wave / .sig-lab-puck / .sig-lab-morph / .sig-lab-sonar);
+    this section is the lab's STAGE chrome only (the bar, the grids,
+    the metric rows). */
 .motion-lab {
   display: flex;
   flex-direction: column;
@@ -1988,26 +1990,8 @@
   gap: var(--space-section);
 }
 
-/* 01 — the stagger cascade */
-.motion-lab__stagger {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-standard);
-}
-
-.motion-lab__tile {
-  display: flex;
-  align-items: center;
-  gap: var(--space-tight);
-  padding: var(--space-standard);
-  background: var(--bg-inset);
-  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
-  border-radius: var(--radius-ui);
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-main);
-}
-
+/* 01 — the stagger cascade tiles (the chip glyph well; the wave card
+   itself is .sig-lab-wave in css/motion.css) */
 .motion-lab__tile-chip {
   width: 24px;
   height: 24px;
@@ -2018,19 +2002,29 @@
   flex: 0 0 auto;
 }
 
-/* 3.9.0 — the per-frame Play strip (the (b) contract: one Play Effect
-   button per frame, above the demo stage). */
+/* 02 — the bento wave grid (six colorful --sig-* cards; the cascade
+   animation is .sig-lab-wave in css/motion.css, remounted by key). */
+.motion-lab__wave-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-standard);
+  align-items: start;
+}
+
+/* 3.9.0 — the per-frame Play strip (one Play/Trigger button per
+   frame, above the demo stage). */
 .motion-lab__frame-tools {
   display: flex;
   justify-content: flex-end;
   margin-bottom: var(--space-tight);
 }
 
-/* 3.9.0 frame 02 — the aurora/tilt/sheen quad grid. */
+/* 01 — the aurora/tilt/sheen grid. */
 .motion-lab__aurora-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-standard);
+  align-items: start;
 }
 
 .motion-lab__aurora-inner {
@@ -2062,96 +2056,7 @@
   color: var(--text-main);
 }
 
-/* 3.9.0 frame 04 — the elastic drawer (ONE scaleY on the gentle spring). */
-.motion-lab__drawer-row {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-tight);
-  margin-top: var(--space-standard);
-}
-
-.motion-lab__drawer {
-  width: 100%;
-  transform: scaleY(0);
-  transform-origin: top;
-  opacity: 0;
-  transition:
-    transform var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1)),
-    opacity var(--dur-spring-gentle, 480ms) var(--ease-spring-gentle, cubic-bezier(0.25, 1.25, 0.45, 1));
-  pointer-events: none;
-}
-
-.motion-lab__drawer.is-open {
-  transform: scaleY(1);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.motion-lab__drawer p {
-  margin: 0;
-  padding: var(--space-standard);
-  border: 1px dashed color-mix(in srgb, var(--color-cake-secondary) 45%, transparent);
-  border-radius: var(--radius-ui);
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .motion-lab__drawer {
-    transition: none;
-  }
-}
-[data-sig-motion="reduced"] .motion-lab__drawer {
-  transition: none;
-}
-
-/* 02 — the spring detents (LAB-ONLY transition overrides, see header) */
-.motion-lab__detents {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-standard);
-}
-
-.motion-lab__detent {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-standard);
-  padding: var(--space-standard);
-  background: var(--bg-inset);
-  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
-  border-radius: var(--radius-ui);
-}
-
-.motion-lab__detent h4 {
-  margin: 0;
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
-  font-weight: 500;
-}
-
-.motion-lab__detent .sig-radio-cards {
-  width: 100%;
-}
-
-.motion-lab__detent[data-detent="snappy"] .sig-btn,
-.motion-lab__detent[data-detent="snappy"] .sig-switch__pill,
-.motion-lab__detent[data-detent="snappy"] .sig-radio-card {
-  transition: var(--transition-standard),
-    transform var(--dur-spring-snappy) var(--ease-spring-snappy);
-}
-
-.motion-lab__detent[data-detent="gentle"] .sig-btn,
-.motion-lab__detent[data-detent="gentle"] .sig-switch__pill,
-.motion-lab__detent[data-detent="gentle"] .sig-radio-card {
-  transition: var(--transition-standard),
-    transform var(--dur-spring-gentle) var(--ease-spring-gentle);
-}
-
-/* 03 — the sheen trio */
+/* The sheen trio grid (inside frame 01). */
 .motion-lab__sheen-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2178,31 +2083,90 @@
   color: var(--text-muted);
 }
 
-/* 04 — the FLIP demo copy */
+/* The FLIP demo copy line. */
 .motion-lab__flip-copy {
-  margin: var(--space-standard) 0 0;
+  margin: 0;
   color: var(--text-muted);
   font-size: 0.875rem;
 }
 
-/* 05 — rolling telemetry */
-.motion-lab__telemetry {
+/* 04 — the FLIP pill frame: the package Tabs' shared indicator is
+   re-inked --sig-cyan for the lab (the gliding pill). Scoped to the
+   frame — the production Tabs keep their Flamingo underline. */
+.motion-lab__flip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-tight);
+}
+
+.motion-lab__flip .sig-tabs-indicator {
+  background: var(--sig-cyan);
+}
+
+.motion-lab__drawer-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-tight);
+  margin-top: var(--space-standard);
+}
+
+/* 05 — the kinetic equalizer + sonar stage (the bars/rings mechanics
+   live in css/motion.css: .sig-waveform / .sig-lab-sonar). */
+.motion-lab__eq-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-section);
+  align-items: center;
+}
+
+.motion-lab__eq-rows {
   display: flex;
   flex-direction: column;
   gap: var(--space-standard);
+  min-width: 0;
 }
 
-.motion-lab__telemetry-row {
-  display: flex;
+.motion-lab__eq-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(0, 1fr);
   align-items: center;
-  flex-wrap: wrap;
   gap: var(--space-standard);
+}
+
+.motion-lab__sonar-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-tight);
+}
+
+/* 06 — the telemetry sweep stage. */
+.motion-lab__sweep-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-section);
+  align-items: start;
 }
 
 .motion-lab__metric {
   display: flex;
   flex-direction: column;
   gap: var(--space-tight);
+}
+
+.motion-lab__metric--wide {
+  grid-column: 1 / -1;
+}
+
+.motion-lab__metric-note {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
+}
+
+.motion-lab__sweep-chart {
+  min-width: 0;
 }
 
 .motion-lab__metric-label {
@@ -2223,78 +2187,19 @@
   font-size: 1.75rem;
 }
 
-.motion-lab__range {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-tight);
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-}
-
-.motion-lab__range input[type="range"] {
-  accent-color: var(--color-cake-primary);
-  width: 160px;
-}
-
-/* 06 — the live choreography */
-.motion-lab__weather-status {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--space-standard);
-  margin-bottom: var(--space-standard);
-}
-
-.motion-lab__weather-status > .sig-skeleton-card {
-  flex: 0 0 auto;
-  width: 200px;
-}
-
-.motion-lab__chip {
-  display: inline-flex;
-  align-items: center;
-  font-family: var(--font-mono, ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace);
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-muted);
-  padding: var(--space-tight) var(--space-standard);
-  border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
-  border-radius: var(--radius-ui);
-  background: var(--bg-inset);
-}
-
-.motion-lab__chip[data-status="live"] {
-  color: var(--sig-green);
-  border-color: color-mix(in srgb, var(--sig-green) 45%, transparent);
-}
-
-.motion-lab__chip[data-status="error"] {
-  color: var(--sig-peach);
-  border-color: color-mix(in srgb, var(--sig-peach) 45%, transparent);
-}
-
-.motion-lab__chip[data-status="loading"] {
-  color: var(--sig-sky);
-  border-color: color-mix(in srgb, var(--sig-sky) 45%, transparent);
-}
-
-.motion-lab__weather-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-standard);
-  align-items: center;
-  margin-bottom: var(--space-standard);
-}
-
 /* The lab collapses at the strict Pillar 2 breakpoint (every multi-
    column grid to one column). */
 @media (max-width: 768px) {
-  .motion-lab__stagger,
-  .motion-lab__detents,
+  .motion-lab__wave-grid,
+  .motion-lab__aurora-grid,
   .motion-lab__sheen-grid,
-  .motion-lab__weather-cards {
+  .motion-lab__eq-grid,
+  .motion-lab__sweep-grid {
     grid-template-columns: 1fr;
+  }
+
+  .motion-lab__eq-grid {
+    justify-items: center;
   }
 
   .motion-lab__bar-readout {

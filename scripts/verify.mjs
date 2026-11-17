@@ -1346,14 +1346,14 @@ if (!existsSync(motionLabPath)) {
   const MO2_LAB_NEEDLES = [
     ['data-testid="motion-bar"', "the sticky control bar"],
     ['data-testid="motion-speed-slow"', "the 0.25× Slow-Mo segment"],
-    ['data-testid="motion-replay"', "the Replay Choreography button"],
+    ['data-testid="motion-replay"', "the Replay All button"],
     ['data-testid="motion-reduced"', "the Reduced Motion Preview toggle"],
-    ['data-testid="motion-stagger"', "showcase 01 — the stagger cascade"],
-    ['data-testid="motion-detents"', "showcase 02 — the spring detents"],
-    ['data-testid="motion-sheen"', "showcase 03 — the kinetic sheen"],
-    ['data-testid="motion-flip"', "showcase 04 — the FLIP tabs"],
-    ['data-testid="motion-telemetry"', "showcase 05 — rolling telemetry"],
-    ['data-testid="motion-weather"', "showcase 06 — the open-meteo stage"],
+    ['data-testid="motion-aurora"', "showcase 01 — the aurora beam & tilt"],
+    ['data-testid="motion-stagger"', "showcase 02 — the staggered bento wave"],
+    ['data-testid="motion-detents"', "showcase 03 — the spring puck race"],
+    ['data-testid="motion-flip"', "showcase 04 — the FLIP pill + morph drawer"],
+    ['data-testid="motion-equalizer"', "showcase 05 — the equalizer & sonar"],
+    ['data-testid="motion-telemetry"', "showcase 06 — the telemetry sweep"],
     ['"--sig-motion-scale"', "the time dial set on the lab root"],
     ['"data-sig-motion"', "the reduced-preview attribute toggle"],
     ["MOTION_SNIPPETS", "the Set 08 copy payloads"],
@@ -1469,34 +1469,33 @@ if (!motionCss370.includes(".sig-kinetic-surface:hover::after")) {
   failures.push("(mo5) the sheen must fade in on hover (.sig-kinetic-surface:hover::after)");
 }
 
-// (mo6) OPEN-METEO + FALLBACK-FIRST: the zero-auth URL, the AbortController
-//       cleanup, the deterministic labeled sample rendering FIRST, the live
-//       swap reading the FETCH payload (never hardcoded "live" values),
-//       the refetch control, the skeleton loading state.
+// (mo6) THE TELEMETRY SWEEP (4.0.0 — the rebuilt showcase 06): ONE
+//       "Simulate Spike" trigger fires THREE instruments at once —
+//       the AnimatedNumber roll, the 128px "md" StatRing jump, and the
+//       AreaChart path sweep re-triggered by the key remount. The
+//       spike roster is a fixed deterministic array (no Math.random —
+//       the purity doctrine), no network, no keys.
 const MO6_NEEDLES = [
-  ["https://api.open-meteo.com/v1/forecast?latitude=31.76&longitude=-106.48&hourly=temperature_2m,wind_speed_10m&forecast_days=1", "the zero-auth Open-Meteo URL (exact)"],
-  ["new AbortController()", "the per-fetch AbortController"],
-  ["abort()", "the cleanup abort (unmount + re-fetch)"],
-  ["Deterministic offline sample", "the fallback's honest label (never fake-live)"],
-  ["Refetch Live Stream", "the manual retry control"],
-  ["SkeletonCard", "the loading state"],
-  ["json.hourly?.temperature_2m", "the live swap reads the FETCH payload"],
-  ["json.hourly?.wind_speed_10m", "the live swap reads the FETCH payload"],
-  ['useState<WeatherSeries>', "the fallback-first state (the sample IS the opening value)"],
+  ['data-testid="motion-spike"', "the Simulate Spike trigger"],
+  ["Simulate Spike", "the trigger's visible label"],
+  ["SPIKE_VALUES", "the fixed deterministic spike roster"],
+  ["<AnimatedNumber", "the rolling number instrument"],
+  ['size="md"', "the 128px StatRing (the md enum diameter)"],
+  ["StatRing", "the ring instrument"],
+  ["AreaChart", "the sweep instrument"],
+  ["key={spikeIndex}", "the key-remount that replays the path sweep"],
+  ["colorToken=\"--sig-cyan\"", "the sweep's chromatic ink"],
 ];
 for (const [needle, label] of MO6_NEEDLES) {
   if (!motionLab.includes(needle)) {
     failures.push(`(mo6) MotionLab.tsx must contain ${needle} — ${label}`);
   }
 }
-if ((motionLab.replace(/\/\*[\s\S]*?\*\//g, "").match(/api\.open-meteo\.com/g) ?? []).length !== 1) {
-  failures.push("(mo6) the Open-Meteo URL must appear EXACTLY once in code (one endpoint constant; no shadow requests)");
+if (/\bMath\.random\b/.test(motionLab.replace(/\/\*[\s\S]*?\*\//g, ""))) {
+  failures.push("(mo6) MotionLab.tsx must be deterministic — Math.random is banned (the same presses produce the same choreography)");
 }
-// "Live" may only be claimed inside the fetch success chain.
-const liveClaimOutsideFetch = motionLab.includes('"Live · Open-Meteo"') &&
-  !/\.then\([\s\S]*?"Live · Open-Meteo"[\s\S]*?\}\s*\}\s*\)\s*\n?\s*\.catch/.test(motionLab);
-if (liveClaimOutsideFetch) {
-  failures.push('(mo6) the "Live · Open-Meteo" label may only be set from the fetch success chain — no hardcoded live values');
+if (/fetch\s*\(/.test(motionLab)) {
+  failures.push("(mo6) MotionLab.tsx is a LOCAL demo — no network calls (no fetch) allowed; the live-data pattern lives in the recipes");
 }
 
 // (e1-motion) THE E1 MOTION SCAN: the motion-bearing stylesheets animate

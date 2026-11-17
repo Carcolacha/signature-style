@@ -201,4 +201,91 @@ useEffect(() => {
    the deterministic golden-angle curve (0.3 + 0.7·|sin(i·2.399 + 1.2)| —
    same input, same bars, NO Math.random). Reduced motion: static bars. */`,
   },
+  StaggerWave: {
+    set: "08",
+    componentName: "The staggered wave (key-remount pattern)",
+    jsx: `import { useState } from "react";
+
+// 4.0.0 — Play = bump a React key; the REMOUNT re-runs a pure CSS
+// @keyframes cascade. Every card carries --wave-i (its index).
+const [waveKey, setWaveKey] = useState(0);
+<div key={waveKey} className="wave-grid">
+  {tiles.map((tile, index) => (
+    <div key={tile.label} className="wave-card" style={{ "--wave-i": index }}>
+      {tile.label}
+    </div>
+  ))}
+</div>
+<Button onClick={() => setWaveKey((k) => k + 1)}>Play Wave</Button>
+
+/* css: .wave-card { opacity: 0; animation: wave-in 560ms
+   var(--ease-spring-gentle) calc(var(--wave-i) * 60ms) forwards; }
+   @keyframes wave-in { from { opacity: 0; transform: translate3d(0, 24px, 0)
+   scale(0.94); } to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } }
+   Reduced motion: animation none, opacity 1. */`,
+  },
+  SpringPucks: {
+    set: "08",
+    componentName: "The spring puck race",
+    jsx: `// 4.0.0 — TWO weighted pucks, SAME duration, two springs: the
+// overshoot difference IS the lesson. Trigger = bump the key (reset
+// to start, then animate).
+<div key={raceKey} className="puck-track">   {/* container-type: inline-size */}
+  <div className="puck-lane">
+    <span className="puck" style={{ "--puck-ease": "var(--ease-spring-snappy)" }}>Snappy</span>
+  </div>
+  <div className="puck-lane">
+    <span className="puck" style={{ "--puck-ease": "var(--ease-spring-gentle)" }}>Gentle</span>
+  </div>
+</div>
+
+/* css: .puck { position: absolute; left: 0; top: 50%; animation:
+   puck-run 900ms var(--puck-ease) both; }
+   @keyframes puck-run { from { transform: translate3d(0, -50%, 0); }
+   to { transform: translate3d(calc(100cqw - 100%), -50%, 0); } }
+   Transform-only (the e1 treaty) — the container-query length unit
+   cqw measures the track, the % measures the puck. */`,
+  },
+  MorphDrawer: {
+    set: "08",
+    componentName: "The morphing drawer (grid-rows)",
+    jsx: `// 4.0.0 — the TRUE height expansion: grid-template-rows 0fr → 1fr
+// on the gentle spring. No max-height hack, no JS measurement — the
+// inner clips through overflow: hidden while the row glides.
+const [open, setOpen] = useState(false);
+<button aria-expanded={open} onClick={() => setOpen(!open)}>…</button>
+<div className={open ? "morph is-open" : "morph"}>
+  <div className="morph__inner">…</div>
+</div>
+
+/* css: .morph { display: grid; grid-template-rows: 0fr; transition:
+   grid-template-rows 320ms var(--ease-spring-gentle); }
+   .morph.is-open { grid-template-rows: 1fr; }
+   .morph__inner { overflow: hidden; min-height: 0; }
+   Reduced motion: transition none (the state still flips). */`,
+  },
+  TelemetrySweep: {
+    set: "08",
+    componentName: "The telemetry sweep (three instruments, one trigger)",
+    jsx: `import { useState } from "react";
+import { AnimatedNumber, AreaChart, StatRing } from "@edwyn/signature-style/react";
+
+// 4.0.0 — ONE trigger, THREE instruments: the number ROLLS (rAF
+// spring), the ring's arc JUMPS (stroke-dashoffset transition), and
+// the chart RE-DRAWS its path sweep (the key remount replays the
+// pathLength dash draw from zero).
+const [value, setValue] = useState(1280);
+const [spike, setSpike] = useState(0);
+<button onClick={() => { setValue(1840); setSpike((s) => s + 1); }}>
+  Simulate Spike
+</button>
+<AnimatedNumber value={value} />
+<StatRing value={64} size="md" colorToken="--sig-mint" label="Momentum" />
+<div key={spike}>
+  <AreaChart points={series} colorToken="--sig-cyan" label="Stream" />
+</div>
+
+/* Deterministic roster: keep the spike values in a fixed array — the
+   same presses produce the same choreography (no Math.random). */`,
+  },
 };
