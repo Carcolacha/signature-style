@@ -1436,6 +1436,7 @@ const AUTHORIZED_330 = new Set([
   "scripts/gates-v390.mjs", // T6: the mm1 amendment — the retired saas/docs templates leave the sweep
   "scripts/verify-cli.mjs", // T5: scenarios G/H + tpl3 + b3 71
   "scripts/verify-a11y.mjs", // T1: the flip-face selectors
+  "scripts/verify-mcp.mjs", // T5: the templates probe rides the analytics hub default
   "scripts/regen-template-sources.mjs", // T5: the two-source list
   "scripts/regen-cli-templates.mjs", // T5: NEW — the CLI map regen tool
   "bin/cli.mjs", "bin/templates.mjs", // T5: the blueprint set change

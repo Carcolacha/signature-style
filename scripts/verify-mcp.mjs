@@ -188,13 +188,14 @@ try {
   // (s2d) the TEMPLATES STUDIO navigation probe (3.8.0): #/templates
   // mounts the studio — the stage wrap + stage measure alive rects,
   // the control bar, the template tabs and the copy control are all
-  // present, and the preview mounts the live template (the SaaS
-  // landing default: the pricing section is in the DOM).
+  // present, and the preview mounts the live template (4.0.0: the
+  // Match & Telemetry Analytics Hub default — the player hero + the
+  // match ledger are in the DOM).
   const templatesLayout = await rpc.call("tools/call", {
     name: "inspect_layout",
     arguments: {
       url: `${URL_TO_INSPECT}/#/templates`,
-      selectors: [".tpl-studio", ".tpl-studio__bar", ".tpl-studio__stage-wrap", ".tpl-studio__stage", ".sig-tpl-saas", ".sig-tpl-saas__tiers"],
+      selectors: [".tpl-studio", ".tpl-studio__bar", ".tpl-studio__stage-wrap", ".tpl-studio__stage", ".sig-tpl-telemetry", ".sig-tpl-telemetry__grid"],
     },
   });
   assert(templatesLayout.isError !== true, `templates inspect_layout errored: ${JSON.stringify(templatesLayout.content)}`);
@@ -205,9 +206,9 @@ try {
   assert(aliveTpl(".tpl-studio__bar") === 1, "templates probe: the control bar is not mounting");
   assert(aliveTpl(".tpl-studio__stage-wrap") === 1, "templates probe: the stage wrap is not mounting");
   assert(aliveTpl(".tpl-studio__stage") === 1, "templates probe: the stage is not mounting");
-  assert(aliveTpl(".sig-tpl-saas") === 1, "templates probe: the default template (SaaS Landing) is not mounting live");
-  assert(aliveTpl(".sig-tpl-saas__tiers") === 1, "templates probe: the SaaS pricing tiers are not mounting");
-  console.log(`templates hits: studio=${aliveTpl(".tpl-studio")} · bar=${aliveTpl(".tpl-studio__bar")} · stage=${aliveTpl(".tpl-studio__stage")} · saas=${aliveTpl(".sig-tpl-saas")}`);
+  assert(aliveTpl(".sig-tpl-telemetry") === 1, "templates probe: the default template (Match & Telemetry Analytics Hub) is not mounting live");
+  assert(aliveTpl(".sig-tpl-telemetry__grid") === 1, "templates probe: the analytics hub inner grid is not mounting");
+  console.log(`templates hits: studio=${aliveTpl(".tpl-studio")} · bar=${aliveTpl(".tpl-studio__bar")} · stage=${aliveTpl(".tpl-studio__stage")} · telemetry=${aliveTpl(".sig-tpl-telemetry")}`);
 
   // (s2e) the 4-VIEWPORT sweep ON THE TEMPLATES VIEW (3.8.0): the
   // doctrine matrix captured on #/templates — the studio + the stage

@@ -46,16 +46,19 @@ import { useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "./primitives.js";
 /**
- * useFocusReturn — capture document.activeElement on MOUNT and restore
- * focus to it on UNMOUNT. The opener does nothing special: mounting
- * <ConfirmDialog open> captures the focused trigger (the button the
- * user pressed, or the node they hit Delete on); unmounting restores
- * focus there, so keyboard users are never stranded after a confirm or
- * a cancel.
+ * useFocusReturn(enabled) — capture document.activeElement when
+ * `enabled` flips true and restore focus to it when it flips false
+ * (or on unmount). ConfirmDialog passes its `open` flag: the capture
+ * lands at OPEN time (the trigger the user just pressed), the restore
+ * lands at CLOSE time — keyboard users are never stranded after a
+ * confirm or a cancel. Mounting alone captures nothing (the preview
+ * mount's activeElement is the page body, not the trigger).
  */
-export function useFocusReturn() {
+export function useFocusReturn(enabled) {
     const restoreRef = useRef(null);
     useEffect(() => {
+        if (!enabled)
+            return undefined;
         restoreRef.current =
             document.activeElement instanceof HTMLElement ? document.activeElement : null;
         return () => {
@@ -63,7 +66,7 @@ export function useFocusReturn() {
             if (restore !== null && restore.isConnected)
                 restore.focus();
         };
-    }, []);
+    }, [enabled]);
 }
 /** The focusables inside the dialog card, in DOM order. */
 function focusablesIn(card) {
@@ -98,8 +101,9 @@ export function ConfirmDialog({ open, title, description, confirmLabel = "Yes", 
     const titleId = useId();
     const descriptionId = useId();
     const cardRef = useRef(null);
-    // THE FOCUS RETURN — activeElement at open-time is the trigger.
-    useFocusReturn();
+    // THE FOCUS RETURN — armed on `open`: activeElement at OPEN-time is
+    // the trigger; it gets focus back at CLOSE-time.
+    useFocusReturn(open);
     useEffect(() => {
         if (!open)
             return;

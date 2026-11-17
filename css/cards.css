@@ -365,7 +365,11 @@
   .sig-accordion__body-inner {
     overflow: hidden; /* the clipping leg of the 0fr/1fr technique */
     min-height: 0;
-    padding: 0 var(--space-standard) var(--space-standard);
+    /* HORIZONTAL padding only — vertical padding would put a floor
+       under the inner (border-box: a box can never be shorter than its
+       own padding), and the closed 0fr row would hold a 16px sliver.
+       The breathing room rides the children's margins instead. */
+    padding: 0 var(--space-standard);
     font-size: 0.875rem;
     color: var(--text-main);
   }

@@ -36,14 +36,14 @@
  * 0.25× Slow-Mo on the --sig-motion-scale dial, scoped to this root),
  * Replay All (the global remount key), Reduced Motion Preview
  * ([data-sig-motion="reduced"] root override), the live readout.
- * Every showcase rides --dur-*/--ease-* tokens, so Slow-Mo dilates
- * the whole lab and the reduced preview collapses it.
+ * Every showcase rides the --dur / --ease kinetic tokens, so Slow-Mo
+ * dilates the whole lab and the reduced preview collapses it.
  *
  * Domain-neutral by the purity doctrine: the telemetry numbers speak
  * ratings and samples — no network, no keys, fully deterministic
  * sequences (the spike roster is a fixed array).
  */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import {
   AnimatedNumber,
@@ -293,6 +293,12 @@ export function MotionLabView() {
                   <p>±6° of perspective tilt tracking the pointer, plus the chromatic sheen. Reduced motion pins it flat.</p>
                 </div>
               </TiltSurface>
+              <AuroraBorderCard trigger="always" accentTokens={["--sig-magenta", "--sig-tangerine", "--sig-neon-green", "--sig-azure"]}>
+                <div className="motion-lab__aurora-inner">
+                  <h4>Always-on beam</h4>
+                  <p>A different four-token cycle, spinning without hover — for exactly one hero card, not ten.</p>
+                </div>
+              </AuroraBorderCard>
               <div className="motion-lab__sheen-grid" data-testid="motion-sheen">
                 {SHEEN_CARDS.map((card) => (
                   <KineticSurface key={card.title} accentToken={card.token} className="motion-lab__sheen-card">

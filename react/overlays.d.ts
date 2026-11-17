@@ -43,14 +43,15 @@
  */
 import type { ReactNode } from "react";
 /**
- * useFocusReturn — capture document.activeElement on MOUNT and restore
- * focus to it on UNMOUNT. The opener does nothing special: mounting
- * <ConfirmDialog open> captures the focused trigger (the button the
- * user pressed, or the node they hit Delete on); unmounting restores
- * focus there, so keyboard users are never stranded after a confirm or
- * a cancel.
+ * useFocusReturn(enabled) — capture document.activeElement when
+ * `enabled` flips true and restore focus to it when it flips false
+ * (or on unmount). ConfirmDialog passes its `open` flag: the capture
+ * lands at OPEN time (the trigger the user just pressed), the restore
+ * lands at CLOSE time — keyboard users are never stranded after a
+ * confirm or a cancel. Mounting alone captures nothing (the preview
+ * mount's activeElement is the page body, not the trigger).
  */
-export declare function useFocusReturn(): void;
+export declare function useFocusReturn(enabled: boolean): void;
 export interface ConfirmDialogProps {
     /** Whether the dialog is mounted (false renders nothing). */
     open: boolean;
