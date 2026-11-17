@@ -50,9 +50,8 @@ function expectFailure(name, gateFn, files, fragment) {
 // -- the pristine record (the positive control's input) --
 const pristine = {
   styles: read("playground/styles.css"),
-  saas: read("playground/templates/SaasLandingTemplate.tsx"),
-  docs: read("playground/templates/DocsReaderTemplate.tsx"),
   telemetry: read("playground/templates/TelemetryCenterTemplate.tsx"),
+  microlab: read("playground/templates/MicroLabTemplate.tsx"),
   viz: read("react/viz.tsx"),
   vizCss: read("css/viz.css"),
   app: read("playground/App.tsx"),

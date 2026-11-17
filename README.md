@@ -25,7 +25,7 @@ palette's signature Flamingo/Teal pairing) — where every hover, active,
 disabled and focus-visible state is *derived* from the core tokens
 instead of hand-authored. It ships a zero-dependency CSS core, an optional
 hardened React provider, a machine-readable token manifest, and the
-**Dynamic Signature Engine v4.0** system prompt so AI agents can extend the
+**Dynamic Signature Engine v4.1** system prompt so AI agents can extend the
 style faithfully.
 
 ```
@@ -291,6 +291,53 @@ and dropped; unknown keys are warned and dropped.
 | VULN-3 | Provider FOUC, style-tag leaks, arbitrary prop injection | Isomorphic layout effect (`useLayoutEffect`/`useEffect`), `useId`-keyed deduped style tags, strict self-only cleanup, memoized serialization, token whitelist (all 34 tokens, type + runtime), CSS-injection guard on values |
 
 ## Changelog
+
+### 4.0.0 — Motion Lab Rebuild, Flip/Accordion Geometry Fix, Destructive Confirm Norm & Human-Crafted Blueprints
+
+**BREAKING — the template set changes.** The generic SaaS Landing +
+Docs Reader blueprints RETIRE; the registry, the Templates Studio tabs,
+and the CLI `--template` set are now exactly `telemetry | microlab`
+(alongside `minimal | bento`). `telemetry` is REPLACED IN PLACE (the
+CLI file stays `SignatureTelemetryCenter.tsx`) and `microlab` is NEW
+(`SignatureMicroLab.tsx`). Both blueprints are authentic, human-crafted
+pages with ORIGINAL content — invented call signs, invented maps,
+deterministic mock numbers; the style genre is the inspiration, never
+anyone's data. `StatRing`/`AccordionCard`/`FlipCard` consumers who pass
+removed `saas`/`docs` ids must migrate; the components' props surfaces
+only GROW (FlipCard gains optional rich-face fields, AccordionCard's is
+untouched).
+
+**The four defect fixes, proven:**
+
+| # | The defect (v3.9.0) | The fix (4.0.0) | The proof |
+|---|---|---|---|
+| 1 | FlipCard 3D was a fake: the faces were absolutely positioned (contributing no height — the 220px floor owned the box), the perspective sat at 800px on the button, and any rotateX use rendered the back face upside-down. | TRUE full-card 3D: the button is a `display: grid` perspective stage (1000px); `.sig-flip-inner` docks at `grid-area: 1/1` with `transform-style: preserve-3d` and owns THE rotation — `rotateY(180deg)`, NEVER rotateX; both faces `.sig-flip-front`/`.sig-flip-back` share `grid-area: 1/1; width/height: 100%` with BOTH `backface-visibility` spellings hidden and `padding: 20px`. Rich faces layer on top: eyebrow badge + accent-underlined title + body + the mono "Click to flip" hint on both faces (front = prompt, back = reveal). Reduced motion keeps the opacity crossfade. | `node scripts/gates-v400.mjs` (cd1) pins grid-area 1/1, both backface spellings, rotateY-on-inner, min-height 220, radius-card — and FAILS a rotateX mutant (negative test n1). |
+| 2 | AccordionCard expanded via browser default (no animation); closed accordions in card grids were STRETCHED over dead space by `align-items: stretch` rows. | TRUE height expansion: `.sig-accordion__body` is `display: grid; grid-template-rows: 0fr` expanding to `1fr` on `details[open]` — `transition: grid-template-rows 320ms var(--ease-spring-gentle)`, the inner carrying `overflow: hidden` (the modern technique, no max-height hack; the native details/summary mechanism still IS the state machine). Containing grids use `align-items: start` (`.hub__row--4` audited + fixed). | Computed check: closed body reads `0fr`, open reads `1fr`; gate (cd2) pins the 320ms spring needle + the overflow-hidden inner (negative n3 kills the expansion → FAIL). |
+| 3 | Destructive actions were one-click: node deletes, canvas resets and workspace resets fired immediately on the button press (or on Delete/Backspace). | THE DESTRUCTIVE ACTION NORM: `<ConfirmDialog>` (NEW `react/overlays.tsx` + `css/overlays.css`) — portal-mounted on the z-40 scrim/z-50 card rungs, Escape/scrim/cancel all CANCEL, Tab is TRAPPED inside, the cancel button takes focus on open (one accidental Enter never destroys), focus returns to the trigger on close (`useFocusReturn`). Confirm = solid `var(--sig-crimson)` + `#FFFFFF` ink (4.18:1 ≥ 3.1, gate-asserted). Wired EVERYWHERE: Graph Studio's inspector Delete Node + the Delete/Backspace key route (children promote to roots), Reset Canvas ("Yes, Reset"), and the Analytics & Planner Reset Workspace. Pattern Studio carries the live recipe frame. | Gate (ov1) asserts portal/z-rungs/trap/Escape/aria-modal/contrast; negative n2 strips the trap → FAIL; negative n4 drifts the crimson → FAIL. |
+| 4 | The Motion Lab's v3.9.0 showcases were derivative (detent panels, an Open-Meteo fetch demo) and half the frames' Play buttons merely replayed an entrance. | WIPE & REBUILD — six vivid showcases, every Play/Trigger fires immediate motion: 01 Aurora Beam & 3D Tilt (Play forces the always-on beam beat), 02 Staggered Bento Wave (key-remounted `@keyframes` cascade, 60ms stagger from `opacity 0 · translate3d(0,24px,0) · scale(0.94)`), 03 Tactile Spring Detents (two pucks race on snappy vs gentle — the overshoot crystal-clear), 04 FLIP Gliding Pill (--sig-cyan re-ink) & Morphing Drawer (the Task-2 grid-rows technique), 05 Kinetic Equalizer & Pulse Beacons (3-color bars + sequential sonar rings), 06 Live Telemetry Sweep (one button rolls an AnimatedNumber, jumps the 128px StatRing, re-draws the AreaChart path sweep). Control bar stays: 1.0× / 0.25× Slow-Mo (`--sig-motion-scale`) / Reduced Motion Preview / Replay All. | Gate (ml1) pins all six showcases + the puck container/cqw finish line + the wave stagger + both reduced-motion belts per mechanic; the (mo6) gate pins the deterministic spike roster (no `Math.random`, no fetch). |
+
+**The human-crafted blueprints.** `telemetry` — Match & Telemetry
+Analytics Hub: Player Summary header (rank SigBadge, call sign, live
+AnimatedNumber rating, the 128px win-rate StatRing), Role Mastery
+(BarChart + ProgressBar per role), Rating Momentum (AreaChart), and the
+filterable Match History DataTable with `--sig-mint` Win / `--sig-crimson`
+Loss badges. `microlab` — Interactive Micro-Lab & Discovery Deck: the
+Millisecond Reaction-Time Test (idle → waiting → green → result; a
+random 1–3s hold, exact ms in tabular-nums, "Too soon!" reset,
+best-of-5), the fixed-seed FlipCard Prompt Deck, and the Focus Rhythm
+Waveform Toy (toggle + tempo controls over WaveformBars + StatusBeacon).
+Templates Studio tabs read `01 · Analytics Hub | 02 · Micro-Lab` with
+the viewport emulator, theme switcher and Copy Full Page preserved;
+`verify:cli` scenarios G/H scaffold both flavors, and the retired
+saas/docs ids are clean exit-1 errors.
+
+**The ConfirmDialog norm ships in the package surface.** `react/overlays.tsx`
++ `css/overlays.css` join the bundle (the (bd1) blur sanction grows one
+file, enumerated) and the umbrella exports; `SYSTEM_PROMPT.md` gains the
+"Destructive Action Norm" subsection with the copy-paste recipe. Pack
+count: 68 → EXACTLY 71 (+ `css/overlays.css`, `react/overlays.js`,
+`react/overlays.d.ts`; the `.tsx` source stays negated like every
+package source).
 
 ### 3.9.0 — Full-Viewport Tree & Mind-Map Graph Studio, Colorful Kinetic Suite & Responsive Layout Closure
 

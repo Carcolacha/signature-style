@@ -152,6 +152,7 @@ import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync, spawnSync } from "node:child_process";
 import { runV390Gates } from "./gates-v390.mjs";
+import { runV400Gates } from "./gates-v400.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -1561,9 +1562,8 @@ try {
   const read = (rel) => readFileSync(resolve(root, rel), "utf8");
   const mmFiles = {
     styles: read("playground/styles.css"),
-    saas: read("playground/templates/SaasLandingTemplate.tsx"),
-    docs: read("playground/templates/DocsReaderTemplate.tsx"),
     telemetry: read("playground/templates/TelemetryCenterTemplate.tsx"),
+    microlab: read("playground/templates/MicroLabTemplate.tsx"),
     viz: read("react/viz.tsx"),
     vizCss: read("css/viz.css"),
     app: read("playground/App.tsx"),
@@ -1576,6 +1576,39 @@ try {
   };
   const mmFailures = runV390Gates(mmFiles);
   failures.push(...mmFailures);
+}
+
+// ---- (cd1)/(cd2)/(ov1)/(gs1)/(ml1)/(cli) THE v4.0.0 RELEASE GATES ------------
+// The gate functions live in scripts/gates-v400.mjs (pure functions over
+// file contents) so scripts/verify-negative-v400.mjs can run the SAME
+// gates against MUTATED copies — the negative tests prove every gate
+// here can actually fail.
+{
+  const read = (rel) => readFileSync(resolve(root, rel), "utf8");
+  const v400Files = {
+    cardsTsx: read("react/cards.tsx"),
+    cardsCss: read("css/cards.css"),
+    cardsDts: read("react/cards.d.ts"),
+    styles: read("playground/styles.css"),
+    overlaysTsx: read("react/overlays.tsx"),
+    overlaysCss: read("css/overlays.css"),
+    overlaysDts: read("react/overlays.d.ts"),
+    bundleCss: read("css/signature-style.css"),
+    umbrellaDts: read("react/index.d.ts"),
+    indexTsx: read("react/index.ts"),
+    studio: read("playground/components/GraphStudio.tsx"),
+    app: read("playground/App.tsx"),
+    motionLab: read("playground/components/MotionLab.tsx"),
+    motionCss: read("css/motion.css"),
+    motionSnippets: read("playground/motion-snippets.ts"),
+    registrySrc: read("playground/template-registry.ts"),
+    sourcesSrc: read("playground/template-sources.ts"),
+    cliSrc: read("bin/cli.mjs"),
+    templatesBinSrc: read("bin/templates.mjs"),
+    studioSrc: read("playground/components/TemplatesStudio.tsx"),
+  };
+  const v400Failures = runV400Gates(v400Files);
+  failures.push(...v400Failures);
 }
 
 // ---- (pure) THE STANDALONE PURITY GATE (3.1.0, the release gate) ------------

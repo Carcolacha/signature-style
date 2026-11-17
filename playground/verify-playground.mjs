@@ -1318,7 +1318,41 @@ if (oldTimeline !== null) {
   failures.push("(e2) cannot run the code-deletion check — v1.8.0:css/timeline.css unavailable");
 }
 
-// ---- (b7) SAFETY PROOF: core deltas vs v3.8.0 are owner-authorized ----------
+// ---- (b7) SAFETY PROOF: core deltas vs v3.9.0 are owner-authorized ----------
+// 4.0.0 REBASE (the floor moves v3.8.0 → v3.9.0): MOTION LAB REBUILD,
+// FLIP/ACCORDION GEOMETRY FIX, DESTRUCTIVE CONFIRM NORM & HUMAN-CRAFTED
+// BLUEPRINTS. The owner-authorized 4.0.0 deltas, and NOTHING else:
+//   css/cards.css            — T1: the FlipCard true-3D geometry + the
+//                              AccordionCard grid-rows expansion + the rich
+//                              face anatomy + the reduced-motion crossfade
+//   css/overlays.css         — T2: NEW — the ConfirmDialog scrim/card/buttons
+//   css/motion.css           — T4: REBUILT — the primitives kept + the 4.0.0
+//                              lab showcase mechanics (.sig-lab-*)
+//   css/signature-style.css  — T2: the bundle grows the ONE overlays import
+//   react/cards.*            — T1: the FlipCard/AccordionCard geometry
+//   react/overlays.*         — T2: NEW — ConfirmDialog + useFocusReturn
+//   react/index.*            — T2: the overlays exports
+//   SYSTEM_PROMPT.md         — T6: the Destructive Action Norm + the
+//                              rewritten blueprint set
+//   scripts/verify.mjs       — T6: the (mo2)/(mo6) evolution + (v400) wiring
+//   scripts/gates-v400.mjs   — T6: NEW — the pure cd1/cd2/ov1/gs1/ml1/cli gates
+//   scripts/verify-negative-v400.mjs — T6: NEW — the negative tests
+//   scripts/verify-negative-v390.mjs — T6: the n4 needle rides the new
+//                              cards.css floor line
+//   scripts/verify-cli.mjs   — T5: scenarios G/H + tpl3 + (b3) 68 → 71
+//   scripts/verify-a11y.mjs  — T1: the flip-face selectors ride the new
+//                              class names
+//   scripts/regen-template-sources.mjs + scripts/regen-cli-templates.mjs —
+//                              T5: the two-source regen tools
+//   bin/cli.mjs + bin/templates.mjs — T5: the blueprint set change
+// css/cascade.css, css/overrides.css, css/timeline.css, css/modal.css,
+// css/nav.css, css/toast.css, css/data.css, css/editorial.css,
+// css/surface.css, css/forms.css, css/viz.css, css/command.css,
+// css/graph.css, css/skeleton.css, css/tokens.css, css/primitives.css,
+// shared/, docs/, bin/themes.mjs, wc/, dist/wc stay byte-identical to
+// v3.9.0 (0-line diff). tokens.json gains meta.version 4.0.0 (guarded
+// below — the COLOR VALUES stay byte-frozen). playground/ is NOT under
+// the freeze; README/package.json/lock are release plumbing.
 // 3.4.0 REBASE (the floor moves v3.2.0 → v3.3.0): the ZERO-REACT NATIVE
 // WEB COMPONENTS release. The owner-mandated 3.4.0 deltas, and NOTHING
 // else — css/, react/, demo/, bin/ and the tokens.json VALUES stay
@@ -1385,46 +1419,45 @@ if (oldTimeline !== null) {
 // composition layer); README/package.json/lock are release plumbing.
 const B7_LOCKED_330 = ["css/", "react/", "SYSTEM_PROMPT.md", "demo/", "scripts/", "tools/", "bin/"];
 const AUTHORIZED_330 = new Set([
-  // 3.9.0 — THE FOUR-DEFECT RELEASE DELTAS (enumerated honestly):
-  // StatRing enum (T1), templates container reflow (T2), workbench
-  // proportions (T3), the graph studio engine (T4), the kinetic suite
-  // (T5), the gates + cert probes + the template-sources regen (T6).
-  "css/viz.css", // T1: the .sig-stat-ring box contract
-  "css/motion.css", // T5: the kinetic suite (@property, beam, tilt, beacon, wave)
-  "css/graph.css", // T4: nodeKind paint + non-free cursors
-  "react/viz.tsx", "react/viz.js", "react/viz.d.ts", // T1: the enum
-  "react/graph.tsx", "react/graph.js", "react/graph.d.ts", // T4: the layout engine
-  "react/motion.tsx", "react/motion.js", "react/motion.d.ts", // T5: the suite
-  "react/index.ts", "react/index.js", "react/index.d.ts", // T4+T5: the exports
-  "SYSTEM_PROMPT.md", // T6: the title steps to v4.1 + the new recipes
-  "scripts/verify.mjs", // T6: the (ring2)+(mm1)-(mm5) additive gates
-  "scripts/gates-v390.mjs", // T6: the pure mm gates
-  "scripts/verify-negative-v390.mjs", // T6: the negative tests
-  "scripts/verify-mcp.mjs", // T6: the (s2f)/(s2g) probes
-  "scripts/regen-template-sources.mjs", // T2: the (tpl1) parity regen tool
-  "scripts/verify-cli.mjs", // (carried 3.8.0 — no edit this release)
-  "scripts/verify-a11y.mjs", // (carried 3.8.0 — no edit this release)
-  "scripts/verify-visual-diff.mjs", // (carried 3.8.0 — no edit this release)
-  "bin/cli.mjs", "bin/templates.mjs", // (carried 3.8.0 — no edit this release)
+  // 4.0.0 — THE MOTION LAB REBUILD + GEOMETRY FIX + CONFIRM NORM +
+  // HUMAN-CRAFTED BLUEPRINTS (enumerated honestly, see the header):
+  "css/cards.css", // T1: FlipCard 3D + AccordionCard grid-rows
+  "css/overlays.css", // T2: NEW — the ConfirmDialog css
+  "css/motion.css", // T4: REBUILT — primitives + lab mechanics
+  "css/signature-style.css", // T2: the overlays bundle import
+  "react/cards.tsx", "react/cards.js", "react/cards.d.ts", // T1
+  "react/overlays.tsx", "react/overlays.js", "react/overlays.d.ts", // T2 NEW
+  "react/index.ts", "react/index.js", "react/index.d.ts", // T2: the exports
+  "SYSTEM_PROMPT.md", // T6: the norm + the blueprint set
+  "scripts/verify.mjs", // T6: (mo2)/(mo6) evolution + (v400) wiring
+  "scripts/gates-v400.mjs", // T6: NEW — the cd1/cd2/ov1/gs1/ml1/cli gates
+  "scripts/verify-negative-v400.mjs", // T6: NEW — the negative tests
+  "scripts/verify-negative-v390.mjs", // T6: the n4 needle rides the new floor line
+  "scripts/gates-v390.mjs", // T6: the mm1 amendment — the retired saas/docs templates leave the sweep
+  "scripts/verify-cli.mjs", // T5: scenarios G/H + tpl3 + b3 71
+  "scripts/verify-a11y.mjs", // T1: the flip-face selectors
+  "scripts/regen-template-sources.mjs", // T5: the two-source list
+  "scripts/regen-cli-templates.mjs", // T5: NEW — the CLI map regen tool
+  "bin/cli.mjs", "bin/templates.mjs", // T5: the blueprint set change
 ]);
 let b7Changed = [];
 try {
   b7Changed = execFileSync(
     "git",
-    ["diff", "v3.8.0", "--name-only", "--", ...B7_LOCKED_330],
+    ["diff", "v3.9.0", "--name-only", "--", ...B7_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
     .map((line) => line.trim())
     .filter((line) => line !== "");
 } catch (error) {
-  failures.push(`(b7) could not diff against v3.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(b7) could not diff against v3.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 for (const file of b7Changed) {
   // scripts/goldens/ is the golden-master base (prefix exemption).
   if (!AUTHORIZED_330.has(file) && !file.startsWith("scripts/goldens/")) {
     failures.push(
-      `(b7) SAFETY: ${file} changed since v3.8.0 — outside the owner-authorized 3.9.0 set (the four-defect release: ring enum, container reflow, workbench, graph studio, kinetic suite, gates)`,
+      `(b7) SAFETY: ${file} changed since v3.9.0 — outside the owner-authorized 4.0.0 set (Motion Lab rebuild, flip/accordion geometry, ConfirmDialog norm, human-crafted blueprints)`,
     );
   }
 }
@@ -1441,7 +1474,10 @@ const SCRIPTS_330_ALLOWED = new Set([
   "scripts/verify-examples.mjs",
   "scripts/gates-v390.mjs",
   "scripts/verify-negative-v390.mjs",
+  "scripts/gates-v400.mjs",
+  "scripts/verify-negative-v400.mjs",
   "scripts/regen-template-sources.mjs",
+  "scripts/regen-cli-templates.mjs",
 ]);
 if (b7Changed.some((f) => f.startsWith("scripts/") && !SCRIPTS_330_ALLOWED.has(f) && !f.startsWith("scripts/goldens/"))) {
   failures.push("(b7) SAFETY: scripts/ beyond the authorized gates + the certification scripts is LOCKED (verify.mjs stays BYTE-FROZEN)");
@@ -1456,8 +1492,8 @@ if (b7Changed.some((f) => f.startsWith("tools/mcp-viz/node_modules/"))) {
 // kinetic tokens, each with a name/value/description.
 try {
   const tokensNow = JSON.parse(readFileSync(resolve(root, "tokens.json"), "utf8"));
-  if (tokensNow.meta?.version !== "3.9.0") {
-    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "3.9.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
+  if (tokensNow.meta?.version !== "4.0.0") {
+    failures.push(`(b7) SAFETY: tokens.json meta.version must be EXACTLY "4.0.0", found ${JSON.stringify(tokensNow.meta?.version)}`);
   }
   const MOTION_NAMES_370 = [
     "--ease-spring-snappy", "--ease-spring-gentle", "--ease-kinetic-out", "--ease-glide",
@@ -1637,15 +1673,15 @@ try {
   failures.push(`(b7) could not verify the tokens.json 3.2.0 delta — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
-// ---- (n-hub4) THE 3.9.0 FROZEN PROOF — v3.8.0 baseline ----
-// Rebased 3.9.0 (the floor moves v3.7.0 → v3.8.0 with the b7 rebase):
-// the watched surface is unchanged; the authorized set is the 3.9.0
+// ---- (n-hub4) THE 4.0.0 FROZEN PROOF — v3.9.0 baseline ----
+// Rebased 4.0.0 (the floor moves v3.8.0 → v3.9.0 with the b7 rebase):
+// the watched surface is unchanged; the authorized set is the 4.0.0
 // list from (b7).
 const N_HUB4_LOCKED_330 = ["css/", "react/", "demo/", "SYSTEM_PROMPT.md", "scripts/", "tools/", "bin/"];
 try {
   const v2SafetyDiff = execFileSync(
     "git",
-    ["diff", "v3.8.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
+    ["diff", "v3.9.0", "--name-only", "--", ...N_HUB4_LOCKED_330],
     { cwd: root, encoding: "utf8" },
   )
     .split("\n")
@@ -1653,11 +1689,11 @@ try {
     .filter((line) => line !== "" && !AUTHORIZED_330.has(line) && !line.startsWith("scripts/goldens/"));
   if (v2SafetyDiff.length > 0) {
     failures.push(
-      `(n-hub4) SAFETY: files changed since v3.8.0 beyond the 3.9.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated four-defect release set)`,
+      `(n-hub4) SAFETY: files changed since v3.9.0 beyond the 4.0.0 authorization — ${v2SafetyDiff.join(", ")} (deltas must be in the enumerated release set)`,
     );
   }
 } catch (error) {
-  failures.push(`(n-hub4) could not diff against v3.8.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
+  failures.push(`(n-hub4) could not diff against v3.9.0 — ${(error instanceof Error ? error.message : String(error)).split("\n")[0]}`);
 }
 
 // ---- (m1) the compiled MCP server exists (3.5.0 RETARGET) -------------------------

@@ -31,8 +31,11 @@
  *         ALL of them.
  */
 
-/* ---- (mm1) CONTAINER-QUERY REFLOW ----------------------------------------- */
-export function gateMm1({ styles, saas, docs, telemetry }) {
+/* ---- (mm1) CONTAINER-QUERY REFLOW -----------------------------------------
+   4.0.0 AMENDMENT: the generic saas/docs templates RETIRED — the mm1
+   stage/template needles sweep the TWO shipped blueprints (telemetry +
+   microlab), both answering the shared `template-stage` container. */
+export function gateMm1({ styles, telemetry, microlab }) {
   const failures = [];
   const stageBlock = styles.slice(styles.indexOf(".tpl-studio__stage {"));
   if (stageBlock.includes("container-type: inline-size;") === false) {
@@ -46,9 +49,8 @@ export function gateMm1({ styles, saas, docs, telemetry }) {
     );
   }
   for (const [name, src] of [
-    ["SaasLandingTemplate", saas],
-    ["DocsReaderTemplate", docs],
     ["TelemetryCenterTemplate", telemetry],
+    ["MicroLabTemplate", microlab],
   ]) {
     if (src.includes("@container template-stage") === false) {
       failures.push(
@@ -73,6 +75,16 @@ export function gateMm1({ styles, saas, docs, telemetry }) {
   ]) {
     if (telemetry.includes(needle) === false) {
       failures.push(`(mm1) TelemetryCenterTemplate.tsx must contain ${JSON.stringify(needle)} — the inner-grid tier structure`);
+    }
+  }
+  // The microlab inner grid (same inner-wrapper doctrine).
+  for (const needle of [
+    ".sig-tpl-microlab__grid {",
+    "@container template-stage (max-width: 900px)",
+    "minmax(0, 1fr)",
+  ]) {
+    if (microlab.includes(needle) === false) {
+      failures.push(`(mm1) MicroLabTemplate.tsx must contain ${JSON.stringify(needle)} — the inner-grid tier structure`);
     }
   }
   return failures;
