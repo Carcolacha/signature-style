@@ -200,3 +200,8 @@ export {
   WaveformBars,
   type WaveformBarsProps,
 } from "./motion.js";
+export {
+  ConfirmDialog,
+  type ConfirmDialogProps,
+  useFocusReturn,
+} from "./overlays.js";

@@ -1,0 +1,142 @@
+/* ==========================================================================
+   OVERLAYS — THE DESTRUCTIVE-CONFIRMATION NORM (4.0.0 "Motion Lab
+   Rebuild, Flip/Accordion Geometry Fix, Destructive Confirm Norm &
+   Human-Crafted Blueprints"). Layered into `cascade` by
+   signature-style.css (imported after editorial.css — LAST cascade
+   member, so the confirm button's crimson voice outranks the shared
+   Button variants at equal specificity).
+
+   ONE component today: <ConfirmDialog> (react/overlays.tsx) — the
+   portal-mounted destructive-action dialog the SYSTEM_PROMPT norm
+   mandates for EVERY delete/reset across any site built with the
+   engine.
+
+   THE Z-PILLARS (Pillar 3, exact — the EventModal precedent): the
+   scrim is var(--z-overlay, 40), the card is var(--z-modal, 50). The
+   component portals both elements to document.body, so they break
+   free of any host stacking context and these z-index values are the
+   ONLY stacking authority.
+
+   CENTERING (no wrapper): both elements are position: fixed siblings-
+   in-portal; the card centers with the over-constrained absolute
+   centering — `inset: 0; margin: auto` with an explicit width and a
+   fit-content height (the css/modal.css anatomy, verbatim).
+
+   COLOR DOCTRINE EXCEPTIONS (user-mandated, the ONLY non-token colors
+   in the package, mirroring css/modal.css's documented rgba scrim):
+     1. The scrim is rgba(0, 0, 0, 0.6) — a dimming layer must dim
+        what is BEHIND it regardless of theme.
+     2. The confirm button's ink is #FFFFFF on the solid
+        var(--sig-crimson) fill — the destructive voice must be
+        theme-independent high contrast (#FFFFFF × #F22222 = 4.18:1,
+        above the 3.1 gate floor; scripts/gates-v400.mjs computes it).
+   Every other declaration is token-driven.
+
+   (bd1) AMENDMENT — THE SANCTIONED BLUR SURFACES: css/modal.css,
+   css/command.css, and NOW css/overlays.css carry backdrop-filter.
+   The confirm card joins the list: a floating decision surface
+   renders over content that must stay legible-but-recessed behind
+   the glass. Enumerated in the (bd1) audit (scripts/verify.mjs).
+
+   FLAT: zero box-shadow (the e1 treaty — the scrim + blur IS the
+   elevation); hairline border; radius-card; 8px grid.
+   ========================================================================== */
+
+@layer cascade {
+
+  /* The scrim — the documented rgba exception (see header). Sits at
+     the 40 rung; clicking it CANCELS (the safe close, wired in the
+     component). */
+  .sig-confirm-scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: var(--z-overlay, 40);
+  }
+
+  /* The dialog card — fixed, centered, hairline-bordered, the (bd1)
+     sanctioned blur glass, token-driven. z-50: above the scrim,
+     below the toast zenith. */
+  .sig-confirm-card {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(26rem, calc(100% - var(--space-section) * 2));
+    height: fit-content;
+    max-height: calc(100% - var(--space-section) * 2);
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-standard);
+    padding: var(--space-section);
+    background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+    color: var(--text-main);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 20%, transparent);
+    border-radius: var(--radius-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: var(--z-modal, 50);
+  }
+
+  .sig-confirm__title {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  .sig-confirm__description {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  /* The action row — cancel first (DOM order IS the focus order: the
+     safe default focus lands here), confirm last, right-aligned. */
+  .sig-confirm__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-tight);
+    padding-top: var(--space-tight);
+  }
+
+  /* THE DESTRUCTIVE VOICE — solid var(--sig-crimson) fill + the
+     #FFFFFF ink (documented exception #2). Same specificity as the
+     shared .sig-btn--danger but LOADED LAST in the cascade, so this
+     rule outranks the peach wash. :active press physics and the
+     Flamingo focus ring stay the shared Button's. */
+  .sig-confirm__confirm.sig-btn {
+    background: var(--sig-crimson);
+    color: #ffffff;
+    border: 1px solid var(--sig-crimson);
+  }
+  .sig-confirm__confirm.sig-btn:hover {
+    background: color-mix(in srgb, var(--sig-crimson) 85%, var(--bg-base));
+    border-color: color-mix(in srgb, var(--sig-crimson) 85%, var(--bg-base));
+  }
+
+  /* Mechanical physics — motion is a gift, not a requirement. */
+  @media (prefers-reduced-motion: no-preference) {
+    .sig-confirm-card {
+      animation: sig-confirm-in var(--dur-glide, 280ms) var(--ease-glide, cubic-bezier(0.2, 0.8, 0.2, 1));
+    }
+    @keyframes sig-confirm-in {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 8px, 0) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+      }
+    }
+  }
+
+  /* Pillar 2 mobile: the card takes the full width minus the gutter. */
+  @media (max-width: 768px) {
+    .sig-confirm-card {
+      width: calc(100% - var(--space-section) * 2);
+    }
+  }
+}

@@ -72,6 +72,7 @@ import {
   EmptyState,
   ToastProvider,
   useToast,
+  ConfirmDialog,
 } from "@edwyn/signature-style/react";
 import type {
   TimelineEvent,
@@ -833,6 +834,62 @@ function UseToastPreview() {
   );
 }
 
+/** The destructive-action NORM, live (4.0.0): the demo Delete button
+    opens a REAL ConfirmDialog; confirming deletes the demo row and
+    pushes the crimson-strip toast; cancelling pushes nothing. Focus
+    lands on "No" on open and returns to the trigger on close. */
+function ConfirmDialogPreview() {
+  const toast = useToast();
+  const [confirming, setConfirming] = useState(false);
+  const [rows, setRows] = useState<string[]>(["Sprint retro notes", "Old deploy log"]);
+  const [last, setLast] = useState<string>("");
+  return (
+    <div className="studio__stack">
+      <div className="studio__inline-row">
+        {rows.map((row) => (
+          <span key={row} className="studio__mini-tile">
+            {row}
+          </span>
+        ))}
+        {rows.length === 0 && <span className="studio__note">every row deleted — the demo resets via the norm itself</span>}
+      </div>
+      <div className="studio__inline-row">
+        <Button
+          size="sm"
+          variant="danger"
+          leftIcon="Trash"
+          disabled={rows.length === 0}
+          data-testid="ps-confirm-trigger"
+          onClick={() => setConfirming(true)}
+        >
+          Delete “{rows[0] ?? "nothing"}”
+        </Button>
+        <span className="studio__note">
+          {last !== "" ? `last action: ${last}` : "no destructive action fired yet"}
+        </span>
+      </div>
+      <ConfirmDialog
+        open={confirming}
+        title="Delete this row?"
+        description={`This permanently removes “${rows[0] ?? "the row"}” from the demo workspace. This cannot be undone.`}
+        cancelLabel="No"
+        confirmLabel="Yes, Delete"
+        onCancel={() => {
+          setConfirming(false);
+          setLast("cancelled — nothing was deleted");
+        }}
+        onConfirm={() => {
+          const removed = rows[0] ?? "";
+          setRows((current) => current.slice(1));
+          setConfirming(false);
+          setLast(`deleted “${removed}” — crimson toast fired`);
+          toast("error", `Deleted “${removed}” — the norm logged the destruction.`);
+        }}
+      />
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /* Set 07 previews — Web Components (zero-react)                       */
 /*                                                                    */
@@ -1011,6 +1068,7 @@ const PREVIEWS: Record<string, ReactNode> = {
   EmptyState: <EmptyStatePreview />,
   ToastProvider: <ToastProviderPreview />,
   useToast: <UseToastPreview />,
+  ConfirmDialog: <ConfirmDialogPreview />,
   // Set 07 — the zero-react custom elements, mounted LIVE.
   SigWcSurfaceCard: <SigWcSurfaceCardPreview />,
   SigWcBadge: <SigWcBadgePreview />,
@@ -1040,6 +1098,7 @@ const SET_FRAMES: Record<SetId, ReadonlyArray<string>> = {
   "06": [
     "DataTable", "Callout", "Carousel", "CarouselItem", "ProseBlock",
     "AnnouncementBanner", "EmptyState", "ToastProvider", "useToast",
+    "ConfirmDialog",
   ],
   "07": [
     "SigWcSurfaceCard", "SigWcBadge", "SigWcProgressBar", "SigWcStatRing",

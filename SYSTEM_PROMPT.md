@@ -181,6 +181,36 @@ When you ship React, prefer the official primitives in this package — `<Icon>`
 
 Any AI consuming `@edwyn/signature-style@2.7.0` can reproduce this signature verbatim — these snippets are the law. Every exported component, its exact props, one import, no invented props: read the snippet, copy the snippet.
 
+### The Destructive Action Norm (4.0.0)
+
+Every destructive action across any site built with this engine MUST route through `<ConfirmDialog>` — deletes, resets, and irreversible commits never fire on a single click. Escape, the scrim, and the cancel button all CANCEL (the safe closes); only the explicit confirm commits. The dialog traps Tab inside itself, focuses the CANCEL button on open (one accidental Enter must never destroy), and returns focus to the trigger on close. It portals to `document.body` on the z-40 scrim / z-50 card rungs; the confirm button is the solid `var(--sig-crimson)` fill with `#FFFFFF` ink; `variant` is reserved ("danger" is the norm's voice). Copy-paste recipe:
+
+```tsx
+import { useState } from "react";
+import { Button, ConfirmDialog, useToast } from "@edwyn/signature-style/react";
+
+const [confirming, setConfirming] = useState(false);
+const toast = useToast();
+<Button variant="danger" leftIcon="Trash" onClick={() => setConfirming(true)}>
+  Delete Node
+</Button>
+<ConfirmDialog
+  open={confirming}
+  title="Delete Node?"
+  description='This removes "Core Engine" and all edges attached to it.'
+  cancelLabel="No"
+  confirmLabel="Yes, Delete"
+  onCancel={() => setConfirming(false)}
+  onConfirm={() => {
+    deleteNode(id);
+    setConfirming(false);
+    toast("error", "Node deleted.");
+  }}
+/>
+```
+
+The engine's own surfaces obey the norm: the Graph Studio's Delete Node (inspector button AND the Delete/Backspace key), Reset Canvas, and the Analytics & Planner Reset Workspace all open ConfirmDialogs before committing.
+
 ### The sig-shell layout (2.5.0)
 
 Every view's content renders inside ONE centered column — max-width 1400px, centered, breathing side padding (≥20px of viewport margin at every width). GlobalNav stays OUTSIDE the shell (it is its own bar). Never render tab modules or card grids edge-to-edge:

@@ -22,3 +22,4 @@ export { KnowledgeGraph, type KnowledgeGraphProps, type KnowledgeGraphHandle, ty
 export { CommandPalette, type CommandEntry, type CommandPaletteProps, } from "./command.js";
 export { SkeletonLine, type SkeletonLineProps, SkeletonCard, SkeletonTableRow, type SkeletonTableRowProps, } from "./skeleton.js";
 export { AnimatedNumber, springProgress, type AnimatedNumberProps, MotionReveal, type MotionRevealProps, type MotionRevealVariant, KineticSurface, type KineticSurfaceProps, AuroraBorderCard, type AuroraBorderCardProps, TiltSurface, type TiltSurfaceProps, StatusBeacon, type StatusBeaconProps, WaveformBars, type WaveformBarsProps, } from "./motion.js";
+export { ConfirmDialog, type ConfirmDialogProps, useFocusReturn, } from "./overlays.js";

@@ -55,7 +55,8 @@
     "!react/timeline-manager.tsx",
     "!react/command.tsx",
     "!react/skeleton.tsx",
-    "!react/motion.tsx"
+    "!react/motion.tsx",
+    "!react/overlays.tsx"
   ],
   "sideEffects": [
     "*.css"

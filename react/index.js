@@ -22,3 +22,4 @@ export { KnowledgeGraph, layoutGraph, layoutTree, layoutRadial, treeEdge, cubicB
 export { CommandPalette, } from "./command.js";
 export { SkeletonLine, SkeletonCard, SkeletonTableRow, } from "./skeleton.js";
 export { AnimatedNumber, springProgress, MotionReveal, KineticSurface, AuroraBorderCard, TiltSurface, StatusBeacon, WaveformBars, } from "./motion.js";
+export { ConfirmDialog, useFocusReturn, } from "./overlays.js";

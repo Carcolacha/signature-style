@@ -685,6 +685,35 @@ const modal = useModal<TimelineEvent>();
 const toast = useToast();
 toast("success", "Attendance saved — see you there 🎉");`,
   },
+  ConfirmDialog: {
+    set: "06",
+    componentName: "ConfirmDialog",
+    jsx: `import { useState } from "react";
+import { Button, ConfirmDialog, useToast } from "@edwyn/signature-style/react";
+
+// THE DESTRUCTIVE ACTION NORM (4.0.0): every delete/reset routes
+// through ConfirmDialog — Escape, scrim and "No" all cancel; only
+// "Yes" commits. Focus lands on the cancel button on open and
+// returns to the trigger on close.
+const [confirming, setConfirming] = useState(false);
+const toast = useToast();
+<Button variant="danger" leftIcon="Trash" onClick={() => setConfirming(true)}>
+  Delete Node
+</Button>
+<ConfirmDialog
+  open={confirming}
+  title="Delete Node?"
+  description={'This removes "Core Engine" and all edges attached to it. Nodes connected through it are kept.'}
+  cancelLabel="No"
+  confirmLabel="Yes, Delete"
+  onCancel={() => setConfirming(false)}
+  onConfirm={() => {
+    deleteNode(id);
+    setConfirming(false);
+    toast("error", "Node deleted.");
+  }}
+/>`,
+  },
 
   // ---------------------------------------------------------------- Set 07
   // 3.4.0 — THE ZERO-REACT SURFACE: the six custom elements. The "jsx"
