@@ -54,6 +54,16 @@
  * Reset Canvas opens "Reset Graph Canvas?". The commits fire only from
  * the dialogs' onConfirm; focus lands on "No" and returns to the
  * trigger on close.
+ *
+ * 4.1.0 — THE GRAPH MOTION LAYER: the canvas svg is UNCHANGED (the
+ * outer translate-only drag wrapper stays rAF-quiet); a playground
+ * choreography stratum (<GraphMotionLayer>, components/GraphMotionLayer
+ * .tsx + the two engine halves GraphNodeSpring.tsx [motion/react] and
+ * GraphEdgeDraw.tsx [animejs]) sits over the stage and animates the
+ * transients — node spawn springs (opacity/scale, 440/28, staggered
+ * spawnIndex·0.07s), edge draw-ons (strokeDashoffset, 420ms outCubic,
+ * spawnIndex·70ms), and the delete/reset exit ghosts (scale 0.72).
+ * One engine per file (gate own1); the layer renders NULL at rest.
  */
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
@@ -80,6 +90,7 @@ import type {
 import { KnowledgeGraph } from "@edwyn/signature-style/react";
 import { PALETTE } from "../palette.js";
 import { expandNodeIdeas } from "../graph-expansion.js";
+import { GraphMotionLayer } from "./GraphMotionLayer.js";
 
 /** The inspector's edit patch — the fields the HUD can commit. */
 export type NodePatch = Partial<
@@ -264,7 +275,9 @@ export function GraphStudioView({
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [selectedEdge, setSelectedEdge] = useState<GraphEdgeSelection | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [zoom, setZoom] = useState(1);
+  // 4.1.0 — THE FULL VIEW (was zoom-only): the motion layer mirrors the
+  // canvas viewBox, so every pan/zoom report is kept whole.
+  const [view, setView] = useState<GraphView>({ x: 0, y: 0, zoom: 1 });
   // THE INSPECTOR COLLAPSE — the ✕ hides it until the next selection.
   const [inspectorOpen, setInspectorOpen] = useState(true);
   // THE 4.0.0 DESTRUCTIVE NORM — the two pending-confirm slots: the
@@ -344,8 +357,8 @@ export function GraphStudioView({
     setSelectedEdge(edge);
     setInspectorOpen(true);
   };
-  const handleViewChange = (view: GraphView): void => {
-    setZoom(view.zoom);
+  const handleViewChange = (next: GraphView): void => {
+    setView(next);
   };
   const jumpTo = (id: string): void => {
     graphRef.current?.selectNode(id);
@@ -567,6 +580,17 @@ export function GraphStudioView({
           height={stageHeight}
           label="Graph Studio canvas"
         />
+        {/* 4.1.0 THE GRAPH MOTION LAYER — the choreography stratum over
+            the static canvas: node spawn springs (motion/react), edge
+            draw-ons (animejs), and the delete/reset exit ghosts. Renders
+            null at rest — the canvas is untouched when nothing moves. */}
+        <GraphMotionLayer
+          graph={graph}
+          links={links}
+          positions={positions ?? {}}
+          layoutMode={layoutMode}
+          view={view}
+        />
       </div>
 
       {/* HUD 1 — THE TOP-LEFT TOOLBAR. */}
@@ -620,7 +644,7 @@ export function GraphStudioView({
             −
           </button>
           <span className="graph-studio__zoom-readout" aria-live="polite">
-            {Math.round(zoom * 100)}%
+            {Math.round(view.zoom * 100)}%
           </span>
           <button
             type="button"

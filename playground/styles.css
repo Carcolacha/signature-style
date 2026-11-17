@@ -1505,6 +1505,61 @@
   outline-offset: 1px;
 }
 
+/* 4.1.0 THE GRAPH MOTION LAYER — the choreography stratum over the
+   canvas (flat, token-driven; e1: hairlines, never shadows). The
+   overlay svg mirrors the canvas box exactly — same inset as the
+   stage padding, so both svgs share one viewBox → px projection.
+   pointer-events: none keeps every click on the (possibly masked)
+   static canvas; z 1 rides under the 30-rung HUD cards. At rest the
+   layer renders nothing — this css only styles live transients. */
+.graph-motion-layer {
+  position: absolute;
+  inset: var(--space-standard);
+  z-index: 1;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* THE INNER NODE CARD (motion/react owns scale + opacity ONLY — the
+   outer translate wrapper in the package is untouched). The div fills
+   its slack foreignObject slot at exactly the node ring's 68×68. */
+.sig-motion-node {
+  transform-origin: 50% 50%;
+}
+
+/* THE TRANSIENT CHIP — the visual twin of the canvas node (r 34 ring,
+   surface fill, 13px label): the settle swap is pixel-seamless. The
+   label OVERFLOWS the ring exactly like the SVG canvas text. */
+.sig-motion-node__chip {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-cake-primary); /* per-node token rides inline */
+  border-radius: 9999px;
+  background-color: var(--bg-surface);
+  overflow: visible;
+  padding: 0 var(--space-tight);
+}
+
+.sig-motion-node__label {
+  font-size: 13px;
+  color: var(--text-main);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Reduced motion: the layer choreographs nothing (the hook gates the
+   JS) — this guard is the belt-and-suspenders css escape. */
+@media (prefers-reduced-motion: reduce) {
+  .sig-motion-node {
+    animation: none;
+    transition: none;
+  }
+}
+
 .graph-studio__inspector {
   min-width: 0;
 }
